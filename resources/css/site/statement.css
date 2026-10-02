@@ -1,0 +1,50 @@
+/*
+  Statement block (blocks/statement.blade.php; behaviour js/public/statement.ts).
+  Dark on the page's white, or — .statement--dark — white on the opening
+  hero's fixed background.
+*/
+@layer components {
+    .statement {
+        --statement-ink: var(--color-neutral-900);
+        --statement-body: var(--color-neutral-600);
+        --statement-rule: var(--color-neutral-200);
+        --statement-square: #2b7be8; /* colorA of the hero gradient */
+    }
+
+    .statement--dark {
+        --statement-ink: #fff;
+        --statement-body: rgb(255 255 255 / 0.75);
+        --statement-rule: rgb(255 255 255 / 0.25);
+        --statement-square: #7fe8a0; /* colorD: reads on the dark gradient */
+    }
+
+    .statement__grid {
+        border-color: var(--statement-rule);
+    }
+
+    .statement__eyebrow {
+        @apply flex items-center gap-2.5 text-xs font-medium tracking-[0.12em] uppercase;
+        color: var(--statement-ink);
+    }
+
+    .statement__square {
+        @apply size-2 shrink-0;
+        background: var(--statement-square);
+    }
+
+    /* 36–56px, three lines on desktop. */
+    .statement__text {
+        @apply text-[clamp(2.25rem,3.9vw,3.5rem)] leading-[1.15] font-medium tracking-[-0.02em] text-balance;
+        color: var(--statement-ink);
+    }
+
+    /* The script sets each word's opacity as the section scrolls; spaces
+       between the spans keep it one readable sentence. */
+    .statement__word {
+        @apply inline;
+    }
+
+    .statement__body {
+        color: var(--statement-body);
+    }
+}

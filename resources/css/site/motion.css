@@ -1,0 +1,18 @@
+/*
+  The site's one motion language: the "expo" family, everywhere. Use these
+  tokens instead of literal curves; resources/js/public/gsap.ts carries the
+  matching GSAP names (EASE) for scripted animation.
+
+  - --motion-out: things arriving — fast start, long smooth settle.
+  - --motion-in: things leaving — they gather speed and go.
+  - --motion-in-out: things travelling across the screen (curtains, panels).
+*/
+:root {
+    --motion-out: cubic-bezier(0.16, 1, 0.3, 1);
+    --motion-in: cubic-bezier(0.7, 0, 0.84, 0);
+    --motion-in-out: cubic-bezier(0.87, 0, 0.13, 1);
+
+    --duration-fast: 0.3s;
+    --duration: 0.6s;
+    --duration-slow: 0.9s;
+}

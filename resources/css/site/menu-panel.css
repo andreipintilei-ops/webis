@@ -1,0 +1,453 @@
+/*
+  Site header and slide-in navigation panel, after dennissnellenberg.com.
+  Markup: components/site/header.blade.php; behaviour: js/public/panel-menu.ts.
+
+  State lives on <html>: `nav-open` (panel open) and `nav-scrolled` (the top
+  bar has scrolled away, so the round button shows). The :has(:target) twin of
+  each "open" rule is the no-JavaScript fallback.
+*/
+
+:root {
+    --site-dark: #1c1d20;
+    --site-accent: #455ce9;
+    --site-border-light: rgb(255 255 255 / 0.2);
+    --site-gap: clamp(1.5rem, 4vw, 2.5rem);
+    /*
+      The deep navy of the hero gradient as it renders (its base, #062334,
+      under the ramp it always mixes in): the full-screen menu and the page
+      transition, so they read as the same world as the hero.
+    */
+    --site-deep: #082439;
+    /* The open menu's ground: a step lighter, so the wipe (--site-deep)
+       reads as a dark band passing over it. */
+    --site-menu: #0d3150;
+    /*
+      Film grain without WebGL, after the gradient's own: fine, static,
+      monochrome noise from an SVG filter, drawn once by the browser and
+      tiled, its contrast halved around mid-grey (computed in sRGB: in the
+      filters' default linear RGB, mid-grey would come out brighter). Blend it over a colour
+      with overlay (background-blend-mode or mix-blend-mode): mid-grey leaves
+      the colour alone and the rest scales it evenly up and down, so a dark
+      colour keeps its value — soft-light would lift a dark one overall.
+    */
+    --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='g' color-interpolation-filters='sRGB'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3CfeComponentTransfer%3E%3CfeFuncR type='linear' slope='0.5' intercept='0.25'/%3E%3CfeFuncG type='linear' slope='0.5' intercept='0.25'/%3E%3CfeFuncB type='linear' slope='0.5' intercept='0.25'/%3E%3CfeFuncA type='linear' slope='0' intercept='1'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E");
+    /*
+      The page's column, centred: content and the top bar share its edges.
+      Narrower screens fall back to the --site-gap margin.
+    */
+    --content-max: 84rem;
+}
+
+@layer components {
+    /* ---- Top bar ------------------------------------------------------- */
+
+    /* Logo and links on the content column's edges (--content-max). */
+    .site-nav {
+        @apply absolute inset-x-0 top-0 z-30 flex items-center justify-between;
+        padding-block: var(--site-gap);
+        padding-inline: max(
+            var(--site-gap),
+            calc((100% - var(--content-max)) / 2)
+        );
+        color: var(--site-dark);
+    }
+
+    /* Over a dark first screen (an image hero). */
+    .site-nav--dark {
+        @apply text-white;
+    }
+
+    .site-nav__logo {
+        @apply text-2xl font-semibold tracking-tight;
+    }
+
+    .site-nav__links {
+        @apply flex items-center;
+    }
+
+    /*
+      A text link, after icomat.co.uk: hovering one rolls its label up while
+      an identical copy rolls in from below, and the other links dim back so
+      it stands out (the button is left alone). The current page keeps a dot
+      under its link.
+    */
+    .site-link {
+        @apply relative inline-flex items-center px-3 py-2 text-base;
+        transition: opacity var(--duration) var(--motion-out);
+
+        &::after {
+            content: '';
+            @apply absolute left-1/2 size-1.5 rounded-full bg-current;
+            bottom: -0.25rem;
+            transform: translate(-50%, -50%) scale(0);
+            transition: transform var(--duration) var(--motion-out);
+        }
+
+        &.is-active::after {
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+        & > span {
+            @apply inline-block;
+        }
+    }
+
+    /*
+      The roll: the label carries its copy as a text-shadow exactly one line
+      below, inside a mask one line tall; moving the label up by a line brings
+      the copy to where the label was. Screen readers only ever read it once.
+    */
+    .site-link__mask {
+        @apply overflow-clip leading-[1.5];
+        vertical-align: top;
+    }
+
+    .site-link__text {
+        @apply inline-block;
+        text-shadow: 0 1.5em currentColor;
+        transition: transform var(--duration) var(--motion-out);
+    }
+
+    /* Per item (li), so a dropdown stays lit while the pointer is in its panel. */
+    .site-nav__links > li:is(:hover, :has(:focus-visible)) .site-link__text {
+        transform: translateY(-1.5em);
+    }
+
+    /*
+      Dim the rest while a link (or its dropdown) is pointed at or has
+      keyboard focus. :has() cannot nest, hence the spelled-out cases.
+    */
+    .site-nav__links:is(
+            :has(> li:hover > .site-link),
+            :has(> li > .site-link:focus-visible),
+            :has(> li .site-dropdown__link:focus-visible)
+        )
+        > li:not(:hover, :has(:focus-visible))
+        > .site-link {
+        opacity: 0.35;
+    }
+
+    .site-link--light {
+        @apply px-0 text-white;
+    }
+
+    /* ---- Top-bar dropdown (Soluții ▾) ----------------------------------- */
+
+    .site-nav__dropdown {
+        @apply relative;
+    }
+
+    .site-nav__caret {
+        @apply ml-1 size-3;
+        transition: transform var(--duration-fast) var(--motion-out);
+    }
+
+    /*
+      Hidden with visibility (not display) so it can fade; the top padding
+      bridges the gap under the link, so moving the pointer down to the
+      panel never crosses empty space and closes it.
+    */
+    .site-dropdown {
+        @apply invisible absolute top-full left-0 pt-3 opacity-0;
+        transform: translateY(0.5rem);
+        transition:
+            opacity var(--duration-fast) var(--motion-out),
+            transform var(--duration-fast) var(--motion-out),
+            visibility 0s linear var(--duration-fast);
+    }
+
+    .site-nav__dropdown:hover,
+    .site-nav__dropdown:focus-within {
+        & .site-dropdown {
+            @apply visible opacity-100;
+            transform: none;
+            transition:
+                opacity var(--duration) var(--motion-out),
+                transform var(--duration) var(--motion-out);
+        }
+
+        & .site-nav__caret {
+            transform: rotate(180deg);
+        }
+    }
+
+    /* A white card on every header tone. */
+    .site-dropdown__list {
+        @apply min-w-60 rounded-2xl bg-white p-2;
+        color: var(--site-dark);
+        box-shadow: 0 1.25rem 3rem rgb(0 0 0 / 0.14);
+    }
+
+    .site-dropdown__link {
+        @apply block rounded-xl px-4 py-2.5 text-base whitespace-nowrap;
+        transition: background-color var(--duration-fast) var(--motion-out);
+
+        &:hover,
+        &:focus-visible {
+            @apply bg-neutral-100;
+        }
+    }
+
+    /* ---- Round menu button --------------------------------------------- */
+
+    /*
+      The wrapper only places the button and pops it in and out (scale). The
+      round button inside moves with the cursor via inline styles; keeping the
+      two on separate elements stops either from overriding the other.
+    */
+    .site-burger {
+        @apply fixed z-[105];
+        top: calc(var(--site-gap) / 1.5);
+        right: calc(var(--site-gap) / 1.5);
+        transform: scale(0);
+        transition: transform var(--duration-fast) var(--motion-in);
+        will-change: transform;
+    }
+
+    /* Scales in once the top bar is gone. */
+    :root.nav-scrolled .site-burger,
+    :root.nav-open .site-burger,
+    :root:has(#site-panel:target) .site-burger {
+        transform: scale(1);
+        transition: transform var(--duration) var(--motion-out);
+    }
+
+    /*
+      Always the opposite of what is behind it: dark on light pages, white
+      over dark surfaces (`nav-on-dark`, set from site-nav.ts by looking at
+      what is under the button) and over the open menu, which is black.
+    */
+    .site-burger__button {
+        --burger-bg: var(--site-dark);
+        --burger-ink: #fff;
+
+        @apply relative grid place-items-center rounded-full;
+        width: clamp(4rem, 5.5vw, 5rem);
+        height: clamp(4rem, 5.5vw, 5rem);
+        background: var(--burger-bg);
+        box-shadow: 0 0.5rem 1.5rem rgb(0 0 0 / 0.12);
+        transition:
+            background-color var(--duration) var(--motion-out),
+            transform var(--duration) var(--motion-out);
+    }
+
+    :root.nav-on-dark .site-burger__button,
+    :root.nav-open .site-burger__button {
+        --burger-bg: #fff;
+        --burger-ink: var(--site-dark);
+    }
+
+    @media (hover: hover) and (pointer: fine) {
+        .site-burger__button:hover {
+            transform: scale(1.06);
+        }
+    }
+
+    /* Two lines that cross into an ✕. */
+    .site-burger__bars {
+        @apply pointer-events-none relative;
+        width: 28%;
+        height: 8%;
+
+        &::before,
+        &::after {
+            content: '';
+            @apply absolute left-1/2 block h-px w-full;
+            background: var(--burger-ink);
+            transform: translate(-50%, -50%);
+            transition:
+                top var(--duration) var(--motion-in-out),
+                transform var(--duration) var(--motion-in-out),
+                background-color var(--duration) var(--motion-out);
+        }
+
+        &::before {
+            top: 0;
+        }
+
+        &::after {
+            top: 100%;
+        }
+    }
+
+    :root.nav-open .site-burger__bars {
+        &::before {
+            top: 50%;
+            transform: translate(-50%, -50%) rotate(-45deg);
+        }
+
+        &::after {
+            top: 50%;
+            transform: translate(-50%, -50%) rotate(45deg);
+        }
+    }
+
+    /* ---- Backdrop ------------------------------------------------------- */
+
+    .site-panel-backdrop {
+        @apply pointer-events-none fixed inset-0 z-[100] opacity-0;
+        background: linear-gradient(to right, rgb(0 0 0 / 0.3) 40%, #000 80%);
+        transition: opacity 0.8s var(--motion-in-out);
+    }
+
+    :root.nav-open .site-panel-backdrop,
+    :root:has(#site-panel:target) .site-panel-backdrop {
+        @apply pointer-events-auto;
+        opacity: 0.35;
+    }
+
+    /* ---- Panel ------------------------------------------------------------ */
+
+    .site-panel {
+        @apply fixed top-0 right-0 z-[100] h-svh text-white;
+        background: var(--site-dark);
+        /* Parked off-screen, plus the width of its curved edge. */
+        transform: translateX(calc(100% + 6vw));
+        transition: transform 0.8s var(--motion-in-out);
+        will-change: transform;
+    }
+
+    :root.nav-open .site-panel,
+    :root:has(#site-panel:target) .site-panel {
+        transform: translateX(0);
+    }
+
+    /*
+      The curve: an SVG strip glued to the panel's left edge (1px overlap, so
+      no seam shows). Its width is the depth of the bulge; it shrinks to 0 as
+      the panel arrives and grows back as it leaves.
+    */
+    .site-panel__curve {
+        @apply absolute top-0 h-full;
+        left: 1px;
+        width: 6vw;
+        transform: translateX(-100%);
+        fill: var(--site-dark);
+        transition: width 0.85s var(--motion-in-out);
+    }
+
+    :root.nav-open .site-panel__curve,
+    :root:has(#site-panel:target) .site-panel__curve {
+        width: 0;
+    }
+
+    .site-panel__inner {
+        @apply relative flex h-full flex-col justify-between;
+        padding: 15vh 7.5vw 10vh;
+    }
+
+    .site-panel__label {
+        @apply text-xs tracking-[0.08em] uppercase opacity-50;
+    }
+
+    .site-panel__stripe {
+        @apply mt-6 border-0 border-t;
+        border-color: var(--site-border-light);
+    }
+
+    .site-panel__links {
+        @apply flex flex-col items-start pt-[5vh];
+        margin-left: calc(var(--site-gap) / -2);
+    }
+
+    /* Each link slides in from the right, a beat after the one above. */
+    .site-panel__item {
+        transform: translateX(15vw);
+        transition: transform 0.8s var(--motion-in-out);
+        will-change: transform;
+
+        &:nth-child(2) {
+            transition-delay: 0.03s;
+        }
+
+        &:nth-child(3) {
+            transition-delay: 0.06s;
+        }
+
+        &:nth-child(4) {
+            transition-delay: 0.09s;
+        }
+
+        &:nth-child(5) {
+            transition-delay: 0.12s;
+        }
+    }
+
+    :root.nav-open .site-panel__item,
+    :root:has(#site-panel:target) .site-panel__item {
+        transform: translateX(0);
+    }
+
+    .site-panel__link {
+        @apply relative inline-flex items-center leading-[1.4] font-normal;
+        padding: 0 calc(var(--site-gap) / 2);
+        font-size: calc(clamp(3.25rem, 5vw, 4rem) * 0.875);
+        will-change: transform;
+
+        & > span {
+            @apply inline-block;
+        }
+
+        /* The dot sits to the left of the link. */
+        &::after {
+            content: '';
+            @apply absolute top-1/2 rounded-full bg-white;
+            left: calc(var(--site-gap) / -4);
+            width: calc(clamp(16px, 1.2vw, 19px) / 1.65);
+            height: calc(clamp(16px, 1.2vw, 19px) / 1.65);
+            transform: translate(-50%, -50%) scale(0);
+            transition: transform var(--duration) var(--motion-out);
+        }
+
+        &:hover::after,
+        &:focus-visible::after,
+        &.is-active::after {
+            transform: translate(-50%, -50%) scale(1);
+        }
+    }
+
+    .site-panel__socials {
+        @apply mt-4 flex flex-wrap gap-x-6 gap-y-2;
+    }
+
+    /* Phones: the panel takes the whole screen and the curve gets deeper. */
+    @media (max-width: 540px) {
+        .site-panel {
+            @apply w-full;
+            transform: translateX(calc(100% + 20vw));
+        }
+
+        .site-panel__inner {
+            padding: 15svh 1.5rem 2rem;
+        }
+
+        .site-panel__curve {
+            width: 20vw;
+        }
+
+        .site-panel__link::after {
+            left: auto;
+            right: 0.4em;
+        }
+
+        .site-panel__links {
+            @apply w-full;
+            margin-left: 0;
+        }
+
+        .site-panel__item {
+            @apply w-full;
+        }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .site-burger,
+        .site-panel,
+        .site-panel__item,
+        .site-panel__curve,
+        .site-panel-backdrop {
+            transition-duration: 0.01ms !important;
+            transition-delay: 0s !important;
+        }
+    }
+}

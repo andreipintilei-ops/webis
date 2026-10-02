@@ -1,0 +1,60 @@
+/*
+  The opening hero as a card, and its intro (js/public/hero-intro.ts), after
+  integratedbio.com.
+
+  At rest the backdrop is a rounded card a few pixels in from the screen's
+  edges; the script opens it to the full screen as the page scrolls. The
+  intro grows it into that card from a small rectangle in the middle of a
+  blank page, then the title rises line by line out of its masks and the rest
+  of the hero and the header come in.
+
+  `intro` on <html> is set by the <head> script (layouts/public.blade.php)
+  before anything paints, on any full load (a visit or a reload) except
+  behind the page curtain or Back/Forward, and never with reduced motion.
+  The :root.intro rules are the intro's starting state; the script takes
+  over from them. Without the script, a safety timeout in <head> lifts them.
+*/
+@layer components {
+    /*
+      The card at rest: the opening hero's fixed backdrop
+      (blocks/partials/hero-backdrop.blade.php). Keep in step with CARD /
+      CARD_SMALL in hero-intro.ts.
+    */
+    [data-intro-backdrop] {
+        clip-path: inset(14px round 20px);
+
+        @media (max-width: 640px) {
+            clip-path: inset(10px round 16px);
+        }
+    }
+
+    /* Title lines: each its own mask. The padding keeps Romanian accents
+       (Î, Ă, the commas of Ș and Ț) inside it; the margin gives the room back. */
+    .hero-line {
+        @apply block overflow-clip;
+        padding-block: 0.08em;
+        margin-block: -0.08em;
+    }
+
+    .hero-line__inner {
+        @apply block;
+    }
+
+    :root.intro [data-intro-backdrop] {
+        clip-path: inset(50% round 999px);
+    }
+
+    :root.intro [data-intro] {
+        & .hero-line__inner {
+            transform: translateY(140%); /* LINE_HIDDEN in hero-intro.ts */
+        }
+
+        & [data-intro-fade] {
+            opacity: 0;
+        }
+    }
+
+    :root.intro:has([data-intro]) .site-nav {
+        opacity: 0;
+    }
+}

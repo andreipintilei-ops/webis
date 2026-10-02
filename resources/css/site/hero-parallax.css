@@ -1,0 +1,16 @@
+/*
+  What follows the opening hero covers it as the page scrolls: everything
+  after it is lifted above it on the page's white. Two cases:
+
+  - A light hero scrolls at half speed (data-speed, ScrollSmoother —
+    js/public/smooth-scroll.ts), so the page slides up over it.
+  - A dark hero's background is fixed behind the page; the hero and the
+    blocks set on that background ([data-on-backdrop], see blocks.blade.php)
+    are see-through, and the first block after them slides over the
+    background on white.
+*/
+@layer components {
+    [data-hero-parallax] ~ :not([data-on-backdrop]) {
+        @apply relative z-[1] bg-white;
+    }
+}

@@ -1,0 +1,217 @@
+/*
+  Public-site buttons: components/ui/pill.blade.php (primary, after the
+  "Contacts" button on cuberto.com) and components/ui/arrow-link.blade.php
+  (secondary, after exoape.com).
+
+  Colours come from two variables set by the tone class: `--btn-ink` (the
+  button's main colour — the pill's fill, the arrow link's text) and
+  `--btn-contrast` (what is drawn on top of it). Easings: css/site/motion.css.
+*/
+
+@layer components {
+    .btn-light {
+        --btn-ink: var(--site-dark);
+        --btn-contrast: #fff;
+    }
+
+    .btn-dark {
+        --btn-ink: #fff;
+        --btn-contrast: var(--site-dark);
+    }
+
+    /* ---- Pill (primary), after cuberto.com ----------------------------------- */
+
+    /*
+      On hover the pill empties from the bottom up — a clear shape rising
+      through the fill, its top rounded at first, flattening as it climbs —
+      leaving just a fine outline over whatever is behind the button (the
+      hero gradient, the page). The label rolls up out of view while a copy in
+      the ink colour rolls in from below, and the pill gives a small
+      horizontal stretch.
+    */
+    .pill {
+        @apply relative inline-flex h-14 items-center justify-center overflow-hidden rounded-full px-7 text-base leading-none font-medium whitespace-nowrap;
+        color: var(--btn-contrast);
+        transform: translateZ(0);
+        transition: transform var(--duration-fast) var(--motion-out);
+
+        /* The outline left once the fill has gone. */
+        &::before {
+            content: '';
+            @apply pointer-events-none absolute inset-0 z-[1] rounded-full;
+            box-shadow: inset 0 0 0 1px var(--btn-ink);
+        }
+    }
+
+    /* Small, for the header bar. */
+    .pill--sm {
+        @apply h-11 px-5;
+    }
+
+    .pill__ripple {
+        @apply absolute inset-0 overflow-hidden;
+        border-radius: inherit;
+
+        /*
+          The rising shape is itself transparent; the fill is its shadow,
+          spread far enough to cover the rest of the pill. A box-shadow follows
+          border-radius, so the boundary keeps the curved top.
+        */
+        & > span {
+            @apply block size-full;
+            box-shadow: 0 0 0 100vmax var(--btn-ink);
+            border-radius: 50% 50% 0 0;
+            transform: translateY(101%);
+            /* Cuberto's own curve for the fill. */
+            transition:
+                transform 0.5s cubic-bezier(0.4, 0, 0, 1),
+                border-radius 0.5s cubic-bezier(0.4, 0, 0, 1);
+        }
+    }
+
+    .pill__title {
+        @apply relative z-[2] block overflow-hidden;
+
+        & > span {
+            @apply block;
+            transition: transform 0.8s var(--motion-out);
+
+            &::after {
+                /* Empty alt text: the copy is decoration, not read out twice. */
+                content: attr(data-text) / '';
+                @apply absolute left-0 block;
+                top: 110%;
+                color: var(--btn-ink);
+            }
+        }
+    }
+
+    @media (hover: hover) and (pointer: fine) {
+        .pill:hover,
+        .pill:focus-visible {
+            /* Cuberto's jelly: a 2% stretch on a deliberately springy curve. */
+            transform: scaleX(1.02);
+            transition: transform 0.6s cubic-bezier(0.34, 5.56, 0.64, 1);
+
+            & .pill__ripple > span {
+                border-radius: 0;
+                transform: translateY(0);
+                transition-duration: 0.5s, 0.9s;
+            }
+
+            & .pill__title > span {
+                transform: translateY(-110%);
+            }
+        }
+    }
+
+    /* ---- Arrow link (secondary), after exoape.com ------------------------------ */
+
+    /*
+      At rest a small hollow dot sits left of the underlined label. On hover a
+      filled circle grows out of the dot with an arrow sliding in, the label
+      eases right to make room and its underline draws away to the right.
+      Leaving is quicker and plays it back; the underline redraws from the left.
+
+      Each part has two transitions: the base rules time the way back, the
+      :hover rules the way in (slower, on --motion-out).
+    */
+    .arrow-link {
+        --dot: 0.4375rem;
+        --circle: 2.75rem;
+        --gap: 1.25rem;
+
+        @apply relative inline-flex items-center text-base whitespace-nowrap;
+        color: var(--btn-ink);
+        padding-left: var(--gap);
+    }
+
+    /* Centred on the dot, so the circle seems to grow out of it. */
+    .arrow-link__circle {
+        @apply pointer-events-none absolute grid place-items-center overflow-hidden rounded-full;
+        width: var(--circle);
+        height: var(--circle);
+        left: calc(var(--dot) / 2 - var(--circle) / 2);
+        top: 50%;
+        transform: translateY(-50%);
+    }
+
+    .arrow-link__dot {
+        @apply absolute rounded-full;
+        width: var(--dot);
+        height: var(--dot);
+        box-shadow: inset 0 0 0 1px currentColor;
+    }
+
+    /* Starts at the dot's own size, so it reads as the dot filling and growing. */
+    .arrow-link__fill {
+        @apply absolute inset-0 rounded-full;
+        background: currentColor;
+        opacity: 0;
+        transform: scale(calc(0.4375 / 2.75));
+        transition:
+            transform 0.45s var(--motion-in-out),
+            opacity 0.15s linear 0.3s;
+    }
+
+    /* Waits just outside the circle's left edge, clipped, until hovered. */
+    .arrow-link__icon {
+        @apply relative size-3;
+        color: var(--btn-contrast);
+        transform: translateX(-250%);
+        transition: transform 0.35s var(--motion-in);
+    }
+
+    .arrow-link__label {
+        @apply relative pb-0.5;
+        transition: transform 0.45s var(--motion-in-out);
+    }
+
+    .arrow-link__border {
+        @apply absolute inset-x-0 bottom-0 h-px;
+        background: currentColor;
+        opacity: 0.35;
+        transform-origin: left;
+        transition: transform 0.6s var(--motion-out) 0.15s;
+    }
+
+    @media (hover: hover) {
+        .arrow-link:hover,
+        .arrow-link:focus-visible {
+            & .arrow-link__fill {
+                opacity: 1;
+                transform: scale(1);
+                transition:
+                    transform 0.7s var(--motion-out),
+                    opacity 0.05s linear;
+            }
+
+            & .arrow-link__icon {
+                transform: translateX(0);
+                transition: transform 0.7s var(--motion-out) 0.08s;
+            }
+
+            /* Clear the circle: from beside the dot to beside the circle. */
+            & .arrow-link__label {
+                transform: translateX(calc(var(--circle) / 2 + var(--dot) / 2));
+                transition: transform 0.7s var(--motion-out);
+            }
+
+            /* Draws away to the right; on leave redraws from the left. */
+            & .arrow-link__border {
+                transform: scaleX(0);
+                transform-origin: right;
+                transition: transform 0.5s var(--motion-in-out);
+            }
+        }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .pill,
+        .pill *,
+        .arrow-link * {
+            transition-duration: 0.01ms !important;
+            transition-delay: 0s !important;
+        }
+    }
+}
