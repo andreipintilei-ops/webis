@@ -25,7 +25,7 @@
  */
 
 const CONFIG = {
-    bgColor: '#062334',
+    bgColor: '#01225e',
     colorA: '#2b7be8',
     colorB: '#2bc8e8',
     colorC: '#4fe0d8',

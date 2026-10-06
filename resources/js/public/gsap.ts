@@ -15,8 +15,14 @@ export const EASE = {
     out: 'expo.out',
     /** Things leaving: they gather speed and go. */
     in: 'expo.in',
-    /** Things travelling across the screen (curtains). */
+    /** Things travelling across the screen (the hero intro's growth). */
     inOut: 'expo.inOut',
+    /**
+     * The curtains (menu, page transition): quartic, gentler than expo — at
+     * ~0.6s expo crams the move into its middle and reads as a snap; this
+     * spreads it over more of the time and still eases at both ends.
+     */
+    curtain: 'power3.inOut',
 } as const;
 
 let gsapPromise: Promise<Gsap> | null = null;
@@ -51,7 +57,7 @@ export function curtainMove(
     via: string,
     to: string,
     duration: number,
-    ease: string = EASE.inOut,
+    ease: string = EASE.curtain,
     curveAt = 0.6,
 ): gsap.TweenVars {
     return {

@@ -107,7 +107,7 @@ it('renders the animated gradient behind a centred hero, in place of its image, 
         ->toContain('<canvas data-soffit')
         // The round menu button turns white over it.
         ->toContain('data-nav-tone="dark"')
-        ->toContain('bg-[#062334]')
+        ->toContain('bg-[#01225e]')
         ->toContain('site-nav site-nav--dark')
         ->toContain('class="pill btn-dark"')
         ->not->toContain('<img')
@@ -192,7 +192,7 @@ it('marks the opening dark hero for the intro, and only that one', function () {
         ->and(substr_count($hero[0], 'data-intro-fade'))->toBe(2);
 
     expect($html)
-        ->toMatch('/<div class="overflow-hidden fixed inset-0 z-0 bg-\[#062334\]"\s+data-intro-backdrop\s*>\s*<div class="absolute inset-0" data-intro-media>\s*<canvas data-soffit/')
+        ->toMatch('/<div class="overflow-hidden fixed inset-0 z-0 bg-\[#01225e\]"\s+data-intro-backdrop\s*>\s*<div class="absolute inset-0" data-intro-media>\s*<canvas data-soffit/')
         ->and(strpos($html, 'data-intro-backdrop'))->toBeLessThan(strpos($html, '<div id="smooth-wrapper"'));
 
     // A plain hero on white has no backdrop to grow, so no intro.
@@ -235,8 +235,8 @@ it('keeps the secondary button an arrow link when it is the only one', function 
 });
 
 it('renders feature cards with their note and a link at the foot', function () {
-    Page::factory()->ofType(PageType::Home)->create([
-        'slug' => 'acasa',
+    Page::factory()->create([
+        'slug' => 'avantaje',
         'blocks' => [['id' => 'f', 'type' => 'features', 'v' => 1, 'data' => [
             'heading' => 'Ce dezvoltăm',
             'columns' => 3,
@@ -247,7 +247,7 @@ it('renders feature cards with their note and a link at the foot', function () {
         ]]],
     ]);
 
-    preg_match('/<section id="f".*?<\/section>/s', $this->get('/')->assertOk()->getContent(), $section);
+    preg_match('/<section id="f".*?<\/section>/s', $this->get('/avantaje')->assertOk()->getContent(), $section);
 
     expect($section[0])
         ->toMatch('/<h2[^>]*>Ce dezvoltăm<\/h2>/')
@@ -315,4 +315,29 @@ it('sets a statement on the hero background only straight after a dark hero', fu
     ]]);
 
     expect($section($this->get('/')->getContent(), 'a'))->not->toContain('statement--dark');
+});
+
+it('lays the home page services out as tilted colour cards, each one link', function () {
+    Page::factory()->ofType(PageType::Home)->create([
+        'slug' => 'acasa',
+        'blocks' => [['id' => 'f', 'type' => 'features', 'v' => 1, 'data' => [
+            'heading' => 'Ce dezvoltăm',
+            'columns' => 3,
+            'items' => [
+                ['title' => 'Software la comandă', 'text' => 'Sisteme construite.', 'link' => ['label' => 'Află mai multe', 'url' => '/software-la-comanda']],
+                ['title' => 'Produse SaaS', 'text' => 'Produse proprii.', 'link' => ['label' => 'Vezi produsele', 'url' => '/produse']],
+            ],
+        ]]],
+    ]);
+
+    preg_match('/<section id="f".*?<\/section>/s', $this->get('/')->assertOk()->getContent(), $section);
+
+    expect($section[0])
+        ->toContain('<h2 class="services__heading">Ce dezvoltăm</h2>')
+        // Blue and red with white text and dark-toned links; titles on two lines.
+        ->toContain('class="service-card service-card--blue service-card--on-dark"')
+        ->toContain('class="service-card service-card--red service-card--on-dark"')
+        ->toMatch('/<h3 class="service-card__title"><span>Produse<\/span>\s*<span>SaaS<\/span>/')
+        ->toMatch('/<a href="\/produse" class="arrow-link btn-dark service-card__link">.*?Vezi produsele/s')
+        ->and(substr_count($section[0], '<li class="service-card '))->toBe(2);
 });

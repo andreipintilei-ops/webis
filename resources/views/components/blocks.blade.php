@@ -13,8 +13,11 @@
     hero's background. Anywhere else the setting is ignored.
 
     Types without a template yet (or retired ones) are skipped.
+
+    `featuresLayout`: the home page uses its services layout; other pages honour the
+    feature block's configured columns.
 --}}
-@props(['blocks' => []])
+@props(['blocks' => [], 'featuresLayout' => 'columns'])
 
 @php
     $registry = app(\App\Blocks\BlockRegistry::class);
@@ -47,5 +50,6 @@
         'assets' => $assets,
         'isFirst' => $loop->first,
         'onBackdrop' => $onBackdrop,
+        'featuresLayout' => $featuresLayout,
     ])
 @endforeach

@@ -1,6 +1,14 @@
 {{-- `menu`: "site" (the real one), or a kept test variant: "panel", "theodore".
-     `headerTheme`: "dark" when the page opens on a dark hero (white logo + links). --}}
-@props(['title' => null, 'menu' => 'site', 'headerTheme' => 'light'])
+     `headerTheme`: "dark" when the page opens on a dark hero (white logo + links).
+     `lowerTone`: "dark" or "light" — the home page's sections below the hero,
+     and the page around them; other pages leave it out
+     (config/site.php; css/site/lower-tone.css).
+     `heroLeave`: "overlap" — the next section slides over the hero's backdrop
+     with a rounded top instead of the backdrop shrinking into a card
+     (js/public/hero-intro.ts).
+     `variant`: a design variant under test (e.g. "clienti"), as data-variant
+     on <html>, for styles scoped to it. --}}
+@props(['title' => null, 'menu' => 'site', 'headerTheme' => 'light', 'lowerTone' => null, 'variant' => null, 'heroLeave' => null])
 
 @php
     $siteName = app(\App\Settings\CompanySettings::class)->name;
@@ -9,7 +17,7 @@
 @endphp
 
 <!DOCTYPE html>
-<html lang="ro">
+<html lang="ro" @if ($lowerTone) data-lower="{{ $lowerTone }}" @endif @if ($variant) data-variant="{{ $variant }}" @endif @if ($heroLeave) data-hero-leave="{{ $heroLeave }}" @endif>
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -90,7 +98,8 @@
             }
         </script>
     </head>
-    <body class="min-h-screen bg-white font-sans text-neutral-900 antialiased">
+    {{-- Background and text colour: .site-body (css/site/lower-tone.css). --}}
+    <body class="site-body min-h-screen font-sans antialiased">
         {{--
             Fixed to the screen — the round button and the menu — so outside
             the smooth-scrolled content below (a transformed parent would carry

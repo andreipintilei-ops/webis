@@ -44,14 +44,19 @@ const PATHS = {
 
 /** Seconds and pixels; tune the feel here. Easings: EASE (gsap.ts). */
 const MOTION = {
-    // Each curtain move is one continuous expo.inOut sweep.
-    cover: 0.9,
-    reveal: 0.9,
+    // Each curtain move is one continuous sweep (EASE.curtain) — the same as
+    // the menu's (theodore-menu.ts).
+    cover: 0.6,
+    reveal: 0.6,
+    // The next page is requested this far into covering: on the curtain's
+    // sweep the screen is already ~99% covered, and the browser keeps
+    // showing this page until the next one arrives, so it lands covered.
+    navigateAt: 0.8,
     // How far the old page drifts down as it is covered…
     leaveShift: 100,
     // …and how far above its place the new page starts, settling (expo.out).
     enterShift: -150,
-    enterDuration: 1.4,
+    enterDuration: 0.9,
 };
 
 /** If the reveal cannot run (GSAP failed to load…), uncover anyway. */
@@ -105,7 +110,7 @@ export function initPageTransitions(): void {
                             PATHS.bottomCurve,
                             PATHS.bottomFlat,
                             MOTION.reveal,
-                            EASE.inOut,
+                            EASE.curtain,
                             0.4,
                         ),
                     )
@@ -151,7 +156,7 @@ export function initPageTransitions(): void {
 
         void loadGsap()
             .then((gsap) => {
-                gsap.timeline({ onComplete: () => navigateCovered(href) })
+                gsap.timeline()
                     .set(path, { attr: { d: PATHS.topFlat } })
                     .to(
                         path,
@@ -165,10 +170,17 @@ export function initPageTransitions(): void {
                         shifted(),
                         {
                             duration: MOTION.cover,
-                            ease: EASE.inOut,
+                            ease: EASE.curtain,
                             y: MOTION.leaveShift,
                         },
                         0,
+                    )
+                    // At an absolute time, after the tweens: placed before
+                    // them it would push their start back.
+                    .call(
+                        () => navigateCovered(href),
+                        [],
+                        MOTION.cover * MOTION.navigateAt,
                     );
             })
             .catch(() => window.location.assign(href));

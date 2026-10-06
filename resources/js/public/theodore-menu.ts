@@ -38,19 +38,20 @@ const PATHS = {
 
 /**
  * Seconds. Theodore's originals were 0.8 / 0.3 / 0.3 / 0.8 / 1.1 (≈2.2s per
- * direction); these keep the shape of the motion at ≈1.3s.
+ * direction). Opening here: the curtain is off and the menu usable at 1.2s,
+ * everything settled by ≈1.8s.
  */
 const TIMING = {
-    // Each curtain move (covering, then clearing) is one expo.inOut sweep.
-    cover: 0.8,
-    reveal: 0.8,
+    // Each curtain move (covering, then clearing) is one sweep (EASE.curtain).
+    cover: 0.6,
+    reveal: 0.6,
     // The links (or the page) settling into place as the curtain clears (expo.out)…
-    rise: 1.2,
+    rise: 0.8,
     // …starting this far into the reveal.
-    riseAt: 0.3,
+    riseAt: 0.2,
     // The links falling away as the menu closes (expo.in).
-    fall: 0.5,
-    stagger: 0.05,
+    fall: 0.35,
+    stagger: 0.04,
     // How far the page lifts away under the opening curtain.
     lift: 200,
 };
@@ -114,6 +115,7 @@ export function initTheodoreMenu(): void {
         isOpen = open;
         header?.classList.toggle('theo-header--menu-open', open);
         root.classList.toggle('nav-open', open);
+        root.classList.remove('nav-opening');
         menu.classList.toggle('theo-menu--open', open);
         menu.inert = !open;
         lockScroll(open);
@@ -146,6 +148,10 @@ export function initTheodoreMenu(): void {
         }
 
         isAnimating = true;
+        // From the click: the round button takes its open look at once,
+        // rather than when the curtain has covered the page (css/site/
+        // menu-panel.css) — otherwise leaving it quickly refills it first.
+        root.classList.add('nav-opening');
         const gsap = await loadGsap();
 
         timeline?.kill();
@@ -164,7 +170,7 @@ export function initTheodoreMenu(): void {
             })
             .to(
                 shifted(),
-                { duration: TIMING.cover, ease: EASE.inOut, y: -TIMING.lift },
+                { duration: TIMING.cover, ease: EASE.curtain, y: -TIMING.lift },
                 0,
             )
             // Reveal: off through the top, the links rising in behind it.
@@ -178,7 +184,7 @@ export function initTheodoreMenu(): void {
                     PATHS.topCurve,
                     PATHS.topFlat,
                     TIMING.reveal,
-                    EASE.inOut,
+                    EASE.curtain,
                     0.4,
                 ),
                 'reveal',
@@ -212,7 +218,7 @@ export function initTheodoreMenu(): void {
                     opacity: 1,
                     stagger: TIMING.stagger,
                 },
-                `reveal+=${TIMING.reveal * TIMING.riseAt + 0.2}`,
+                `reveal+=${TIMING.reveal * TIMING.riseAt + 0.1}`,
             );
     };
 
@@ -260,7 +266,7 @@ export function initTheodoreMenu(): void {
                     PATHS.closeRevealCurve,
                     PATHS.bottomFlat,
                     TIMING.reveal,
-                    EASE.inOut,
+                    EASE.curtain,
                     0.4,
                 ),
                 'reveal',
@@ -293,7 +299,7 @@ export function initTheodoreMenu(): void {
 
         timeline?.kill();
         timeline = gsap
-            .timeline({ onComplete: () => navigateCovered(href) })
+            .timeline()
             .set(overlay, { attr: { d: PATHS.topFlat } })
             .to(
                 overlay,
@@ -309,7 +315,11 @@ export function initTheodoreMenu(): void {
                     stagger: -TIMING.stagger,
                 },
                 0,
-            );
+            )
+            // Requested before the curtain is quite down, as on the page
+            // transition (page-transition.ts): it lands covered either way.
+            // At an absolute time, after the tweens, so it does not delay them.
+            .call(() => navigateCovered(href), [], TIMING.cover * 0.8);
     };
 
     for (const item of links) {

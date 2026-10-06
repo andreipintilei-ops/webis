@@ -1,0 +1,51 @@
+/* Section 5: a static supplier checklist for public institutions. */
+@layer components {
+    .public-institutions {
+        @apply relative z-[1] px-[var(--site-gap)] py-20 md:py-28;
+        background: #f2f5f9;
+    }
+
+    .public-institutions__inner {
+        @apply mx-auto grid max-w-[var(--content-max)] gap-10 lg:grid-cols-2 lg:gap-16;
+    }
+
+    .public-institutions__heading {
+        @apply min-w-0;
+    }
+
+    .public-institutions__eyebrow {
+        @apply mb-6 flex items-center gap-2.5 text-xs leading-relaxed font-medium tracking-[0.12em] uppercase;
+
+        &::before {
+            content: '';
+            @apply size-2 shrink-0;
+            background: #2b7be8;
+        }
+    }
+
+    .public-institutions__title {
+        @apply max-w-[12ch] leading-[1.1] font-medium tracking-[-0.04em];
+        font-size: clamp(2.5rem, 4.5vw, 4rem);
+    }
+
+    .public-institutions__year {
+        color: #2469c7;
+    }
+
+    .public-institutions__list {
+        @apply min-w-0 divide-y border-y;
+        border-color: #d6dfe9;
+    }
+
+    .public-institutions__item {
+        @apply flex items-start gap-4 py-5 text-base leading-relaxed font-medium text-pretty md:gap-5 md:py-6 md:text-lg;
+        border-color: #d6dfe9;
+        overflow-wrap: anywhere;
+    }
+
+    .public-institutions__check {
+        @apply mt-0.5 grid size-6 shrink-0 place-items-center rounded-sm border;
+        color: #2469c7;
+        border-color: #bdcfe7;
+    }
+}

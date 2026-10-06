@@ -1,0 +1,27 @@
+/*
+  Design trials on /clienti (public/clienti.blade.php), a copy of the home
+  page. Scope every rule to :root[data-variant='clienti'] so the home page
+  is never affected.
+*/
+@layer components {
+    /*
+      The hero's last section ("Despre noi") gets as much more room below as
+      the next section's rounded top overlaps it (css/site/services-plain.css:
+      2.5rem, 5rem from tablet), so its spacing stays the same.
+    */
+    :root[data-variant='clienti'] .statement--dark {
+        padding-bottom: calc(7rem + 2.5rem);
+
+        @media (min-width: 768px) {
+            padding-bottom: calc(10rem + 5rem);
+        }
+    }
+
+    /*
+      The service rows close on a hairline of their own
+      (css/site/services-plain.css), so the projects' divider would double it.
+    */
+    :root[data-variant='clienti'] .selected-projects__inner {
+        border-top: 0;
+    }
+}

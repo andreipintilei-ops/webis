@@ -12,6 +12,15 @@
 @import './site/hero-parallax.css';
 @import './site/hero-intro.css';
 @import './site/statement.css';
+@import './site/services.css';
+@import './site/services-plain.css';
+@import './site/selected-projects.css';
+@import './site/project-showcase.css';
+@import './site/own-products.css';
+@import './site/how-we-work.css';
+@import './site/contact.css';
+@import './site/lower-tone.css';
+@import './site/variant-clienti.css';
 
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 @source '../../storage/framework/views/*.php';

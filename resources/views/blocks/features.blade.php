@@ -3,8 +3,8 @@
     hairlines. Each card: title, text, an optional note (when it fits) and an
     optional link, held to the foot of the card so the links line up.
 
-    Icons are not drawn on the public site yet (there is no icon set outside
-    the admin); the cards read without them.
+    The home page asks for its services layout via featuresLayout
+    (blocks/partials/services); other pages keep the CMS column setting. Neither presentation requires icons.
 --}}
 @php
     $items = array_values(array_filter($data['items'] ?? [], fn ($item) => is_array($item) && ($item['title'] ?? '') !== ''));
@@ -12,7 +12,11 @@
     $hasLink = fn ($item): bool => is_array($item['link'] ?? null) && ($item['link']['label'] ?? '') !== '' && ($item['link']['url'] ?? '') !== '';
 @endphp
 
-@if ($items !== [])
+@if ($items !== [] && ($featuresLayout ?? 'columns') === 'services')
+    @include('blocks.partials.services')
+@elseif ($items !== [] && ($featuresLayout ?? 'columns') === 'services-plain')
+    @include('blocks.partials.services-plain')
+@elseif ($items !== [])
     <section id="{{ $block['id'] }}" class="px-[var(--site-gap)] py-24 md:py-36">
         <div class="mx-auto max-w-[var(--content-max)]">
             @if (! empty($data['heading']))

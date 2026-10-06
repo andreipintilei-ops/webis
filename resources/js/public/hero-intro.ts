@@ -2,27 +2,28 @@ import type { Gsap } from '@/public/gsap';
 import { EASE, loadGsap } from '@/public/gsap';
 
 /**
- * The opening hero's backdrop as a card, and its intro — after
- * integratedbio.com, with the counter-motion of a mask and what is inside it
- * from andrei-pintilei.github.io/portfolio.
- *
- * The card: at rest the backdrop is a rounded rectangle a few pixels in from
- * the screen's edges (css/site/hero-intro.css). Scrolling opens it out to the
- * full screen over the first quarter-screen, following the smooth scroll;
- * back at the top it is a card again.
+ * The opening hero's backdrop — fixed behind the page, full screen — its
+ * intro, and how it leaves. After integratedbio.com, with the counter-motion
+ * of a mask and what is inside it from andrei-pintilei.github.io/portfolio.
  *
  * The intro, on a full load (see the <head> script in
  * layouts/public.blade.php):
  * 1. A small rounded rectangle (~100px) appears in the middle of the blank
  *    page.
- * 2. It grows into the card — the backdrop seen through a clip-path inset
- *    with rounded corners, redrawn each frame — while the gradient inside
- *    settles from a slight zoom, against the growth.
+ * 2. It grows to the full screen — the backdrop seen through a clip-path
+ *    inset with rounded corners, redrawn each frame — while the gradient
+ *    inside settles from a slight zoom, against the growth.
  * 3. The title rises line by line out of its masks; the eyebrow, buttons,
  *    logo strip and header come in after it.
  *
+ * Leaving: once the last section on the backdrop ([data-backdrop-area])
+ * starts to scroll off, the page after it slides up and the backdrop shrinks
+ * into a rounded card just above it, while the gradient inside drifts up at
+ * half the scroll's speed — the parallax. Scrubbed, so scrolling back up
+ * plays it in reverse.
+ *
  * Applies to the page's intro hero ([data-intro], blocks/hero.blade.php).
- * With reduced motion the card simply stays as it is.
+ * With reduced motion the backdrop simply stays full screen until covered.
  */
 
 /** Seconds, on the site's expo family (gsap.ts). */
@@ -32,25 +33,52 @@ const TIMING = {
     // It barely settles before it opens up.
     growAt: 0.45,
     grow: 1.6,
-    // The content follows as the backdrop reaches the card.
+    // The content follows as the backdrop reaches the screen's edges.
     textAt: 1.7,
     text: 1.3,
     lineStagger: 0.12,
     restStagger: 0.1,
 };
 
-/** The starting rectangle, px (integratedbio's pill proportions). */
-const START = { width: 100, height: 62 };
-/** Corner radius while small, px: a rounded rectangle, not a pill. */
-const RADIUS = 28;
 /**
- * The card at rest, px: margin from the screen's edges and corner radius.
- * Keep in step with css/site/hero-intro.css.
+ * The starting rectangle, px (2:1), and its corner radius. On narrow screens
+ * it is scaled down to `maxShare` of the screen's width, keeping its shape.
  */
-const CARD = { inset: 14, radius: 20 };
-const CARD_SMALL = { inset: 10, radius: 16 };
-/** Scrolled this share of the screen's height, the card is full screen. */
-const OPEN_AFTER = 0.25;
+const START = { width: 400, height: 200, maxShare: 0.8 };
+const RADIUS = 42;
+/**
+ * Leaving: the card's margin from the screen's edges (a share of the
+ * screen's width, capped in px) and corner radius (px), both reached over
+ * the first `settle` of the way and then held; the shortest the card gets
+ * (a share of the screen's height) before it scrolls away upward with the
+ * page instead of thinning into a strip; and how far the gradient inside has
+ * drifted up when covered (a share of the screen's height — the page
+ * covering it travels a whole height, so 0.5 is half speed).
+ */
+const LEAVE = {
+    insetVw: 0.03,
+    insetMax: 12,
+    radius: 20,
+    settle: 0.15,
+    minHeight: 0.5,
+    lag: 0.5,
+};
+
+/**
+ * The card's visible rectangle on screen while it leaves, or null while the
+ * backdrop fills the screen. The round menu button reads it (site-nav.ts):
+ * over a dark section whose background has shrunk away, it is on white.
+ */
+let card: { left: number; top: number; right: number; bottom: number } | null =
+    null;
+
+/** Whether the backdrop is visible at this point of the screen. */
+export function backdropCovers(x: number, y: number): boolean {
+    return (
+        card === null ||
+        (x >= card.left && x <= card.right && y >= card.top && y <= card.bottom)
+    );
+}
 /**
  * How far below its mask a title line waits (% of its height). More than a
  * full line: the marks over Î and Ă rise above the line and would otherwise
@@ -60,7 +88,11 @@ const LINE_HIDDEN = 140;
 /** How far the inside starts zoomed in; it settles to 1 as the shape grows. */
 const ZOOM = 1.25;
 
-export async function initHero(): Promise<void> {
+/**
+ * @param ready settles once smooth scrolling is set up (or skipped), so the
+ *   scroll-linked leaving measures the page as it will scroll
+ */
+export async function initHero(ready: Promise<unknown>): Promise<void> {
     const root = document.documentElement;
     const hero = document.querySelector<HTMLElement>('[data-intro]');
     // Fixed behind the page, outside the hero (blocks/partials/hero-backdrop).
@@ -88,18 +120,15 @@ export async function initHero(): Promise<void> {
         return;
     }
 
-    const card = window.matchMedia('(max-width: 640px)').matches
-        ? CARD_SMALL
-        : CARD;
-    const open = (): void => void openOnScroll(gsap, hero, backdrop, card);
+    const leave = (): void => void leaveOnScroll(gsap, backdrop, ready);
 
     // Played only from the very top; the <head> safety timeout may also have
     // given up on us while GSAP loaded.
     if (root.classList.contains('intro') && window.scrollY === 0) {
-        playIntro(gsap, hero, backdrop, card, open);
+        playIntro(gsap, hero, backdrop, leave);
     } else {
         root.classList.remove('intro');
-        open();
+        leave();
     }
 }
 
@@ -134,36 +163,103 @@ function hideWhenCovered(backdrop: HTMLElement): void {
 }
 
 /**
- * Scroll-linked: the card's margin and corners go to nothing as the page
- * scrolls the first quarter-screen, and come back on the way up. Scrubbed by
- * ScrollTrigger, so it follows the smoothed scroll, not the raw one.
+ * Scroll-linked leaving: from when the last section on the backdrop starts to
+ * scroll off (its bottom at the screen's bottom — the next section coming in)
+ * until it has gone (its bottom at the top), the backdrop shrinks into a
+ * rounded card riding above the section coming in, and the gradient inside
+ * drifts up at half speed.
+ *
+ * Measured from where that section is drawn, every frame — not from the
+ * scroll position: with smooth scrolling the content trails the scroll, and
+ * a card driven by the scroll would run ahead of it and cut into it.
  */
-async function openOnScroll(
+async function leaveOnScroll(
     gsap: Gsap,
-    hero: HTMLElement,
     backdrop: HTMLElement,
-    card: typeof CARD,
+    ready: Promise<unknown>,
 ): Promise<void> {
-    const { ScrollTrigger } = await import('gsap/ScrollTrigger');
-    gsap.registerPlugin(ScrollTrigger);
+    const areas = document.querySelectorAll<HTMLElement>(
+        '[data-backdrop-area]',
+    );
+    const last = areas[areas.length - 1];
 
-    const state = { open: 0 };
+    if (!last) {
+        return;
+    }
+
+    await ready.catch(() => undefined);
+
+    const media = backdrop.querySelector<HTMLElement>('[data-intro-media]');
+    const overlap = document.documentElement.dataset.heroLeave === 'overlap';
+    const state = { p: 0 };
+
     const draw = (): void => {
-        const closed = 1 - state.open;
+        const p = state.p;
 
-        backdrop.style.clipPath = `inset(${card.inset * closed}px round ${card.radius * closed}px)`;
+        if (p === 0) {
+            card = null;
+            backdrop.style.clipPath = '';
+
+            if (media) {
+                media.style.transform = '';
+            }
+
+            return;
+        }
+
+        const width = window.innerWidth;
+        const height = window.innerHeight;
+
+        // The overlap way (data-hero-leave="overlap" on <html>, set by
+        // /clienti): no card — the next section slides up over the full-screen
+        // backdrop with a rounded top. The backdrop shows down to that
+        // section's top; only the drift remains.
+        if (overlap) {
+            const next = last.nextElementSibling;
+            const edge = next ? next.getBoundingClientRect().top : height;
+
+            card = { left: 0, top: 0, right: width, bottom: edge };
+
+            if (media) {
+                media.style.transform = `translate3d(0, ${-height * LEAVE.lag * p}px, 0)`;
+            }
+
+            return;
+        }
+
+        const settled = Math.min(1, p / LEAVE.settle);
+        const margin =
+            Math.min(width * LEAVE.insetVw, LEAVE.insetMax) * settled;
+        const radius = LEAVE.radius * settled;
+        // The section coming in has its top at height × (1 − p): the card's
+        // bottom edge rides the margin above it, so its rounded corners show.
+        const bottom = height * (1 - p) - margin;
+        // Its top holds at the margin until the card is as short as it gets,
+        // then moves up with the bottom: the card scrolls away with the page.
+        const top = Math.min(margin, bottom - height * LEAVE.minHeight);
+
+        card = { left: margin, top, right: width - margin, bottom };
+        // A top far above the screen is clamped: the corners are out of view
+        // either way.
+        backdrop.style.clipPath = `inset(${Math.max(top, -2 * radius)}px ${margin}px ${height - bottom}px ${margin}px round ${radius}px)`;
+
+        // The parallax: what is inside drifts up at half speed.
+        if (media) {
+            media.style.transform = `translate3d(0, ${-height * LEAVE.lag * p}px, 0)`;
+        }
     };
 
-    gsap.to(state, {
-        open: 1,
-        ease: 'none',
-        onUpdate: draw,
-        scrollTrigger: {
-            trigger: hero,
-            start: 'top top',
-            end: () => `+=${window.innerHeight * OPEN_AFTER}`,
-            scrub: true,
-        },
+    // p: 0 while the section's bottom is at or below the screen's bottom,
+    // 1 once it has reached the top. Redrawn only when it changes.
+    gsap.ticker.add(() => {
+        const bottom = last.getBoundingClientRect().bottom;
+        const height = window.innerHeight;
+        const p = Math.min(1, Math.max(0, (height - bottom) / height));
+
+        if (p !== state.p) {
+            state.p = p;
+            draw();
+        }
     });
 }
 
@@ -171,7 +267,6 @@ function playIntro(
     gsap: Gsap,
     hero: HTMLElement,
     backdrop: HTMLElement,
-    card: typeof CARD,
     then: () => void,
 ): void {
     const root = document.documentElement;
@@ -189,24 +284,21 @@ function playIntro(
 
     const width = backdrop.clientWidth;
     const height = backdrop.clientHeight;
-    // Where it stops: the card.
-    const endWidth = width - 2 * card.inset;
-    const endHeight = height - 2 * card.inset;
-    // appear: 0 → 1 as the rectangle comes in; grow: 0 → 1 to the card.
+    const startScale = Math.min(1, (width * START.maxShare) / START.width);
+    const startWidth = START.width * startScale;
+    const startHeight = START.height * startScale;
+    // appear: 0 → 1 as the rectangle comes in; grow: 0 → 1 to the full screen.
     const shape = { appear: 0, grow: 0 };
 
-    // The visible shape: centred, `w` × `h`, corners easing to the card's.
+    // The visible shape: centred, `w` × `h`, corners flattening as it grows.
     const draw = (): void => {
         const p = shape.grow;
         // Comes in from 70% of its starting size.
         const start = 0.7 + 0.3 * shape.appear;
-        const w = START.width * start + (endWidth - START.width) * p;
+        const w = startWidth * start + (width - startWidth) * p;
         // Height lags width early on, so it stays wide while small.
-        const h = START.height * start + (endHeight - START.height) * p ** 1.35;
-        const r = Math.min(
-            RADIUS + (card.radius - RADIUS) * p,
-            Math.min(w, h) / 2,
-        );
+        const h = startHeight * start + (height - startHeight) * p ** 1.35;
+        const r = Math.min(RADIUS * (1 - p) ** 0.6, Math.min(w, h) / 2);
 
         backdrop.style.clipPath = `inset(${(height - h) / 2}px ${(width - w) / 2}px round ${r}px)`;
     };
@@ -231,7 +323,7 @@ function playIntro(
     root.classList.remove('intro');
 
     const finish = (): void => {
-        // The card is the CSS resting state too, so nothing jumps here.
+        // Full screen is the CSS resting state too, so nothing jumps here.
         backdrop.style.clipPath = '';
         gsap.set(backdrop, { clearProps: 'opacity,visibility' });
         gsap.set(

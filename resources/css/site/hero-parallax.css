@@ -7,10 +7,13 @@
   - A dark hero's background is fixed behind the page; the hero and the
     blocks set on that background ([data-on-backdrop], see blocks.blade.php)
     are see-through, and the first block after them slides over the
-    background on white.
+    background on white — which meanwhile shrinks into a rounded card and
+    drifts up at half speed (js/public/hero-intro.ts).
 */
 @layer components {
-    [data-hero-parallax] ~ :not([data-on-backdrop]) {
+    /* :where() — no specificity: white is the default; a section with a
+       background of its own (Cum lucrăm, Contact) keeps it. */
+    :where([data-hero-parallax] ~ :not([data-on-backdrop])) {
         @apply relative z-[1] bg-white;
     }
 }

@@ -67,9 +67,9 @@
             <div class="theo-menu__aside">
                 <div class="theo-menu__groups" data-theo-reveal>
                     @foreach ($groups as $group)
-                        <nav aria-label="{{ $group['label'] }}">
+                        <nav aria-label="{{ $group['label'] }}" class="theo-menu__group">
                             <p class="theo-menu__heading">{{ $group['label'] }}</p>
-                            <ul class="theo-menu__details">
+                            <ul class="theo-menu__group-links">
                                 @foreach ($group['links'] as $link)
                                     <li><a href="{{ $link['href'] }}" class="theo-menu__detail" data-theo-link>{{ $link['label'] }}</a></li>
                                 @endforeach
@@ -80,22 +80,24 @@
 
                 <div class="theo-menu__contact" data-theo-reveal>
                     @if ($company->email || $company->phone || $address !== '')
-                        <p class="theo-menu__heading">Contact</p>
-                        <ul class="theo-menu__details">
-                            @if ($phoneHref)
-                                <li><a href="{{ $phoneHref }}" class="theo-menu__detail">{{ $company->phone }}</a></li>
-                            @endif
-                            @if ($company->email)
-                                <li><a href="mailto:{{ $company->email }}" class="theo-menu__detail">{{ $company->email }}</a></li>
-                            @endif
-                            @if ($address !== '')
-                                <li class="theo-menu__detail">{{ $address }}</li>
-                            @endif
-                        </ul>
+                        <div class="theo-menu__contact-info">
+                            <p class="theo-menu__heading">Contact</p>
+                            <ul class="theo-menu__details">
+                                @if ($phoneHref)
+                                    <li><a href="{{ $phoneHref }}" class="theo-menu__detail">{{ $company->phone }}</a></li>
+                                @endif
+                                @if ($company->email)
+                                    <li><a href="mailto:{{ $company->email }}" class="theo-menu__detail">{{ $company->email }}</a></li>
+                                @endif
+                                @if ($address !== '')
+                                    <li class="theo-menu__detail">{{ $address }}</li>
+                                @endif
+                            </ul>
+                        </div>
                     @endif
 
                     @if ($cta)
-                        <x-ui.pill :href="$cta['href']" tone="dark" data-theo-link :aria-current="$cta['current'] ? 'page' : null" class="mt-8">{{ $cta['cta'] }}</x-ui.pill>
+                        <x-ui.pill :href="$cta['href']" tone="dark" data-theo-link :aria-current="$cta['current'] ? 'page' : null" class="theo-menu__cta">{{ $cta['cta'] }}</x-ui.pill>
                     @endif
                 </div>
             </div>

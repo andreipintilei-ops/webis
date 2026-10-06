@@ -31,9 +31,9 @@
                 @continue (! $link['bar'])
 
                 @if ($link['cta'])
-                    {{-- The call to action: the main button, small. --}}
+                    {{-- The call to action: the main button, as in the hero. --}}
                     <li class="hidden md:ml-4 md:block">
-                        <x-ui.pill :href="$link['href']" size="sm" :tone="$theme" :aria-current="$link['current'] ? 'page' : null">
+                        <x-ui.pill :href="$link['href']" :tone="$theme" :aria-current="$link['current'] ? 'page' : null">
                             {{ $link['cta'] }}
                         </x-ui.pill>
                     </li>

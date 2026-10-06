@@ -1,9 +1,13 @@
 import type { Component } from 'vue';
+import { initContactForm } from '@/public/contact-form';
 import { initHero } from '@/public/hero-intro';
 import { initPageTransitions } from '@/public/page-transition';
 import { initPanelMenu } from '@/public/panel-menu';
+import { initProjectShowcase } from '@/public/project-showcase';
 import { initSiteNav } from '@/public/site-nav';
 import { initSmoothScroll } from '@/public/smooth-scroll';
+import { initServices } from '@/public/services';
+import { initServicesPlain } from '@/public/services-plain';
 import { initStatements } from '@/public/statement';
 import { initTheodoreMenu } from '@/public/theodore-menu';
 
@@ -69,15 +73,23 @@ async function mountIsland(el: HTMLElement): Promise<void> {
 }
 
 function boot(): void {
-    // Each does nothing on pages without its markup.
-    void initHero();
+    // Each does nothing on pages without its markup. The hero's scroll-linked
+    // leaving and the statements (which pin differently with and without
+    // smooth scrolling) wait for smooth scrolling to be set up.
+    const smooth = initSmoothScroll();
+
+    void initHero(smooth);
     initPageTransitions();
     initSiteNav();
     initPanelMenu();
     initTheodoreMenu();
-    // Statements pin differently with and without smooth scrolling, so they
-    // wait for it to be set up.
-    void initSmoothScroll().then(() => initStatements());
+    initContactForm();
+    void smooth.then(() => {
+        void initStatements();
+        void initServices();
+        void initServicesPlain();
+        void initProjectShowcase();
+    });
 
     // The WebGL gradient ships as its own chunk, fetched only where it is used.
     if (document.querySelector('canvas[data-soffit]')) {

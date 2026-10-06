@@ -11,9 +11,15 @@
  * (css/site/motion.css) are enough here.
  */
 
+import { backdropCovers } from '@/public/hero-intro';
 import { getSmoother } from '@/public/smooth-scroll';
 
 const SCROLLED_AT = 0.3; // of the viewport height
+// What is dark with the home page's dark lower tone (lower-tone.css): its
+// sections, and the sections on the hero's background — where that
+// background has shrunk away, the page behind them is dark too.
+const DARK_TONE_SECTIONS =
+    '.services, .selected-projects, .own-products, .how-we-work, [data-backdrop-area]';
 // How long the page can keep gliding after the last scroll event (ScrollSmoother).
 const SETTLE_MS = 1500;
 
@@ -93,20 +99,43 @@ function initBurgerTone(): void {
 
     let until = 0;
     let running = false;
+    // Layers above the page that say nothing about what the page is: the
+    // menu and the curtains.
+    const overlays =
+        '.site-burger, [data-theo-menu], .theo-overlay, .theo-overlay-grain, .page-curtain, .page-curtain-grain, .page-curtain-cover';
+    const menuOpen = (): boolean =>
+        root.classList.contains('nav-open') ||
+        root.classList.contains('nav-opening');
 
     const check = (): void => {
+        // With the menu open the button has its own look; checking now would
+        // only see the menu.
+        if (menuOpen()) {
+            return;
+        }
+
         // Scaled to nothing while hidden, but the centre is still the centre.
         const box = burger.getBoundingClientRect();
+        const x = box.left + box.width / 2;
+        const y = box.top + box.height / 2;
         const under = document
-            .elementsFromPoint(
-                box.left + box.width / 2,
-                box.top + box.height / 2,
-            )
-            .find((element) => !burger.contains(element));
+            .elementsFromPoint(x, y)
+            .find((element) => !element.closest(overlays));
+        // A section on the hero's fixed background is dark only where that
+        // background still shows — not once it has shrunk away (hero-intro.ts).
+        const onBackdrop = under?.closest('[data-backdrop-area]') != null;
+
+        // The home page's sections below the hero, in their dark tone
+        // (css/site/lower-tone.css).
+        const darkTone =
+            root.dataset.lower === 'dark' &&
+            under?.closest(DARK_TONE_SECTIONS) != null;
 
         root.classList.toggle(
             'nav-on-dark',
-            under?.closest('[data-nav-tone="dark"]') != null,
+            darkTone ||
+                (under?.closest('[data-nav-tone="dark"]') != null &&
+                    (!onBackdrop || backdropCovers(x, y))),
         );
     };
 
@@ -131,5 +160,20 @@ function initBurgerTone(): void {
 
     window.addEventListener('scroll', wake, { passive: true });
     window.addEventListener('resize', wake, { passive: true });
+
+    // When the menu closes, look again: the page may have moved under it,
+    // and the content settles back over the next moment.
+    let wasOpen = menuOpen();
+
+    new MutationObserver(() => {
+        const open = menuOpen();
+
+        if (wasOpen && !open) {
+            wake();
+        }
+
+        wasOpen = open;
+    }).observe(root, { attributes: true, attributeFilter: ['class'] });
+
     wake();
 }

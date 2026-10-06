@@ -72,12 +72,12 @@ it('shows Contact in the top bar as the main button, in the header tone', functi
     $light = $this->get('/solutii')->assertOk()->getContent();
 
     expect($light)
-        ->toMatch('/<a href="\/contact" class="pill pill--sm btn-light">.*?<span data-text="Hai să discutăm">Hai să discutăm<\/span>/s')
+        ->toMatch('/<a href="\/contact" class="pill btn-light">.*?<span data-text="Hai să discutăm">Hai să discutăm<\/span>/s')
         ->not->toContain('class="site-link" >Contact');
 
     Page::factory()->create(['slug' => 'contact', 'blocks' => []]);
 
-    expect($this->get('/contact')->assertOk()->getContent())->toContain('class="pill pill--sm btn-light" aria-current="page"');
+    expect($this->get('/contact')->assertOk()->getContent())->toContain('class="pill btn-light" aria-current="page"');
 });
 
 it('keeps fixed controls outside the smooth-scrolled content and the top bar inside it', function () {
@@ -101,4 +101,53 @@ it('ships the page-transition curtain and the prefetch hints', function () {
         ->toContain('data-curtain-path')
         ->toContain('<script type="speculationrules">')
         ->toContain('"href_matches": "/admin/*"');
+});
+
+it('lays out the rest of the home page: projects, products, how we work, contact', function () {
+    $html = $this->get('/')->assertOk()->getContent();
+
+    expect($html)
+        ->toContain('Toți clienții')
+        ->toContain('<h2 id="own-products-title" class="own-products__eyebrow">Produsele noastre</h2>')
+        ->toContain('<h3 class="how-we-work__title">Codul și datele rămân ale voastre</h3>')
+        ->toContain('Lucrăm cu instituții publice din 2016.')
+        ->toMatch('/<form method="POST" action="[^"]*\/cerere-oferta"[^>]*data-contact-form/')
+        ->toContain('name="organization"')
+        // Replaced sections are gone.
+        ->not->toContain('Pentru instituții publice')
+        ->not->toContain('Construim și site-uri și magazine online.')
+        // In order.
+        ->and(strpos($html, 'selected-projects-title'))->toBeLessThan(strpos($html, 'own-products-title'))
+        ->and(strpos($html, 'own-products-title'))->toBeLessThan(strpos($html, 'how-we-work-title'))
+        ->and(strpos($html, 'how-we-work-title'))->toBeLessThan(strpos($html, 'contact-title'));
+});
+
+it('sets the tone of the home page sections below the hero from one setting', function () {
+    config(['site.lower_tone' => 'dark']);
+    expect($this->get('/')->assertOk()->getContent())->toMatch('/<html lang="ro"\s+data-lower="dark"\s*>/');
+
+    config(['site.lower_tone' => 'light']);
+    expect($this->get('/')->getContent())->toMatch('/<html lang="ro"\s+data-lower="light"\s*>/');
+
+    // Other pages are not affected.
+    config(['site.lower_tone' => 'dark']);
+    expect($this->get('/solutii')->assertOk()->getContent())->not->toContain('data-lower');
+});
+
+it('serves a copy of the home page at /clienti, marked as its own design variant', function () {
+    Page::factory()->ofType(PageType::Home)->create([
+        'slug' => 'acasa',
+        'blocks' => [['id' => 'h', 'type' => 'hero', 'v' => 1, 'data' => ['layout' => 'centered', 'heading' => 'Titlul de acasă']]],
+    ]);
+
+    $html = $this->get('/clienti')->assertOk()->getContent();
+
+    expect($html)
+        ->toMatch('/<html lang="ro"[^>]*data-variant="clienti"/')
+        ->toContain('<title>Clienți | Webis</title>')
+        ->toContain('Titlul de acasă')
+        ->toContain('id="contact"');
+
+    // The home page itself is not the variant.
+    expect($this->get('/')->getContent())->not->toContain('data-variant');
 });

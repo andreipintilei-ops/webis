@@ -17,7 +17,7 @@
     'overflow-hidden',
     'fixed inset-0 z-0' => $fixed,
     'absolute inset-0 -z-10' => ! $fixed,
-    'bg-[#062334]' => $backdrop === 'gradient',
+    'bg-[#01225e]' => $backdrop === 'gradient',
     'bg-[#0b1d5c]' => $backdrop === 'image',
 ]) @if ($fixed) data-intro-backdrop @endif>
     <div class="absolute inset-0" data-intro-media>

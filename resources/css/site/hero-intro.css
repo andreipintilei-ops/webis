@@ -1,12 +1,10 @@
 /*
-  The opening hero as a card, and its intro (js/public/hero-intro.ts), after
-  integratedbio.com.
+  The opening hero's intro (js/public/hero-intro.ts), after integratedbio.com.
 
-  At rest the backdrop is a rounded card a few pixels in from the screen's
-  edges; the script opens it to the full screen as the page scrolls. The
-  intro grows it into that card from a small rectangle in the middle of a
-  blank page, then the title rises line by line out of its masks and the rest
-  of the hero and the header come in.
+  At rest the backdrop fills the screen. The intro grows it there from a
+  small rectangle in the middle of a blank page, then the title rises line
+  by line out of its masks and the rest of the hero and the header come in.
+  As the page scrolls past it, the script shrinks it into a rounded card.
 
   `intro` on <html> is set by the <head> script (layouts/public.blade.php)
   before anything paints, on any full load (a visit or a reload) except
@@ -15,19 +13,6 @@
   over from them. Without the script, a safety timeout in <head> lifts them.
 */
 @layer components {
-    /*
-      The card at rest: the opening hero's fixed backdrop
-      (blocks/partials/hero-backdrop.blade.php). Keep in step with CARD /
-      CARD_SMALL in hero-intro.ts.
-    */
-    [data-intro-backdrop] {
-        clip-path: inset(14px round 20px);
-
-        @media (max-width: 640px) {
-            clip-path: inset(10px round 16px);
-        }
-    }
-
     /* Title lines: each its own mask. The padding keeps Romanian accents
        (Î, Ă, the commas of Ș and Ț) inside it; the margin gives the room back. */
     .hero-line {

@@ -1,0 +1,152 @@
+/*
+  "Ce dezvoltăm" on /clienti (blocks/partials/services-plain.blade.php): a
+  white section sliding up over the hero with an 80px rounded top; the three
+  services as rows between hairlines, each marked in one colour of the home
+  cards (motion: js/public/services-plain.ts).
+*/
+@layer components {
+    /*
+      Over the hero: pulled up by its radius, so the backdrop's last section
+      (given that much more room below, css/site/variant-clienti.css) keeps
+      its spacing; lifted above the backdrop like every section after it.
+    */
+    .services-plain {
+        --radius: 2.5rem;
+        --ink: #0b1529;
+
+        @apply relative z-[1] bg-white pt-20 pb-20 md:pt-28 md:pb-32;
+        margin-top: calc(-1 * var(--radius));
+        border-radius: var(--radius) var(--radius) 0 0;
+
+        @media (min-width: 768px) {
+            --radius: 5rem;
+        }
+    }
+
+    .services-plain__inner {
+        @apply mx-auto px-[var(--site-gap)];
+        max-width: calc(var(--content-max) + 2 * var(--site-gap));
+    }
+
+    /* A small square in the Webis blue, then the name in spaced capitals. */
+    .services-plain__label {
+        @apply flex items-center gap-3 text-xs font-semibold tracking-[0.14em] uppercase;
+        color: var(--ink);
+
+        &::before {
+            content: '';
+            @apply size-1.5;
+            background: #2172ff;
+        }
+    }
+
+    .services-plain__rows {
+        @apply mt-8 border-b border-neutral-200 md:mt-10;
+
+        & > li {
+            @apply border-t border-neutral-200;
+        }
+    }
+
+    /* ---- A row ---------------------------------------------------------------- */
+
+    /* The home cards' colours; the arrow's ink on each when filled. */
+    .plain-row--blue {
+        --row: #2172ff;
+        --row-ink: #fff;
+    }
+
+    .plain-row--red {
+        --row: #ff5b51;
+        --row-ink: #fff;
+    }
+
+    .plain-row--yellow {
+        --row: #f9d850;
+        --row-ink: #16171a;
+    }
+
+    .plain-row {
+        @apply relative grid items-start gap-x-6 gap-y-4 py-10 md:py-14;
+        grid-template-columns: 3rem 1fr auto;
+        grid-template-areas:
+            'number title arrow'
+            'number body body';
+        color: var(--ink);
+
+        @media (min-width: 1024px) {
+            @apply gap-x-10;
+            grid-template-columns: 3.5rem minmax(0, 1fr) minmax(0, 26rem) auto;
+            grid-template-areas: 'number title body arrow';
+        }
+    }
+
+    /*
+      Over the row's hairline: drawn in by the script (the outer span), it
+      rests short and runs the full width on hover (the inner one).
+    */
+    .plain-row__rule {
+        @apply absolute top-[-1px] left-0 h-[3px] w-full origin-left;
+
+        & > span {
+            @apply block h-full origin-left transition-transform duration-700 ease-[cubic-bezier(0.65,0,0.35,1)];
+            background: var(--row);
+            transform: scaleX(0.18);
+        }
+    }
+
+    a.plain-row:hover .plain-row__rule > span,
+    a.plain-row:focus-visible .plain-row__rule > span {
+        transform: scaleX(1);
+    }
+
+    .plain-row__number {
+        grid-area: number;
+        @apply flex items-center gap-2 pt-2 text-xs font-medium tracking-[0.12em] text-neutral-400;
+
+        & > i {
+            @apply block size-2;
+            background: var(--row);
+        }
+    }
+
+    /* Clips the title as it rises into place; room left for ș and ă. */
+    .plain-row__title {
+        grid-area: title;
+        @apply -my-[0.12em] overflow-hidden py-[0.12em] leading-[1.1] font-medium tracking-[-0.03em] text-balance;
+        font-size: clamp(1.75rem, 3.4vw, 3rem);
+
+        & > span {
+            @apply block;
+        }
+    }
+
+    .plain-row__body {
+        grid-area: body;
+    }
+
+    .plain-row__text {
+        @apply text-base leading-relaxed text-pretty text-neutral-600;
+    }
+
+    .plain-row__note {
+        @apply mt-4 text-sm font-medium text-pretty;
+    }
+
+    /* An outlined circle; filled in the row's colour while it is hovered. */
+    .plain-row__arrow {
+        grid-area: arrow;
+        @apply grid size-11 place-items-center rounded-full border border-neutral-300 transition-colors duration-300;
+
+        & svg {
+            @apply w-3;
+        }
+    }
+
+    a.plain-row:hover .plain-row__arrow,
+    a.plain-row:focus-visible .plain-row__arrow {
+        border-color: var(--row);
+        color: var(--row-ink);
+        background: var(--row);
+    }
+}

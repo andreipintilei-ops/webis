@@ -1,0 +1,103 @@
+/*
+  The public page's background, and the tone (light or dark) of the home
+  page's sections below the hero — switched by config('site.lower_tone')
+  (SITE_LOWER_TONE), set on <html data-lower> by the home page.
+
+  Dark works by remapping, inside those sections, the colours their styles
+  already use: Tailwind's greys and white are CSS variables, so the scale is
+  turned around (white → the dark ground, neutral-900 → near-white…) and the
+  sections invert without their own styles changing. The few fixed colours
+  get dark twins below. Switching back is the setting alone.
+*/
+@layer components {
+    /* Here rather than as classes on <body>, so the tone can change it. */
+    .site-body {
+        background: #fff;
+        color: var(--color-neutral-900);
+    }
+
+    /*
+      Light: a white ground (it was #eaecee). The same remap as the dark
+      tone, one step: what was white in those sections takes the ground
+      colour (outlined cards stay outlines on it), so a tint set here
+      carries through.
+    */
+    :root[data-lower='light'] {
+        --lower-bg: #fff;
+
+        & .site-body {
+            background: var(--lower-bg);
+        }
+
+        & :is(.services, .selected-projects, .own-products, .how-we-work) {
+            --color-white: var(--lower-bg);
+        }
+    }
+
+    :root[data-lower='dark'] {
+        /* The ground: a deep navy, in the hero gradient's family. */
+        --lower-bg: #0b1529;
+
+        & .site-body {
+            background: var(--lower-bg);
+        }
+
+        & :is(.services, .selected-projects, .own-products, .how-we-work) {
+            --color-white: var(--lower-bg);
+            --color-neutral-50: #101b33;
+            --color-neutral-100: #15223d;
+            --color-neutral-200: #22304f;
+            --color-neutral-300: #314266;
+            --color-neutral-400: #66748f;
+            --color-neutral-500: #8592ad;
+            --color-neutral-600: #a6b0c6;
+            --color-neutral-700: #c3cbdc;
+            --color-neutral-800: #dde2ec;
+            --color-neutral-900: #f2f4f8;
+            --color-neutral-950: #fff;
+
+            color: var(--color-neutral-900);
+
+            /* Light-toned buttons and links: light ink on the dark ground. */
+            & .btn-light {
+                --btn-ink: #fff;
+                --btn-contrast: var(--site-dark);
+            }
+        }
+
+        /* ---- Fixed colours, in dark ---------------------------------------- */
+
+        /* On the page's own ground, like the sections around it. */
+        & .how-we-work {
+            background: var(--lower-bg);
+        }
+
+        & :is(.how-we-work__inner, .how-we-work__foot) {
+            border-color: var(--color-neutral-200);
+        }
+
+        & .own-product__name {
+            color: #6ea2ea;
+        }
+
+        & .project-story__visual {
+            background: color-mix(
+                in srgb,
+                var(--project-accent) 16%,
+                var(--lower-bg)
+            );
+        }
+
+        & .project-story__audience {
+            color: color-mix(in srgb, var(--project-accent) 55%, white);
+        }
+
+        & .project-interface {
+            border-color: color-mix(
+                in srgb,
+                var(--project-accent) 30%,
+                var(--lower-bg)
+            );
+        }
+    }
+}

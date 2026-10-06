@@ -15,6 +15,8 @@
 
 <div class="site-burger">
     <a href="#{{ $menu }}" class="site-burger__button" data-menu-toggle="{{ $kind }}" data-burger aria-controls="{{ $menu }}" aria-expanded="false">
+        {{-- The fill, which drains on hover as on the main button (css). --}}
+        <span class="site-burger__ripple" aria-hidden="true"><span></span></span>
         <span class="site-burger__bars" aria-hidden="true"></span>
         <span class="sr-only">Meniu</span>
     </a>

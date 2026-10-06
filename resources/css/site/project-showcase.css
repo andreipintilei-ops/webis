@@ -1,0 +1,144 @@
+/*
+  "Proiecte selectate" on the home page (components/site/selected-projects,
+  layout "showcase"): large off-white cards in two columns — on the left
+  one held in view with the title and the details of the project in view,
+  on the right the three projects' interfaces scrolling past it (motion:
+  js/public/project-showcase.ts). From desktop width; below it the cards
+  stack, each project with its own details.
+*/
+@layer components {
+    .project-showcase {
+        /* Every card the same height: the screen, less a margin around it. */
+        --card-h: min(calc(100svh - 3rem), 52rem);
+        --card-bg: #f9f9fb;
+        --ink: #0b1529;
+
+        @apply relative z-[1] bg-white px-[var(--site-gap)] pt-6 pb-20 md:pt-8 md:pb-28;
+        color: var(--ink);
+    }
+
+    .project-showcase__inner {
+        @apply mx-auto grid max-w-[var(--content-max)] gap-3 lg:grid-cols-2;
+    }
+
+    /* ---- The card held in view -------------------------------------------- */
+
+    .project-showcase__lead {
+        @apply flex flex-col gap-10 rounded-[1.5rem] p-7 md:p-10 xl:p-12;
+        background: var(--card-bg);
+
+        @media (min-width: 1024px) {
+            @apply justify-between gap-8;
+            height: var(--card-h);
+        }
+    }
+
+    .project-showcase__title {
+        @apply leading-[1.1] font-medium tracking-[-0.04em];
+        font-size: clamp(2.5rem, 4.2vw, 4rem);
+    }
+
+    .project-showcase__intro {
+        @apply mt-6 max-w-[38ch] text-base leading-relaxed text-pretty text-neutral-600 md:text-lg;
+    }
+
+    /* Stacked in one place; the script brings up the one in view. */
+    .project-showcase__panels {
+        @apply hidden lg:grid;
+
+        & > * {
+            grid-area: 1 / 1;
+        }
+    }
+
+    .project-showcase__panel {
+        @apply invisible opacity-0;
+
+        &.is-active {
+            @apply visible opacity-100;
+        }
+    }
+
+    .project-showcase__count {
+        @apply flex items-center gap-3 text-xs font-medium tracking-[0.12em] text-neutral-500 uppercase;
+
+        & > span {
+            color: var(--ink);
+        }
+    }
+
+    .project-showcase__name {
+        @apply mt-3 text-2xl leading-tight font-medium tracking-[-0.025em] text-balance xl:text-[1.75rem];
+        overflow-wrap: anywhere;
+    }
+
+    .project-showcase__facts {
+        @apply mt-5 grid gap-4 border-t border-black/10 pt-5 xl:grid-cols-3 xl:gap-6;
+
+        & dt {
+            @apply text-xs leading-relaxed font-medium text-neutral-500;
+        }
+
+        & dd {
+            @apply mt-1 text-sm leading-relaxed text-pretty text-neutral-700;
+        }
+    }
+
+    .project-showcase__link {
+        @apply self-start;
+    }
+
+    /* ---- The projects -------------------------------------------------------- */
+
+    .project-showcase__cards {
+        @apply grid gap-3;
+    }
+
+    /* The mockups' accent colours (css/site/selected-projects.css). */
+    .project-showcase__card {
+        --project-accent: #456fa8;
+        @apply overflow-hidden rounded-[1.5rem];
+        background: var(--card-bg);
+    }
+
+    .project-showcase__card--institution {
+        --project-accent: #537b69;
+    }
+
+    .project-showcase__card--company {
+        --project-accent: #92744f;
+    }
+
+    .project-showcase__visual {
+        @apply relative overflow-hidden;
+        aspect-ratio: 1.1;
+
+        @media (min-width: 1024px) {
+            aspect-ratio: auto;
+            height: var(--card-h);
+        }
+    }
+
+    .project-showcase__audience {
+        @apply absolute top-6 left-7 z-[1] text-xs font-medium tracking-[0.12em] uppercase md:top-8 md:left-10;
+        color: var(--project-accent);
+    }
+
+    /*
+      The interface, drawn for small cards, enlarged by half and running off
+      the card's right and bottom edges.
+    */
+    .project-showcase__screen {
+        @apply absolute top-[20%] left-[9%] h-[60%] w-[66%] origin-top-left;
+        scale: 1.5;
+
+        & .project-interface {
+            @apply inset-0 rounded-xl;
+            box-shadow: 0 1.5rem 4rem rgb(11 21 41 / 0.08);
+        }
+    }
+
+    .project-showcase__details {
+        @apply px-7 pt-2 pb-8 md:px-10 md:pb-10 lg:hidden;
+    }
+}

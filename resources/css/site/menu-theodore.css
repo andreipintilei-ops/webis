@@ -177,17 +177,46 @@
 
     /* Past a hairline from the sections, on large screens. */
     .theo-menu__aside {
-        @apply flex flex-col gap-10 lg:col-span-7 lg:justify-center lg:border-l lg:border-white/15 lg:py-10 lg:pl-10 xl:pl-14;
+        @apply flex min-w-0 flex-col gap-8 lg:col-span-7 lg:justify-center lg:border-l lg:border-white/15 lg:py-10 lg:pl-10 xl:gap-10 xl:pl-14;
     }
 
-    /* The link groups: side by side on wide screens, stacked below. */
+    /* Each category gets the full width, with links flowing beneath it. */
     .theo-menu__groups {
-        @apply grid gap-8 sm:grid-cols-2 xl:grid-cols-3;
+        @apply flex min-w-0 flex-col gap-6 xl:gap-8;
     }
 
-    /* Contact and the button, under a hairline. */
+    .theo-menu__group {
+        @apply min-w-0;
+    }
+
+    .theo-menu__group + .theo-menu__group {
+        @apply border-t border-white/15 pt-6 xl:pt-8;
+    }
+
+    .theo-menu__group-links {
+        @apply flex flex-wrap gap-x-6 gap-y-2 text-base md:text-lg;
+
+        & a {
+            @apply inline-block py-1 underline-offset-4;
+        }
+
+        & a:is(:hover, :focus-visible) {
+            @apply underline;
+        }
+    }
+
+    /* Contact has its own row; the action sits alongside it when it fits. */
     .theo-menu__contact {
-        @apply border-t border-white/15 pt-8;
+        @apply flex flex-wrap items-end justify-between gap-6 border-t border-white/15 pt-6 xl:pt-8;
+    }
+
+    .theo-menu__contact-info {
+        @apply min-w-0;
+        overflow-wrap: anywhere;
+    }
+
+    .theo-menu__cta {
+        @apply shrink-0;
     }
 
     .theo-menu__heading {

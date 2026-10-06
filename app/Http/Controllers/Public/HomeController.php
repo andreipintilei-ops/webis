@@ -19,4 +19,16 @@ class HomeController extends Controller
             'page' => Page::query()->ofType(PageType::Home)->published()->first(),
         ]);
     }
+
+    /**
+     * GET /clienti — for now a copy of the home page, from its own template
+     * (public/clienti.blade.php) and marked data-variant="clienti", to try
+     * design choices without touching the home page (css/site/variant-clienti.css).
+     */
+    public function clienti(): View
+    {
+        return view('public.clienti', [
+            'page' => Page::query()->ofType(PageType::Home)->published()->first(),
+        ]);
+    }
 }

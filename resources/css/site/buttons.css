@@ -43,11 +43,6 @@
         }
     }
 
-    /* Small, for the header bar. */
-    .pill--sm {
-        @apply h-11 px-5;
-    }
-
     .pill__ripple {
         @apply absolute inset-0 overflow-hidden;
         border-radius: inherit;
