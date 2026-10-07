@@ -8,8 +8,8 @@ import { getSmoother } from '@/public/smooth-scroll';
  *   cards scroll past it. CSS `position: sticky` cannot do this under
  *   ScrollSmoother (the page is moved by a transform), so it is pinned by
  *   ScrollTrigger instead; without smooth scrolling, CSS sticky does it.
- * - It shows the details of the project crossing the middle of the screen,
- *   the next coming in as the last goes.
+ * - It shows the details of the project whose card is nearest the middle of
+ *   the screen, the next coming in as the last goes.
  * - Each interface drifts up a little within its card as it passes.
  *
  * With reduced motion the details still change, without the movement.
@@ -106,14 +106,36 @@ export async function initProjectShowcase(): Promise<void> {
             lead.style.top = `${top()}px`;
         }
 
-        cards.forEach((card, index) => {
-            ScrollTrigger.create({
-                trigger: card,
-                start: 'top center',
-                end: 'bottom center',
-                onToggle: (self) => self.isActive && show(index),
+        // The step in view: the card whose middle is nearest the middle of
+        // the screen — so it is always the one being looked at, gaps between
+        // the cards or not, scrolling down or up.
+        const pick = (): void => {
+            let nearest = 0;
+            let best = Infinity;
+
+            cards.forEach((card, index) => {
+                const box = card.getBoundingClientRect();
+                const distance = Math.abs(
+                    box.top + box.height / 2 - innerHeight / 2,
+                );
+
+                if (distance < best) {
+                    [nearest, best] = [index, distance];
+                }
             });
 
+            show(nearest);
+        };
+
+        ScrollTrigger.create({
+            trigger: column,
+            start: 'top bottom',
+            end: 'bottom top',
+            onUpdate: pick,
+            onRefresh: pick,
+        });
+
+        cards.forEach((card) => {
             const screen = card.querySelector('[data-showcase-screen]');
 
             if (screen && !still) {

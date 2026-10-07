@@ -1,12 +1,19 @@
 {{--
-    Section 4 prototype. Replace these example stories with approved project content.
+    Section 4 prototype. DEMO DATA: the three stories below are invented
+    (no real client, figure or date) — replace them with approved project
+    content before launch.
 
     `layout`: "grid" — the three stories side by side; "showcase" (the home
     page) — two columns of large cards: on the left one held in view, with
     the title and the details of the project in view, and on the right the
     three projects' interfaces scrolling past it (css/site/project-showcase.css,
     js/public/project-showcase.ts). On phones the cards simply stack, each
-    project with its own details.
+    project with its own details. "list" (the violet pages) — the projects as
+    rows, each with a thumbnail of its interface (css/site/project-list.css).
+    "accordion" — rows that open, one at a time, into a short case
+    (css/site/project-accordion.css). "steps" — numbered steps beside very
+    tall patterned cards, each step held while its card passes
+    (css/site/project-steps.css, js/public/project-steps.ts).
 --}}
 @props(['layout' => 'grid'])
 
@@ -14,27 +21,27 @@
     $examples = [
         [
             'audience' => 'Universitate',
-            'organization' => '[Numele universității]',
+            'organization' => 'Gestiunea proiectelor de cercetare',
             'variant' => 'university',
-            'need' => 'Cereri și documente gestionate în sisteme separate.',
-            'built' => 'O platformă pentru centralizarea cererilor și aprobărilor.',
-            'result' => '[Utilizatori activi · anul lansării]',
+            'need' => 'Proiecte și bugete urmărite în Excel.',
+            'built' => 'O platformă pentru proiecte și deconturi.',
+            'result' => '240 de proiecte gestionate.',
         ],
         [
             'audience' => 'Instituție publică',
-            'organization' => '[Numele instituției]',
+            'organization' => 'Registru electronic de documente',
             'variant' => 'institution',
-            'need' => 'Un proces de lucru cu multe etape manuale.',
-            'built' => 'Un sistem de evidență, urmărire și raportare.',
-            'result' => '[Operațiuni procesate lunar]',
+            'need' => 'Documente urmărite în registre separate.',
+            'built' => 'Un sistem de înregistrare și urmărire.',
+            'result' => '3.500 de documente pe lună.',
         ],
         [
             'audience' => 'Companie',
-            'organization' => '[Numele companiei]',
+            'organization' => 'Gestiunea comenzilor',
             'variant' => 'company',
-            'need' => 'Date și operațiuni împărțite între mai multe instrumente.',
-            'built' => 'O aplicație internă care conectează echipele și procesele.',
-            'result' => '[Timp economisit · volum de lucru]',
+            'need' => 'Comenzi, stoc și facturi în trei programe.',
+            'built' => 'O aplicație internă care le leagă.',
+            'result' => 'Comenzi procesate de două ori mai repede.',
         ],
     ];
 
@@ -45,7 +52,161 @@
     ];
 @endphp
 
-@if ($layout === 'showcase')
+@if ($layout === 'list')
+{{-- After the list of recent work on dennissnellenberg.com: the projects as
+     rows between hairlines, each with a thumbnail of its interface on its own
+     colour; hovering one brings it forward and dims the rest
+     (css/site/project-list.css). --}}
+<section id="proiecte-lista" class="project-list" aria-labelledby="projects-list-title">
+    <div class="project-list__inner">
+        <header class="project-list__head">
+            <div class="md:col-span-7">
+                <p class="project-list__label">Proiecte selectate</p>
+                <h2 id="projects-list-title" class="project-list__title">Ce am construit,<br>pe scurt.</h2>
+            </div>
+            <p class="project-list__intro">Universități, instituții publice și companii. Nevoi diferite, soluții construite în jurul lor.</p>
+        </header>
+
+        <div class="project-list__columns" aria-hidden="true">
+            <span>Proiect</span><span>Rezultat</span>
+        </div>
+
+        <ol class="project-list__rows">
+            @foreach ($examples as $example)
+                <li class="project-list__row" data-project-list-row="{{ $loop->index }}">
+                    <span class="project-list__number">{{ sprintf('%02d', $loop->iteration) }}</span>
+
+                    <div class="project-list__thumb" aria-hidden="true">
+                        <x-site.project-interface :variant="$example['variant']" />
+                    </div>
+
+                    <div class="project-list__main">
+                        <span class="project-list__audience">{{ $example['audience'] }}</span>
+                        <h3 class="project-list__name">{{ $example['organization'] }}</h3>
+                        {{-- From what they needed to what was built. --}}
+                        <p class="project-list__story">
+                            <span class="sr-only">Ce aveau nevoie: </span>{{ $example['need'] }}
+                            <span class="project-list__arrow" aria-hidden="true">→</span>
+                            <span class="sr-only">Ce am construit: </span>{{ $example['built'] }}
+                        </p>
+                    </div>
+
+                    <p class="project-list__result"><span class="sr-only">Ce face acum: </span>{{ $example['result'] }}</p>
+                </li>
+            @endforeach
+        </ol>
+
+        <div class="project-list__foot">
+            <x-ui.pill :href="route('projects.index')">Toți clienții</x-ui.pill>
+        </div>
+    </div>
+</section>
+@elseif ($layout === 'accordion')
+{{-- The projects as rows that open, one at a time, into a short case: the
+     interface on the project's colour, the three facts and a link. Native
+     <details> (keyboard-ready, working without the script); the script
+     animates the opening and closing and keeps one open at a time
+     (css/site/project-accordion.css, js/public/project-accordion.ts). --}}
+<section id="proiecte-detalii" class="project-accordion" aria-labelledby="projects-accordion-title" data-project-accordion>
+    <div class="project-accordion__inner">
+        <header class="project-accordion__head">
+            <div class="md:col-span-7">
+                <p class="project-accordion__label">Proiecte selectate</p>
+                <h2 id="projects-accordion-title" class="project-accordion__title">Ce am construit,<br>pe scurt.</h2>
+            </div>
+            <p class="project-accordion__intro">Universități, instituții publice și companii. Nevoi diferite, soluții construite în jurul lor.</p>
+        </header>
+
+        <div class="project-accordion__list">
+            @foreach ($examples as $example)
+                <details @class(['project-accordion__item', 'is-open' => $loop->first]) @if ($loop->first) open @endif data-accordion-item>
+                    <summary class="project-accordion__summary">
+                        <span class="project-accordion__number">{{ sprintf('%02d', $loop->iteration) }}</span>
+                        <h3 class="project-accordion__name">{{ $example['organization'] }}</h3>
+                        <span class="project-accordion__audience">{{ $example['audience'] }}</span>
+                        <span class="project-accordion__icon" aria-hidden="true"></span>
+                    </summary>
+
+                    <div class="project-accordion__case" data-accordion-case>
+                        <div class="project-accordion__visual" aria-hidden="true">
+                            <x-site.project-interface :variant="$example['variant']" />
+                        </div>
+                        <div class="project-accordion__story">
+                            <dl class="project-accordion__facts">
+                                @foreach ($facts($example) as $term => $detail)
+                                    <div><dt>{{ $term }}</dt><dd>{{ $detail }}</dd></div>
+                                @endforeach
+                            </dl>
+                            {{-- TODO: the project's own page. --}}
+                            <x-ui.arrow-link :href="route('projects.index')" class="project-accordion__link">Vezi proiectul</x-ui.arrow-link>
+                        </div>
+                    </div>
+                </details>
+            @endforeach
+        </div>
+
+        <div class="project-accordion__foot">
+            <x-ui.pill :href="route('projects.index')">Toți clienții</x-ui.pill>
+        </div>
+    </div>
+</section>
+@elseif ($layout === 'steps')
+{{-- The projects as numbered steps, after the walkthrough on sendpotion.com:
+     each a row — on the left its step (a large number, the audience, the
+     name, one line, the result), held in view while its card passes and then
+     pushed on by the next; on the right a very tall purple card with its own
+     pattern and the interface in a large window running off its edges,
+     drifting as the page scrolls. js/public/project-steps.ts,
+     css/site/project-steps.css. --}}
+@php
+    // Per project: the word of its name to highlight.
+    $stepMarks = [
+        'university' => 'proiectelor',
+        'institution' => 'documente',
+        'company' => 'comenzilor',
+    ];
+@endphp
+<section id="proiecte-pasi" class="project-steps" aria-labelledby="projects-steps-title" data-project-steps data-nav-tone="dark">
+    <div class="project-steps__inner">
+        <header class="project-steps__head">
+            <div class="md:col-span-7">
+                <p class="project-steps__label">Proiecte selectate</p>
+                <h2 id="projects-steps-title" class="project-steps__title">Ce am construit,<br>pe scurt.</h2>
+            </div>
+            <p class="project-steps__intro">Universități, instituții publice și companii. Nevoi diferite, soluții construite în jurul lor.</p>
+        </header>
+
+        <ol class="project-steps__rows">
+            @foreach ($examples as $example)
+                <li class="project-steps__row" data-step-row>
+                    <div class="project-steps__text" data-step-text>
+                        {{-- A small index and the audience; the name leads. --}}
+                        <p class="project-steps__meta" data-step-part><span>{{ sprintf('%02d', $loop->iteration) }}</span>{{ $example['audience'] }}</p>
+                        @php($mark = $stepMarks[$example['variant']] ?? null)
+                        {{-- One word of the name on a highlight, as on the reference. --}}
+                        <h3 class="project-steps__name" data-step-part>{!! $mark ? str_replace(e($mark), '<mark>'.e($mark).'</mark>', e($example['organization'])) : e($example['organization']) !!}</h3>
+                        <p class="project-steps__line" data-step-part>{{ $example['built'] }}</p>
+                        <div class="project-steps__result" data-step-part>
+                            <span class="project-steps__result-label">Ce face acum</span>
+                            <p>{{ $example['result'] }}</p>
+                        </div>
+                    </div>
+
+                    <div class="project-steps__visual" aria-hidden="true">
+                        <div class="project-steps__window" data-step-window>
+                            <x-site.project-interface :variant="$example['variant']" />
+                        </div>
+                    </div>
+                </li>
+            @endforeach
+        </ol>
+
+        <div class="project-steps__foot">
+            <x-ui.pill :href="route('projects.index')">Toți clienții</x-ui.pill>
+        </div>
+    </div>
+</section>
+@elseif ($layout === 'showcase')
 <section id="proiecte-selectate" class="project-showcase" aria-labelledby="selected-projects-title" data-project-showcase>
     <div class="project-showcase__inner">
         <div class="project-showcase__aside">

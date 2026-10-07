@@ -1,0 +1,177 @@
+/*
+  "Produsele noastre", layout "stack" (components/site/own-products):
+  continuing the walkthrough's deep indigo, a head, then each product as a
+  screen-high rounded card — its name large, the text and a link on the
+  left, its interface on the right running off the edges. From 1024px they
+  stack on scroll as on gethyped.nl (js/public/product-stack.ts): each grows
+  into place as it arrives, holds, and shrinks and tilts as the next slides
+  up over it, its top peeking above the newcomer for a moment. Below that, and with reduced motion, rounded
+  cards one after another.
+*/
+@layer components {
+    .product-stack {
+        @apply relative z-[1] text-white;
+        background: #1f2868;
+
+        /* The mock-ups, in the violet. */
+        --project-accent: var(--violet-500);
+        --project-tint: #efebff;
+    }
+
+    /* ---- Head ------------------------------------------------------------------ */
+
+    .product-stack__head {
+        @apply mx-auto grid max-w-[calc(var(--content-max)+2*var(--site-gap))] gap-6 px-[var(--site-gap)] pt-24 pb-12 md:grid-cols-12 md:items-end md:gap-10 md:pt-32 md:pb-16;
+    }
+
+    .product-stack__label {
+        @apply inline-flex h-7 items-center rounded-full bg-white px-3 text-xs font-medium;
+        color: var(--violet-500);
+    }
+
+    .product-stack__title {
+        @apply mt-5 font-medium;
+        font-size: 36px;
+        line-height: 1.1;
+        letter-spacing: -0.02em;
+
+        @media (min-width: 1024px) {
+            font-size: 56px;
+        }
+    }
+
+    .product-stack__intro {
+        @apply max-w-[42ch] text-pretty md:col-span-5 md:col-start-8 md:pb-2;
+        font-size: 17px;
+        line-height: 1.6;
+        color: rgb(255 255 255 / 0.78);
+    }
+
+    /* ---- The cards ------------------------------------------------------------------ */
+
+    .product-stack__cards {
+        @apply grid gap-4 px-[var(--site-gap)] pb-24 lg:block lg:gap-0 lg:px-0 lg:pb-0;
+    }
+
+    /* One screen each from 1024px, the card inset from its edges as on
+       gethyped.nl; the later ones above the earlier. */
+    .product-card {
+        @apply relative;
+        z-index: calc(var(--i) + 1);
+
+        @media (min-width: 1024px) {
+            @apply h-svh p-[var(--site-gap)];
+        }
+    }
+
+    /*
+      The card itself, rounded. From 1024px the script grows it into place
+      as it arrives, and shrinks and tilts it as the next card covers it.
+    */
+    .product-card__panel {
+        @apply relative grid min-h-[34rem] gap-10 overflow-hidden rounded-[28px] p-8 md:p-12 lg:h-full lg:grid-cols-12 lg:items-center lg:gap-10 lg:rounded-[32px] lg:px-[max(3.5rem,calc((100%-var(--content-max))/2))] lg:py-0;
+        background:
+            radial-gradient(
+                ellipse 60% 70% at 100% 0%,
+                rgb(239 220 255 / 0.35),
+                transparent 60%
+            ),
+            linear-gradient(
+                135deg,
+                var(--purple-500),
+                var(--violet-500) 60%,
+                #5b3fe0
+            );
+        transform-origin: 50% 0%;
+        will-change: clip-path, transform;
+    }
+
+    .product-card--2 .product-card__panel {
+        background:
+            radial-gradient(
+                ellipse 60% 70% at 0% 100%,
+                rgb(164 76 238 / 0.55),
+                transparent 60%
+            ),
+            linear-gradient(200deg, var(--violet-500), #5b3fe0 50%, #2d2b78);
+    }
+
+    /* The third, lighter: lilac into purple. */
+    .product-card--3 .product-card__panel {
+        background:
+            radial-gradient(
+                ellipse 60% 70% at 0% 0%,
+                rgb(239 220 255 / 0.4),
+                transparent 60%
+            ),
+            linear-gradient(
+                160deg,
+                #c98bf5,
+                var(--purple-500) 45%,
+                var(--violet-500)
+            );
+    }
+
+    /* Moved by the entry (the script); the panel inside by being covered. */
+    .product-card__frame {
+        @apply lg:h-full;
+        transform-origin: 50% 100%;
+        will-change: transform;
+    }
+
+    .product-card__content {
+        @apply relative z-[1] flex flex-col items-start lg:col-span-5;
+    }
+
+    .product-card__count {
+        @apply text-xs font-medium tracking-[0.12em] uppercase;
+        color: rgb(255 255 255 / 0.75);
+    }
+
+    /* The product's name, very large. */
+    .product-card__name {
+        @apply mt-6 font-semibold;
+        font-size: clamp(2.75rem, 6vw, 6rem);
+        line-height: 0.95;
+        letter-spacing: -0.04em;
+        overflow-wrap: anywhere;
+    }
+
+    .product-card__for {
+        @apply mt-6 text-xl font-medium md:text-2xl;
+    }
+
+    .product-card__detail {
+        @apply mt-3 max-w-[40ch] text-[17px] leading-relaxed text-pretty;
+        color: rgb(255 255 255 / 0.82);
+    }
+
+    .product-card__link {
+        @apply mt-10;
+    }
+
+    /* White on the purple card (stronger than the violet pages' own pill,
+       css/site/buttons.css); drained on hover to a white outline. */
+    :root:has([data-intro-backdrop][data-palette='violet'])
+        .product-card
+        .pill.btn-dark,
+    .product-card .pill.btn-dark {
+        --btn-ink: #fff;
+        --btn-contrast: var(--navy-950);
+
+        & .pill__title > span::after {
+            color: #fff;
+        }
+    }
+
+    /* The interface, large, running off the right and bottom. */
+    .product-card__visual {
+        @apply relative h-[300px] lg:col-span-7 lg:h-[70%] lg:self-end;
+
+        & .project-interface {
+            inset: 0 -12% -4rem 0;
+            border-radius: 16px 0 0 0;
+            box-shadow: 0 40px 80px -30px rgb(1 15 28 / 0.55);
+        }
+    }
+}

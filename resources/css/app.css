@@ -9,11 +9,23 @@
 @import './site/page-transition.css';
 @import './site/buttons.css';
 @import './site/marquee.css';
+@import './site/google-rating.css';
 @import './site/hero-parallax.css';
 @import './site/hero-intro.css';
 @import './site/statement.css';
 @import './site/services.css';
 @import './site/services-plain.css';
+@import './site/service-cards.css';
+@import './site/service-chapters.css';
+@import './site/explorer.css';
+@import './site/reviews-carousel.css';
+@import './site/blog-posts.css';
+@import './site/title-pill.css';
+@import './site/footer.css';
+@import './site/project-list.css';
+@import './site/project-accordion.css';
+@import './site/project-steps.css';
+@import './site/product-stack.css';
 @import './site/selected-projects.css';
 @import './site/project-showcase.css';
 @import './site/own-products.css';
@@ -42,6 +54,11 @@
         'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
     /* Big uppercase titles (`font-display`). */
     --font-display: Anton, Impact, 'Arial Narrow Bold', sans-serif;
+    /*
+      Numerals and micro-labels only (`font-micro`). Its own name, so the
+      admin's `font-mono` (code, URLs) keeps the system monospace.
+    */
+    --font-micro: 'JetBrains Mono', ui-monospace, SFMono-Regular, monospace;
 
     --radius-lg: var(--radius);
     --radius-md: calc(var(--radius) - 2px);

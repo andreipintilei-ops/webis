@@ -80,7 +80,6 @@ final class SiteNavigation
             ['label' => 'Web și e-commerce', 'links' => [
                 ['label' => 'Creare site de prezentare', 'href' => '/creare-site-de-prezentare'],
                 ['label' => 'Magazin online', 'href' => '/magazin-online'],
-                ['label' => 'SEO', 'href' => '/seo'],
             ]],
         ];
     }

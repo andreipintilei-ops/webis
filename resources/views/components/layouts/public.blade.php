@@ -140,6 +140,8 @@
                 <main data-transition-shift data-theo-shift>
                     {{ $slot }}
                 </main>
+
+                <x-site.footer />
             </div>
         </div>
 

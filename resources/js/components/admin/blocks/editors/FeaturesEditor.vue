@@ -20,6 +20,7 @@ type FeatureItem = {
 type FeaturesData = {
     heading: string | null;
     intro: string | null;
+    layout?: 'columns' | 'cards' | null;
     columns: number;
     items: FeatureItem[];
 };
@@ -54,6 +55,19 @@ const newItem = (): FeatureItem => ({
             :max="400"
             multiline
             :error="errors.intro"
+        />
+        <SelectField
+            :model-value="data.layout ?? 'columns'"
+            label="Aspect"
+            :options="[
+                { value: 'columns', label: 'Coloane, între linii' },
+                { value: 'cards', label: 'Carduri ilustrate (serviciile)' },
+            ]"
+            hint="„Carduri ilustrate” afișează cele trei servicii, cu ilustrații."
+            :error="errors.layout"
+            @update:model-value="
+                data.layout = $event === 'cards' ? 'cards' : 'columns'
+            "
         />
         <SelectField
             v-model="data.columns"

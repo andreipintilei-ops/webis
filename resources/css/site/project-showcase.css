@@ -10,7 +10,7 @@
     .project-showcase {
         /* Every card the same height: the screen, less a margin around it. */
         --card-h: min(calc(100svh - 3rem), 52rem);
-        --card-bg: #f9f9fb;
+        --card-bg: var(--site-paper);
         --ink: #0b1529;
 
         @apply relative z-[1] bg-white px-[var(--site-gap)] pt-6 pb-20 md:pt-8 md:pb-28;

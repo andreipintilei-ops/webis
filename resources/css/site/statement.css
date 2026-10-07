@@ -18,6 +18,11 @@
         --statement-square: #7fe8a0; /* colorD: reads on the dark gradient */
     }
 
+    /* On the violet gradient (hero background "gradient-violet"): lavender. */
+    :root:has([data-intro-backdrop][data-palette='violet']) .statement--dark {
+        --statement-square: var(--lavender-300);
+    }
+
     .statement__grid {
         border-color: var(--statement-rule);
     }

@@ -91,10 +91,16 @@ class SettingsController extends Controller
             'opening_hours.*.closes' => ['required', 'date_format:H:i', 'after:opening_hours.*.opens'],
             'social' => ['array'],
             'social.*' => ['nullable', 'url:https', 'max:255'],
+            'google_rating' => ['nullable', 'numeric', 'between:1,5'],
+            'google_review_count' => ['nullable', 'integer', 'min:0', 'max:100000'],
+            'google_reviews_url' => ['nullable', 'url:https', 'max:255'],
         ]);
 
         $settings->fill([
             ...$data,
+            'google_rating' => isset($data['google_rating']) ? round((float) $data['google_rating'], 1) : null,
+            'google_review_count' => isset($data['google_review_count']) ? (int) $data['google_review_count'] : null,
+            'google_reviews_url' => $data['google_reviews_url'] ?? null,
             'country_code' => mb_strtoupper($data['country_code']),
             'latitude' => isset($data['latitude']) ? (float) $data['latitude'] : null,
             'longitude' => isset($data['longitude']) ? (float) $data['longitude'] : null,

@@ -2,9 +2,9 @@
  * Full-screen menu with an SVG curtain transition, adapted from Codrops'
  * "Theodore" (https://github.com/codrops/Theodore, MIT).
  *
- * Opening: the curtain rises from the bottom with a curved edge, the page's
- * big title lifts away, then the curtain pulls off the top to reveal the menu
- * and its links rise in. Closing plays the mirror image.
+ * Opening: the curtain sweeps up the screen as a band with curved edges, the
+ * page lifting away under it, and the menu is uncovered right behind it, its
+ * links rising in. Closing plays the mirror image, the band falling.
  *
  * GSAP is not in the page bundle: it is fetched once the browser is idle after
  * load (or earlier, the moment the visitor reaches for the button), so the
@@ -21,30 +21,28 @@ import {
 import { navigateCovered, transitionLink } from '@/public/page-transition';
 import { lockScroll } from '@/public/site-nav';
 
-// Curtain shapes in the overlay's 0–100 viewBox.
+// Curtain shapes in the overlay's 0–100 viewBox, for leaving through a
+// link (the band of opening and closing is drawn by drawBand).
 const PATHS = {
-    // Open, phase 1: rise from the bottom edge.
+    // At rest: nothing, along the bottom edge.
     bottomFlat: 'M 0 100 V 100 Q 50 100 100 100 V 100 z',
-    bottomCurve: 'M 0 100 V 50 Q 50 0 100 50 V 100 z',
-    bottomFull: 'M 0 100 V 0 Q 50 0 100 0 V 100 z',
-    // Open, phase 2: pull off through the top edge.
-    topFull: 'M 0 0 V 100 Q 50 100 100 100 V 0 z',
-    topCurve: 'M 0 0 V 50 Q 50 0 100 50 V 0 z',
+    // Down from the top edge, bowing, to cover everything.
     topFlat: 'M 0 0 V 0 Q 50 0 100 0 V 0 z',
-    // Close: the same moves mirrored.
     closeCurve: 'M 0 0 V 50 Q 50 100 100 50 V 0 z',
-    closeRevealCurve: 'M 0 100 V 50 Q 50 100 100 50 V 100 z',
+    topFull: 'M 0 0 V 100 Q 50 100 100 100 V 0 z',
 };
 
 /**
  * Seconds. Theodore's originals were 0.8 / 0.3 / 0.3 / 0.8 / 1.1 (≈2.2s per
- * direction). Opening here: the curtain is off and the menu usable at 1.2s,
- * everything settled by ≈1.8s.
+ * direction). Opening here: the band is off and the menu usable at 0.72s,
+ * everything settled by ≈1.4s.
  */
 const TIMING = {
-    // Each curtain move (covering, then clearing) is one sweep (EASE.curtain).
+    // The curtain's sweep across the screen (EASE.curtain)…
     cover: 0.6,
-    reveal: 0.6,
+    // …and how far behind its leading edge the trailing one follows,
+    // uncovering the menu (opening) or the page (closing).
+    follow: 0.12,
     // The links (or the page) settling into place as the curtain clears (expo.out)…
     rise: 0.8,
     // …starting this far into the reveal.
@@ -135,6 +133,56 @@ export function initTheodoreMenu(): void {
     const shifted = (): HTMLElement[] =>
         Array.from(document.querySelectorAll<HTMLElement>('[data-theo-shift]'));
 
+    /**
+     * The curtain as a band: its leading edge sweeps across the screen and
+     * its trailing edge follows TIMING.follow behind, both bowing as they
+     * move (at most half the screen, mid-way, as Theodore's). Opening, it
+     * rises (both edges bow upward); closing, it falls (both bow downward).
+     * The menu is clipped to the edge on its side of the band, so it is
+     * uncovered — or covered — right behind the curtain.
+     */
+    const bow = (p: number): number => 200 * p * (1 - p);
+
+    const band = {
+        lead: 0,
+        trail: 0,
+        up: true,
+    };
+
+    const drawBand = (): void => {
+        const { lead, trail, up } = band;
+        let d: string;
+        let clipTop: number;
+
+        if (up) {
+            // Rising: the top edge leads, the bottom edge trails; the menu shows below it.
+            const top = 100 - 100 * lead;
+            const bottom = 100 - 100 * trail;
+
+            d = `M 0 ${bottom} V ${top} Q 50 ${top - bow(lead)} 100 ${top} V ${bottom} Q 50 ${bottom - bow(trail)} 0 ${bottom} z`;
+            // The trailing edge is highest at its middle.
+            clipTop = bottom - bow(trail) / 2;
+        } else {
+            // Falling: the bottom edge leads, the top edge trails; the menu shows below the band.
+            const bottom = 100 * lead;
+            const top = 100 * trail;
+
+            d = `M 0 ${top} Q 50 ${top + bow(trail)} 100 ${top} V ${bottom} Q 50 ${bottom + bow(lead)} 0 ${bottom} z`;
+            // The leading edge is highest at its sides.
+            clipTop = bottom;
+        }
+
+        overlay.setAttribute('d', d);
+        menu.style.clipPath = `inset(${Math.min(100, Math.max(0, clipTop))}% 0 0 0)`;
+    };
+
+    /** Once the band is off: no clip on the menu, the curtain at rest. */
+    const clearBand = (): void => {
+        menu.style.removeProperty('clip-path');
+        overlay.setAttribute('d', PATHS.bottomFlat);
+        root.classList.remove('nav-moving');
+    };
+
     const open = async (): Promise<void> => {
         if (isOpen || isAnimating) {
             return;
@@ -152,52 +200,39 @@ export function initTheodoreMenu(): void {
         // rather than when the curtain has covered the page (css/site/
         // menu-panel.css) — otherwise leaving it quickly refills it first.
         root.classList.add('nav-opening');
+
         const gsap = await loadGsap();
+        const settled = TIMING.follow + TIMING.cover;
 
         timeline?.kill();
+        // The round button keeps the page's tone while the band moves.
+        root.classList.add('nav-moving');
+        Object.assign(band, { lead: 0, trail: 0, up: true });
+        drawBand();
+        // Open from the start, hidden by its clip until the band uncovers it.
+        setOpenState(true);
+        gsap.set(items, { opacity: 0, y: 150 });
+        gsap.set(reveals, { opacity: 0, y: 30 });
+
         timeline = gsap
-            .timeline()
-            // Cover: up from the bottom while the page lifts away under it.
-            .set(overlay, { attr: { d: PATHS.bottomFlat } })
-            .to(overlay, {
-                ...curtainMove(
-                    PATHS.bottomCurve,
-                    PATHS.bottomFull,
-                    TIMING.cover,
-                ),
-                // Swap in the menu while the curtain fully covers the page.
-                onComplete: () => setOpenState(true),
-            })
+            .timeline({ onUpdate: drawBand, onComplete: clearBand })
+            .to(
+                band,
+                { lead: 1, duration: TIMING.cover, ease: EASE.curtain },
+                0,
+            )
+            .to(
+                band,
+                { trail: 1, duration: TIMING.cover, ease: EASE.curtain },
+                TIMING.follow,
+            )
+            // The page lifts away under the band.
             .to(
                 shifted(),
                 { duration: TIMING.cover, ease: EASE.curtain, y: -TIMING.lift },
                 0,
             )
-            // Reveal: off through the top, the links rising in behind it.
-            .set(items, { opacity: 0, y: 150 })
-            .set(reveals, { opacity: 0, y: 30 })
-            .set(overlay, { attr: { d: PATHS.topFull } })
-            .addLabel('reveal')
-            .to(
-                overlay,
-                curtainMove(
-                    PATHS.topCurve,
-                    PATHS.topFlat,
-                    TIMING.reveal,
-                    EASE.curtain,
-                    0.4,
-                ),
-                'reveal',
-            )
-            // The curtain is off: the menu is open and answers clicks again.
-            .call(
-                () => {
-                    isAnimating = false;
-                    focusInside();
-                },
-                [],
-                `reveal+=${TIMING.reveal}`,
-            )
+            // The links rise in behind it.
             .to(
                 items,
                 {
@@ -207,7 +242,7 @@ export function initTheodoreMenu(): void {
                     opacity: 1,
                     stagger: TIMING.stagger,
                 },
-                `reveal+=${TIMING.reveal * TIMING.riseAt}`,
+                TIMING.follow + TIMING.cover * TIMING.riseAt,
             )
             .to(
                 reveals,
@@ -218,7 +253,18 @@ export function initTheodoreMenu(): void {
                     opacity: 1,
                     stagger: TIMING.stagger,
                 },
-                `reveal+=${TIMING.reveal * TIMING.riseAt + 0.1}`,
+                TIMING.follow + TIMING.cover * TIMING.riseAt + 0.1,
+            )
+            // The band is off: the menu is open and answers clicks again.
+            .call(
+                () => {
+                    // The menu is behind the button now: its open look.
+                    root.classList.remove('nav-moving');
+                    isAnimating = false;
+                    focusInside();
+                },
+                [],
+                settled,
             );
     };
 
@@ -235,17 +281,18 @@ export function initTheodoreMenu(): void {
         }
 
         isAnimating = true;
+
         const gsap = await loadGsap();
+        const settled = TIMING.follow + TIMING.cover;
 
         timeline?.kill();
+        root.classList.add('nav-moving');
+        Object.assign(band, { lead: 0, trail: 0, up: false });
+        drawBand();
+
         timeline = gsap
-            .timeline()
-            // Cover: down from the top while the links fall away.
-            .set(overlay, { attr: { d: PATHS.topFlat } })
-            .to(overlay, {
-                ...curtainMove(PATHS.closeCurve, PATHS.topFull, TIMING.cover),
-                onComplete: () => setOpenState(false),
-            })
+            .timeline({ onUpdate: drawBand, onComplete: clearBand })
+            // The links fall away as the band comes down over them…
             .to(
                 [...items, ...reveals],
                 {
@@ -257,33 +304,32 @@ export function initTheodoreMenu(): void {
                 },
                 0,
             )
-            // Reveal: on out through the bottom, the page settling back.
-            .set(overlay, { attr: { d: PATHS.bottomFull } })
-            .addLabel('reveal')
             .to(
-                overlay,
-                curtainMove(
-                    PATHS.closeRevealCurve,
-                    PATHS.bottomFlat,
-                    TIMING.reveal,
-                    EASE.curtain,
-                    0.4,
-                ),
-                'reveal',
+                band,
+                { lead: 1, duration: TIMING.cover, ease: EASE.curtain },
+                0,
             )
-            // The curtain is off: the menu is closed and the button answers again.
-            .call(
-                () => {
-                    isAnimating = false;
-                    focusBack();
-                },
-                [],
-                `reveal+=${TIMING.reveal}`,
+            // …and the page follows right behind it, settling back.
+            .to(
+                band,
+                { trail: 1, duration: TIMING.cover, ease: EASE.curtain },
+                TIMING.follow,
             )
             .to(
                 shifted(),
                 { duration: TIMING.rise, ease: EASE.out, y: 0 },
-                `reveal+=${TIMING.reveal * TIMING.riseAt}`,
+                TIMING.follow + TIMING.cover * TIMING.riseAt,
+            )
+            // The band is off: the menu is closed and the button answers again.
+            .call(
+                () => {
+                    setOpenState(false);
+                    root.classList.remove('nav-moving');
+                    isAnimating = false;
+                    focusBack();
+                },
+                [],
+                settled,
             );
     };
 
@@ -363,7 +409,7 @@ export function initTheodoreMenu(): void {
         timeline = null;
         isAnimating = false;
         setOpenState(false);
-        overlay.setAttribute('d', PATHS.bottomFlat);
+        clearBand();
 
         for (const element of [...items, ...reveals, ...shifted()]) {
             element.style.transform = '';

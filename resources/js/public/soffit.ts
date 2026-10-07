@@ -17,8 +17,8 @@
  * Adapted from full-window to element: the canvas is sized from its own box
  * (ResizeObserver) and the pointer is measured against it. It stops drawing
  * while off-screen or in a hidden tab, and draws a single still frame for
- * visitors who prefer reduced motion. To recolour or retune, change CONFIG —
- * never the shader.
+ * visitors who prefer reduced motion. To recolour or retune, change CONFIG
+ * (PALETTES for the colours) — never the shader.
  *
  * One Webis addition, marked as such in the shader: the cursor stirs the
  * field locally (STIR). At strength and swirl 0 the picture is the original.
@@ -283,13 +283,36 @@ const FLOAT_KEYS = [
     'parallax',
 ] as const;
 
-const COLOR_UNIFORMS = {
-    uBg: CONFIG.bgColor,
-    uColorA: CONFIG.colorA,
-    uColorB: CONFIG.colorB,
-    uColorC: CONFIG.colorC,
-    uColorD: CONFIG.colorD,
+/**
+ * The colours, per canvas (`data-palette`, from the hero's background):
+ * "blue" is CONFIG's own; "violet" swaps in the old site's purples
+ * (webis.ro: deep indigo #1f2868 into #775afc and #a44cee), lightening to
+ * lavender for the glow. Everything else in CONFIG is shared.
+ */
+const PALETTES = {
+    blue: {
+        uBg: CONFIG.bgColor,
+        uColorA: CONFIG.colorA,
+        uColorB: CONFIG.colorB,
+        uColorC: CONFIG.colorC,
+        uColorD: CONFIG.colorD,
+    },
+    violet: {
+        uBg: '#1f2868',
+        uColorA: '#775afc',
+        uColorB: '#a44cee',
+        uColorC: '#c98bf5',
+        uColorD: '#efdcff',
+    },
 } as const;
+
+function paletteOf(
+    canvas: HTMLCanvasElement,
+): (typeof PALETTES)[keyof typeof PALETTES] {
+    return canvas.dataset.palette === 'violet'
+        ? PALETTES.violet
+        : PALETTES.blue;
+}
 
 function hexToVec3(hex: string): [number, number, number] {
     const n = parseInt(hex.slice(1), 16);
@@ -359,7 +382,7 @@ function mount(canvas: HTMLCanvasElement): void {
 
     // ---- CONFIG → uniforms (once) -----------------------------------------------
 
-    for (const [name, hex] of Object.entries(COLOR_UNIFORMS)) {
+    for (const [name, hex] of Object.entries(paletteOf(canvas))) {
         gl.uniform3f(loc(name), ...hexToVec3(hex));
     }
 

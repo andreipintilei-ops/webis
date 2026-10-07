@@ -62,10 +62,10 @@
         }
     }
 
-    /* Mid navy (--site-menu), lighter than the wipe that reveals it; film grain. */
+    /* Indigo (--menu-ground), lighter than the wipe that reveals it; film grain. */
     .theo-menu {
         @apply pointer-events-none fixed inset-0 z-30 overflow-hidden text-white opacity-0;
-        background: var(--site-menu);
+        background: var(--menu-ground);
 
         /* Film grain (--grain), under the content. */
         &::after {
@@ -73,6 +73,7 @@
             @apply pointer-events-none absolute inset-0;
             background-image: var(--grain);
             mix-blend-mode: overlay;
+            opacity: var(--menu-grain);
         }
     }
 
@@ -276,7 +277,7 @@
     .theo-overlay {
         @apply pointer-events-none fixed inset-0 z-50 size-full;
         /* Same as the page-transition curtain: menu → next page is one seamless cover. */
-        fill: var(--site-deep);
+        fill: var(--menu-wipe);
     }
 
     /* The curtain's grain, clipped to its moving shape (theodore-menu.blade.php),
@@ -285,6 +286,7 @@
         @apply pointer-events-none fixed inset-0 z-50;
         background-image: var(--grain);
         mix-blend-mode: overlay;
+        opacity: var(--menu-grain);
     }
 
     @media (prefers-reduced-motion: reduce) {

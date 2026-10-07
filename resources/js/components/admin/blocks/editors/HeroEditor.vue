@@ -16,7 +16,7 @@ type HeroData = {
     image_asset_id: number | null;
     layout: 'split' | 'centered';
     /** Centred layout only; "gradient" takes the image's place. */
-    background?: 'none' | 'gradient';
+    background?: 'none' | 'gradient' | 'gradient-violet';
     /** Centred layout only. */
     align?: 'center' | 'left';
     /** Centred layout only: the client-logo marquee along the bottom. */
@@ -94,11 +94,18 @@ const data = defineModel<HeroData>('data', { required: true });
             :options="[
                 { value: 'none', label: 'Alb / imagine' },
                 { value: 'gradient', label: 'Gradient animat' },
+                {
+                    value: 'gradient-violet',
+                    label: 'Gradient animat (violet)',
+                },
             ]"
             hint="Gradientul animat înlocuiește imaginea; textul devine alb."
             :error="errors.background"
             @update:model-value="
-                data.background = $event === 'gradient' ? 'gradient' : 'none'
+                data.background =
+                    $event === 'gradient' || $event === 'gradient-violet'
+                        ? $event
+                        : 'none'
             "
         />
         <SwitchField

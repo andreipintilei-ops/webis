@@ -9,23 +9,64 @@
 
 :root {
     --site-dark: #1c1d20;
-    --site-accent: #455ce9;
+    /*
+      The one interface blue: links, focus rings, the section labels'
+      squares. The hero gradient's colorA; 3:1 or more on every navy step
+      and the off-white (non-text contrast).
+    */
+    --site-accent: #2b7be8;
+    /* The off-white surface (the project showcase's cards, a service band). */
+    --site-paper: #f9f9fb;
+    /* The lavender of the light sections, under their grain (--grain-light). */
+    --paper: var(--lavender-50);
     --site-border-light: rgb(255 255 255 / 0.2);
     --site-gap: clamp(1.5rem, 4vw, 2.5rem);
-    /*
-      The menu and the page transition, in the hero gradient's navy (its
-      bgColor, js/public/soffit.ts): the open menu's ground is that navy;
-      the wipe that reveals it — and the page-transition curtain it hands
-      over to — is a deeper shade of it, a dark band passing over.
-    */
     /* Webis's brand colours, as in the logo's stripe. */
     --webis-red: #ef4d52;
     --webis-orange: #f2a120;
     --webis-yellow: #ffd00c;
     --webis-green: #62b046;
     --webis-navy: #2e3585;
+    /*
+      The hero gradient's navy (its bgColor, js/public/soffit.ts), and a
+      deeper shade of it: the contact section's ground, the hero's base.
+    */
     --site-deep: #011740;
     --site-menu: #01225e;
+    /*
+      The open menu and the curtain, in the old site's purples (webis.ro,
+      as the violet hero gradient): the menu's ground an indigo; the wipe
+      that reveals it — and the page-transition curtain it hands over to —
+      the old site's purple (--purple-500, as the hero arrow links' circle). Their
+      film grain at --menu-grain strength.
+    */
+    --menu-ground: #2d2b78;
+    --menu-wipe: var(--purple-500);
+    --menu-grain: 0.35;
+    /*
+      The old site's palette (webis.ro), for the violet pages: its
+      purple-blue and violet, a near-white lavender, a near-black navy, and
+      a muted ink for secondary text on light (5.7:1 on the lavender).
+    */
+    --violet-500: #775afc;
+    --purple-500: #a44cee;
+    --lavender-50: #f5f3ff;
+    --lavender-300: #a18eff;
+    --navy-950: #010f1c;
+    --indigo-800: #1c1f5e;
+    --ink-muted: #5b5f7a;
+    /*
+      Its call to action, in the purple-blue: the pill on the violet hero
+      (white on it: 4.5:1); and the violet it turned on hover: the arrow
+      links' circle there.
+    */
+    --violet-cta: var(--violet-500);
+    --violet-cta-hover: var(--purple-500);
+    /* Motion: one easing and three durations. */
+    --ease: cubic-bezier(0.22, 1, 0.36, 1);
+    --fast: 180ms;
+    --base: 320ms;
+    --slow: 520ms;
     /*
       Film grain without WebGL, after the gradient's own: fine, static,
       monochrome noise from an SVG filter, drawn once by the browser and
@@ -36,6 +77,16 @@
       colour keeps its value — soft-light would lift a dark one overall.
     */
     --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='g' color-interpolation-filters='sRGB'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3CfeComponentTransfer%3E%3CfeFuncR type='linear' slope='0.5' intercept='0.25'/%3E%3CfeFuncG type='linear' slope='0.5' intercept='0.25'/%3E%3CfeFuncB type='linear' slope='0.5' intercept='0.25'/%3E%3CfeFuncA type='linear' slope='0' intercept='1'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E");
+    /*
+      The grain for light grounds: the "paper" itself — the same noise,
+      centred channel by channel on --paper (#f5f3ff: intercept = the
+      channel - slope / 2; blue a touch under its 1, so it is not clipped
+      by half), laid over it with no blending. Over a near-white an overlay barely
+      shows; this way --paper-grain sets how much grain without changing
+      the grey.
+    */
+    --grain-light: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='g' color-interpolation-filters='sRGB'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3CfeComponentTransfer%3E%3CfeFuncR type='linear' slope='0.3' intercept='0.811'/%3E%3CfeFuncG type='linear' slope='0.3' intercept='0.803'/%3E%3CfeFuncB type='linear' slope='0.3' intercept='0.84'/%3E%3CfeFuncA type='linear' slope='0' intercept='1'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E");
+    --paper-grain: 0.6;
     /*
       The page's column, centred: content and the top bar share its edges.
       Narrower screens fall back to the --site-gap margin.
@@ -224,7 +275,7 @@
     */
     .site-burger__button {
         /* On light pages: the dark tone's deep navy (css/site/lower-tone.css). */
-        --burger-bg: #0b1529;
+        --burger-bg: #0f1e3d;
         --burger-ink: #fff;
 
         @apply relative grid place-items-center overflow-hidden rounded-full;
@@ -262,10 +313,24 @@
         }
     }
 
+    /* White over dark surfaces and over the open menu — but not while the
+       curtain is still moving (nav-moving, js/public/theodore-menu.ts): the
+       page shows around the band then, so the button keeps the page's tone
+       until the menu is really behind it. */
     :root.nav-on-dark .site-burger__button,
-    :root.nav-open .site-burger__button {
+    :root.nav-open:not(.nav-moving) .site-burger__button {
         --burger-bg: #fff;
         --burger-ink: var(--site-dark);
+    }
+
+    /* Over light sections of a violet page (hero background
+       "gradient-violet"): the call-to-action purple-blue, as its pills. */
+    :root:has([data-intro-backdrop][data-palette='violet']):is(
+            :not(.nav-open),
+            .nav-moving
+        ):not(.nav-on-dark)
+        .site-burger__button {
+        --burger-bg: var(--violet-cta);
     }
 
     /* With the menu open the button rests drained — a ring with the ✕ in its

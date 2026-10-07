@@ -1,0 +1,68 @@
+/*
+  The Google rating (components/site/google-rating.blade.php), on two lines,
+  right-aligned: the stars and the score, then "Google Reviews" small and
+  muted. The page's own face throughout; no Google logo, no badge box.
+*/
+@layer components {
+    .google-rating {
+        @apply inline-flex flex-col items-end gap-1.5 text-right leading-none;
+        color: var(--rating-ink);
+    }
+
+    .google-rating--dark {
+        --rating-ink: #fff;
+        --rating-muted: rgb(255 255 255 / 0.75);
+    }
+
+    .google-rating--light {
+        --rating-ink: var(--site-dark);
+        --rating-muted: var(--color-neutral-600);
+    }
+
+    .google-rating__top {
+        @apply flex items-center gap-2.5;
+    }
+
+    .google-rating__score {
+        @apply text-lg font-semibold tabular-nums;
+    }
+
+    /* Two rows of stars in one place: a faint one, and the full one clipped. */
+    .google-rating__stars {
+        @apply relative grid;
+
+        & > * {
+            grid-area: 1 / 1;
+        }
+    }
+
+    .google-rating__row {
+        @apply flex gap-[3px];
+
+        & svg {
+            @apply size-4 shrink-0;
+            fill: currentColor;
+        }
+    }
+
+    .google-rating__row--empty {
+        @apply opacity-30;
+    }
+
+    .google-rating__row--full {
+        clip-path: inset(0 calc(100% - var(--fill)) 0 0);
+    }
+
+    .google-rating__meta {
+        @apply text-xs;
+        color: var(--rating-muted);
+    }
+
+    /* As a link: the label underlines on hover and focus. */
+    a.google-rating {
+        &:hover .google-rating__meta,
+        &:focus-visible .google-rating__meta {
+            @apply underline underline-offset-4;
+        }
+    }
+}

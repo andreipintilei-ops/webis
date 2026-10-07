@@ -4,6 +4,7 @@ use App\Enums\PageType;
 use App\Models\Asset;
 use App\Models\Client;
 use App\Models\Page;
+use App\Settings\CompanySettings;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Storage;
 
@@ -84,12 +85,15 @@ it('skips block types that have no template yet', function () {
 it('keeps a centred hero centred and dark on white without an image', function () {
     homeWithHero(['layout' => 'centered', 'eyebrow' => 'Pentru toți', 'heading' => 'Titlu centrat']);
 
-    expect($this->get('/')->assertOk()->getContent())
+    $html = $this->get('/')->assertOk()->getContent();
+
+    expect($html)
         ->toContain('justify-center px-6 text-center')
         ->toContain('text-neutral-600')
         ->toContain('Titlu centrat')
         ->not->toContain('site-nav--dark')
-        ->not->toContain('<img');
+        // No image in the hero (the reviews further down have their logos).
+        ->and(strstr($html, '<section id="software-la-comanda"', true))->not->toContain('<img');
 });
 
 it('renders the animated gradient behind a centred hero, in place of its image, with a dark header', function () {
@@ -103,15 +107,29 @@ it('renders the animated gradient behind a centred hero, in place of its image, 
         'primary_cta' => ['label' => 'Discutați proiectul', 'url' => '/contact'],
     ]);
 
-    expect($this->get('/')->assertOk()->getContent())
+    $html = $this->get('/')->assertOk()->getContent();
+
+    expect($html)
         ->toContain('<canvas data-soffit')
+        ->toContain('data-palette="blue"')
         // The round menu button turns white over it.
         ->toContain('data-nav-tone="dark"')
-        ->toContain('bg-[#01225e]')
+        ->toContain('bg-[var(--site-menu)]')
         ->toContain('site-nav site-nav--dark')
         ->toContain('class="pill btn-dark"')
-        ->not->toContain('<img')
-        ->not->toContain('rel="preload" as="image"');
+        ->not->toContain('rel="preload" as="image"')
+        // No image in the hero (the reviews further down have their logos).
+        ->and(strstr($html, '<section id="software-la-comanda"', true))->not->toContain('<img');
+});
+
+it('renders the violet gradient, in the old site\'s purples, on its indigo base', function () {
+    homeWithHero(['layout' => 'centered', 'background' => 'gradient-violet', 'heading' => 'Titlu']);
+
+    expect($this->get('/')->assertOk()->getContent())
+        ->toContain('<canvas data-soffit data-palette="violet"')
+        ->toContain('bg-[#1f2868]')
+        ->not->toContain('bg-[var(--site-menu)]')
+        ->toContain('site-nav site-nav--dark');
 });
 
 it('aligns a full-screen hero left, in the content column', function () {
@@ -192,7 +210,7 @@ it('marks the opening dark hero for the intro, and only that one', function () {
         ->and(substr_count($hero[0], 'data-intro-fade'))->toBe(2);
 
     expect($html)
-        ->toMatch('/<div class="overflow-hidden fixed inset-0 z-0 bg-\[#01225e\]"\s+data-intro-backdrop\s*>\s*<div class="absolute inset-0" data-intro-media>\s*<canvas data-soffit/')
+        ->toMatch('/<div class="overflow-hidden fixed inset-0 z-0 bg-\[var\(--site-menu\)\]"\s+data-palette="blue"\s+data-intro-backdrop\s*>\s*<div class="absolute inset-0" data-intro-media>\s*<canvas data-soffit/')
         ->and(strpos($html, 'data-intro-backdrop'))->toBeLessThan(strpos($html, '<div id="smooth-wrapper"'));
 
     // A plain hero on white has no backdrop to grow, so no intro.
@@ -202,12 +220,36 @@ it('marks the opening dark hero for the intro, and only that one', function () {
     expect($this->get('/')->getContent())->not->toMatch('/\sdata-intro\s*>/')->not->toContain('data-intro-backdrop');
 });
 
+it('shows the Google rating above the client logos, linked to the reviews, and nothing without one', function () {
+    $company = app(CompanySettings::class);
+    $company->google_rating = 4.7;
+    $company->google_review_count = 38;
+    $company->google_reviews_url = 'https://search.google.com/local/reviews?placeid=abc';
+    $company->save();
+
+    homeWithHero(['layout' => 'centered', 'background' => 'gradient', 'logos' => true, 'heading' => 'Titlu']);
+
+    expect($this->get('/')->assertOk()->getContent())
+        ->toContain('class="google-rating google-rating--dark"')
+        ->toContain('href="https://search.google.com/local/reviews?placeid=abc" target="_blank" rel="noopener"')
+        ->toContain('Evaluare Google: 4,7 din 5, din 38 de recenzii')
+        ->toContain('Google Reviews · 38 de recenzii')
+        ->toContain('style="--fill: 94%"');
+
+    $company->google_rating = null;
+    $company->save();
+
+    expect($this->get('/')->getContent())->not->toContain('google-rating');
+});
+
 it('ignores the gradient on a split hero', function () {
     homeWithHero(['layout' => 'split', 'background' => 'gradient', 'heading' => 'Titlu']);
 
-    expect($this->get('/')->assertOk()->getContent())
-        ->not->toContain('data-soffit')
-        ->not->toContain('site-nav--dark');
+    $html = $this->get('/')->assertOk()->getContent();
+
+    // No gradient before the footer (which always has its own).
+    expect(strstr($html, '<footer', true))->not->toContain('data-soffit')
+        ->and($html)->not->toContain('site-nav--dark');
 });
 
 it('renders the primary button as a pill and the secondary as an arrow link', function () {
@@ -256,6 +298,59 @@ it('renders feature cards with their note and a link at the foot', function () {
         ->toContain('Când procesul vostru nu seamănă cu al nimănui.')
         ->toMatch('/<a href="\/solutii" class="arrow-link btn-light">.*?Află mai multe/s')
         ->and(substr_count($section[0], 'class="arrow-link btn-'))->toBe(1);
+});
+
+it('renders the services as illustrated cards when the block asks for them, rising over the hero', function () {
+    Page::factory()->create([
+        'slug' => 'despre',
+        'blocks' => [['id' => 'f', 'type' => 'features', 'v' => 1, 'data' => [
+            'layout' => 'cards',
+            'columns' => 3,
+            'items' => [['title' => 'Software la comandă']],
+        ]]],
+    ]);
+
+    $html = $this->get('/despre')->assertOk()->getContent();
+    preg_match('/<section id="f".*?<\/section>/s', $html, $section);
+
+    expect($section[0])
+        ->toContain('class="svc-cards"')
+        // The title, a chip between its words (hidden from screen readers).
+        ->toMatch('/<h2[^>]*>Tot de ce ai nevoie, <span class="title-pill" aria-hidden="true" data-title-pill>.*?<\/span><\/span>\s*<br> de la site la sistemul de gestiune.<\/h2>/s')
+        ->and(substr_count($section[0], '<article class="svc-card">'))->toBe(3)
+        ->and($section[0])->toContain('Sisteme construite pentru procesele organizației voastre.')
+        // The illustrations: one inline SVG each, nothing loaded.
+        ->and(substr_count($section[0], '<svg class="il"'))->toBe(3)
+        // The SaaS one: a product in the cloud, no product named.
+        ->and($section[0])->toContain('M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z')
+        ->not->toContain('>SmileSoft</text>')
+        ->not->toContain('<img')
+        ->not->toContain('md:grid-cols-3')
+        ->and($html)->toContain('data-hero-leave="overlap"')
+        // The projects follow, as rows that open (the first open).
+        ->toContain('<section id="proiecte-detalii" class="project-accordion"')
+        ->and(substr_count($html, 'data-accordion-item'))->toBe(3)
+        ->and(preg_match_all('/<details[^>]*\sopen\s/', $html))->toBe(1)
+        ->and($html)->toContain('Toți clienții')
+        // …and, to compare, as a walkthrough.
+        ->toContain('<section id="proiecte-pasi" class="project-steps"')
+        ->and(substr_count($html, 'data-step-row'))->toBe(3)
+        // Then our products, as full-screen cards stacking, SmileSoft first.
+        ->and(substr_count($html, 'data-product-card'))->toBe(3)
+        ->and(strpos($html, '>SmileSoft</h3>'))->toBeLessThan(strpos($html, 'product-card--2'));
+});
+
+it('keeps the columns, and the hero leaving as a card, without the cards layout', function () {
+    Page::factory()->create([
+        'slug' => 'avantaje',
+        'blocks' => [['id' => 'f', 'type' => 'features', 'v' => 1, 'data' => ['columns' => 3, 'items' => [['title' => 'Card']]]]],
+    ]);
+
+    expect($this->get('/avantaje')->assertOk()->getContent())
+        ->toContain('md:grid-cols-3')
+        ->not->toContain('svc-cards')
+        ->not->toContain('project-accordion')
+        ->not->toContain('data-hero-leave');
 });
 
 it('renders a statement: label left, words split for the reveal, paragraph and link', function () {
@@ -315,29 +410,4 @@ it('sets a statement on the hero background only straight after a dark hero', fu
     ]]);
 
     expect($section($this->get('/')->getContent(), 'a'))->not->toContain('statement--dark');
-});
-
-it('lays the home page services out as tilted colour cards, each one link', function () {
-    Page::factory()->ofType(PageType::Home)->create([
-        'slug' => 'acasa',
-        'blocks' => [['id' => 'f', 'type' => 'features', 'v' => 1, 'data' => [
-            'heading' => 'Ce dezvoltăm',
-            'columns' => 3,
-            'items' => [
-                ['title' => 'Software la comandă', 'text' => 'Sisteme construite.', 'link' => ['label' => 'Află mai multe', 'url' => '/software-la-comanda']],
-                ['title' => 'Produse SaaS', 'text' => 'Produse proprii.', 'link' => ['label' => 'Vezi produsele', 'url' => '/produse']],
-            ],
-        ]]],
-    ]);
-
-    preg_match('/<section id="f".*?<\/section>/s', $this->get('/')->assertOk()->getContent(), $section);
-
-    expect($section[0])
-        ->toContain('<h2 class="services__heading">Ce dezvoltăm</h2>')
-        // Blue and red with white text and dark-toned links; titles on two lines.
-        ->toContain('class="service-card service-card--blue service-card--on-dark"')
-        ->toContain('class="service-card service-card--red service-card--on-dark"')
-        ->toMatch('/<h3 class="service-card__title"><span>Produse<\/span>\s*<span>SaaS<\/span>/')
-        ->toMatch('/<a href="\/produse" class="arrow-link btn-dark service-card__link">.*?Vezi produsele/s')
-        ->and(substr_count($section[0], '<li class="service-card '))->toBe(2);
 });

@@ -37,11 +37,12 @@ it('stores a request as a new lead, with its organization and consent', function
 });
 
 it('comes back to the form with a thank-you without JavaScript', function () {
-    $this->from('/')->post('/cerere-oferta', contactForm())
-        ->assertRedirect(url('/').'#contact')
+    // The form is on /clienti (the home page no longer has it).
+    $this->from('/clienti')->post('/cerere-oferta', contactForm())
+        ->assertRedirect(url('/clienti').'#contact')
         ->assertSessionHas('contact-sent');
 
-    $this->get('/')->assertSee('Mulțumim! Vă răspundem în aceeași zi lucrătoare.');
+    $this->get('/clienti')->assertSee('Mulțumim! Vă răspundem în aceeași zi lucrătoare.');
 });
 
 it('needs a name, a message and one way to answer', function () {

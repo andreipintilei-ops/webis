@@ -1,0 +1,607 @@
+/*
+  The services as chapters on the home page
+  (components/site/service-chapters.blade.php, components/site/chapter/*):
+  full width, one after another — white, dark, lavender — each a head and
+  subsections between hairlines on the 12-column site grid. 160px around a
+  chapter, 96px between subsections (less on phones). The entry: the
+  heads, hairlines and contents (js/public/reveals.ts).
+
+  Every colour is set per surface below: --surface, --ink, --muted, --line,
+  --tint, --accent.
+*/
+@layer components {
+    .chapter {
+        @apply relative z-[1] px-[var(--site-gap)] py-24 lg:py-40;
+        color: var(--ink);
+        background: var(--surface);
+
+        /* The mock-ups, in the violet. */
+        --project-accent: var(--violet-500);
+        --project-tint: #efebff;
+    }
+
+    /*
+      Two lavender sections in a row are one ground: the second starts
+      without its own top padding, the first's bottom being the gap (the
+      cards after the hero, then 01; 03, then the reviews, then the blog).
+    */
+    :is(.svc-cards, .chapter--light, .chapter--lavender)
+        + :is(.chapter--light, .chapter--lavender) {
+        @apply pt-0 lg:pt-0;
+    }
+
+    /* Light: lavender paper with a grain (--paper, --grain-light). */
+    .chapter--light {
+        --surface: var(--paper);
+        --ink: var(--navy-950);
+        --muted: var(--ink-muted);
+        --line: rgb(45 43 120 / 0.12);
+        --tint: rgb(119 90 252 / 0.05);
+        --accent: var(--violet-500);
+
+        /* The grain: over the lavender, under the content (the section is its
+           own stacking context, z-[1]). */
+        &::before {
+            content: '';
+            @apply pointer-events-none absolute inset-0 -z-10;
+            background-image: var(--grain-light);
+            opacity: var(--paper-grain);
+        }
+    }
+
+    /*
+      "Dark" in the hero's colours, never near-black: the violet gradient's
+      indigo (#1f2868), lit by its purple and violet in large soft glows.
+    */
+    .chapter--dark {
+        --surface: #1f2868;
+        --ink: #fff;
+        --muted: rgb(255 255 255 / 0.78);
+        --line: rgb(255 255 255 / 0.14);
+        --tint: rgb(255 255 255 / 0.06);
+        --accent: var(--lavender-300);
+
+        /* The purple top right, mirrored bottom left; violet between. */
+        background:
+            radial-gradient(
+                ellipse 60% 30% at 95% 4%,
+                rgb(164 76 238 / 0.55),
+                transparent 70%
+            ),
+            radial-gradient(
+                ellipse 60% 30% at 5% 96%,
+                rgb(164 76 238 / 0.55),
+                transparent 70%
+            ),
+            radial-gradient(
+                ellipse 55% 30% at 0% 40%,
+                rgb(119 90 252 / 0.4),
+                transparent 70%
+            ),
+            radial-gradient(
+                ellipse 70% 35% at 85% 80%,
+                rgb(119 90 252 / 0.45),
+                transparent 70%
+            ),
+            linear-gradient(180deg, #2d2b78, #1f2868 50%, #2d2b78);
+    }
+
+    .chapter--lavender {
+        --surface: var(--lavender-50);
+        --ink: var(--navy-950);
+        --muted: var(--ink-muted);
+        --line: rgb(45 43 120 / 0.12);
+        --tint: rgb(119 90 252 / 0.06);
+        --accent: var(--violet-500);
+    }
+
+    .chapter__inner {
+        @apply mx-auto grid max-w-[var(--content-max)] gap-14 lg:gap-20;
+    }
+
+    /* ---- Head: label and title (1–6), the intro (8–12) on its baseline ---------- */
+
+    .chapter__head {
+        @apply grid gap-6 lg:grid-cols-12 lg:items-end lg:gap-10;
+    }
+
+    .chapter__head-main {
+        @apply lg:col-span-6;
+    }
+
+    .chapter__label {
+        @apply font-micro text-xs tracking-[0.08em] uppercase;
+        color: var(--accent);
+    }
+
+    .chapter__title {
+        @apply mt-5 font-medium text-balance;
+        font-size: 36px;
+        line-height: 1.1;
+        letter-spacing: -0.02em;
+
+        @media (min-width: 1024px) {
+            font-size: 56px;
+        }
+    }
+
+    .chapter__intro {
+        @apply text-pretty lg:col-span-5 lg:col-start-8 lg:pb-2;
+        font-size: 18px;
+        line-height: 1.6;
+        color: var(--muted);
+    }
+
+    /* ---- Subsection: a mono label over a hairline ------------------------------ */
+
+    /* The label over its hairline, which the entry draws from the left
+       (--rule, 0–1: js/public/reveals.ts). */
+    .chapter-sub__header {
+        @apply relative flex items-end justify-between gap-6 pb-4;
+
+        &::after {
+            content: '';
+            @apply absolute inset-x-0 bottom-0 h-px origin-left;
+            background: var(--line);
+            transform: scaleX(var(--rule, 1));
+        }
+    }
+
+    .chapter-sub__label {
+        @apply font-micro text-[11px] font-normal tracking-[0.08em] uppercase;
+        color: var(--muted);
+    }
+
+    /*
+      ---- Cells between hairlines: each cell draws a line on its right and
+      below; the grid clips the ones at its outer edges, and closes with
+      its own line underneath. No fills, so any surface shows through.
+    */
+
+    .chapter-cells {
+        @apply grid overflow-hidden border-b md:grid-cols-2;
+        border-color: var(--line);
+    }
+
+    .chapter-cells--3 {
+        @apply lg:grid-cols-3;
+    }
+
+    .chapter-cells--4 {
+        @apply lg:grid-cols-4;
+    }
+
+    .chapter-cell {
+        @apply relative flex flex-col px-6 py-7 lg:px-8;
+        box-shadow: 1px 1px 0 0 var(--line);
+        transition: background-color var(--base) var(--ease);
+
+        &:hover,
+        &:has(a:focus-visible) {
+            background-color: var(--tint);
+
+            & .chapter-cell__name {
+                color: var(--accent);
+            }
+        }
+    }
+
+    .chapter-cell__index {
+        @apply font-micro text-xs;
+        color: var(--muted);
+    }
+
+    .chapter-cell__name {
+        @apply mt-3 font-semibold;
+        font-size: 20px;
+        line-height: 1.25;
+        transition: color var(--base) var(--ease);
+
+        /* A linked cell is one link. */
+        & a::after {
+            content: '';
+            @apply absolute inset-0;
+        }
+
+        & a:focus-visible {
+            outline: none;
+        }
+    }
+
+    .chapter-cell:has(a:focus-visible) {
+        outline: 2px solid var(--accent);
+        outline-offset: -2px;
+    }
+
+    .chapter-cell__text {
+        @apply mt-2 line-clamp-3 text-[15px] leading-normal text-pretty;
+        color: var(--muted);
+    }
+
+    .chapter-cell__example {
+        @apply mt-3 text-[13px];
+        color: var(--muted);
+    }
+
+    /* ---- Projects: cards that are links -------------------------------------------- */
+
+    .chapter-projects {
+        @apply mt-10 grid gap-10 md:grid-cols-2 lg:grid-cols-3 lg:gap-8;
+    }
+
+    .project-card {
+        @apply flex flex-col;
+
+        &:focus-visible {
+            outline: 2px solid var(--accent);
+            outline-offset: 6px;
+            border-radius: 16px;
+        }
+    }
+
+    .project-card__frame {
+        @apply relative block overflow-hidden rounded-2xl;
+        aspect-ratio: 16 / 10;
+        background: linear-gradient(160deg, #f8f6ff, #ece8ff);
+        transition: transform var(--base) var(--ease);
+
+        & .project-interface {
+            top: 1.5rem;
+            left: 1.5rem;
+            right: -1rem;
+            bottom: -1rem;
+            border-radius: 10px 0 0 0;
+        }
+    }
+
+    /* A label on a project (here, and in the explorer: components/site/explorer.blade.php). */
+    .chapter-chip {
+        @apply mt-5 inline-flex h-6 items-center self-start rounded-full px-2.5 font-micro text-[11px] tracking-[0.04em] uppercase;
+        color: var(--accent);
+        border: 1px solid var(--line);
+    }
+
+    .project-card__title {
+        @apply mt-3 flex items-start justify-between gap-4 font-semibold text-balance;
+        font-size: 20px;
+        line-height: 1.3;
+    }
+
+    .project-card__arrow {
+        @apply mt-1.5 block w-3 shrink-0;
+        color: var(--accent);
+        transition: transform var(--base) var(--ease);
+    }
+
+    .project-card__line {
+        @apply mt-2 text-[15px] leading-relaxed text-pretty;
+        color: var(--muted);
+    }
+
+    .project-card:is(:hover, :focus-visible) {
+        & .project-card__frame {
+            transform: translateY(-4px);
+        }
+
+        & .project-card__arrow {
+            transform: translateX(6px);
+        }
+    }
+
+    /* A figure: the number large, its mono label beside it. */
+    .chapter-metric {
+        @apply mt-4 flex items-baseline gap-3;
+
+        & > b {
+            @apply font-semibold;
+            font-size: 32px;
+            line-height: 1;
+            letter-spacing: -0.02em;
+        }
+
+        & > span {
+            @apply font-micro text-[11px] tracking-[0.06em] uppercase;
+            color: var(--muted);
+        }
+    }
+
+    /* ---- CTA row ---------------------------------------------------------------- */
+
+    .chapter-cta {
+        /* The primary button and the link side by side, at the start. */
+        @apply flex flex-wrap items-center gap-x-10 gap-y-5;
+    }
+
+    /* The primary button in the call-to-action purple-blue, as the page's
+       other buttons (on the dark chapter it already is: css/site/buttons.css). */
+    .chapter .pill.btn-light {
+        --btn-ink: var(--violet-cta);
+    }
+
+    /* ---- 02: the products --------------------------------------------------------- */
+
+    /* SmileSoft across the row, the smaller products side by side below. */
+    .chapter-products {
+        @apply mt-10 grid gap-6 md:grid-cols-2;
+
+        & > .product-panel--feature {
+            @apply md:col-span-2;
+        }
+    }
+
+    .product-panel {
+        @apply grid gap-10 rounded-3xl p-8 md:p-10;
+        background: rgb(255 255 255 / 0.04);
+        border: 1px solid var(--line);
+    }
+
+    .product-panel--feature {
+        @apply lg:grid-cols-12 lg:items-center;
+    }
+
+    .product-panel__text {
+        @apply flex flex-col items-start lg:col-span-4;
+    }
+
+    .product-panel__name {
+        @apply font-semibold;
+        font-size: 32px;
+        letter-spacing: -0.02em;
+    }
+
+    .product-panel__for {
+        @apply mt-2 text-lg;
+        color: var(--muted);
+    }
+
+    .product-panel__checks {
+        @apply mt-7 grid gap-3;
+
+        & > li {
+            @apply flex items-center gap-3 text-base font-medium;
+        }
+
+        & svg {
+            @apply size-5 shrink-0 rounded-full p-1;
+            fill: none;
+            stroke: #fff;
+            stroke-width: 3;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            background: var(--violet-500);
+        }
+    }
+
+    .product-panel__link {
+        @apply mt-8;
+    }
+
+    /* A smaller product: its text, then its screen, cut by the panel's foot
+       (no bottom padding; overflow-hidden). */
+    .product-panel--small {
+        @apply content-start gap-10 overflow-hidden pb-0 md:pb-0;
+
+        /* One column here, not the feature's 4 of 12. */
+        & .product-panel__text {
+            @apply lg:col-span-1;
+        }
+
+        & .product-panel__name {
+            font-size: 26px;
+        }
+
+        & .product-panel__for {
+            @apply text-base;
+        }
+
+        & .product-panel__checks {
+            @apply mt-6;
+        }
+
+        & .product-panel__link {
+            @apply mt-7;
+        }
+    }
+
+    .product-preview {
+        @apply -mr-8 self-end overflow-hidden rounded-t-xl bg-white md:-mr-10 md:ml-6;
+        color: var(--navy-950);
+        box-shadow: 0 30px 60px -24px rgb(0 0 0 / 0.5);
+    }
+
+    .product-preview__list {
+        @apply grid gap-2 p-3 pb-5 text-xs;
+    }
+
+    /* A row: its name, its figure, its progress below (budget spent, votes). */
+    .product-preview__row {
+        @apply grid items-center gap-x-3 gap-y-1.5 rounded-lg px-3 py-2.5;
+        grid-template-columns: minmax(0, 1fr) auto;
+        background: #f6f4ff;
+
+        & > b {
+            @apply font-semibold;
+        }
+
+        & > span:last-child {
+            @apply col-start-2 row-start-1 font-micro text-[10px];
+            color: var(--ink-muted);
+        }
+    }
+
+    .product-preview__bar {
+        @apply col-span-2 block h-1.5 rounded-full;
+        background:
+            linear-gradient(90deg, var(--purple-500), var(--violet-500)) 0 0 /
+                var(--share) 100% no-repeat,
+            #e4dfff;
+    }
+
+    /* The two devices: the browser with the calendar, the phone over its corner. */
+    /* Room below for the phone, which hangs past the browser's foot. */
+    .product-devices {
+        @apply relative pb-16 lg:col-span-8;
+    }
+
+    .product-devices__browser {
+        @apply flex w-[86%] flex-col overflow-hidden rounded-xl bg-white;
+        box-shadow: 0 30px 60px -24px rgb(0 0 0 / 0.5);
+        color: var(--navy-950);
+    }
+
+    .product-devices__bar {
+        @apply flex h-8 shrink-0 items-center gap-1.5 px-3;
+        border-bottom: 1px solid rgb(38 42 111 / 0.08);
+
+        & > i {
+            @apply block size-2 rounded-full;
+            background: #dcd7f7;
+        }
+
+        & > b {
+            @apply ml-3 text-xs font-semibold;
+        }
+    }
+
+    /* A week: times down the side, days across, a few appointments. */
+    .calendar {
+        @apply grid gap-px p-3 text-[11px];
+        grid-template-columns: 3rem repeat(5, minmax(0, 1fr));
+        grid-template-rows: auto repeat(5, 2.75rem);
+    }
+
+    .calendar__day {
+        @apply pb-2 text-center font-semibold;
+        color: var(--ink-muted);
+    }
+
+    .calendar__time {
+        @apply pt-1 font-micro text-[10px];
+        grid-column: 1;
+        color: var(--ink-muted);
+        border-top: 1px solid rgb(38 42 111 / 0.06);
+    }
+
+    .calendar__slot {
+        @apply m-0.5 flex flex-col justify-center rounded-md px-2 text-[10px] leading-tight text-white;
+        background: linear-gradient(
+            135deg,
+            var(--purple-500),
+            var(--violet-500)
+        );
+
+        & > b {
+            @apply text-[11px] font-semibold;
+        }
+
+        &:nth-of-type(even) {
+            color: var(--navy-950);
+            background: #e4dfff;
+        }
+    }
+
+    .product-devices__phone {
+        @apply absolute right-0 bottom-0 flex w-[24%] flex-col gap-2 rounded-[24px] bg-white p-3 pt-6;
+        aspect-ratio: 9 / 16;
+        color: var(--navy-950);
+        border: 5px solid #000;
+        box-shadow: 0 30px 60px -20px rgb(0 0 0 / 0.55);
+    }
+
+    .product-devices__notch {
+        @apply absolute top-1.5 left-1/2 h-1.5 w-10 -translate-x-1/2 rounded-full bg-black;
+    }
+
+    .product-devices__app-title {
+        @apply text-xs font-semibold;
+    }
+
+    .product-devices__slot {
+        @apply flex flex-col gap-0.5 rounded-lg p-2 text-[11px];
+        background: #f1edff;
+
+        & > b {
+            @apply font-semibold;
+            color: var(--violet-500);
+        }
+    }
+
+    /* ---- The reviews: their own section after the chapters (components/site/reviews) */
+
+    /* The head centred: the title, the rating under it. */
+    .site-reviews__head {
+        @apply flex flex-col items-center gap-5 text-center lg:gap-6;
+
+        & .chapter__title {
+            @apply mt-0;
+        }
+    }
+
+    .site-reviews .site-reviews__rating {
+        @apply items-center text-center;
+    }
+
+    /* Right under the head (no subsection hairline above them). */
+    .site-reviews .chapter-reviews {
+        @apply mt-0;
+    }
+
+    .chapter-rating {
+        --rating-ink: var(--navy-950);
+        --rating-muted: var(--ink-muted);
+
+        & .google-rating__row--full {
+            color: var(--violet-500);
+        }
+    }
+
+    /* Without the carousel's script: side by side, whole. */
+    .chapter-reviews {
+        @apply mt-10 grid items-start gap-5 lg:grid-cols-3;
+    }
+
+    /* A review, centred and flat (as sendpotion.com's): the client's logo,
+       the text, the name. */
+    .chapter-review {
+        @apply flex flex-col items-center rounded-[2.5rem] bg-white px-7 py-12 text-center md:px-16 md:py-14;
+    }
+
+    .chapter-review__logo {
+        @apply size-20 rounded-full bg-white object-contain;
+        box-shadow: 0 0 0 1px var(--line);
+    }
+
+    .chapter-review__quote {
+        @apply mt-7 text-[17px] font-medium text-pretty md:text-lg;
+        line-height: 1.5;
+        letter-spacing: -0.015em;
+        color: var(--ink);
+    }
+
+    .chapter-review__author {
+        @apply mt-7 text-[15px];
+        color: var(--muted);
+
+        & cite {
+            @apply font-semibold not-italic;
+            color: var(--ink);
+        }
+    }
+
+    /* ---- Entry (js/public/reveals.ts) ------------------------------------------- */
+
+    /* A title's words, each in its mask while it rises: room below for the
+       descenders (ș, ț, g), which the mask would clip. */
+    .reveal-word-mask {
+        padding-bottom: 0.14em;
+        margin-bottom: -0.14em;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .chapter *,
+        .chapter *::before,
+        .chapter *::after {
+            transition: none !important;
+        }
+    }
+}

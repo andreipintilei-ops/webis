@@ -1,0 +1,95 @@
+/*
+  The reviews carousel (components/site/reviews.blade.php;
+  js/public/reviews-carousel.ts), in the light chapter's colours
+  (css/site/service-chapters.css: the cards, --line, --accent). Once the
+  script is ready (`is-ready`) the reviews lie stacked in one cell and it
+  places, scales and fades each; without it they stay side by side, whole.
+*/
+@layer components {
+    /* The side cards reach past the content column, not past the page. */
+    .site-reviews {
+        overflow-x: clip;
+    }
+
+    .reviews-carousel.is-ready {
+        & .reviews-carousel__track {
+            @apply mt-0 grid cursor-grab items-center justify-items-center gap-0 select-none;
+            grid-template-columns: minmax(0, 1fr);
+            /* Vertical scrolling stays the page's; horizontal is the swipe. */
+            touch-action: pan-y;
+        }
+
+        & .chapter-review {
+            @apply col-start-1 row-start-1;
+            /* The side ones reach past the content column, cut by the page edge. */
+            width: var(--card-w);
+            will-change: transform, opacity;
+        }
+
+        /* Its contents dimmed toward the sides (--fade: the script). */
+        & .chapter-review > * {
+            opacity: var(--fade, 1);
+        }
+
+        /* A side card: a click brings it to the centre. */
+        & .chapter-review:not(.is-focus) {
+            @apply cursor-pointer;
+        }
+
+        /* The texts cut to the same height, fading out where they are cut. */
+        & .chapter-review__quote {
+            @apply overflow-hidden;
+            height: calc(1.5em * 5);
+        }
+
+        & .chapter-review.is-cut:not(.is-open) .chapter-review__quote {
+            mask-image: linear-gradient(180deg, #000 55%, transparent);
+        }
+
+        & .chapter-review.is-open .chapter-review__quote {
+            height: auto;
+        }
+    }
+
+    .reviews-carousel.is-dragging .reviews-carousel__track {
+        @apply cursor-grabbing;
+    }
+
+    /* "Citește tot": quiet, a chevron that turns when the text is open. */
+    .chapter-review__more {
+        @apply mt-3 inline-flex cursor-pointer items-center gap-1.5 text-[15px] font-medium;
+        color: var(--accent);
+
+        & svg {
+            @apply size-3;
+            fill: none;
+            stroke: currentColor;
+            stroke-width: 1.6;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            transition: transform var(--slow) var(--ease);
+        }
+
+        &[aria-expanded='true'] svg {
+            transform: rotate(180deg);
+        }
+
+        &:focus-visible {
+            outline: 2px solid var(--accent);
+            outline-offset: 4px;
+            border-radius: 4px;
+        }
+    }
+
+    .reviews-carousel {
+        /* The card's width (its slides use it). */
+        --card-w: min(46rem, 86vw);
+
+        /* In focus, the arrow keys move it: a ring around it. */
+        &:focus-visible {
+            outline: 2px solid var(--accent);
+            outline-offset: 12px;
+            border-radius: 2.5rem;
+        }
+    }
+}

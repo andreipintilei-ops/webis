@@ -1,8 +1,12 @@
 /*
   "Ce dezvoltăm" on /clienti (blocks/partials/services-plain.blade.php): a
-  white section sliding up over the hero with an 80px rounded top; the three
-  services as rows between hairlines, each marked in one colour of the home
-  cards (motion: js/public/services-plain.ts).
+  label, then the three services in a hairline grid within the content
+  width, on the page's background — the one colour in it is the interface
+  blue (--site-accent). Entry: js/public/services-plain.ts.
+
+  Contrast, checked on white: the ink (--site-deep) 17:1, the 80% text
+  9:1, the 60% numerals and label 4.7:1; the blue, for non-text only
+  (focus ring, square), 4.1:1.
 */
 @layer components {
     /*
@@ -12,9 +16,11 @@
     */
     .services-plain {
         --radius: 2.5rem;
-        --ink: #0b1529;
+        --ink: var(--site-deep);
 
-        @apply relative z-[1] bg-white pt-20 pb-20 md:pt-28 md:pb-32;
+        /* Motion: the site's tokens only (css/site/menu-panel.css). */
+
+        @apply relative z-[1] overflow-clip bg-white pt-20 pb-20 md:pt-28 md:pb-28;
         margin-top: calc(-1 * var(--radius));
         border-radius: var(--radius) var(--radius) 0 0;
 
@@ -24,129 +30,280 @@
     }
 
     .services-plain__inner {
-        @apply mx-auto px-[var(--site-gap)];
+        @apply mx-auto px-[var(--site-gap)] pb-10 md:pb-14;
         max-width: calc(var(--content-max) + 2 * var(--site-gap));
     }
 
-    /* A small square in the Webis blue, then the name in spaced capitals. */
+    /* A solid square in the accent, then the name in the mono face. */
     .services-plain__label {
-        @apply flex items-center gap-3 text-xs font-semibold tracking-[0.14em] uppercase;
-        color: var(--ink);
+        @apply flex items-center gap-3 font-micro text-[11px] leading-none font-normal tracking-[0.08em] uppercase;
+        color: color-mix(in srgb, var(--ink) 60%, transparent);
 
         &::before {
             content: '';
-            @apply size-1.5;
-            background: #2172ff;
+            @apply size-2.5 shrink-0;
+            background: var(--site-accent);
         }
     }
 
-    .services-plain__rows {
-        @apply mt-8 border-b border-neutral-200 md:mt-10;
+    /* ---- The grid ----------------------------------------------------------------- */
 
-        & > li {
-            @apply border-t border-neutral-200;
-        }
-    }
+    /*
+      Within the content width: three cells with hairlines between them —
+      side by side from 900px, stacked below. On the page's background, in
+      its ink.
+    */
+    .service-bands {
+        @apply mx-auto grid;
+        width: min(var(--content-max), calc(100% - 2 * var(--site-gap)));
 
-    /* ---- A row ---------------------------------------------------------------- */
-
-    /* The home cards' colours; the arrow's ink on each when filled. */
-    .plain-row--blue {
-        --row: #2172ff;
-        --row-ink: #fff;
-    }
-
-    .plain-row--red {
-        --row: #ff5b51;
-        --row-ink: #fff;
-    }
-
-    .plain-row--yellow {
-        --row: #f9d850;
-        --row-ink: #16171a;
-    }
-
-    .plain-row {
-        @apply relative grid items-start gap-x-6 gap-y-4 py-10 md:py-14;
-        grid-template-columns: 3rem 1fr auto;
-        grid-template-areas:
-            'number title arrow'
-            'number body body';
-        color: var(--ink);
-
-        @media (min-width: 1024px) {
-            @apply gap-x-10;
-            grid-template-columns: 3.5rem minmax(0, 1fr) minmax(0, 26rem) auto;
-            grid-template-areas: 'number title body arrow';
+        @media (min-width: 900px) {
+            @apply grid-cols-3;
+            /*
+              Shared rows, so titles, texts and links line up across the
+              cells whatever their length: the cells and their grids take
+              them as subgrids.
+            */
+            grid-template-rows: auto 1fr auto auto auto;
         }
     }
 
     /*
-      Over the row's hairline: drawn in by the script (the outer span), it
-      rests short and runs the full width on hover (the inner one).
+      overflow-hidden: clips the link's hit area (below) to the cell. The
+      cell's left padding leaves the arrow link's circle room to grow
+      left of its dot.
     */
-    .plain-row__rule {
-        @apply absolute top-[-1px] left-0 h-[3px] w-full origin-left;
+    .service-band {
+        @apply relative overflow-hidden border-neutral-200 not-first:border-t;
+        color: var(--ink);
 
-        & > span {
-            @apply block h-full origin-left transition-transform duration-700 ease-[cubic-bezier(0.65,0,0.35,1)];
-            background: var(--row);
-            transform: scaleX(0.18);
+        @media (min-width: 900px) {
+            @apply grid not-first:border-t-0 not-first:border-l;
+            grid-row: span 5;
+            grid-template-rows: subgrid;
         }
     }
 
-    a.plain-row:hover .plain-row__rule > span,
-    a.plain-row:focus-visible .plain-row__rule > span {
-        transform: scaleX(1);
-    }
+    /*
+      Glyph and numeral on top, then empty space, then title, text and link
+      low in the cell. Below 900px the space closes up.
+    */
+    .service-band__grid {
+        @apply grid h-full items-start py-12 pl-5;
+        grid-template-columns: minmax(0, 1fr) auto;
+        grid-template-rows: auto 1fr auto auto auto;
+        grid-template-areas:
+            'glyph numeral'
+            'space space'
+            'title title'
+            'text text'
+            'link link';
 
-    .plain-row__number {
-        grid-area: number;
-        @apply flex items-center gap-2 pt-2 text-xs font-medium tracking-[0.12em] text-neutral-400;
-
-        & > i {
-            @apply block size-2;
-            background: var(--row);
+        @media (min-width: 900px) {
+            @apply px-10 py-10;
+            grid-row: 1 / -1;
+            grid-template-rows: subgrid;
         }
     }
 
-    /* Clips the title as it rises into place; room left for ș and ă. */
-    .plain-row__title {
+    @media (min-width: 900px) {
+        .service-band:first-child .service-band__grid {
+            @apply pl-5;
+        }
+
+        .service-band:last-child .service-band__grid {
+            @apply pr-0;
+        }
+    }
+
+    /*
+      The illustration (blocks/partials/services-plain.blade.php): 72px
+      square at the top of the cell, 56px on phones.
+    */
+    .service-band__art {
+        grid-area: glyph;
+        @apply size-14 overflow-visible min-[900px]:size-18;
+    }
+
+    /*
+      Solid planes, each edged in the page's white (the stroke under the
+      fill, so half of it shows), the same width at any size: overlapping
+      planes read as separate sheets, like the gaps in the mark.
+    */
+    .iso__plane {
+        transition: transform var(--base) var(--ease);
+
+        & rect {
+            stroke: var(--color-white);
+            stroke-width: 2.5;
+            stroke-linejoin: round;
+            paint-order: stroke;
+            vector-effect: non-scaling-stroke;
+        }
+    }
+
+    /* 01: floors 12px apart, the top one off its place by 10px along the
+       isometric x-axis (up and to the right). Hover: set down, 4px apart. */
+    .iso--floors {
+        --gap: 12px;
+
+        & .iso__plane {
+            transform: translate(
+                var(--off-x, 0px),
+                calc(var(--i) * var(--gap) * -1 + var(--off-y, 0px))
+            );
+        }
+
+        & .iso__plane--placing {
+            --off-x: 8.66px;
+            --off-y: -5px;
+        }
+    }
+
+    /*
+      03: the pages behind the front one, 14px apart back along the depth
+      axis (up and to the right). Hover: fanned to 21px.
+    */
+    .iso--pages {
+        --depth: 14px;
+
+        & .iso__plane {
+            transform: translate(
+                calc(var(--i) * var(--depth) * 0.866),
+                calc(var(--i) * var(--depth) * -0.5)
+            );
+        }
+    }
+
+    /* 02: on hover the tiles lift 8px and settle, one after another. */
+    @keyframes iso-lift {
+        0%,
+        100% {
+            transform: translateY(0);
+        }
+
+        45% {
+            transform: translateY(-8px);
+        }
+    }
+
+    /* Top right, on the glyph's line; counts up on entry. */
+    .service-band__numeral {
+        grid-area: numeral;
+        @apply font-micro text-xs leading-none tracking-[0.05em] uppercase tabular-nums;
+        color: color-mix(in srgb, var(--ink) 60%, transparent);
+    }
+
+    /* Up to 44px, as a third of the content width allows (32px on phones). */
+    .service-band__title {
         grid-area: title;
-        @apply -my-[0.12em] overflow-hidden py-[0.12em] leading-[1.1] font-medium tracking-[-0.03em] text-balance;
-        font-size: clamp(1.75rem, 3.4vw, 3rem);
+        @apply mt-6 font-medium text-balance;
+        font-size: 32px;
+        line-height: 1.15;
+        letter-spacing: -0.015em;
 
-        & > span {
-            @apply block;
+        @media (min-width: 900px) {
+            font-size: clamp(32px, 2.6vw, 44px);
         }
     }
 
-    .plain-row__body {
-        grid-area: body;
+    .service-band__text {
+        grid-area: text;
+        @apply mt-4 max-w-[60ch] text-pretty;
+        font-size: 17px;
+        line-height: 1.6;
+        color: color-mix(in srgb, var(--ink) 80%, transparent);
     }
 
-    .plain-row__text {
-        @apply text-base leading-relaxed text-pretty text-neutral-600;
-    }
+    /* Under the text: the site's arrow link (components/ui/arrow-link). */
+    .service-band__link {
+        grid-area: link;
+        @apply mt-8 justify-self-start;
 
-    .plain-row__note {
-        @apply mt-4 text-sm font-medium text-pretty;
-    }
+        /* The whole cell is the link's target. */
+        &::after {
+            content: '';
+            @apply absolute z-[1];
+            inset: -100vmax;
+        }
 
-    /* An outlined circle; filled in the row's colour while it is hovered. */
-    .plain-row__arrow {
-        grid-area: arrow;
-        @apply grid size-11 place-items-center rounded-full border border-neutral-300 transition-colors duration-300;
-
-        & svg {
-            @apply w-3;
+        &:focus-visible {
+            outline: 2px solid var(--site-accent);
+            outline-offset: 2px;
         }
     }
 
-    a.plain-row:hover .plain-row__arrow,
-    a.plain-row:focus-visible .plain-row__arrow {
-        border-color: var(--row);
-        color: var(--row-ink);
-        background: var(--row);
+    /* ---- Hover, and the same on keyboard focus ---------------------------------- */
+
+    /*
+      The illustration plays on hover (where there is a pointer — not on a
+      tap or while scrolling) and on keyboard focus; the arrow link plays its
+      own hover. Reduced motion: the compositions stay as they are.
+    */
+    @media (hover: hover) and (prefers-reduced-motion: no-preference) {
+        .service-band:hover {
+            & .iso--floors {
+                --gap: 4px;
+            }
+
+            & .iso__plane--placing {
+                --off-x: 0px;
+                --off-y: 0px;
+            }
+
+            & .iso--tiles .iso__plane {
+                animation: iso-lift var(--slow) var(--ease)
+                    calc(var(--i) * 60ms) both;
+            }
+
+            & .iso--pages {
+                --depth: 21px;
+            }
+        }
+    }
+
+    @media (prefers-reduced-motion: no-preference) {
+        .service-band:has(:focus-visible) {
+            & .iso--floors {
+                --gap: 4px;
+            }
+
+            & .iso__plane--placing {
+                --off-x: 0px;
+                --off-y: 0px;
+            }
+
+            & .iso--tiles .iso__plane {
+                animation: iso-lift var(--slow) var(--ease)
+                    calc(var(--i) * 60ms) both;
+            }
+
+            & .iso--pages {
+                --depth: 21px;
+            }
+        }
+    }
+
+    /* ---- Entry (only once the script has set it up) ----------------------------- */
+
+    .service-bands[data-entry='waiting'] .service-band__grid {
+        opacity: 0;
+        transform: translateY(24px);
+    }
+
+    .service-bands[data-entry] .service-band__grid {
+        transition:
+            opacity var(--slow) var(--ease) calc(var(--i) * 80ms),
+            transform var(--slow) var(--ease) calc(var(--i) * 80ms);
+    }
+
+    /* Reduced motion: everything in its final state, nothing moving. */
+    @media (prefers-reduced-motion: reduce) {
+        .services-plain *,
+        .services-plain *::before,
+        .services-plain *::after {
+            animation: none !important;
+            transition: none !important;
+        }
     }
 }

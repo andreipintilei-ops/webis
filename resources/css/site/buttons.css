@@ -100,6 +100,39 @@
         }
     }
 
+    /*
+      On a page opening on the violet gradient (hero background
+      "gradient-violet"), the pill on dark is the old site's purple-blue with
+      a white label, as its call to action was. On hover the fill drains to
+      a purple outline and the label stays white — the purple on the indigo
+      would be too faint to read.
+    */
+    :root:has([data-intro-backdrop][data-palette='violet']) .pill.btn-dark {
+        --btn-ink: var(--violet-cta);
+        --btn-contrast: #fff;
+
+        & .pill__title > span::after {
+            color: #fff;
+        }
+    }
+
+    /*
+      …and the arrow links on the gradient (the hero's, the statement's on
+      it): the circle fills with the violet the old call to action turned on
+      hover, the arrow in it white. The label keeps its own colour.
+    */
+    :root:has([data-intro-backdrop][data-palette='violet'])
+        :is([data-intro], .statement--dark)
+        .arrow-link.btn-dark {
+        & .arrow-link__fill {
+            background: var(--violet-cta-hover);
+        }
+
+        & .arrow-link__icon {
+            color: #fff;
+        }
+    }
+
     /* ---- Arrow link (secondary), after exoape.com ------------------------------ */
 
     /*

@@ -1,12 +1,13 @@
 /*
   Page-transition curtain (resources/js/public/page-transition.ts), after
   Codrops' "Theodore". Above everything, including the open menu panel.
-  Deep navy with film grain (--site-deep, --grain: css/site/menu-panel.css).
+  Purple with film grain (--menu-wipe, --grain: css/site/menu-panel.css),
+  the colour of the menu's wipe, so menu → next page is one cover.
 */
 @layer components {
     .page-curtain {
         @apply pointer-events-none fixed inset-0 z-[1000] size-full;
-        fill: var(--site-deep);
+        fill: var(--menu-wipe);
     }
 
     /*
@@ -19,6 +20,7 @@
         @apply pointer-events-none fixed inset-0 z-[1000];
         background-image: var(--grain);
         mix-blend-mode: overlay;
+        opacity: var(--menu-grain);
         clip-path: url(#page-curtain-clip);
     }
 
@@ -29,8 +31,16 @@
     */
     .page-curtain-cover {
         @apply pointer-events-none fixed inset-0 z-[1000] hidden;
-        background: var(--grain), var(--site-deep);
-        background-blend-mode: overlay, normal;
+        background: var(--menu-wipe);
+
+        /* Its grain, as on the curtain. */
+        &::after {
+            content: '';
+            @apply absolute inset-0;
+            background-image: var(--grain);
+            mix-blend-mode: overlay;
+            opacity: var(--menu-grain);
+        }
     }
 
     :root.curtain-cover .page-curtain-cover {

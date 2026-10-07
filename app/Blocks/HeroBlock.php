@@ -10,7 +10,8 @@ use Illuminate\Validation\Rule;
  *
  * `background` (centred layout only): "none" — the image if one is chosen,
  * else the page's white; "gradient" — the animated WebGL gradient
- * (js/public/soffit.ts), which takes the place of the image.
+ * (js/public/soffit.ts), which takes the place of the image, in the blues;
+ * "gradient-violet" — the same in the old site's purples (webis.ro).
  *
  * `align` (centred layout only): the text "center" or "left" — the latter at
  * the left of the page's content column (--content-max).
@@ -20,7 +21,7 @@ use Illuminate\Validation\Rule;
  */
 class HeroBlock extends Block
 {
-    public const array BACKGROUNDS = ['none', 'gradient'];
+    public const array BACKGROUNDS = ['none', 'gradient', 'gradient-violet'];
 
     public const array ALIGNS = ['center', 'left'];
 
@@ -82,11 +83,22 @@ class HeroBlock extends Block
             return 'none';
         }
 
-        if (($data['background'] ?? null) === 'gradient') {
+        if (in_array($data['background'] ?? null, ['gradient', 'gradient-violet'], true)) {
             return 'gradient';
         }
 
         return empty($data['image_asset_id']) ? 'none' : 'image';
+    }
+
+    /**
+     * The animated gradient's colours (js/public/soffit.ts): "violet" for
+     * "gradient-violet", else "blue".
+     *
+     * @param  array<string, mixed>  $data
+     */
+    public static function palette(array $data): string
+    {
+        return ($data['background'] ?? null) === 'gradient-violet' ? 'violet' : 'blue';
     }
 
     /**

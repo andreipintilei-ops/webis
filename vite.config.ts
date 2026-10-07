@@ -100,6 +100,14 @@ export default defineConfig({
                     weights: [400],
                     subsets: ['latin', 'latin-ext'],
                 }),
+                // JetBrains Mono: only numerals and micro-labels (`font-micro`),
+                // never running text. Small, so not preloaded.
+                bunny('JetBrains Mono', {
+                    weights: [400],
+                    subsets: ['latin', 'latin-ext'],
+                    display: 'swap',
+                    preload: false,
+                }),
             ],
         }),
         inertia(),

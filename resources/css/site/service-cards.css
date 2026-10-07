@@ -1,0 +1,349 @@
+/*
+  "Ce dezvoltăm" as illustrated cards (blocks/partials/service-cards.blade.php;
+  behaviour js/public/service-cards.ts). The old site's palette and the
+  site's motion tokens (css/site/menu-panel.css).
+
+  Contrast, checked: the head's title (--navy-950) 19:1 and intro
+  (--ink-muted) 5.7:1 on the lavender sheet; on the white cards, titles
+  19:1 and text (--ink-muted) 6.2:1; the focus ring 4.1:1 on the sheet.
+*/
+@layer components {
+    /*
+      A lavender sheet rising over the dark section before it, with a rounded
+      top. The projects follow on a white sheet rising over its foot the same
+      way (css/site/project-accordion.css).
+    */
+    .svc-cards {
+        /* pb: its own spacing plus the 32px the next sheet rises over. */
+        @apply relative isolate z-[1] overflow-clip pt-18 pb-[calc(6rem+32px)] md:pt-24 md:pb-[calc(8rem+32px)];
+        margin-top: -32px;
+        border-radius: 32px 32px 0 0;
+        background: var(--lavender-50);
+    }
+
+    /* The hero's container: the content column inside the site gap. */
+    .svc-cards__inner {
+        @apply mx-auto px-[var(--site-gap)];
+        max-width: calc(var(--content-max) + 2 * var(--site-gap));
+    }
+
+    /* ---- Head ------------------------------------------------------------------ */
+
+    .svc-cards__head {
+        @apply mx-auto text-center;
+        color: var(--navy-950);
+    }
+
+    .svc-cards__title {
+        @apply font-medium text-balance;
+        font-size: 36px;
+        line-height: 1.1;
+        letter-spacing: -0.02em;
+
+        @media (min-width: 1024px) {
+            font-size: 56px;
+        }
+    }
+
+    .svc-cards__intro {
+        @apply mx-auto mt-5 max-w-[52ch] text-pretty;
+        font-size: 18px;
+        line-height: 1.6;
+        color: var(--ink-muted);
+    }
+
+    /* ---- Cards ------------------------------------------------------------------ */
+
+    .svc-cards__list {
+        @apply mt-[72px] grid gap-5 lg:grid-cols-3;
+    }
+
+    /*
+      White cards, flat — no shadow, no border: the illustration, the title,
+      and text and link at the foot under a divider.
+
+      Flat at rest. They come in as the home page's service cards do
+      (js/public/service-cards.ts: dropping in from below, leaning a little,
+      settling flat), through their own custom properties (--in-*). On hover
+      only the white card behind grows (::before); the content above it —
+      illustration, text, lines — is never scaled, so it stays crisp.
+    */
+    .svc-card {
+        --card-ink: var(--navy-950);
+        --card-muted: var(--ink-muted);
+        --card-bg: #fff;
+
+        @apply relative isolate h-full rounded-[24px];
+        color: var(--card-ink);
+        opacity: var(--in-o, 1);
+        transform: translateY(var(--in-y, 0rem)) rotate(var(--in-r, 0deg));
+
+        /* The card itself: the white, a layer behind. */
+        &::before {
+            content: '';
+            @apply absolute inset-0 -z-10;
+            border-radius: inherit;
+            background: var(--card-bg);
+            transition: transform 0.6s cubic-bezier(0.34, 1.4, 0.64, 1);
+        }
+
+        /* The ring on keyboard focus follows the card's corners. */
+        &:has(:focus-visible) {
+            outline: 2px solid var(--violet-500);
+            outline-offset: 2px;
+        }
+    }
+
+    /* The content; it clips the link's hit area (below) to the card. */
+    .svc-card__body {
+        @apply flex h-full flex-col overflow-hidden p-6;
+        border-radius: inherit;
+    }
+
+    /* Hover and keyboard focus: the white card grows a little behind. */
+    @media (hover: hover) and (pointer: fine) {
+        .svc-card:hover::before {
+            transform: scale(1.03);
+        }
+    }
+
+    .svc-card:has(:focus-visible)::before {
+        transform: scale(1.03);
+    }
+
+    /* The illustration, 4:3. */
+    .svc-card__art {
+        @apply overflow-hidden rounded-2xl bg-white;
+        aspect-ratio: 4 / 3;
+
+        & > svg {
+            @apply block size-full;
+        }
+    }
+
+    /*
+      The content part sits further in than the illustration (40px from the
+      card's edge), so the arrow link's circle — which grows to the left of
+      its dot — keeps clear of the edge.
+    */
+    .svc-card__title {
+        @apply mt-6 mb-5 px-4 font-medium tracking-[-0.01em];
+        font-size: 22px;
+        line-height: 1.25;
+    }
+
+    /* The divider, then the text and the link. */
+    .svc-card__foot {
+        @apply mt-auto border-t px-4 pt-5 pb-2;
+        border-color: rgb(38 42 111 / 0.12);
+    }
+
+    /* Two lines at least, so the rules above line up across the cards. */
+    .svc-card__text {
+        @apply max-w-[38ch] text-pretty;
+        font-size: 16px;
+        line-height: 1.55;
+        min-height: calc(2lh);
+        color: var(--card-muted);
+    }
+
+    /* The site's arrow link in the card's ink; the whole card is its target. */
+    .svc-card__link {
+        @apply mt-5;
+
+        &.arrow-link {
+            --btn-ink: var(--card-ink);
+            --btn-contrast: var(--card-bg);
+        }
+
+        /* On hover its circle fills with the call-to-action purple-blue. */
+        & .arrow-link__fill {
+            background: var(--violet-cta);
+        }
+
+        &::after {
+            content: '';
+            @apply absolute z-[1];
+            inset: -100vmax;
+        }
+
+        &:focus-visible {
+            outline: none;
+        }
+    }
+
+    /* ---- The illustrations (after temp/Ilustratii servicii v2) ------------------- */
+
+    .il {
+        font-family: var(--font-sans);
+    }
+
+    .il-ground {
+        fill: #fff;
+    }
+
+    .il-grid {
+        fill: none;
+        stroke: rgb(38 42 111 / 0.08);
+        stroke-width: 1;
+    }
+
+    .il-stop-glow {
+        stop-color: rgb(164 76 238 / 0.18);
+    }
+
+    .il-stop-violet {
+        stop-color: var(--violet-500);
+    }
+
+    .il-stop-purple {
+        stop-color: var(--purple-500);
+    }
+
+    .il-shadow {
+        flood-color: var(--violet-500);
+        flood-opacity: 0.4;
+    }
+
+    /* White panels and their edges. */
+    .il-panel {
+        fill: #fff;
+        stroke: rgb(38 42 111 / 0.18);
+        stroke-width: 1;
+    }
+
+    .il-panel--soft {
+        fill: rgb(255 255 255 / 0.9);
+        stroke: rgb(38 42 111 / 0.1);
+    }
+
+    .il-halo {
+        fill: rgb(164 76 238 / 0.1);
+    }
+
+    .il-rule {
+        stroke: rgb(38 42 111 / 0.1);
+        stroke-width: 1;
+    }
+
+    /* Text in the mock-ups: the muted ink, not black. */
+    .il-ink {
+        fill: var(--ink-muted);
+    }
+
+    .il-ink--soft {
+        fill: rgb(91 95 122 / 0.4);
+    }
+
+    .il-faint {
+        fill: rgb(38 42 111 / 0.18);
+    }
+
+    .il-sunken {
+        fill: #efecfb;
+    }
+
+    /* Buttons in the mock-ups: the call-to-action purple-blue. */
+    .il-cta {
+        fill: var(--violet-cta);
+    }
+
+    .il-ring {
+        fill: none;
+        stroke: rgb(119 90 252 / 0.1);
+        stroke-width: 1;
+    }
+
+    .il-ring--near {
+        stroke: rgb(119 90 252 / 0.18);
+    }
+
+    .il-ring--dashed {
+        stroke: rgb(119 90 252 / 0.08);
+        stroke-dasharray: 4 4;
+    }
+
+    .il-line {
+        fill: none;
+        stroke-width: 1.5;
+        stroke-linecap: round;
+    }
+
+    .il-line--wide {
+        stroke-width: 1.75;
+    }
+
+    /* Drawn on as the cards come in (js/public/service-cards.ts). */
+    .il-draw {
+        stroke-dasharray: 1;
+        stroke-dashoffset: 0;
+    }
+
+    .il-dot {
+        fill: var(--purple-500);
+    }
+
+    .il-dot--far {
+        fill: var(--violet-500);
+        opacity: 0.5;
+    }
+
+    .il-icon {
+        fill: none;
+        stroke: currentColor;
+        stroke-width: 2;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+    }
+
+    .il-icon--ink {
+        color: var(--ink-muted);
+    }
+
+    .il-icon--white {
+        color: #fff;
+    }
+
+    .il-icon--accent {
+        color: var(--violet-500);
+    }
+
+    .il-icon--muted {
+        color: var(--ink-muted);
+    }
+
+    .il-cursor {
+        fill: var(--navy-950);
+        stroke: #fff;
+        stroke-width: 1.5;
+        stroke-linejoin: round;
+    }
+
+    .il-text {
+        fill: var(--navy-950);
+        font-size: 13px;
+        font-weight: 600;
+    }
+
+    /* ---- Entry: the lines draw on as the cards come in (the cards' own entry
+       is the script's, on --in-*) --------------------------------------------- */
+
+    [data-service-cards][data-entry='waiting'] .il-draw {
+        stroke-dashoffset: 1;
+    }
+
+    [data-service-cards][data-entry] .il-draw {
+        transition: stroke-dashoffset 600ms var(--ease)
+            calc(var(--i) * 80ms + 300ms);
+    }
+
+    /* Reduced motion: everything in its final state, nothing moving. */
+    @media (prefers-reduced-motion: reduce) {
+        .svc-cards *,
+        .svc-cards *::before,
+        .svc-cards *::after {
+            animation: none !important;
+            transition: none !important;
+        }
+    }
+}

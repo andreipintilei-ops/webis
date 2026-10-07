@@ -1,0 +1,184 @@
+/*
+  The latest articles (components/site/blog-posts.blade.php), on the light
+  chapter's lavender (css/site/service-chapters.css), continuing the
+  reviews' section above it. The cards after integratedbio.com's: text
+  only, a notch cut from the bottom-right corner (a mask on the background)
+  with the round arrow button sitting in it.
+*/
+@layer components {
+    /* The title on the left, the link to all of them on the right. */
+    .site-blog__head {
+        @apply flex flex-wrap items-end justify-between gap-x-10 gap-y-6;
+
+        & .chapter__title {
+            @apply mt-0;
+        }
+    }
+
+    .site-blog__posts {
+        @apply grid gap-5 lg:grid-cols-3;
+    }
+
+    /* ---- A card ---------------------------------------------------------------------- */
+
+    .post-card {
+        --card-bg: #fff;
+        --card-ink: var(--navy-950);
+        --card-muted: var(--ink-muted);
+        --card-chip: var(--lavender-50);
+        /* The notch: its size, and the button in it. */
+        --notch: 88px;
+
+        @apply relative isolate flex h-full min-h-60 flex-col gap-6 px-7 pt-6 pb-7 lg:min-h-80 lg:px-8 lg:pt-7;
+        color: var(--card-ink);
+
+        &:focus-visible {
+            outline: 2px solid var(--accent);
+            outline-offset: 4px;
+            border-radius: 20px;
+        }
+    }
+
+    /* The second in the hero's indigo, the third in the violet. */
+    .site-blog__posts > li:nth-child(3n + 2) .post-card {
+        --card-bg: #1f2868;
+        --card-ink: #fff;
+        --card-muted: rgb(255 255 255 / 0.7);
+        --card-chip: rgb(255 255 255 / 0.1);
+    }
+
+    .site-blog__posts > li:nth-child(3n + 3) .post-card {
+        --card-bg: var(--violet-500);
+        --card-ink: #fff;
+        --card-muted: rgb(255 255 255 / 0.78);
+        --card-chip: rgb(255 255 255 / 0.14);
+    }
+
+    /* The ground and its button, which grow together on hover (springy, as
+       the cards after the hero). Behind the content. */
+    .post-card__frame {
+        @apply absolute inset-0 -z-10;
+        transition: transform 0.6s cubic-bezier(0.34, 1.4, 0.64, 1);
+    }
+
+    /*
+      The card's ground, with the notch cut from its corner: three mask
+      layers — everything above the corner's row, the row left of the
+      corner, and the corner itself (an SVG: the card's edges rounding into
+      the notch, the notch's own corner rounded out of the card).
+    */
+    .post-card__bg {
+        @apply absolute inset-0 rounded-[20px];
+        background: var(--card-bg);
+        mask:
+            linear-gradient(#000 0 0) top / 100% calc(100% - var(--notch) + 1px)
+                no-repeat,
+            linear-gradient(#000 0 0) left bottom /
+                calc(100% - var(--notch) + 1px) var(--notch) no-repeat,
+            url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 88 88'%3E%3Cpath d='M0 0H88V4A12 12 0 0 1 76 16H36A20 20 0 0 0 16 36V76A12 12 0 0 1 4 88H0Z'/%3E%3C/svg%3E")
+                right bottom / var(--notch) var(--notch) no-repeat;
+    }
+
+    .post-card__meta {
+        @apply flex items-center justify-between gap-3;
+    }
+
+    .post-card__category {
+        @apply inline-flex h-7 items-center rounded-full px-3 text-xs font-medium;
+        background: var(--card-chip);
+    }
+
+    .post-card__meta time {
+        @apply font-micro text-xs tracking-[0.04em] whitespace-nowrap;
+        color: var(--card-muted);
+    }
+
+    /* The title, underlined from the left on hover. */
+    .post-card__title {
+        @apply flex-1 text-[22px] font-medium text-balance;
+        line-height: 1.3;
+        letter-spacing: -0.02em;
+
+        & > span {
+            background: linear-gradient(currentColor, currentColor) 0 100% / 0
+                1px no-repeat;
+            transition: background-size var(--slow) var(--ease);
+        }
+    }
+
+    .post-card__foot {
+        @apply pr-[var(--notch)] font-micro text-xs tracking-[0.04em];
+        color: var(--card-muted);
+    }
+
+    /*
+      The button in the notch: a rounded square, its corners concentric with
+      the notch's (20px, 8px in). Two arrows: on hover the one shown leaves
+      to the right and the other comes in from the left.
+    */
+    .post-card__button {
+        @apply absolute right-0 bottom-0 size-16 overflow-hidden rounded-xl text-white;
+        background: var(--violet-cta);
+        transition: background-color var(--base) var(--ease);
+    }
+
+    .post-card__arrow {
+        @apply absolute inset-0 grid place-items-center;
+        transition: transform var(--slow) var(--ease);
+
+        & svg {
+            @apply w-3.5;
+        }
+    }
+
+    .post-card__arrow--next {
+        transform: translateX(-2.5rem);
+    }
+
+    /*
+      Hover and keyboard focus: the ground (with its button) grows a little
+      behind the content, as the cards after the hero
+      (css/site/service-cards.css); the title is underlined; the arrows
+      change places.
+    */
+    @media (hover: hover) and (pointer: fine) {
+        .post-card:hover {
+            & .post-card__frame {
+                transform: scale(1.03);
+            }
+
+            & .post-card__title > span {
+                background-size: 100% 1px;
+            }
+
+            & .post-card__button {
+                background: var(--violet-cta-hover);
+            }
+
+            & .post-card__arrow {
+                transform: translateX(2.5rem);
+            }
+
+            & .post-card__arrow--next {
+                transform: none;
+            }
+        }
+    }
+
+    .post-card:focus-visible {
+        & .post-card__frame {
+            transform: scale(1.03);
+        }
+
+        & .post-card__title > span {
+            background-size: 100% 1px;
+        }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .post-card__frame,
+        .post-card__arrow {
+            transition: none;
+        }
+    }
+}

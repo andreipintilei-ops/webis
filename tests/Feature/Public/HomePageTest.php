@@ -1,7 +1,10 @@
 <?php
 
+use App\Enums\ContentStatus;
 use App\Enums\PageType;
 use App\Models\Page;
+use App\Models\Post;
+use App\Settings\CompanySettings;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 uses(RefreshDatabase::class);
@@ -103,31 +106,110 @@ it('ships the page-transition curtain and the prefetch hints', function () {
         ->toContain('"href_matches": "/admin/*"');
 });
 
-it('lays out the rest of the home page: projects, products, how we work, contact', function () {
+it('keeps the home page to its blocks: hero, Despre noi, the illustrated service cards', function () {
+    Page::factory()->ofType(PageType::Home)->create([
+        'slug' => 'acasa',
+        'blocks' => [
+            ['id' => 'h', 'type' => 'hero', 'v' => 1, 'data' => ['layout' => 'centered', 'background' => 'gradient-violet', 'heading' => 'Titlu']],
+            ['id' => 'f', 'type' => 'features', 'v' => 1, 'data' => ['layout' => 'cards', 'columns' => 3, 'items' => [['title' => 'Software la comandă']]]],
+        ],
+    ]);
+
     $html = $this->get('/')->assertOk()->getContent();
 
     expect($html)
-        ->toContain('Toți clienții')
-        ->toContain('<h2 id="own-products-title" class="own-products__eyebrow">Produsele noastre</h2>')
-        ->toContain('<h3 class="how-we-work__title">Codul și datele rămân ale voastre</h3>')
-        ->toContain('Lucrăm cu instituții publice din 2016.')
-        ->toMatch('/<form method="POST" action="[^"]*\/cerere-oferta"[^>]*data-contact-form/')
-        ->toContain('name="organization"')
-        // Replaced sections are gone.
-        ->not->toContain('Pentru instituții publice')
-        ->not->toContain('Construim și site-uri și magazine online.')
-        // In order.
-        ->and(strpos($html, 'selected-projects-title'))->toBeLessThan(strpos($html, 'own-products-title'))
-        ->and(strpos($html, 'own-products-title'))->toBeLessThan(strpos($html, 'how-we-work-title'))
-        ->and(strpos($html, 'how-we-work-title'))->toBeLessThan(strpos($html, 'contact-title'));
+        ->toContain('class="svc-cards"')
+        ->toContain('data-hero-leave="overlap"')
+        // Then the services as three chapters, in order, each a section with its h2.
+        ->and(preg_match_all('/<section id="[^"]+" class="chapter chapter--(light|dark|lavender)"/', $html, $chapters))->toBe(3)
+        ->and($chapters[1])->toBe(['light', 'dark', 'lavender'])
+        ->and(substr_count($html, '<h2 id="chapter-'))->toBe(3)
+        // 01 and 02 show what they build as cells, 01 its projects as cards;
+        // 03 as an explorer of its 3 types.
+        ->and(substr_count($html, 'class="chapter-cell"'))->toBe(6 + 3)
+        ->and(substr_count($html, 'class="project-card"'))->toBe(3)
+        ->and(substr_count($html, 'data-explorer>'))->toBe(1)
+        ->and(substr_count($html, 'data-explorer-row>'))->toBe(3)
+        ->and(substr_count($html, 'data-explorer-panel>'))->toBe(3)
+        // A type with a project says so; one without lists its modules.
+        ->and(substr_count($html, '<span class="explorer-row__tag">1 proiect</span>'))->toBe(2)
+        ->and(substr_count($html, 'Module tipice:'))->toBe(1)
+        ->and($html)->toContain('id="explorer-web-1-tab" class="explorer-row" aria-controls="explorer-web-1-panel"')
+        // SmileSoft across the row, RIMS and Bugetare participativă below it.
+        ->and(substr_count($html, 'class="product-panel product-panel--small"'))->toBe(2)
+        ->and($html)->toMatch('/<a href="https:\/\/smilesoft\.ro"[^>]* target="_blank" rel="noopener">/')
+        ->toContain('<h4 class="product-panel__name">RIMS</h4>')
+        ->toMatch('/<a href="\/contact" class="arrow-link[^"]*product-panel__link[^"]*">.*?Cere o prezentare/s')
+        ->toMatch('/<a href="https:\/\/bugetare\.ro"[^>]* target="_blank" rel="noopener">/')
+        ->not->toContain('confirmo.ro')
+        ->toContain('href="/creare-magazin-online"')
+        ->toContain('href="/mentenanta"')
+        // The reviews: their own section, after the chapters.
+        ->and(substr_count($html, 'class="chapter-review"'))->toBe(3)
+        // As a carousel: each review a slide, its text openable; no buttons.
+        ->and($html)->toContain('aria-roledescription="carusel"')
+        ->toContain('aria-label="1 din 3" data-review>')
+        ->toContain('aria-expanded="false" aria-controls="recenzie-1-text" hidden data-review-more><span data-review-more-label>Citește tot</span>')
+        ->and(strpos($html, '<section id="recenzii" class="site-reviews'))->toBeGreaterThan(strpos($html, 'id="web-si-e-commerce"'))
+        ->and(substr($html, strpos($html, 'id="web-si-e-commerce"'), strpos($html, 'id="recenzii"') - strpos($html, 'id="web-si-e-commerce"')))->not->toContain('chapter-review')
+        // No SEO anywhere visitors can see.
+        ->and($html)->not->toMatch('/>[^<]*\bSEO\b/')
+        // The earlier sections are gone.
+        ->and($html)->not->toContain('selected-projects')
+        ->not->toContain('own-products-title')
+        ->not->toContain('how-we-work-title')
+        ->not->toContain('data-contact-form');
 });
 
-it('sets the tone of the home page sections below the hero from one setting', function () {
+it('shows the latest articles after the reviews, examples until posts are published', function () {
+    $html = $this->get('/')->assertOk()->getContent();
+
+    expect(strpos($html, '<section id="blog" class="site-blog'))->toBeGreaterThan(strpos($html, 'id="recenzii"'))
+        ->and(substr_count($html, 'class="post-card"'))->toBe(3)
+        ->and($html)->toContain('<!-- DUMMY DATA: example articles')
+        ->toContain('<time datetime="2026-09-22">22 septembrie 2026</time>');
+
+    $post = Post::factory()->create([
+        'title' => 'Primul articol',
+        'slug' => 'primul-articol',
+        'status' => ContentStatus::Published,
+        'published_at' => now()->subDay(),
+    ]);
+
+    expect($this->get('/')->getContent())
+        ->toContain('<a href="'.url('/blog/primul-articol').'" class="post-card">')
+        ->toContain('Primul articol')
+        ->not->toContain('DUMMY DATA: example articles')
+        ->and(substr_count($this->get('/')->getContent(), 'class="post-card"'))->toBe(1)
+        ->and($post->isPublished())->toBeTrue();
+});
+
+it('closes every page with the footer on the violet gradient: the call, the links, the details', function () {
+    $company = app(CompanySettings::class);
+    $company->phone = '0770 700 607';
+    $company->email = 'contact@webis.ro';
+    $company->save();
+
+    $html = $this->get('/solutii')->assertOk()->getContent();
+
+    preg_match('/<footer class="site-footer".*?<\/footer>/s', $html, $footer);
+
+    expect($footer[0])
+        ->toContain('<canvas data-soffit data-palette="violet"')
+        ->toContain('href="/contact"')
+        ->toContain('href="tel:0770700607"')
+        ->toContain('href="mailto:contact@webis.ro"')
+        ->toContain('Software la comandă')
+        ->toContain('Confidențialitate')
+        ->toContain('© '.now()->year);
+});
+
+it('sets the tone of the sections below the hero on /clienti from one setting', function () {
     config(['site.lower_tone' => 'dark']);
-    expect($this->get('/')->assertOk()->getContent())->toMatch('/<html lang="ro"\s+data-lower="dark"\s*>/');
+    expect($this->get('/clienti')->assertOk()->getContent())->toMatch('/<html lang="ro"\s+data-lower="dark"/');
 
     config(['site.lower_tone' => 'light']);
-    expect($this->get('/')->getContent())->toMatch('/<html lang="ro"\s+data-lower="light"\s*>/');
+    expect($this->get('/clienti')->getContent())->toMatch('/<html lang="ro"\s+data-lower="light"/');
 
     // Other pages are not affected.
     config(['site.lower_tone' => 'dark']);

@@ -3,19 +3,26 @@
     hairlines. Each card: title, text, an optional note (when it fits) and an
     optional link, held to the foot of the card so the links line up.
 
-    The home page asks for its services layout via featuresLayout
-    (blocks/partials/services); other pages keep the CMS column setting. Neither presentation requires icons.
+    The layout: a page template's featuresLayout (home: blocks/partials/
+    services; /clienti: services-plain), else the block's own `layout` —
+    "columns" (below) or "cards" (blocks/partials/service-cards). None
+    requires icons.
 --}}
 @php
     $items = array_values(array_filter($data['items'] ?? [], fn ($item) => is_array($item) && ($item['title'] ?? '') !== ''));
     $columns = (int) ($data['columns'] ?? 3);
     $hasLink = fn ($item): bool => is_array($item['link'] ?? null) && ($item['link']['label'] ?? '') !== '' && ($item['link']['url'] ?? '') !== '';
+
+    // The page template's choice (home, /clienti), else the block's own.
+    $layout = $featuresLayout ?? ($data['layout'] ?? 'columns');
 @endphp
 
-@if ($items !== [] && ($featuresLayout ?? 'columns') === 'services')
+@if ($items !== [] && $layout === 'services')
     @include('blocks.partials.services')
-@elseif ($items !== [] && ($featuresLayout ?? 'columns') === 'services-plain')
+@elseif ($items !== [] && $layout === 'services-plain')
     @include('blocks.partials.services-plain')
+@elseif ($items !== [] && $layout === 'cards')
+    @include('blocks.partials.service-cards')
 @elseif ($items !== [])
     <section id="{{ $block['id'] }}" class="px-[var(--site-gap)] py-24 md:py-36">
         <div class="mx-auto max-w-[var(--content-max)]">

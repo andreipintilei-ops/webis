@@ -14,10 +14,11 @@
 
     Types without a template yet (or retired ones) are skipped.
 
-    `featuresLayout`: the home page uses its services layout; other pages honour the
-    feature block's configured columns.
+    `featuresLayout`: a page template's choice of layout for the features
+    block (home: "services", /clienti: "services-plain"); left null, the
+    block's own `layout` setting applies.
 --}}
-@props(['blocks' => [], 'featuresLayout' => 'columns'])
+@props(['blocks' => [], 'featuresLayout' => null])
 
 @php
     $registry = app(\App\Blocks\BlockRegistry::class);

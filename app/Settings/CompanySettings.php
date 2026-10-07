@@ -54,6 +54,17 @@ class CompanySettings extends Settings
      */
     public array $social;
 
+    /**
+     * The Google Business Profile's rating (1–5) and number of reviews, shown
+     * in the hero above the client logos with a link to the reviews. No
+     * rating: nothing is shown. Kept by hand — copy them from the profile.
+     */
+    public ?float $google_rating;
+
+    public ?int $google_review_count;
+
+    public ?string $google_reviews_url;
+
     public static function group(): string
     {
         return 'company';

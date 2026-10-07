@@ -29,25 +29,41 @@
             background: var(--lower-bg);
         }
 
-        & :is(.services, .selected-projects, .own-products, .how-we-work) {
+        &
+            :is(
+                .services,
+                .services-plain,
+                .selected-projects,
+                .project-showcase,
+                .own-products,
+                .how-we-work
+            ) {
             --color-white: var(--lower-bg);
         }
     }
 
     :root[data-lower='dark'] {
         /* The ground: a deep navy, in the hero gradient's family. */
-        --lower-bg: #0b1529;
+        --lower-bg: #0f1e3d;
 
         & .site-body {
             background: var(--lower-bg);
         }
 
-        & :is(.services, .selected-projects, .own-products, .how-we-work) {
+        &
+            :is(
+                .services,
+                .services-plain,
+                .selected-projects,
+                .project-showcase,
+                .own-products,
+                .how-we-work
+            ) {
             --color-white: var(--lower-bg);
-            --color-neutral-50: #101b33;
-            --color-neutral-100: #15223d;
-            --color-neutral-200: #22304f;
-            --color-neutral-300: #314266;
+            --color-neutral-50: #132447;
+            --color-neutral-100: #182a50;
+            --color-neutral-200: #263a62;
+            --color-neutral-300: #364b76;
             --color-neutral-400: #66748f;
             --color-neutral-500: #8592ad;
             --color-neutral-600: #a6b0c6;
@@ -74,6 +90,19 @@
 
         & :is(.how-we-work__inner, .how-we-work__foot) {
             border-color: var(--color-neutral-200);
+        }
+
+        & :is(.services-plain, .project-showcase) {
+            --ink: var(--color-neutral-900);
+        }
+
+        /* A step lighter than the ground, as the light cards are off-white. */
+        & .project-showcase {
+            --card-bg: #152951;
+        }
+
+        & .project-showcase__facts {
+            border-color: rgb(255 255 255 / 0.1);
         }
 
         & .own-product__name {

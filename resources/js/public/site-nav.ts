@@ -19,7 +19,7 @@ const SCROLLED_AT = 0.3; // of the viewport height
 // sections, and the sections on the hero's background — where that
 // background has shrunk away, the page behind them is dark too.
 const DARK_TONE_SECTIONS =
-    '.services, .selected-projects, .own-products, .how-we-work, [data-backdrop-area]';
+    '.services, .services-plain, .selected-projects, .project-showcase, .own-products, .how-we-work, [data-backdrop-area]';
 // How long the page can keep gliding after the last scroll event (ScrollSmoother).
 const SETTLE_MS = 1500;
 

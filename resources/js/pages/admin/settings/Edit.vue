@@ -47,6 +47,9 @@ type CompanySettings = {
     opening_hours: OpeningHours[];
     // An empty PHP array serialises as [], so this may arrive as a list.
     social: Record<string, string> | string[];
+    google_rating: number | null;
+    google_review_count: number | null;
+    google_reviews_url: string | null;
 };
 
 type SeoSettings = {
@@ -491,6 +494,38 @@ function submitLeads(): void {
                             :label="capitalise(platform)"
                             placeholder="https://…"
                             :error="companyErrors[`social.${platform}`]"
+                        />
+                    </section>
+
+                    <section
+                        class="flex flex-col gap-4 rounded-xl border bg-card p-4"
+                    >
+                        <h2 class="text-sm font-medium">Recenzii Google</h2>
+                        <p class="text-sm text-muted-foreground">
+                            Apar în prima secțiune a paginilor, deasupra
+                            logo-urilor clienților. Copiați-le din profilul
+                            Google Business; fără notă, nu apar.
+                        </p>
+                        <div class="grid gap-4 sm:grid-cols-2">
+                            <TextField
+                                v-model="companyForm.google_rating"
+                                type="number"
+                                label="Nota (1–5)"
+                                placeholder="4.7"
+                                :error="companyForm.errors.google_rating"
+                            />
+                            <TextField
+                                v-model="companyForm.google_review_count"
+                                type="number"
+                                label="Număr de recenzii"
+                                :error="companyForm.errors.google_review_count"
+                            />
+                        </div>
+                        <TextField
+                            v-model="companyForm.google_reviews_url"
+                            label="Link către recenzii"
+                            placeholder="https://…"
+                            :error="companyForm.errors.google_reviews_url"
                         />
                     </section>
 

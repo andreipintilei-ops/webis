@@ -11,6 +11,7 @@
 @php
     $image = isset($data['image_asset_id']) ? $assets->get($data['image_asset_id']) : null;
     $backdrop = \App\Blocks\HeroBlock::backdrop($data);
+    $palette = \App\Blocks\HeroBlock::palette($data);
 
     // An image that has since disappeared leaves a plain hero, not white on white.
     if ($backdrop === 'image' && $image === null) {
@@ -102,6 +103,10 @@
                  hairline and the one that may follow (a statement on the hero
                  background) sit evenly around them. --}}
             <div class="absolute inset-x-0 bottom-0 px-[var(--site-gap)] pb-8 md:pb-10" data-intro-fade>
+                {{-- The Google rating above the strip, at the column's right edge. --}}
+                <div class="mx-auto flex max-w-[var(--content-max)] justify-end pb-4 md:pb-5">
+                    <x-site.google-rating :tone="$dark ? 'dark' : 'light'" />
+                </div>
                 <div @class(['mx-auto max-w-[var(--content-max)] border-t pt-8 md:pt-10', 'border-white/25' => $dark, 'border-black/10' => ! $dark])>
                     <x-logo-marquee :tone="$dark ? 'dark' : 'light'" />
                 </div>

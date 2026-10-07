@@ -1,12 +1,19 @@
 import type { Component } from 'vue';
 import { initContactForm } from '@/public/contact-form';
+import { initExplorers } from '@/public/explorer';
+import { initReveals } from '@/public/reveals';
+import { initReviewsCarousels } from '@/public/reviews-carousel';
 import { initHero } from '@/public/hero-intro';
 import { initPageTransitions } from '@/public/page-transition';
 import { initPanelMenu } from '@/public/panel-menu';
+import { initProjectAccordion } from '@/public/project-accordion';
+import { initProductStack } from '@/public/product-stack';
 import { initProjectShowcase } from '@/public/project-showcase';
+import { initProjectSteps } from '@/public/project-steps';
 import { initSiteNav } from '@/public/site-nav';
 import { initSmoothScroll } from '@/public/smooth-scroll';
 import { initServices } from '@/public/services';
+import { initServiceCards } from '@/public/service-cards';
 import { initServicesPlain } from '@/public/services-plain';
 import { initStatements } from '@/public/statement';
 import { initTheodoreMenu } from '@/public/theodore-menu';
@@ -84,11 +91,18 @@ function boot(): void {
     initPanelMenu();
     initTheodoreMenu();
     initContactForm();
+    initExplorers();
+    initReviewsCarousels();
+    initServicesPlain();
+    initProjectAccordion();
     void smooth.then(() => {
         void initStatements();
         void initServices();
-        void initServicesPlain();
+        void initServiceCards();
+        void initReveals();
         void initProjectShowcase();
+        void initProjectSteps();
+        void initProductStack();
     });
 
     // The WebGL gradient ships as its own chunk, fetched only where it is used.
