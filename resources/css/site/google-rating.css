@@ -19,6 +19,17 @@
         --rating-muted: var(--color-neutral-600);
     }
 
+    /* The hero's: at the content column's right edge from 768px, but on a
+       phone it starts at the gutter, where the rest of the hero starts.
+       After .google-rating, so it is this that wins. */
+    .google-rating--hero {
+        @apply items-start text-left;
+
+        @media (min-width: 768px) {
+            @apply items-end text-right;
+        }
+    }
+
     .google-rating__top {
         @apply flex items-center gap-2.5;
     }

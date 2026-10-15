@@ -1,0 +1,121 @@
+/*
+  The planes at the right of an internal page's hero
+  (views/partials/hero-planes.blade.php): inside the hero, on the content
+  column, its right edge on the column's. Taller than the hero, so its foot
+  runs under the section that rises over the hero (that section is above it,
+  css/site/page-hero.css); the hero clips the rest. The hero's text stays in
+  the left part of the column, clear of it (.has-hero-planes). Hidden on
+  phones, where the hero is text on the gradient.
+
+  The three planes float on slow sine waves, each its own height and out of
+  step with the others; the column and the beam hold still. Paused while the
+  hero is off screen (js/public/hero-planes.ts) and with reduced motion.
+*/
+@layer components {
+    .hero-planes {
+        @apply hidden;
+    }
+
+    @media (min-width: 768px) {
+        .has-hero-planes {
+            @apply overflow-clip;
+        }
+
+        .hero-planes {
+            @apply pointer-events-none absolute inset-0 block px-[var(--site-gap)];
+        }
+
+        .hero-planes__frame {
+            @apply relative mx-auto h-full max-w-[var(--content-max)];
+        }
+
+        /* Its top under the header, so the green plane's top edge (2% down
+           the drawing) keeps 40px or more clear of the header's row. Its
+           height follows the hero's, up to a cap: a tall hero (/clienti,
+           with its logos) would otherwise draw it into the title. */
+        .hero-planes__svg {
+            @apply absolute right-0 w-auto;
+            top: 8.5rem;
+            height: min(100%, 40rem);
+            aspect-ratio: 770 / 980;
+        }
+
+        /* The text over the drawing's faint left (positioned, so it paints
+           after it), and in the left of the column, clear of the planes. */
+        .has-hero-planes :is(.page-hero__inner, .contact-hero__inner) {
+            @apply relative;
+        }
+
+        .has-hero-planes
+            :is(.page-hero__title, .contact-hero__title, .contact-hero__foot) {
+            max-width: 60%;
+        }
+
+        /* Its own measure where that is narrower (from 1024px). */
+        .has-hero-planes .page-hero__intro {
+            max-width: min(36rem, 60%);
+        }
+
+        /* Below 1280px: smaller, and out into the gutter a little — the far
+           plane, at the drawing's left, stays in full. */
+        @media (max-width: 1279px) {
+            .hero-planes__svg {
+                right: calc(var(--site-gap) * -0.6);
+            }
+        }
+
+        @media (min-width: 1280px) {
+            .hero-planes__svg {
+                height: min(120%, 51rem);
+            }
+        }
+    }
+
+    /* Nothing rises over the contact page's hero: the drawing fades out
+       at its foot instead of being cut by the hero's edge. */
+    .contact-hero .hero-planes {
+        mask-image: linear-gradient(to bottom, #000 55%, transparent 92%);
+    }
+
+    .plane {
+        animation: plane-float 5.5s ease-in-out infinite;
+        transform-box: fill-box;
+        will-change: transform;
+    }
+
+    .plane--far {
+        --amp: 8px;
+        animation-delay: 0s;
+    }
+
+    .plane--green {
+        --amp: 10px;
+        animation-delay: -1.5s;
+    }
+
+    .plane--red {
+        --amp: 12px;
+        animation-delay: -3s;
+    }
+
+    .hero-planes[data-paused] .plane {
+        animation-play-state: paused;
+    }
+
+    @keyframes plane-float {
+        0%,
+        100% {
+            transform: translateY(0);
+        }
+
+        50% {
+            transform: translateY(calc(var(--amp) * -1));
+        }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .plane {
+            animation: none;
+        }
+    }
+}

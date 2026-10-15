@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Enums\ClientType;
+use App\Enums\Product;
 use App\Http\Controllers\Admin\Concerns\SavesOrder;
 use App\Http\Controllers\Controller;
 use App\Models\Client;
@@ -42,7 +44,8 @@ class ClientController extends Controller
                 'logo_url' => $this->thumbUrl($client),
                 'sector' => $client->sector,
                 'url' => $client->url,
-                'is_institution' => $client->is_institution,
+                'type' => $client->type->value,
+                'products' => $client->products?->map(fn (Product $product): string => $product->value)->values()->all() ?? [],
                 'show_in_logos' => $client->show_in_logos,
                 'sort_order' => $client->sort_order,
                 'projects_count' => $client->projects_count,
@@ -54,6 +57,8 @@ class ClientController extends Controller
             'clients' => $clients,
             'filters' => ['q' => $search, 'trashed' => $trashed],
             'editId' => $request->integer('edit') ?: null,
+            'types' => array_map(fn (ClientType $type): array => ['value' => $type->value, 'label' => $type->label()], ClientType::cases()),
+            'products' => array_map(fn (Product $product): array => ['value' => $product->value, 'label' => $product->label()], Product::cases()),
         ]);
     }
 
@@ -124,14 +129,20 @@ class ClientController extends Controller
             'logo_asset_id' => ['nullable', 'integer', Rule::exists('assets', 'id')],
             'sector' => ['nullable', 'string', 'max:100'],
             'url' => ['nullable', 'url:https,http', 'max:255'],
-            'is_institution' => ['boolean'],
+            'type' => ['sometimes', Rule::enum(ClientType::class)],
+            'products' => ['sometimes', 'nullable', 'array'],
+            'products.*' => ['distinct', Rule::enum(Product::class)],
             'show_in_logos' => ['boolean'],
             'sort_order' => ['nullable', 'integer', 'min:0'],
         ]);
 
+        // No products stores null, as on a client that never had any.
+        if (array_key_exists('products', $data)) {
+            $data['products'] = array_values((array) $data['products']) ?: null;
+        }
+
         return [
             ...$data,
-            'is_institution' => $request->boolean('is_institution'),
             'show_in_logos' => $request->boolean('show_in_logos'),
             'sort_order' => (int) ($data['sort_order'] ?? 0),
         ];

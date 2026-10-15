@@ -3,9 +3,12 @@
 namespace App\Models;
 
 use App\Concerns\TracksAssetUsage;
+use App\Enums\ClientType;
+use App\Enums\Product;
 use Carbon\CarbonImmutable;
 use Database\Factories\ClientFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Casts\AsEnumCollection;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -19,7 +22,8 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property int|null $logo_asset_id
  * @property string|null $sector
  * @property string|null $url
- * @property bool $is_institution
+ * @property ClientType $type
+ * @property \Illuminate\Support\Collection<int, Product>|null $products the products it uses — a product page's "Folosit de" strip
  * @property bool $show_in_logos
  * @property int $sort_order
  * @property CarbonImmutable|null $created_at
@@ -29,7 +33,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property-read Collection<int, Project> $projects
  * @property-read Collection<int, Testimonial> $testimonials
  */
-#[Fillable(['name', 'logo_asset_id', 'sector', 'url', 'is_institution', 'show_in_logos', 'sort_order'])]
+#[Fillable(['name', 'logo_asset_id', 'sector', 'url', 'type', 'products', 'show_in_logos', 'sort_order'])]
 class Client extends Model
 {
     /** @use HasFactory<ClientFactory> */
@@ -38,7 +42,8 @@ class Client extends Model
     protected function casts(): array
     {
         return [
-            'is_institution' => 'boolean',
+            'type' => ClientType::class,
+            'products' => AsEnumCollection::of(Product::class),
             'show_in_logos' => 'boolean',
             'sort_order' => 'integer',
         ];

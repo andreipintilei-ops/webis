@@ -19,6 +19,15 @@
         margin-top: -32px;
         border-radius: 32px 32px 0 0;
         background: var(--lavender-50);
+
+        /* The light chapters' grain (css/site/service-chapters.css): over
+           the lavender, under the content. */
+        &::before {
+            content: '';
+            @apply pointer-events-none absolute inset-0 -z-10;
+            background-image: var(--grain-light);
+            opacity: var(--paper-grain);
+        }
     }
 
     /* The hero's container: the content column inside the site gap. */
@@ -43,6 +52,14 @@
         @media (min-width: 1024px) {
             font-size: 56px;
         }
+    }
+
+    /* Phones: the title's chip, under the title (service-cards.blade.php).
+       In the title's size: the chip is sized in em. */
+    .svc-cards__head .svc-cards__pill-below {
+        @apply mx-auto flex;
+        margin-top: 0.45em;
+        font-size: 36px;
     }
 
     .svc-cards__intro {

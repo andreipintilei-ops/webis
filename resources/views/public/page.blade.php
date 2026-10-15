@@ -24,4 +24,8 @@
         {{-- Our products, as full-screen cards stacking on scroll. --}}
         <x-site.own-products layout="stack" />
     @endif
+
+    {{-- Software la comandă and Web și e-commerce: up to three client
+         projects of their kind (nothing on other pages, never a product). --}}
+    <x-site.related-projects :types="\App\Enums\ProjectType::forServicePage($page->slug)" />
 </x-layouts.public>

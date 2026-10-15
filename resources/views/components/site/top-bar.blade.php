@@ -46,8 +46,10 @@
                     <li class="site-nav__dropdown hidden md:block">
                         <a href="{{ $link['href'] }}" @class(['site-link', 'is-active' => $link['current']]) @if ($link['current']) aria-current="page" @endif>
                             <span class="site-link__mask"><span class="site-link__text">{{ $link['label'] }}</span></span>
-                            <svg class="site-nav__caret" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
-                                <path d="m3 4.5 3 3 3-3" stroke-linecap="round" stroke-linejoin="round" />
+                            {{-- A plus rather than a caret: it turns a quarter
+                                 of the way round while the dropdown is open. --}}
+                            <svg class="site-nav__plus" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+                                <path d="M6 1.75v8.5M1.75 6h8.5" stroke-linecap="round" />
                             </svg>
                         </a>
                         <div class="site-dropdown">

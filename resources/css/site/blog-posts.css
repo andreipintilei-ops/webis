@@ -16,7 +16,90 @@
     }
 
     .site-blog__posts {
-        @apply grid gap-5 lg:grid-cols-3;
+        @apply grid gap-5 sm:grid-cols-2 lg:grid-cols-3;
+    }
+
+    /* The listing (/blog): rows of three one under the other, all white —
+       the colour cycle is the home page's three alone; repeated down a long
+       list it turns into stripes. */
+    .site-blog__rows {
+        @apply grid gap-5;
+    }
+
+    .site-blog--page .site-blog__posts > li:nth-child(n) .post-card {
+        --card-bg: #fff;
+        --card-ink: var(--navy-950);
+        --card-muted: var(--ink-muted);
+        --card-chip: var(--lavender-50);
+    }
+
+    .site-blog--page .pagination {
+        @apply mt-4 lg:mt-6;
+    }
+
+    /* ---- The featured article (/blog) ----------------------------------------------- */
+
+    /* The home page's violet card (its third), the listing's full width: the
+       same ground, notch and button, a larger title and an excerpt. */
+    .post-card.post-featured {
+        --card-bg: var(--violet-500);
+        --card-ink: #fff;
+        --card-muted: rgb(255 255 255 / 0.78);
+        --card-chip: rgb(255 255 255 / 0.14);
+
+        @apply min-h-[26rem] lg:min-h-[34rem];
+    }
+
+    .post-featured__body {
+        @apply flex flex-1 flex-col gap-6;
+    }
+
+    .post-featured__flag {
+        @apply font-micro text-[11px] tracking-[0.08em] uppercase;
+        color: rgb(255 255 255 / 0.85);
+    }
+
+    .post-featured .post-card__meta {
+        @apply justify-start;
+
+        & time {
+            @apply ml-auto;
+        }
+    }
+
+    .post-featured__title {
+        @apply max-w-[22ch] text-balance;
+        font-size: clamp(26px, 3vw, 40px);
+        font-weight: 500;
+        line-height: 1.15;
+        letter-spacing: -0.025em;
+
+        & > span {
+            background: linear-gradient(currentColor, currentColor) 0 100% / 0
+                1px no-repeat;
+            transition: background-size var(--slow) var(--ease);
+        }
+    }
+
+    .post-featured__excerpt {
+        @apply max-w-[34rem] flex-1 text-pretty;
+        font-size: 16px;
+        line-height: 1.6;
+        color: var(--card-muted);
+    }
+
+    .post-featured .post-card__foot {
+        @apply pr-[var(--notch)];
+    }
+
+    @media (hover: hover) and (pointer: fine) {
+        .post-featured:hover .post-featured__title > span {
+            background-size: 100% 1px;
+        }
+    }
+
+    .post-featured:focus-visible .post-featured__title > span {
+        background-size: 100% 1px;
     }
 
     /* ---- A card ---------------------------------------------------------------------- */
@@ -84,7 +167,7 @@
     }
 
     .post-card__category {
-        @apply inline-flex h-7 items-center rounded-full px-3 text-xs font-medium;
+        @apply inline-flex h-7 items-center rounded-full px-3 text-xs font-medium whitespace-nowrap;
         background: var(--card-chip);
     }
 

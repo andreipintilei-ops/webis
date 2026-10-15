@@ -25,6 +25,7 @@ type ProjectRow = {
     title: string;
     url: string;
     client: string | null;
+    type_label: string | null;
     year: number | null;
     categories: string[];
     is_featured: boolean;
@@ -40,11 +41,13 @@ const props = defineProps<{
     filters: {
         q: string;
         status: string;
+        type: string;
         category: string;
         featured: boolean;
         trashed: boolean;
     };
     statuses: Option[];
+    types: Option[];
     categories: Option[];
 }>();
 
@@ -56,6 +59,7 @@ defineOptions({
 
 const search = ref(props.filters.q);
 const status = ref(props.filters.status);
+const type = ref(props.filters.type);
 const category = ref(props.filters.category);
 const featured = ref(props.filters.featured);
 const trashed = ref(props.filters.trashed);
@@ -65,7 +69,7 @@ const selectClass =
 
 let debounce: ReturnType<typeof setTimeout> | undefined;
 
-watch([search, status, category, featured, trashed], () => {
+watch([search, status, type, category, featured, trashed], () => {
     clearTimeout(debounce);
     debounce = setTimeout(() => {
         router.get(
@@ -73,6 +77,7 @@ watch([search, status, category, featured, trashed], () => {
             {
                 q: search.value || undefined,
                 status: status.value || undefined,
+                type: type.value || undefined,
                 category: category.value || undefined,
                 featured: featured.value ? 1 : undefined,
                 trashed: trashed.value ? 1 : undefined,
@@ -89,6 +94,7 @@ const canReorder = computed(
     () =>
         !props.filters.q &&
         !props.filters.status &&
+        !props.filters.type &&
         !props.filters.category &&
         !props.filters.featured &&
         !props.filters.trashed &&
@@ -154,6 +160,12 @@ useSortable(body, rows, {
                     {{ s.label }}
                 </option>
             </select>
+            <select v-model="type" :class="selectClass">
+                <option value="">Toate tipurile</option>
+                <option v-for="t in types" :key="t.value" :value="t.value">
+                    {{ t.label }}
+                </option>
+            </select>
             <select v-model="category" :class="selectClass">
                 <option value="">Toate categoriile</option>
                 <option v-for="c in categories" :key="c.value" :value="c.value">
@@ -181,6 +193,7 @@ useSortable(body, rows, {
                         <th v-if="canReorder" class="w-8 px-2 py-2"></th>
                         <th class="px-4 py-2">Titlu</th>
                         <th class="px-4 py-2">Client</th>
+                        <th class="px-4 py-2">Tip</th>
                         <th class="px-4 py-2">An</th>
                         <th class="px-4 py-2">Categorii</th>
                         <th class="px-4 py-2">Stare</th>
@@ -220,6 +233,9 @@ useSortable(body, rows, {
                         </td>
                         <td class="px-4 py-2 text-muted-foreground">
                             {{ row.client ?? '—' }}
+                        </td>
+                        <td class="px-4 py-2 text-muted-foreground">
+                            {{ row.type_label ?? '—' }}
                         </td>
                         <td class="px-4 py-2 text-muted-foreground">
                             {{ row.year ?? '—' }}
@@ -281,7 +297,7 @@ useSortable(body, rows, {
                     </tr>
                     <tr v-if="rows.length === 0">
                         <td
-                            colspan="7"
+                            colspan="8"
                             class="px-4 py-8 text-center text-muted-foreground"
                         >
                             {{

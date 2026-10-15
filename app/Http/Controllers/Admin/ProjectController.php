@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Enums\ContentStatus;
+use App\Enums\ProjectType;
 use App\Http\Controllers\Admin\Concerns\EditsContent;
 use App\Http\Controllers\Admin\Concerns\ManagesTrash;
 use App\Http\Controllers\Admin\Concerns\SavesOrder;
@@ -31,6 +32,7 @@ class ProjectController extends Controller
     {
         $search = trim((string) $request->query('q', ''));
         $status = ContentStatus::tryFrom((string) $request->query('status', ''));
+        $type = ProjectType::tryFrom((string) $request->query('type', ''));
         $category = (int) $request->query('category', 0);
         $featured = $request->boolean('featured');
         $trashed = $request->boolean('trashed');
@@ -43,6 +45,7 @@ class ProjectController extends Controller
                 ->orWhere('slug', 'like', "%{$search}%")
                 ->orWhereHas('client', fn (Builder $client) => $client->where('name', 'like', "%{$search}%"))))
             ->when($status, fn (Builder $query, ContentStatus $status) => $query->where('status', $status->value))
+            ->when($type, fn (Builder $query, ProjectType $type) => $query->where('type', $type->value))
             ->when($category > 0, fn (Builder $query) => $query->whereHas('categories', fn (Builder $c) => $c->whereKey($category)))
             ->when($featured, fn (Builder $query) => $query->where('is_featured', true))
             ->orderBy('sort_order')
@@ -50,13 +53,14 @@ class ProjectController extends Controller
             // Unfiltered, the list is the site order and can be dragged — so
             // it comes in one page, or reordering one page would collide with
             // positions on the others.
-            ->paginate($search === '' && ! $status && $category === 0 && ! $featured && ! $trashed ? 500 : 30)
+            ->paginate($search === '' && ! $status && ! $type && $category === 0 && ! $featured && ! $trashed ? 500 : 30)
             ->withQueryString()
             ->through(fn (Project $project): array => [
                 'id' => $project->id,
                 'title' => $project->title,
                 'url' => PublicUrls::for($project),
                 'client' => $project->client?->name,
+                'type_label' => $project->type?->label(),
                 'year' => $project->year,
                 'categories' => $project->categories->pluck('name')->all(),
                 'is_featured' => $project->is_featured,
@@ -72,11 +76,13 @@ class ProjectController extends Controller
             'filters' => [
                 'q' => $search,
                 'status' => $status->value ?? '',
+                'type' => $type->value ?? '',
                 'category' => $category > 0 ? (string) $category : '',
                 'featured' => $featured,
                 'trashed' => $trashed,
             ],
             'statuses' => $this->statusOptions(),
+            'types' => $this->typeOptions(),
             'categories' => ProjectCategory::query()->orderBy('sort_order')->orderBy('name')->get(['id', 'name'])
                 ->map(fn (ProjectCategory $c): array => ['value' => (string) $c->id, 'label' => $c->name])
                 ->all(),
@@ -182,10 +188,16 @@ class ProjectController extends Controller
                 'title' => $project->title,
                 'slug' => $project->slug,
                 'client_id' => $project->client_id,
+                'type' => $project->type?->value,
                 'year' => $project->year,
                 'url' => $project->url,
                 'summary' => $project->summary,
+                'need' => $project->need,
+                'built' => $project->built,
+                // Edited as one comma-separated line.
+                'stack' => implode(', ', $project->stack ?? []),
                 'cover_asset_id' => $project->cover_asset_id,
+                'images' => $project->images ?? [],
                 'blocks' => $project->blocks ?? [],
                 'metrics' => $project->metrics ?? [],
                 'is_featured' => (bool) $project->is_featured,
@@ -196,10 +208,22 @@ class ProjectController extends Controller
                 ...$this->publicationPayload($project),
             ],
             'statuses' => $this->statusOptions(),
+            'types' => $this->typeOptions(),
             'blockTypes' => $this->blockTypes(),
             'choices' => AdminChoices::all(),
             'revisions' => $this->revisionsFor($project),
             'titleSuffix' => $this->titleSuffix(),
         ]);
+    }
+
+    /**
+     * @return list<array{value: string, label: string}>
+     */
+    private function typeOptions(): array
+    {
+        return array_map(
+            fn (ProjectType $type): array => ['value' => $type->value, 'label' => $type->label()],
+            ProjectType::cases(),
+        );
     }
 }

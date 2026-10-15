@@ -1,0 +1,359 @@
+/*
+  Design trial on /poveste (public/poveste.blade.php), a copy of the home
+  page. Scope every rule to :root[data-variant='poveste'] so no other page
+  is affected.
+
+  Now: the services story (components/site/services-story.blade.php,
+  js/public/services-story.ts) — one pinned section, one object.
+*/
+@layer components {
+    /*
+      The section: lavender with its grain, turning indigo with the purple
+      glows for 02 (--story-dark, 0 to 1, set by the script). Without the
+      script (no .is-story) the chapters follow each other as plain content.
+    */
+    :root[data-variant='poveste'] .services-story {
+        @apply p-0 lg:p-0;
+        --story-dark: 0;
+        /* Lavender, through a soft violet halfway, to the indigo. */
+        background: color-mix(
+            in oklch,
+            color-mix(
+                in oklch,
+                var(--lavender-50),
+                #8f7cf2 calc(min(1, var(--story-dark) * 2) * 100%)
+            ),
+            #1f2868 calc(max(0, var(--story-dark) * 2 - 1) * 100%)
+        );
+
+        &::before,
+        &::after {
+            content: '';
+            @apply pointer-events-none absolute inset-0 z-0;
+        }
+
+        &::before {
+            background-image: var(--grain-light);
+            opacity: calc(var(--paper-grain, 0.5) * (1 - var(--story-dark)));
+        }
+
+        &::after {
+            background:
+                radial-gradient(
+                    ellipse 55% 45% at 92% 8%,
+                    rgb(164 76 238 / 0.5),
+                    transparent 70%
+                ),
+                radial-gradient(
+                    ellipse 55% 45% at 8% 92%,
+                    rgb(164 76 238 / 0.45),
+                    transparent 70%
+                ),
+                radial-gradient(
+                    ellipse 40% 40% at 64% 50%,
+                    rgb(119 90 252 / 0.35),
+                    transparent 70%
+                );
+            /* Ahead of the indigo, so the way there is violet, not grey. */
+            opacity: min(1, calc(var(--story-dark) * 2.2));
+        }
+    }
+
+    :root[data-variant='poveste'] .services-story__stage {
+        @apply relative z-[1];
+    }
+
+    :root[data-variant='poveste'] .services-story__canvas,
+    :root[data-variant='poveste'] .services-story__overlay {
+        @apply pointer-events-none absolute inset-0 hidden overflow-hidden;
+    }
+
+    :root[data-variant='poveste'] .services-story__canvas canvas {
+        @apply block size-full;
+    }
+
+    :root[data-variant='poveste'] .services-story__inner {
+        @apply relative z-[3] mx-auto grid max-w-[var(--content-max)] px-[var(--site-gap)];
+    }
+
+    /* ---- Pinned: one screen, the panels in turn ------------------------------ */
+
+    :root[data-variant='poveste'] .services-story.is-story {
+        & .services-story__stage {
+            height: 100vh;
+            height: 100svh;
+        }
+
+        & .services-story__canvas,
+        & .services-story__overlay {
+            @apply block;
+        }
+
+        & .services-story__canvas {
+            @apply z-[1];
+        }
+
+        & .services-story__overlay {
+            @apply z-[2];
+        }
+
+        & .services-story__inner {
+            @apply h-full;
+        }
+
+        & .story-panel {
+            @apply py-0;
+            grid-area: 1 / 1;
+            align-self: end;
+            padding-bottom: 5vh;
+
+            /* Phones: the object above, so the text keeps to the essentials. */
+            @media (max-width: 639px) {
+                & .chapter__title {
+                    font-size: 30px;
+                }
+
+                & .story-panel__chips li {
+                    @apply px-3 py-1 text-[13px];
+                }
+
+                & .story-panel__products {
+                    & a {
+                        @apply py-2.5;
+                    }
+
+                    & span:not(.story-panel__go) {
+                        @apply hidden;
+                    }
+                }
+            }
+
+            @media (min-width: 1024px) {
+                align-self: center;
+                padding-bottom: 0;
+                width: calc(5 / 12 * 100%);
+            }
+        }
+    }
+
+    /* ---- A chapter's text --------------------------------------------------------- */
+
+    :root[data-variant='poveste'] .story-panel {
+        @apply py-20 lg:py-32;
+        color: var(--ink);
+
+        & .chapter__title {
+            @apply mt-4;
+        }
+    }
+
+    :root[data-variant='poveste'] .story-panel--light {
+        --ink: var(--navy-950);
+        --muted: var(--ink-muted);
+        --line: rgb(45 43 120 / 0.14);
+        --accent: var(--violet-500);
+    }
+
+    :root[data-variant='poveste'] .story-panel--dark {
+        --ink: #fff;
+        --muted: rgb(255 255 255 / 0.78);
+        --line: rgb(255 255 255 / 0.16);
+        --accent: var(--lavender-300);
+    }
+
+    :root[data-variant='poveste'] .story-panel__intro {
+        @apply mt-5 max-w-[34rem] text-pretty;
+        font-size: 17px;
+        line-height: 1.6;
+        color: var(--muted);
+
+        @media (max-width: 639px) {
+            font-size: 15px;
+        }
+    }
+
+    :root[data-variant='poveste'] .story-panel__chips {
+        @apply mt-7 flex flex-wrap gap-2;
+
+        & li {
+            @apply rounded-full px-3.5 py-1.5 text-sm;
+            border: 1px solid var(--line);
+            background: rgb(255 255 255 / 0.55);
+        }
+    }
+
+    :root[data-variant='poveste'] .story-panel__products {
+        @apply mt-7 grid max-w-[30rem];
+        border-top: 1px solid var(--line);
+
+        & a {
+            @apply grid grid-cols-[1fr_auto] items-center gap-x-4 py-3.5;
+            border-bottom: 1px solid var(--line);
+        }
+
+        & b {
+            @apply font-medium;
+            font-size: 17px;
+        }
+
+        & span:not(.story-panel__go) {
+            @apply col-start-1 text-sm;
+            color: var(--muted);
+        }
+    }
+
+    :root[data-variant='poveste'] .story-panel__go {
+        @apply col-start-2 row-span-2 row-start-1 grid size-9 place-items-center rounded-full;
+        background: rgb(255 255 255 / 0.1);
+        transition: background-color var(--base) var(--ease);
+
+        & svg {
+            @apply size-3;
+        }
+
+        a:hover & {
+            background: var(--violet-500);
+        }
+    }
+
+    :root[data-variant='poveste'] .story-panel__cta {
+        @apply mt-9;
+
+        @media (max-width: 639px) {
+            @apply mt-6;
+        }
+    }
+
+    /* ---- Around the object (placed by the script) ------------------------------- */
+
+    :root[data-variant='poveste'] .story-ring,
+    :root[data-variant='poveste'] .story-callout,
+    :root[data-variant='poveste'] .story-screen {
+        @apply invisible absolute top-0 left-0;
+        will-change: transform, opacity;
+    }
+
+    /* The intro's orbit, after the reference: a hairline circle, a dashed
+       one inside, and the three chapters on leaders. */
+    :root[data-variant='poveste'] .story-ring {
+        & svg {
+            @apply size-full overflow-visible;
+            stroke: rgb(119 90 252 / 0.35);
+            stroke-width: 1;
+            vector-effect: non-scaling-stroke;
+
+            & * {
+                vector-effect: non-scaling-stroke;
+            }
+        }
+
+        & .story-ring__inner {
+            stroke-dasharray: 2 4;
+            opacity: 0.7;
+        }
+
+        & .story-ring__dot {
+            fill: var(--violet-500);
+            stroke: none;
+        }
+    }
+
+    :root[data-variant='poveste'] .story-ring__label {
+        @apply absolute font-micro text-[11px] leading-[1.5] tracking-[0.08em] whitespace-nowrap uppercase;
+        color: var(--navy-950);
+
+        & b {
+            @apply block font-normal;
+            color: var(--violet-500);
+        }
+
+        &.story-ring__label--1 {
+            @apply text-right;
+            left: 29%;
+            top: 5%;
+            translate: calc(-100% - 12px) -70%;
+        }
+
+        &.story-ring__label--2 {
+            left: 93%;
+            top: 52%;
+            translate: 12px -50%;
+        }
+
+        &.story-ring__label--3 {
+            left: 75%;
+            top: 86%;
+            translate: 12px -20%;
+        }
+    }
+
+    /* 01's callouts: a dot on the object, a leader, a label. */
+    :root[data-variant='poveste'] .story-callout {
+        @apply flex items-center font-micro text-[11px] tracking-[0.08em] whitespace-nowrap uppercase;
+        color: var(--navy-950);
+        translate: -4px -50%;
+
+        & i {
+            @apply relative mr-10 block size-2 rounded-full;
+            background: var(--violet-500);
+            box-shadow: 0 0 0 4px rgb(119 90 252 / 0.18);
+
+            &::after {
+                content: '';
+                @apply absolute top-1/2 left-4 h-px w-7;
+                background: rgb(119 90 252 / 0.55);
+            }
+        }
+
+        &.story-callout--left {
+            @apply flex-row-reverse;
+            translate: calc(-100% + 4px) -50%;
+
+            & i {
+                @apply mr-0 ml-10;
+
+                &::after {
+                    @apply right-4 left-auto;
+                }
+            }
+        }
+    }
+
+    /* The screens the object frames: the product (02), a site and a shop (03). */
+    :root[data-variant='poveste'] .story-screen {
+        @apply overflow-hidden rounded-xl bg-white;
+        box-shadow: 0 1.5rem 3.5rem -1.25rem rgb(31 40 104 / 0.45);
+    }
+
+    :root[data-variant='poveste'] .story-screen__bar {
+        @apply flex h-7 items-center gap-1.5 px-3;
+        border-bottom: 1px solid rgb(38 42 111 / 0.08);
+
+        & i {
+            @apply block size-2 rounded-full;
+            background: #dcd7f7;
+        }
+
+        & b {
+            @apply ml-2 truncate text-[11px] font-medium;
+            color: var(--navy-950);
+        }
+    }
+
+    :root[data-variant='poveste'] .story-screen__calendar {
+        @apply grid grid-cols-3 gap-1.5 p-3;
+        grid-template-rows: repeat(5, 1fr);
+        height: calc(100% - 1.75rem);
+
+        & i {
+            @apply block rounded-md;
+            background: #ebe6ff;
+            border-left: 3px solid var(--violet-500);
+
+            &:nth-child(2n) {
+                background: #f6e9ff;
+                border-color: var(--purple-500);
+            }
+        }
+    }
+}

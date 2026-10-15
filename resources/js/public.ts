@@ -4,6 +4,8 @@ import { initExplorers } from '@/public/explorer';
 import { initReveals } from '@/public/reveals';
 import { initReviewsCarousels } from '@/public/reviews-carousel';
 import { initHero } from '@/public/hero-intro';
+import { initHeroPlanes } from '@/public/hero-planes';
+import { initWorkLists } from '@/public/work-list';
 import { initPageTransitions } from '@/public/page-transition';
 import { initPanelMenu } from '@/public/panel-menu';
 import { initProjectAccordion } from '@/public/project-accordion';
@@ -94,6 +96,8 @@ function boot(): void {
     initExplorers();
     initReviewsCarousels();
     initServicesPlain();
+    initHeroPlanes();
+    initWorkLists();
     initProjectAccordion();
     void smooth.then(() => {
         void initStatements();
@@ -103,6 +107,20 @@ function boot(): void {
         void initProjectShowcase();
         void initProjectSteps();
         void initProductStack();
+
+        // The stage's 3D object (Three.js), its own chunk.
+        if (document.querySelector('[data-shapeshifter]')) {
+            void import('@/public/shapeshifter').then(({ initShapeshifter }) =>
+                initShapeshifter(),
+            );
+        }
+
+        // The services story (/poveste): Three.js, its own chunks, only there.
+        if (document.querySelector('[data-story]')) {
+            void import('@/public/services-story').then(
+                ({ initServicesStory }) => initServicesStory(),
+            );
+        }
     });
 
     // The WebGL gradient ships as its own chunk, fetched only where it is used.

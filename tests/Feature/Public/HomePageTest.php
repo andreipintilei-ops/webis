@@ -39,36 +39,48 @@ it('opens the Theodore menu from the round header button', function () {
         ->not->toContain('id="site-panel"');
 });
 
-it('lays out the full-screen menu: sections, link groups, contact and its button, legal links', function () {
+it('lays out the full-screen menu: the services with what they are, the other pages, one way to Contact', function () {
     $html = $this->get('/')->assertOk()->getContent();
-    preg_match('/<div id="meniu" class="theo-menu".*?<\/svg>/s', $html, $menu);
-    preg_match('/<nav class="theo-menu__nav".*?<\/nav>/s', $menu[0], $nav);
-    preg_match_all('/<span class="theo-menu__label">([^<]+)<\/span>/', $nav[0], $labels);
+    preg_match('#<div id="meniu" class="theo-menu".*?</svg>#s', $html, $menu);
+    preg_match('#<nav class="theo-menu__nav".*?</nav>#s', $menu[0], $nav);
+    preg_match_all('#<span class="theo-menu__label">([^<]+)</span>#', $nav[0], $labels);
+    preg_match_all('#<a href="([^"]+)" class="theo-menu__page"#', $nav[0], $pages);
 
-    expect($labels[1])->toBe(['Soluții', 'Clienți', 'Produse', 'Despre'])
-        ->and($nav[0])->toContain('<span class="theo-menu__index" aria-hidden="true">01</span>')
-        // The call to action is the side column's main button, leaving through the curtain.
-        ->and($menu[0])->toMatch('/<a href="\/contact" class="pill btn-dark[^"]*" data-theo-link(="data-theo-link")?>.*?Hai să discutăm/s')
-        ->toContain('<span class="theo-menu__tiny">ce facem</span>')
-        // The side column's groups, and the legal links at the foot.
-        ->toContain('<p class="theo-menu__heading">Pentru cine</p>')
-        ->toMatch('/<a href="\/magazin-online" class="theo-menu__detail" data-theo-link>Magazin online<\/a>/')
-        ->toMatch('/<a href="\/accesibilitate" class="theo-menu__detail" data-theo-link>Accesibilitate<\/a>/')
-        // Contact: only what is filled in (here, the town).
-        ->toContain('<li class="theo-menu__detail">Iași</li>')
-        ->not->toContain('mailto:');
+    // The three services, each with its line; no numbers.
+    expect($labels[1])->toBe(['Software la comandă', 'Produse SaaS', 'Web și e-commerce'])
+        ->and($nav[0])->not->toContain('theo-menu__index')
+        ->toContain('<span class="theo-menu__blurb">Produse gata de folosit, pe abonament lunar.</span>')
+        ->and(substr_count($nav[0], 'class="theo-menu__blurb"'))->toBe(3)
+        // Under them, the other pages — Contact not among them.
+        ->and($pages[1])->toBe(['/portofoliu', '/despre', '/blog'])
+        // Contact once: the button.
+        ->and(substr_count($menu[0], 'href="/contact"'))->toBe(1)
+        ->and($menu[0])->toMatch('#<a href="/contact" class="pill btn-dark[^"]*" data-theo-link(="data-theo-link")?>.*?Hai să discutăm#s')
+        // Contact: only what is filled in (here, the town — no e-mail or phone).
+        ->toContain('<p class="theo-menu__row theo-menu__row--muted">Iași</p>')
+        ->not->toContain('mailto:')
+        // The grouped links moved to the footer; the legal ones stayed.
+        ->and($menu[0])->not->toContain('theo-menu__heading')
+        ->toMatch('#<a href="/accesibilitate" class="theo-menu__detail" data-theo-link>Accesibilitate</a>#');
 });
 
-it('shows the top bar sections, with the Soluții dropdown and no Blog', function () {
-    preg_match('/<header class="site-nav.*?<\/header>/s', $this->get('/')->assertOk()->getContent(), $bar);
+it('shows the top bar sections, with the Servicii dropdown and no Produse', function () {
+    preg_match('#<header class="site-nav.*?</header>#s', $this->get('/')->assertOk()->getContent(), $bar);
 
     expect($bar[0])
-        ->toMatch('/<li class="site-nav__dropdown hidden md:block">\s*<a href="\/solutii" class="site-link"\s*>\s*<span class="site-link__mask"><span class="site-link__text">Soluții<\/span><\/span>\s*<svg class="site-nav__caret"/')
+        // The dropdown opens under a plus, not a caret.
+        ->toMatch('#<li class="site-nav__dropdown hidden md:block">\s*<a href="/solutii" class="site-link"\s*>\s*<span class="site-link__mask"><span class="site-link__text">Servicii</span></span>\s*<svg class="site-nav__plus"#')
+        ->not->toContain('site-nav__caret')
         ->toContain('<div class="site-dropdown">')
-        ->toContain('href="/clienti"')
-        ->toContain('href="/produse"')
+        // Its three services.
+        ->toContain('<a href="/software-la-comanda" class="site-dropdown__link">Software la comandă</a>')
+        ->toContain('<a href="/produse" class="site-dropdown__link">Produse SaaS</a>')
+        ->toContain('<a href="/web" class="site-dropdown__link">Web și e-commerce</a>')
+        // Then the sections, Blog among them; Produse is only in the dropdown.
+        ->toContain('href="/portofoliu"')
         ->toContain('href="/despre"')
-        ->not->toContain('href="/blog"');
+        ->toContain('href="/blog"')
+        ->and(substr_count($bar[0], 'site-link__text">Produse<'))->toBe(0);
 });
 
 it('shows Contact in the top bar as the main button, in the header tone', function () {
@@ -106,7 +118,7 @@ it('ships the page-transition curtain and the prefetch hints', function () {
         ->toContain('"href_matches": "/admin/*"');
 });
 
-it('keeps the home page to its blocks: hero, Despre noi, the illustrated service cards', function () {
+it('keeps the home page to its blocks, then the stage, the reviews and the articles', function () {
     Page::factory()->ofType(PageType::Home)->create([
         'slug' => 'acasa',
         'blocks' => [
@@ -120,45 +132,37 @@ it('keeps the home page to its blocks: hero, Despre noi, the illustrated service
     expect($html)
         ->toContain('class="svc-cards"')
         ->toContain('data-hero-leave="overlap"')
-        // Then the services as three chapters, in order, each a section with its h2.
-        ->and(preg_match_all('/<section id="[^"]+" class="chapter chapter--(light|dark|lavender)"/', $html, $chapters))->toBe(3)
-        ->and($chapters[1])->toBe(['light', 'dark', 'lavender'])
+        // Then the three services as one stage, in order, each with its h2.
+        ->and(substr_count($html, 'data-stage-chapter'))->toBe(3)
+        ->and($html)->toMatch('/<article id="software-la-comanda"[^>]*data-side="right"/')
+        ->toMatch('/<article id="produse-saas"[^>]*data-side="left"/')
+        ->toMatch('/<article id="web-si-e-commerce"[^>]*data-side="right"/')
         ->and(substr_count($html, '<h2 id="chapter-'))->toBe(3)
-        // 01 and 02 show what they build as cells, 01 its projects as cards;
-        // 03 as an explorer of its 3 types.
-        ->and(substr_count($html, 'class="chapter-cell"'))->toBe(6 + 3)
-        ->and(substr_count($html, 'class="project-card"'))->toBe(3)
-        ->and(substr_count($html, 'data-explorer>'))->toBe(1)
-        ->and(substr_count($html, 'data-explorer-row>'))->toBe(3)
-        ->and(substr_count($html, 'data-explorer-panel>'))->toBe(3)
-        // A type with a project says so; one without lists its modules.
-        ->and(substr_count($html, '<span class="explorer-row__tag">1 proiect</span>'))->toBe(2)
-        ->and(substr_count($html, 'Module tipice:'))->toBe(1)
-        ->and($html)->toContain('id="explorer-web-1-tab" class="explorer-row" aria-controls="explorer-web-1-panel"')
-        // SmileSoft across the row, RIMS and Bugetare participativă below it.
-        ->and(substr_count($html, 'class="product-panel product-panel--small"'))->toBe(2)
-        ->and($html)->toMatch('/<a href="https:\/\/smilesoft\.ro"[^>]* target="_blank" rel="noopener">/')
-        ->toContain('<h4 class="product-panel__name">RIMS</h4>')
-        ->toMatch('/<a href="\/contact" class="arrow-link[^"]*product-panel__link[^"]*">.*?Cere o prezentare/s')
-        ->toMatch('/<a href="https:\/\/bugetare\.ro"[^>]* target="_blank" rel="noopener">/')
-        ->not->toContain('confirmo.ro')
+        // 01 lists four capabilities, 02 three products, 03 three columns.
+        ->and(substr_count($html, 'class="stage-item"'))->toBe(4)
+        ->and(substr_count($html, 'class="stage-product"'))->toBe(3)
+        ->and(substr_count($html, 'class="stage-item stage-item--link"'))->toBe(3)
+        ->and($html)->toMatch('#<a href="https://smilesoft.ro"[^>]*target="_blank"[^>]*rel="noopener"#')
+        ->toMatch('#<a href="https://bugetare.ro"[^>]*target="_blank"[^>]*rel="noopener"#')
         ->toContain('href="/creare-magazin-online"')
         ->toContain('href="/mentenanta"')
-        // The reviews: their own section, after the chapters.
+        // Then the closing panel the plates gather into.
+        ->toContain('data-stage-finale')
+        ->toContain('Site, platformă sau aplicație?')
+        // The reviews: their own section, after the stage.
         ->and(substr_count($html, 'class="chapter-review"'))->toBe(3)
-        // As a carousel: each review a slide, its text openable; no buttons.
         ->and($html)->toContain('aria-roledescription="carusel"')
         ->toContain('aria-label="1 din 3" data-review>')
-        ->toContain('aria-expanded="false" aria-controls="recenzie-1-text" hidden data-review-more><span data-review-more-label>Citește tot</span>')
         ->and(strpos($html, '<section id="recenzii" class="site-reviews'))->toBeGreaterThan(strpos($html, 'id="web-si-e-commerce"'))
-        ->and(substr($html, strpos($html, 'id="web-si-e-commerce"'), strpos($html, 'id="recenzii"') - strpos($html, 'id="web-si-e-commerce"')))->not->toContain('chapter-review')
         // No SEO anywhere visitors can see.
-        ->and($html)->not->toMatch('/>[^<]*\bSEO\b/')
-        // The earlier sections are gone.
+        ->and($html)->not->toMatch('/>[^<]*SEO/')
+        // The earlier sections, and the chapters this replaced, are gone.
         ->and($html)->not->toContain('selected-projects')
         ->not->toContain('own-products-title')
         ->not->toContain('how-we-work-title')
-        ->not->toContain('data-contact-form');
+        ->not->toContain('data-contact-form')
+        ->not->toContain('class="chapter-cell"')
+        ->not->toContain('data-explorer>');
 });
 
 it('shows the latest articles after the reviews, examples until posts are published', function () {
@@ -197,39 +201,63 @@ it('closes every page with the footer on the violet gradient: the call, the link
     expect($footer[0])
         ->toContain('<canvas data-soffit data-palette="violet"')
         ->toContain('href="/contact"')
-        ->toContain('href="tel:0770700607"')
+        ->toContain('href="tel:+40770700607"')
         ->toContain('href="mailto:contact@webis.ro"')
         ->toContain('Software la comandă')
         ->toContain('Confidențialitate')
         ->toContain('© '.now()->year);
 });
 
-it('sets the tone of the sections below the hero on /clienti from one setting', function () {
+it('sets the tone of the sections below the hero on /poveste from one setting', function () {
     config(['site.lower_tone' => 'dark']);
-    expect($this->get('/clienti')->assertOk()->getContent())->toMatch('/<html lang="ro"\s+data-lower="dark"/');
+    expect($this->get('/poveste')->assertOk()->getContent())->toMatch('/<html lang="ro"\s+data-lower="dark"/');
 
     config(['site.lower_tone' => 'light']);
-    expect($this->get('/clienti')->getContent())->toMatch('/<html lang="ro"\s+data-lower="light"/');
+    expect($this->get('/poveste')->getContent())->toMatch('/<html lang="ro"\s+data-lower="light"/');
 
     // Other pages are not affected.
     config(['site.lower_tone' => 'dark']);
     expect($this->get('/solutii')->assertOk()->getContent())->not->toContain('data-lower');
 });
 
-it('serves a copy of the home page at /clienti, marked as its own design variant', function () {
+it('keeps the services story trial at /poveste, on a copy of the home page', function () {
     Page::factory()->ofType(PageType::Home)->create([
         'slug' => 'acasa',
         'blocks' => [['id' => 'h', 'type' => 'hero', 'v' => 1, 'data' => ['layout' => 'centered', 'heading' => 'Titlul de acasă']]],
     ]);
 
-    $html = $this->get('/clienti')->assertOk()->getContent();
+    $html = $this->get('/poveste')->assertOk()->getContent();
 
     expect($html)
-        ->toMatch('/<html lang="ro"[^>]*data-variant="clienti"/')
-        ->toContain('<title>Clienți | Webis</title>')
+        ->toMatch('/<html lang="ro"[^>]*data-variant="poveste"/')
+        ->toContain('<title>Poveste | Webis</title>')
         ->toContain('Titlul de acasă')
-        ->toContain('id="contact"');
+        ->toContain('id="contact"')
+        ->toContain('data-story');
 
-    // The home page itself is not the variant.
-    expect($this->get('/')->getContent())->not->toContain('data-variant');
+    // The home page is its own variant, not this one.
+    expect($this->get('/')->getContent())->not->toContain('data-variant="poveste"');
+});
+
+it('builds the home page around the stage, and leaves /produse to the CMS', function () {
+    Page::factory()->ofType(PageType::Home)->create([
+        'slug' => 'acasa',
+        'title' => 'Acasă',
+        'blocks' => [['id' => 'h', 'type' => 'hero', 'v' => 1, 'data' => ['layout' => 'centered', 'heading' => 'Titlul de acasă']]],
+    ]);
+    Page::factory()->create(['slug' => 'produse', 'title' => 'Pagina din CMS', 'blocks' => []]);
+
+    expect($this->get('/')->assertOk()->getContent())
+        ->toMatch('/<html lang="ro"[^>]*data-variant="stage"/')
+        ->toContain('<title>Acasă | Webis</title>')
+        ->toContain('Titlul de acasă')
+        ->toContain('data-stage')
+        ->toContain('data-shapeshifter')
+        ->toContain('data-stage-finale')
+        ->toContain('Site, platformă sau aplicație?');
+
+    // The slug the trial used to hide now serves its own CMS page.
+    expect($this->get('/produse')->assertOk()->getContent())
+        ->toContain('Pagina din CMS')
+        ->not->toContain('data-shapeshifter');
 });

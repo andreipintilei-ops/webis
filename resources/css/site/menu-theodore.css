@@ -99,72 +99,106 @@
 
     /* Logo row, closed by a hairline the column divider starts from. */
     .theo-menu__top {
-        @apply flex shrink-0 items-center border-b border-white/15 pb-6;
-        /* The round button's height, so the logo sits where the header's does. */
-        min-height: 2.75rem;
+        /*
+          The round button (css/site/menu-panel.css: gap / 1.5 from the top,
+          --burger tall) closes the menu. The hairline sits as far below it
+          as it sits below the screen's top, and the logo is centred on it,
+          about where the header's is: the row's content box, from the
+          inner's top padding (one gap) to the hairline less a gap of
+          padding, is centred on the button.
+        */
+        --burger: clamp(4rem, 5.5vw, 5rem);
+
+        @apply flex shrink-0 items-center border-b border-white/15;
+        min-height: calc(var(--burger) + var(--site-gap) / 3);
+        padding-bottom: var(--site-gap);
     }
 
-    /* The divider between the columns runs the full height, down to the foot. */
+    /* One column, the navigation in the middle of what is left. */
     .theo-menu__body {
-        @apply grid flex-1 content-center gap-12 py-10 lg:grid-cols-12 lg:content-stretch lg:gap-10 lg:py-0;
+        @apply flex flex-1 flex-col justify-center;
+        /* Less on short screens, so it fits without scrolling. */
+        padding-block: clamp(1.5rem, 4vh, 2.5rem);
     }
 
-    .theo-menu__nav {
-        @apply lg:col-span-5 lg:flex lg:flex-col lg:justify-center lg:py-10;
-    }
+    /* ---- The services ----------------------------------------------------- */
 
-    /* ---- The sections (left) -------------------------------------------- */
-
+    /* Rows between hairlines. */
     .theo-menu__list {
-        @apply flex flex-col gap-4 md:gap-5;
-    }
-
-    .theo-menu__item {
-        @apply relative inline-flex items-start gap-4 md:gap-6;
-        will-change: opacity, transform;
-    }
-
-    .theo-menu__index {
-        @apply pt-[0.55em] text-xs tracking-[0.12em] text-white/50 md:text-sm;
-        transition: opacity var(--duration) var(--motion-out);
-    }
-
-    .theo-menu__text {
         @apply flex flex-col;
-        transition: opacity var(--duration) var(--motion-out);
+
+        & > li + li {
+            @apply border-t border-white/12;
+        }
     }
 
     /*
-      Anton, sized to the screen's height so the four sections and their small
-      words always fit. The mask is one line tall; the padding keeps the
-      comma under Ș/Ț inside it.
+      A row: the label and what it is — under the label on
+      small screens, in its own column at the right from 1024px. The whole
+      row is the link.
     */
-    .theo-menu__mask {
-        @apply block overflow-clip font-display leading-[1.1] font-normal uppercase;
-        font-size: clamp(2.5rem, min(8.5vh, 10vw), 6.5rem);
-        padding-block: 0.06em;
-        margin-block: -0.06em;
+    .theo-menu__item {
+        @apply relative grid items-start py-[clamp(0.75rem,2.4vh,1.25rem)] md:py-4;
+        grid-template-columns: minmax(0, 1fr);
+        will-change: opacity, transform;
+
+        @media (min-width: 1024px) {
+            @apply items-center gap-x-10;
+            grid-template-columns: minmax(0, 1fr) minmax(0, 22rem);
+        }
     }
 
-    /* The roll: a copy one line below as a text-shadow, brought up on hover. */
+    /* Phones: left out — the names alone, larger (the mask, below). */
+    .theo-menu__blurb {
+        @apply mt-1 hidden text-sm text-pretty text-white/60 md:block md:text-base lg:mt-0;
+        transition:
+            opacity var(--duration) var(--motion-out),
+            color var(--duration) var(--motion-out);
+    }
+
+    .theo-menu__item:is(:hover, :focus-visible) .theo-menu__blurb {
+        @apply text-white/85;
+    }
+
+    /*
+      Anton, sized to the screen's height so every section fits. The mask is
+      one line tall; the padding keeps the marks over Ă and Î and the comma
+      under Ș and Ț inside it (the margin gives the room back), and the
+      transition carries the dim with the rest of the row.
+    */
+    .theo-menu__mask {
+        @apply block overflow-clip font-display leading-[1.1] font-normal whitespace-nowrap uppercase;
+        font-size: clamp(1.75rem, min(6.4vh, 4.6vw), 4rem);
+        padding-block: 0.16em 0.12em;
+        margin-block: -0.16em -0.12em;
+        transition: opacity var(--duration) var(--motion-out);
+
+        /* Phones, without the lines under them: as wide as the longest
+           name (SOFTWARE LA COMANDĂ) can be across the screen. */
+        @media (max-width: 767px) {
+            font-size: min(9.6vw, 6vh);
+        }
+    }
+
+    /* The roll: a copy below as a text-shadow, brought up on hover. Far
+       enough down (--roll) that the marks over its Ă and Î stay out of the
+       mask until it rolls. */
     .theo-menu__label {
+        --roll: 1.5em;
+
         @apply inline-block;
-        text-shadow: 0 1.1em currentColor;
+        text-shadow: 0 var(--roll) currentColor;
         transition: transform var(--duration) var(--motion-out);
     }
 
-    .theo-menu__tiny {
-        @apply mt-1 text-sm text-white/55 md:text-base;
-    }
-
     .theo-menu__item:is(:hover, :focus-visible) .theo-menu__label {
-        transform: translateY(-1.1em);
+        transform: translateY(calc(-1 * var(--roll)));
     }
 
     /* The others dim back (their parts: the links' own opacity is animated). */
     .theo-menu__list:has(.theo-menu__item:is(:hover, :focus-visible))
         .theo-menu__item:not(:hover, :focus-visible)
-        :is(.theo-menu__index, .theo-menu__text) {
+        :is(.theo-menu__mask, .theo-menu__blurb) {
         opacity: 0.3;
     }
 
@@ -174,58 +208,53 @@
         @apply ml-[0.2em] inline-block size-[0.12em] rounded-full bg-current align-middle;
     }
 
-    /* ---- The side column (right) ------------------------------------------ */
+    /* ---- The other pages -------------------------------------------------- */
 
-    /* Past a hairline from the sections, on large screens. */
-    .theo-menu__aside {
-        @apply flex min-w-0 flex-col gap-8 lg:col-span-7 lg:justify-center lg:border-l lg:border-white/15 lg:py-10 lg:pl-10 xl:gap-10 xl:pl-14;
+    /* A row of smaller links under the services. */
+    .theo-menu__pages {
+        @apply mt-6 flex flex-wrap gap-x-8 gap-y-2 border-t border-white/12 pt-6 md:mt-8 md:gap-x-10 md:pt-8;
     }
 
-    /* Each category gets the full width, with links flowing beneath it. */
-    .theo-menu__groups {
-        @apply flex min-w-0 flex-col gap-6 xl:gap-8;
-    }
+    .theo-menu__page {
+        @apply inline-block text-xl font-medium underline-offset-[0.2em] md:text-2xl lg:text-3xl;
 
-    .theo-menu__group {
-        @apply min-w-0;
-    }
-
-    .theo-menu__group + .theo-menu__group {
-        @apply border-t border-white/15 pt-6 xl:pt-8;
-    }
-
-    .theo-menu__group-links {
-        @apply flex flex-wrap gap-x-6 gap-y-2 text-base md:text-lg;
-
-        & a {
-            @apply inline-block py-1 underline-offset-4;
+        &:is(:hover, :focus-visible) {
+            @apply underline decoration-1;
         }
 
-        & a:is(:hover, :focus-visible) {
-            @apply underline;
+        &[aria-current='page']::after {
+            content: '';
+            @apply ml-2 inline-block size-1.5 rounded-full bg-current align-middle;
         }
     }
 
-    /* Contact has its own row; the action sits alongside it when it fits. */
+    /* ---- Contact ---------------------------------------------------------- */
+
+    /* Past a hairline: the call to action — the menu's one way to Contact —
+       with the e-mail and phone beside it, and where we are at the right. */
     .theo-menu__contact {
-        @apply flex flex-wrap items-end justify-between gap-6 border-t border-white/15 pt-6 xl:pt-8;
-    }
-
-    .theo-menu__contact-info {
-        @apply min-w-0;
-        overflow-wrap: anywhere;
+        @apply flex shrink-0 flex-wrap items-center gap-x-8 gap-y-4 border-t border-white/15 pt-6;
     }
 
     .theo-menu__cta {
         @apply shrink-0;
     }
 
-    .theo-menu__heading {
-        @apply mb-3 text-xs font-medium tracking-[0.12em] text-white uppercase;
+    .theo-menu__where {
+        @apply flex flex-col gap-1 md:ml-auto md:items-end;
     }
 
-    .theo-menu__details {
-        @apply flex flex-col gap-1 text-base md:text-lg;
+    .theo-menu__row {
+        @apply flex flex-wrap items-center gap-x-2 gap-y-1 text-base;
+        overflow-wrap: anywhere;
+
+        & > span {
+            @apply text-white/35;
+        }
+    }
+
+    .theo-menu__row--muted {
+        @apply text-white/55;
     }
 
     .theo-menu__detail {
@@ -240,7 +269,7 @@
     /* ---- Foot -------------------------------------------------------------- */
 
     .theo-menu__foot {
-        @apply flex shrink-0 flex-wrap justify-between gap-x-6 gap-y-2 border-t border-white/15 pt-6 text-sm text-white/50;
+        @apply mt-6 flex shrink-0 flex-wrap justify-between gap-x-6 gap-y-2 text-sm text-white/50;
     }
 
     .theo-menu__legal {

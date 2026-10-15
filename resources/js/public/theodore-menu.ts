@@ -317,7 +317,16 @@ export function initTheodoreMenu(): void {
             )
             .to(
                 shifted(),
-                { duration: TIMING.rise, ease: EASE.out, y: 0 },
+                {
+                    duration: TIMING.rise,
+                    ease: EASE.out,
+                    y: 0,
+                    // Not even a zero transform left on the page once it
+                    // has settled: any transform makes it the box that
+                    // position: fixed inside it keeps to — the home page's
+                    // 3D object would stay at the page's top, off screen.
+                    clearProps: 'transform',
+                },
                 TIMING.follow + TIMING.cover * TIMING.riseAt,
             )
             // The band is off: the menu is closed and the button answers again.

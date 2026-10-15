@@ -6,14 +6,18 @@
      `heroLeave`: "overlap" — the next section slides over the hero's backdrop
      with a rounded top instead of the backdrop shrinking into a card
      (js/public/hero-intro.ts).
+     `description`: the meta description (else the SEO settings' default).
+     `footerCtaTitle`, `footerCtaIntro`: the footer's closing call, reworded.
      `variant`: a design variant under test (e.g. "clienti"), as data-variant
      on <html>, for styles scoped to it. --}}
-@props(['title' => null, 'menu' => 'site', 'headerTheme' => 'light', 'lowerTone' => null, 'variant' => null, 'heroLeave' => null])
+@props(['title' => null, 'menu' => 'site', 'headerTheme' => 'light', 'lowerTone' => null, 'variant' => null, 'heroLeave' => null, 'footerCta' => true, 'footerOnBackdrop' => false, 'description' => null, 'footerCtaTitle' => null, 'footerCtaIntro' => null])
 
 @php
     $siteName = app(\App\Settings\CompanySettings::class)->name;
     $suffix = app(\App\Settings\SeoSettings::class)->title_suffix;
     $fullTitle = $title ? $title.$suffix : $siteName;
+    // The page's own, or the site's default (SEO settings).
+    $metaDescription = $description ?: app(\App\Settings\SeoSettings::class)->default_description;
 @endphp
 
 <!DOCTYPE html>
@@ -61,6 +65,9 @@
         </script>
 
         <title>{{ $fullTitle }}</title>
+        @if ($metaDescription)
+            <meta name="description" content="{{ $metaDescription }}">
+        @endif
 
         {{-- Nothing outside production may be indexed. SEO head tags come in Phase 4. --}}
         @unless (app()->isProduction())
@@ -141,7 +148,7 @@
                     {{ $slot }}
                 </main>
 
-                <x-site.footer />
+                <x-site.footer :show-cta="$footerCta" :on-backdrop="$footerOnBackdrop" :cta-title="$footerCtaTitle" :cta-intro="$footerCtaIntro" />
             </div>
         </div>
 

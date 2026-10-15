@@ -19,9 +19,9 @@ final class PublicUrls
     {
         return match (true) {
             $model instanceof Page => $model->type === PageType::Home ? '/' : '/'.$model->slug,
-            $model instanceof Project => '/clienti/'.$model->slug,
+            $model instanceof Project => '/proiect/'.$model->slug,
             $model instanceof Post => '/blog/'.$model->slug,
-            $model instanceof ProjectCategory => '/clienti/categorie/'.$model->slug,
+            $model instanceof ProjectCategory => '/portofoliu/categorie/'.$model->slug,
             $model instanceof PostCategory => '/blog/categorie/'.$model->slug,
         };
     }

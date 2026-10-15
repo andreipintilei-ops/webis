@@ -16,11 +16,18 @@ import { EASE, loadGsap, prefersReducedMotion } from '@/public/gsap';
  * - Any other part (`data-reveal`): its items (`data-reveal-child`) rise one
  *   after another — or, without items, the part itself.
  *
+ * Inside `data-reveal-pace="fast"` (/clienti) everything plays four times as
+ * fast — about 0.3s a part instead of 1.2s.
+ *
  * Reduced motion: nothing moves, and nothing is hidden.
  */
 
 const RISE = { duration: 1.2, ease: EASE.out };
 const START = 'top 85%';
+
+/** How fast a part plays: 4× inside `data-reveal-pace="fast"`. */
+const pace = (part: HTMLElement): number =>
+    part.closest('[data-reveal-pace="fast"]') ? 4 : 1;
 
 export async function initReveals(): Promise<void> {
     const parts = Array.from(
@@ -48,7 +55,7 @@ export async function initReveals(): Promise<void> {
             trigger: part,
             start: START,
             once: true,
-            onEnter: () => void tl.play(),
+            onEnter: () => void tl.timeScale(pace(part)).play(),
         });
     };
 
@@ -101,10 +108,12 @@ export async function initReveals(): Promise<void> {
                     lines.set(line, [...(lines.get(line) ?? []), word]);
                 }
 
-                rise = gsap.timeline({
-                    paused: true,
-                    onComplete: () => self.revert(),
-                });
+                rise = gsap
+                    .timeline({
+                        paused: true,
+                        onComplete: () => self.revert(),
+                    })
+                    .timeScale(pace(part));
 
                 [...lines.values()].forEach((words, index) =>
                     rise?.from(words, { yPercent: 110, ...RISE }, index * 0.09),

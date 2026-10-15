@@ -93,7 +93,7 @@ it('keeps a centred hero centred and dark on white without an image', function (
         ->toContain('Titlu centrat')
         ->not->toContain('site-nav--dark')
         // No image in the hero (the reviews further down have their logos).
-        ->and(strstr($html, '<section id="software-la-comanda"', true))->not->toContain('<img');
+        ->and(strstr($html, '<article id="software-la-comanda"', true))->not->toContain('<img');
 });
 
 it('renders the animated gradient behind a centred hero, in place of its image, with a dark header', function () {
@@ -119,7 +119,7 @@ it('renders the animated gradient behind a centred hero, in place of its image, 
         ->toContain('class="pill btn-dark"')
         ->not->toContain('rel="preload" as="image"')
         // No image in the hero (the reviews further down have their logos).
-        ->and(strstr($html, '<section id="software-la-comanda"', true))->not->toContain('<img');
+        ->and(strstr($html, '<article id="software-la-comanda"', true))->not->toContain('<img');
 });
 
 it('renders the violet gradient, in the old site\'s purples, on its indigo base', function () {
@@ -230,7 +230,8 @@ it('shows the Google rating above the client logos, linked to the reviews, and n
     homeWithHero(['layout' => 'centered', 'background' => 'gradient', 'logos' => true, 'heading' => 'Titlu']);
 
     expect($this->get('/')->assertOk()->getContent())
-        ->toContain('class="google-rating google-rating--dark"')
+        // The hero's is left-aligned on a phone, right-aligned from 768px.
+        ->toContain('class="google-rating google-rating--dark google-rating--hero"')
         ->toContain('href="https://search.google.com/local/reviews?placeid=abc" target="_blank" rel="noopener"')
         ->toContain('Evaluare Google: 4,7 din 5, din 38 de recenzii')
         ->toContain('Google Reviews · 38 de recenzii')
@@ -315,8 +316,9 @@ it('renders the services as illustrated cards when the block asks for them, risi
 
     expect($section[0])
         ->toContain('class="svc-cards"')
-        // The title, a chip between its words (hidden from screen readers).
-        ->toMatch('/<h2[^>]*>Tot de ce ai nevoie, <span class="title-pill" aria-hidden="true" data-title-pill>.*?<\/span><\/span>\s*<br> de la site la sistemul de gestiune.<\/h2>/s')
+        // The title, a chip between its words (hidden from screen readers);
+        // on phones the chip comes under the title instead.
+        ->toMatch('/<h2[^>]*>Tot de ce ai nevoie, <span class="title-pill max-md:hidden" aria-hidden="true" data-title-pill>.*?<\/span><\/span>\s*<br> de la site la sistemul de gestiune.<\/h2>\s*<span class="title-pill svc-cards__pill-below md:hidden"/s')
         ->and(substr_count($section[0], '<article class="svc-card">'))->toBe(3)
         ->and($section[0])->toContain('Sisteme construite pentru procesele organizației voastre.')
         // The illustrations: one inline SVG each, nothing loaded.

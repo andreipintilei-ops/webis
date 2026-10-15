@@ -5,11 +5,18 @@
     (App\Support\SiteNavigation) and the company's details
     (CompanySettings), then the logo, the legal line and links.
     css/site/footer.css.
+
+    On a page that already carries the gradient fixed behind it, pass
+    `on-backdrop` and the footer shows through to that one instead.
+    `cta-title`, `cta-intro`: a page's own wording for the closing call
+    (/clienti), in place of the default.
 --}}
+@props(['showCta' => true, 'onBackdrop' => false, 'ctaTitle' => null, 'ctaIntro' => null])
+
 @php
     $company = app(\App\Settings\CompanySettings::class);
     $logo = app(\App\Support\Brand::class)->logoNegative();
-    $phoneHref = $company->phone ? 'tel:'.preg_replace('/[^\d+]/', '', $company->phone) : null;
+    $phoneHref = \App\Support\PhoneLink::href($company->phone);
     $address = implode(', ', array_filter([$company->street_address, $company->locality]));
 
     $pages = array_values(array_filter(
@@ -18,19 +25,26 @@
     ));
 @endphp
 
-<footer class="site-footer" data-nav-tone="dark">
+{{-- `onBackdrop`: the page already has this gradient fixed behind it (the
+     contact page), so the footer shows through to it instead of drawing a
+     second one. It becomes a backdrop area, which is what keeps that fixed
+     gradient alive this far down the page. --}}
+<footer @class(['site-footer', 'site-footer--compact' => ! $showCta, 'site-footer--on-backdrop' => $onBackdrop]) data-nav-tone="dark" @if ($onBackdrop) data-backdrop-area @endif>
     <div class="site-footer__backdrop" aria-hidden="true">
-        <canvas data-soffit data-palette="violet" class="absolute inset-0 block size-full"></canvas>
+        @unless ($onBackdrop)
+            <canvas data-soffit data-palette="violet" class="absolute inset-0 block size-full"></canvas>
+        @endunless
         <div class="site-footer__wash"></div>
     </div>
 
     <div class="site-footer__inner">
         {{-- The closing call, and the ways to reach us. --}}
+        @if ($showCta)
         <div class="site-footer__cta" data-reveal="head">
             <div>
                 <p class="site-footer__label">Contact</p>
-                <h2 class="site-footer__title">Ai un proces care merită<br> un sistem mai bun?</h2>
-                <p class="site-footer__intro">Spune-ne cum lucrezi acum. Îți răspundem în aceeași zi lucrătoare.</p>
+                <h2 class="site-footer__title">@if ($ctaTitle){{ $ctaTitle }}@else Ai un proces care merită<br> un sistem mai bun?@endif</h2>
+                <p class="site-footer__intro">{{ $ctaIntro ?? 'Spune-ne cum lucrezi acum. Îți răspundem în aceeași zi lucrătoare.' }}</p>
             </div>
             <div class="site-footer__reach">
                 <x-ui.pill href="/contact" tone="dark">Hai să discutăm</x-ui.pill>
@@ -44,6 +58,7 @@
                 </div>
             </div>
         </div>
+        @endif
 
         {{-- The site, in groups; then where we are. --}}
         <nav class="site-footer__nav" aria-label="Subsol">

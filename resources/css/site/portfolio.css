@@ -1,0 +1,187 @@
+/*
+  The client work: /portofoliu (public/clienti.blade.php), a project's page
+  (public/project.blade.php), the related projects at the foot of a service
+  page and the "Folosit de" strip of a product page — on the light chapters'
+  lavender and their colours (css/site/service-chapters.css).
+*/
+@layer components {
+    /* ---- The filter: a row of chips, one address each --------------------- */
+
+    /* The title, then the filter under it; side by side from 1024px. */
+    .portfolio__head {
+        @apply flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between lg:gap-10;
+
+        & .chapter__title {
+            @apply mt-0;
+        }
+    }
+
+    /* Its own width in the chapter's grid, not its content's; the chips
+       wrap onto as many lines as they need. */
+    .portfolio-filter {
+        @apply min-w-0;
+    }
+
+    .portfolio-filter ul {
+        @apply flex flex-wrap gap-2 lg:justify-end;
+    }
+
+    .portfolio-filter__link {
+        @apply inline-flex h-10 items-center rounded-full bg-white px-4 text-[15px] font-medium whitespace-nowrap;
+        color: var(--muted);
+        transition:
+            color var(--fast) var(--ease),
+            background-color var(--fast) var(--ease);
+
+        &:hover {
+            color: var(--ink);
+        }
+
+        &[aria-current='page'] {
+            background: var(--violet-500);
+            color: #fff;
+        }
+    }
+
+    /* ---- The cards ---------------------------------------------------------- */
+
+    .portfolio-grid {
+        @apply mt-10 grid min-w-0 grid-cols-1 gap-x-8 gap-y-12 sm:grid-cols-2 lg:grid-cols-3;
+    }
+
+    .portfolio-empty {
+        @apply mt-10 text-lg;
+        color: var(--muted);
+    }
+
+    .work-card {
+        @apply flex flex-col;
+
+        &:focus-visible {
+            outline: 2px solid var(--accent);
+            outline-offset: 6px;
+            border-radius: 16px;
+        }
+    }
+
+    .work-card__media {
+        @apply relative block overflow-hidden rounded-2xl;
+        aspect-ratio: 3 / 2;
+        background: linear-gradient(160deg, #f8f6ff, #ece8ff);
+
+        & img {
+            @apply size-full object-cover;
+            transition: transform var(--slow) var(--ease);
+        }
+    }
+
+    /* No cover yet: the client's name on the ground. */
+    .work-card__blank {
+        @apply grid size-full place-items-center p-6 text-center text-xl font-medium text-balance;
+        color: var(--muted);
+    }
+
+    .work-card__meta {
+        @apply mt-5 flex items-center gap-3 font-micro text-[11px] tracking-[0.04em] uppercase;
+        color: var(--muted);
+    }
+
+    .work-card__type {
+        @apply inline-flex h-6 items-center rounded-full px-2.5;
+        color: var(--accent);
+        border: 1px solid var(--line);
+    }
+
+    .work-card__title {
+        @apply mt-3 font-semibold text-balance;
+        font-size: 20px;
+        line-height: 1.3;
+    }
+
+    .work-card__client {
+        @apply mt-1 text-[15px];
+        color: var(--muted);
+    }
+
+    .work-card__summary {
+        @apply mt-2 text-[15px] leading-relaxed text-pretty;
+        color: var(--muted);
+    }
+
+    .work-card:is(:hover, :focus-visible) .work-card__media img {
+        transform: scale(1.03);
+    }
+
+    /* ---- /portofoliu's other parts ------------------------------------------ */
+
+    .portfolio-clients__title {
+        @apply mb-8 font-micro text-xs tracking-[0.08em] uppercase;
+        color: var(--accent);
+    }
+
+    /* One line to Produse SaaS. */
+    .portfolio-products p {
+        @apply flex flex-wrap items-center gap-x-6 gap-y-3 border-t pt-8 text-lg;
+        border-color: var(--line);
+    }
+
+    /* ---- A project's page ----------------------------------------------------- */
+
+    .project-page__live {
+        @apply mt-8;
+    }
+
+    /* The first image across the column, the rest two by two. */
+    .project-page__gallery {
+        @apply grid min-w-0 grid-cols-1 gap-4 md:grid-cols-2 md:gap-6;
+
+        & li:first-child {
+            @apply md:col-span-2;
+        }
+
+        & img {
+            @apply w-full rounded-2xl object-cover;
+        }
+    }
+
+    .project-page__details {
+        @apply mt-12 grid md:mt-16;
+
+        & > div {
+            @apply grid gap-2 py-6 md:grid-cols-[14rem_1fr] md:gap-8;
+            border-top: 1px solid var(--line);
+        }
+
+        & dt {
+            @apply font-micro text-xs tracking-[0.08em] uppercase md:pt-1;
+            color: var(--accent);
+        }
+
+        & dd {
+            @apply max-w-[46rem] text-lg leading-relaxed text-pretty;
+        }
+    }
+
+    .project-page__stack {
+        @apply flex flex-wrap gap-2;
+
+        & .chapter-chip {
+            @apply mt-0;
+        }
+    }
+
+    .project-page__back {
+        @apply mt-12;
+    }
+
+    /* ---- A product page's "Folosit de" ---------------------------------------- */
+
+    .used-by {
+        @apply flex flex-col gap-6 md:flex-row md:items-center md:gap-12;
+    }
+
+    .used-by__label {
+        @apply shrink-0 font-micro text-xs tracking-[0.08em] uppercase;
+        color: var(--accent);
+    }
+}

@@ -2,18 +2,24 @@
 
 namespace App\Support;
 
+use App\Enums\ProjectType;
+
 /**
  * The public site's navigation, shared by every menu.
  *
  * `links()`, the sections:
- * - `tiny`: the small word the full-screen menu sets under a section
  * - `bar`: shown in the top bar
- * - `menu`: shown in the full-screen menu's section list
- * - `cta`: shown as the button (a pill) instead, with this label
+ * - `menu`: a main section — the footer's page list
+ * - `place`: "section" — in the full-screen menu, in the row of smaller
+ *   links under the services
+ * - `cta`: shown as the button (a pill) instead, with this label — the
+ *   full-screen menu's one way to Contact
  * - `children`: a dropdown under the item in the top bar
  *
- * `groups()`: the full-screen menu's side column of grouped links.
- * `legal()`: the small links at the menu's foot.
+ * `services()`: the three services, the Servicii dropdown and the numbered
+ * rows of the full-screen menu, each with its line of description (`blurb`).
+ * `groups()`: the footer's columns of grouped links.
+ * `legal()`: the small links at the menu's and the footer's foot.
  *
  * The group and legal links point at the CMS pages they will be (root slugs);
  * until a page exists at that slug its link 404s.
@@ -21,61 +27,63 @@ namespace App\Support;
 final class SiteNavigation
 {
     /**
-     * What Webis builds: the Soluții dropdown and the menu's first group.
+     * What Webis does, in the order the home page's stage tells it.
      *
-     * @var list<array{label: string, href: string}>
+     * @var list<array{label: string, href: string, blurb: string}>
      */
-    private const array SOLUTIONS = [
-        ['label' => 'Software la comandă', 'href' => '/software-la-comanda'],
-        ['label' => 'Platforme', 'href' => '/platforme'],
-        ['label' => 'Mentenanță și suport', 'href' => '/mentenanta-si-suport'],
+    private const array SERVICES = [
+        ['label' => 'Software la comandă', 'href' => '/software-la-comanda', 'blurb' => 'ERP, CRM, registratură și integrări, construite de la zero.'],
+        ['label' => 'Produse SaaS', 'href' => '/produse', 'blurb' => 'Produse gata de folosit, pe abonament lunar.'],
+        ['label' => 'Web și e-commerce', 'href' => '/web', 'blurb' => 'Site-uri de prezentare și magazine online.'],
     ];
 
     /**
-     * @return list<array{label: string, href: string, tiny: string|null, bar: bool, menu: bool, cta: string|null, children: list<array{label: string, href: string}>, current: bool}>
+     * @return list<array{label: string, href: string, bar: bool, menu: bool, place: string|null, cta: string|null, children: list<array{label: string, href: string, blurb?: string}>, current: bool}>
      */
     public static function links(bool $withHome = true): array
     {
         $links = [
-            ['label' => 'Acasă', 'href' => '/', 'tiny' => null, 'bar' => false, 'menu' => false, 'cta' => null, 'children' => []],
-            ['label' => 'Soluții', 'href' => '/solutii', 'tiny' => 'ce facem', 'bar' => true, 'menu' => true, 'cta' => null, 'children' => self::SOLUTIONS],
-            ['label' => 'Clienți', 'href' => '/clienti', 'tiny' => 'cu cine lucrăm', 'bar' => true, 'menu' => true, 'cta' => null, 'children' => []],
-            ['label' => 'Produse', 'href' => '/produse', 'tiny' => 'ale noastre', 'bar' => true, 'menu' => true, 'cta' => null, 'children' => []],
-            ['label' => 'Despre', 'href' => '/despre', 'tiny' => 'cine suntem', 'bar' => true, 'menu' => true, 'cta' => null, 'children' => []],
-            ['label' => 'Blog', 'href' => '/blog', 'tiny' => 'idei', 'bar' => false, 'menu' => false, 'cta' => null, 'children' => []],
-            ['label' => 'Contact', 'href' => '/contact', 'tiny' => 'hai să vorbim', 'bar' => true, 'menu' => false, 'cta' => 'Hai să discutăm', 'children' => []],
+            ['label' => 'Acasă', 'href' => '/', 'bar' => false, 'menu' => false, 'place' => null, 'cta' => null, 'children' => []],
+            ['label' => 'Servicii', 'href' => '/solutii', 'bar' => true, 'menu' => true, 'place' => null, 'cta' => null, 'children' => self::SERVICES],
+            ['label' => 'Clienți', 'href' => '/portofoliu', 'bar' => true, 'menu' => true, 'place' => 'section', 'cta' => null, 'children' => []],
+            ['label' => 'Despre', 'href' => '/despre', 'bar' => true, 'menu' => true, 'place' => 'section', 'cta' => null, 'children' => []],
+            ['label' => 'Blog', 'href' => '/blog', 'bar' => true, 'menu' => true, 'place' => 'section', 'cta' => null, 'children' => []],
+            ['label' => 'Contact', 'href' => '/contact', 'bar' => true, 'menu' => false, 'place' => null, 'cta' => 'Hai să discutăm', 'children' => []],
         ];
 
         if (! $withHome) {
             array_shift($links);
         }
 
-        $path = self::path();
-        $marked = [];
-
-        foreach ($links as $link) {
-            $marked[] = [
-                ...$link,
-                'current' => $link['href'] === '/' ? $path === '/' : str_starts_with($path, $link['href']),
-            ];
-        }
-
-        return $marked;
+        return array_map(self::mark(...), $links);
     }
 
     /**
-     * The full-screen menu's grouped links.
+     * The three services, marked like the rest.
      *
-     * @return list<array{label: string, links: list<array{label: string, href: string}>}>
+     * @return list<array{label: string, href: string, blurb: string, current: bool}>
+     */
+    public static function services(): array
+    {
+        return array_map(self::mark(...), self::SERVICES);
+    }
+
+    /**
+     * The footer's grouped links.
+     *
+     * @return list<array{label: string, links: list<array{label: string, href: string, blurb?: string}>}>
      */
     public static function groups(): array
     {
         return [
-            ['label' => 'Soluții', 'links' => self::SOLUTIONS],
-            ['label' => 'Pentru cine', 'links' => [
-                ['label' => 'Universități', 'href' => '/universitati'],
-                ['label' => 'Instituții publice', 'href' => '/institutii-publice'],
-                ['label' => 'Companii', 'href' => '/companii'],
+            ['label' => 'Servicii', 'links' => self::SERVICES],
+            // The client work, by type (the filter on /portofoliu).
+            ['label' => 'Portofoliu', 'links' => [
+                ['label' => 'Toate proiectele', 'href' => '/portofoliu'],
+                ...array_map(fn (ProjectType $type): array => [
+                    'label' => $type->plural(),
+                    'href' => '/portofoliu?tip='.$type->value,
+                ], ProjectType::cases()),
             ]],
             ['label' => 'Web și e-commerce', 'links' => [
                 ['label' => 'Creare site de prezentare', 'href' => '/creare-site-de-prezentare'],
@@ -92,6 +100,26 @@ final class SiteNavigation
         return [
             ['label' => 'Confidențialitate', 'href' => '/confidentialitate'],
             ['label' => 'Accesibilitate', 'href' => '/accesibilitate'],
+        ];
+    }
+
+    /**
+     * @param  array<string, mixed>  $link
+     * @return array<string, mixed>
+     */
+    private static function mark(array $link): array
+    {
+        $path = self::path();
+        $href = (string) $link['href'];
+
+        return [
+            ...$link,
+            'current' => match (true) {
+                $href === '/' => $path === '/',
+                // A project's page belongs to the portfolio.
+                $href === '/portofoliu' => str_starts_with($path, $href) || str_starts_with($path, '/proiect/'),
+                default => str_starts_with($path, $href),
+            },
         ];
     }
 

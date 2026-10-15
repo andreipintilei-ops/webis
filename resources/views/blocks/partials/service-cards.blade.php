@@ -45,7 +45,10 @@
 <section id="{{ $block['id'] }}" class="svc-cards" aria-labelledby="{{ $block['id'] }}-title">
     <div class="svc-cards__inner">
         <header class="svc-cards__head" data-reveal="head">
-            <h2 id="{{ $block['id'] }}-title" class="svc-cards__title">Tot de ce ai nevoie, <x-ui.title-pill variant="stack" /><br> de la site la sistemul de gestiune.</h2>
+            <h2 id="{{ $block['id'] }}-title" class="svc-cards__title">Tot de ce ai nevoie, <x-ui.title-pill variant="stack" class="max-md:hidden" /><br> de la site la sistemul de gestiune.</h2>
+            {{-- Phones: the chip would wrap onto a line of its own between the
+                 title's halves, so it comes under the whole title instead. --}}
+            <x-ui.title-pill variant="stack" class="svc-cards__pill-below md:hidden" />
             <p class="svc-cards__intro">Construit de la zero sau gata de folosit,<br> cu mentenanță și suport de la aceeași echipă.</p>
         </header>
 

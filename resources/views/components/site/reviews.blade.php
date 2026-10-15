@@ -10,7 +10,7 @@
     script: the reviews side by side, whole. In the chapters' light colours
     and entry (css/site/service-chapters.css; js/public/reveals.ts).
 --}}
-<section id="recenzii" class="site-reviews chapter chapter--light" aria-labelledby="reviews-title">
+<section id="recenzii" {{ $attributes->class('site-reviews chapter chapter--light') }} aria-labelledby="reviews-title">
     <div class="chapter__inner">
         <header class="chapter__head site-reviews__head" data-reveal="head">
             <h2 id="reviews-title" class="chapter__title">În <span class="whitespace-nowrap">cuvintele <x-ui.title-pill variant="reviews" /></span> <span class="whitespace-nowrap">clienților.</span></h2>

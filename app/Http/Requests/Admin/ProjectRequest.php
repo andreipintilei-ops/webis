@@ -3,6 +3,7 @@
 namespace App\Http\Requests\Admin;
 
 use App\Blocks\BlockRegistry;
+use App\Enums\ProjectType;
 use App\Models\Project;
 use Illuminate\Validation\Rule;
 
@@ -20,10 +21,17 @@ class ProjectRequest extends ContentRequest
             'title' => ['required', 'string', 'max:200'],
             ...$this->slugRules('projects', $project instanceof Project ? $project->id : null),
             'client_id' => ['nullable', 'integer', Rule::exists('clients', 'id')],
+            'type' => ['required', Rule::enum(ProjectType::class)],
             'year' => ['nullable', 'integer', 'min:2000', 'max:'.(now()->year + 1)],
             'url' => ['nullable', 'url:https,http', 'max:255'],
-            'summary' => ['nullable', 'string', 'max:1000'],
+            'summary' => ['nullable', 'string', 'max:200'],
+            'need' => ['nullable', 'string', 'max:2000'],
+            'built' => ['nullable', 'string', 'max:2000'],
+            // One comma-separated line in the editor: "Laravel, Vue, MySQL".
+            'stack' => ['nullable', 'string', 'max:500'],
             'cover_asset_id' => ['nullable', 'integer', Rule::exists('assets', 'id')],
+            'images' => ['nullable', 'array', 'max:30'],
+            'images.*' => ['required', 'integer', 'distinct', Rule::exists('assets', 'id')],
             ...app(BlockRegistry::class)->rules(is_array($blocks) ? $blocks : []),
             'metrics' => ['array', 'max:6'],
             'metrics.*' => ['array:label,value'],
@@ -55,10 +63,15 @@ class ProjectRequest extends ContentRequest
             'title' => $this->string('title')->trim()->toString(),
             'slug' => $this->string('slug')->toString(),
             'client_id' => $this->input('client_id'),
+            'type' => $this->enum('type', ProjectType::class),
             'year' => $this->input('year'),
             'url' => $this->input('url'),
             'summary' => $this->input('summary'),
+            'need' => $this->input('need'),
+            'built' => $this->input('built'),
+            'stack' => $this->stack(),
             'cover_asset_id' => $this->input('cover_asset_id'),
+            'images' => array_values(array_map(intval(...), (array) $this->input('images', []))) ?: null,
             'blocks' => app(BlockRegistry::class)->prepare((array) $this->input('blocks', [])),
             'metrics' => array_values((array) $this->input('metrics', [])),
             'is_featured' => $this->boolean('is_featured'),
@@ -74,5 +87,21 @@ class ProjectRequest extends ContentRequest
     public function categoryIds(): array
     {
         return array_values(array_map(intval(...), (array) $this->input('category_ids', [])));
+    }
+
+    /**
+     * The technologies, from their comma-separated line: trimmed, without
+     * blanks or repeats; null when there are none.
+     *
+     * @return list<string>|null
+     */
+    private function stack(): ?array
+    {
+        $items = array_values(array_unique(array_filter(
+            array_map(trim(...), explode(',', $this->string('stack')->toString())),
+            fn (string $item): bool => $item !== '',
+        )));
+
+        return $items === [] ? null : $items;
     }
 }

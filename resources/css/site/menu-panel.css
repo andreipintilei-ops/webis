@@ -193,9 +193,11 @@
         @apply relative;
     }
 
-    .site-nav__caret {
-        @apply ml-1 size-3;
-        transition: transform var(--duration-fast) var(--motion-out);
+    /* A plus, not a caret: it turns a quarter of the way round while the
+       dropdown is open, so it reads as a flourish rather than a state. */
+    .site-nav__plus {
+        @apply ml-1.5 size-3;
+        transition: transform var(--slow) var(--motion-out);
     }
 
     /*
@@ -222,8 +224,8 @@
                 transform var(--duration) var(--motion-out);
         }
 
-        & .site-nav__caret {
-            transform: rotate(180deg);
+        & .site-nav__plus {
+            transform: rotate(90deg);
         }
     }
 

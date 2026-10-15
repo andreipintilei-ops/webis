@@ -1,0 +1,147 @@
+/* The contact page shares the hero palette, chapter grid and enquiry form. */
+@layer components {
+    .contact-hero {
+        @apply relative flex items-center px-[var(--site-gap)] pt-44 pb-14 text-white md:pt-48 md:pb-16;
+    }
+
+    .contact-hero__inner {
+        @apply mx-auto w-full max-w-[var(--content-max)];
+    }
+
+    .contact-hero__label {
+        @apply mb-7 font-micro text-xs tracking-[0.08em] text-white/80 uppercase;
+    }
+
+    .contact-hero__title {
+        @apply font-display text-[clamp(2.75rem,6.8vw,6.25rem)] leading-[1.16] font-normal uppercase;
+    }
+
+    .contact-hero__foot {
+        @apply mt-9 flex flex-col gap-7 md:flex-row md:items-end md:justify-between;
+
+        & p {
+            @apply text-base leading-relaxed text-white/80 md:text-lg;
+        }
+    }
+
+    .contact-page {
+        @apply pt-0 pb-20 md:pt-0 md:pb-28;
+        --ink: #fff;
+        --muted: rgb(255 255 255 / 0.78);
+        --line: rgb(255 255 255 / 0.25);
+        --accent: var(--lavender-300);
+        color: var(--ink);
+        background: transparent;
+        scroll-margin-top: 2rem;
+    }
+
+    .contact-page .contact__inner {
+        @apply items-start gap-10 border-t pt-12 md:pt-16 lg:gap-12;
+        border-color: var(--line);
+    }
+
+    .contact-page .contact__aside {
+        @apply lg:col-span-4;
+    }
+
+    /*
+      The form on a panel of its own, as the home page's closing call is:
+      a deeper indigo over the gradient, so the fields read as one object
+      rather than floating on the backdrop.
+    */
+    .contact-page .contact__main {
+        @apply rounded-[28px] border p-7 md:rounded-[36px] md:p-10 lg:col-span-8 lg:p-12;
+        border-color: rgb(255 255 255 / 0.14);
+        background: rgb(23 27 78 / 0.66);
+    }
+
+    .contact-page .chapter__title {
+        font-size: clamp(2.25rem, 3.4vw, 3.25rem);
+        line-height: 1.08;
+    }
+
+    .contact-page__intro {
+        @apply mt-6 max-w-[34ch] text-xl leading-relaxed;
+        color: var(--muted);
+    }
+
+    .contact-page .contact__details {
+        @apply mt-10 gap-6;
+    }
+
+    .contact-page__detail-label {
+        @apply mb-2 block font-micro text-[11px] tracking-[0.08em] uppercase;
+        color: var(--muted);
+    }
+
+    .contact-page .contact__detail {
+        @apply text-2xl break-words;
+        color: var(--ink);
+    }
+
+    .contact-page a.contact__detail:is(:hover, :focus-visible) {
+        color: var(--lavender-300);
+    }
+
+    .contact-page .contact__promise {
+        @apply mt-8 text-sm;
+        color: var(--muted);
+    }
+
+    .contact-page__form-head {
+        @apply mb-9;
+
+        & h3 {
+            @apply text-3xl font-medium tracking-[-0.02em];
+        }
+
+        & p {
+            @apply mt-3 max-w-[55ch] text-sm leading-relaxed;
+            color: var(--muted);
+        }
+    }
+
+    .contact-page .contact__label {
+        color: var(--muted);
+    }
+
+    .contact-page .contact__input {
+        color: var(--ink);
+        border-color: rgb(255 255 255 / 0.3);
+
+        &:focus {
+            border-color: var(--lavender-300);
+            box-shadow: 0 1px 0 var(--lavender-300);
+        }
+
+        &::placeholder {
+            @apply text-base;
+            color: var(--muted);
+        }
+
+        &[aria-invalid='true'] {
+            border-color: #ff9a9a;
+        }
+    }
+
+    .contact-page .contact__error {
+        color: #ffb3b3;
+    }
+
+    .contact-page .contact__privacy {
+        color: var(--muted);
+
+        & a:is(:hover, :focus-visible) {
+            color: var(--lavender-300);
+        }
+    }
+
+    .contact-page .contact__sent {
+        @apply border-t pt-8;
+        border-color: var(--line);
+    }
+
+    .contact-page__next {
+        @apply mx-auto mt-20 max-w-[var(--content-max)] md:mt-28;
+    }
+}

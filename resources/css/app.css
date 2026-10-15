@@ -20,6 +20,13 @@
 @import './site/explorer.css';
 @import './site/reviews-carousel.css';
 @import './site/blog-posts.css';
+@import './site/page-hero.css';
+@import './site/hero-planes.css';
+@import './site/pagination.css';
+@import './site/clients.css';
+@import './site/portfolio.css';
+@import './site/work-list.css';
+@import './site/work-stack.css';
 @import './site/title-pill.css';
 @import './site/footer.css';
 @import './site/project-list.css';
@@ -31,8 +38,10 @@
 @import './site/own-products.css';
 @import './site/how-we-work.css';
 @import './site/contact.css';
+@import './site/contact-page.css';
 @import './site/lower-tone.css';
-@import './site/variant-clienti.css';
+@import './site/variant-poveste.css';
+@import './site/variant-stage.css';
 
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 @source '../../storage/framework/views/*.php';

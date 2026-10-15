@@ -1,6 +1,8 @@
 <?php
 
+use App\Enums\ClientType;
 use App\Enums\LeadStatus;
+use App\Enums\Product;
 use App\Enums\RedirectCode;
 use App\Enums\UserRole;
 use App\Models\Asset;
@@ -69,12 +71,12 @@ it('adds, edits, orders and trashes clients', function () {
     $this->post(route('admin.clients.store'), [
         'name' => 'Primăria Iași',
         'logo_asset_id' => $logo->id,
-        'is_institution' => true,
+        'type' => 'institution',
         'show_in_logos' => true,
     ])->assertSessionHasNoErrors();
 
     $client = Client::sole();
-    expect($client->is_institution)->toBeTrue()->and($logo->usages()->count())->toBe(1);
+    expect($client->type)->toBe(ClientType::Institution)->and($logo->usages()->count())->toBe(1);
 
     $this->put(route('admin.clients.update', $client), ['name' => 'Primăria Municipiului Iași', 'show_in_logos' => false])
         ->assertSessionHasNoErrors();
@@ -89,6 +91,27 @@ it('adds, edits, orders and trashes clients', function () {
 
     $this->post(route('admin.clients.restore', $client->id))->assertRedirect();
     expect($client->fresh()?->trashed())->toBeFalse();
+});
+
+it('stores the products a client uses', function () {
+    $this->actingAs(User::factory()->create());
+    $client = Client::factory()->create();
+
+    $this->put(route('admin.clients.update', $client), ['name' => $client->name, 'products' => ['rims', 'confirmo']])
+        ->assertSessionHasNoErrors();
+    expect($client->fresh()?->products?->all())->toBe([Product::Rims, Product::Confirmo]);
+
+    $this->get(route('admin.clients.index'))
+        ->assertInertia(fn (Assert $page) => $page
+            ->where('clients.0.products', ['rims', 'confirmo'])
+            ->has('products', 4));
+
+    $this->put(route('admin.clients.update', $client), ['name' => $client->name, 'products' => []])
+        ->assertSessionHasNoErrors();
+    expect($client->fresh()?->products)->toBeNull();
+
+    $this->put(route('admin.clients.update', $client), ['name' => $client->name, 'products' => ['smilesoft', 'webis-crm']])
+        ->assertSessionHasErrors('products.1');
 });
 
 it('opens the panel for the client linked from the media library', function () {

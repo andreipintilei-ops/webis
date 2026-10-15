@@ -11,7 +11,7 @@ import { slugify } from '@/lib/slugify';
  */
 const props = withDefaults(
     defineProps<{
-        /** Shown before the slug, e.g. "/clienti/". */
+        /** Shown before the slug, e.g. "/proiect/". */
         prefix: string;
         title: string;
         /** The slug as saved; empty for a new item. */

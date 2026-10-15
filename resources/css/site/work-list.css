@@ -1,0 +1,163 @@
+/*
+  Every project as a list (components/site/work-list), after
+  dennissnellenberg.com/work, on the light chapters' lavender and their
+  colours (css/site/service-chapters.css): the client large, what it was
+  and its site in quiet columns, rows between hairlines. With a mouse a
+  preview follows the pointer (js/public/work-list.ts) and the rows not
+  pointed at dim; on phones each row carries its screenshot small.
+*/
+@layer components {
+    .work-list {
+        @apply mt-10 md:mt-14;
+    }
+
+    /* Column heads, from 768px: the same grid as the rows. */
+    .work-list__columns {
+        @apply hidden pb-4 font-micro text-[11px] tracking-[0.08em] uppercase md:grid;
+        grid-template-columns: minmax(0, 1fr) 14rem 12rem;
+        color: var(--muted);
+        border-bottom: 1px solid var(--line);
+    }
+
+    .work-list__rows > li {
+        border-bottom: 1px solid var(--line);
+    }
+
+    /* Phones: the screenshot, then the name over what it was. From 768px:
+       the name, what it was, its site — the screenshot follows the pointer
+       instead. */
+    .work-list__row {
+        @apply grid items-center gap-x-4 py-5;
+        grid-template-columns: 5.5rem minmax(0, 1fr);
+        grid-template-areas:
+            'thumb client'
+            'thumb type';
+
+        @media (min-width: 768px) {
+            @apply gap-x-0;
+            grid-template-columns: minmax(0, 1fr) 14rem 12rem;
+            grid-template-areas: 'client type site';
+            padding-block: clamp(1.75rem, 3vw, 2.75rem);
+        }
+
+        &:focus-visible {
+            outline: 2px solid var(--accent);
+            outline-offset: 4px;
+            border-radius: 8px;
+        }
+    }
+
+    .work-list__thumb {
+        @apply block overflow-hidden rounded-lg md:hidden;
+        grid-area: thumb;
+        aspect-ratio: 4 / 3;
+        background: linear-gradient(160deg, #f8f6ff, #ece8ff);
+
+        & img {
+            @apply size-full object-cover object-top;
+        }
+    }
+
+    .work-list__client {
+        @apply min-w-0 self-end font-medium text-balance md:self-auto;
+        grid-area: client;
+        font-size: clamp(1.25rem, 3.6vw, 3.5rem);
+        line-height: 1.1;
+        letter-spacing: -0.02em;
+        transition:
+            transform var(--base) var(--ease),
+            opacity var(--base) var(--ease);
+    }
+
+    .work-list__type,
+    .work-list__site {
+        @apply text-sm md:text-base;
+        color: var(--muted);
+        transition: opacity var(--base) var(--ease);
+    }
+
+    .work-list__type {
+        @apply self-start md:self-auto;
+        grid-area: type;
+    }
+
+    .work-list__site {
+        @apply hidden md:block;
+        grid-area: site;
+    }
+
+    /* With a mouse: the row pointed at leans in, the others step back. */
+    @media (hover: hover) and (pointer: fine) {
+        .work-list__row:hover .work-list__client {
+            transform: translateX(-0.75rem);
+        }
+
+        .work-list__rows:has(.work-list__row:hover)
+            .work-list__row:not(:hover)
+            :is(.work-list__client, .work-list__type, .work-list__site) {
+            opacity: 0.35;
+        }
+    }
+
+    /* ---- The preview: on <body>, following the pointer ---------------------- */
+
+    /* The position comes from the script every frame (--x, --y); only the
+       scale eases, in as the pointer enters the list and out as it leaves. */
+    .work-list__preview,
+    .work-list__cursor {
+        @apply pointer-events-none fixed top-0 left-0 z-40 hidden;
+        /* Placed with `translate`, not `transform`: `scale` then grows it
+           about its own centre on the pointer — with `transform` it grew
+           from the screen's top-left corner, where it sits untransformed. */
+        translate: calc(var(--x, -100vw) - 50%) calc(var(--y, 0px) - 50%);
+        scale: var(--show, 0);
+        transition: scale 0.45s var(--ease);
+    }
+
+    .work-list__preview {
+        @apply overflow-hidden rounded-2xl;
+        width: clamp(18rem, 26vw, 26rem);
+        aspect-ratio: 3 / 2;
+        box-shadow: 0 30px 60px -24px rgb(1 15 28 / 0.35);
+    }
+
+    /* One screenshot per row, one above the other; the row pointed at is
+       slid into view. */
+    .work-list__track {
+        @apply flex flex-col;
+        height: calc(var(--n) * 100%);
+        transform: translateY(calc(var(--i, 0) * -100% / var(--n)));
+        transition: transform 0.6s var(--ease);
+    }
+
+    .work-list__slide {
+        @apply block shrink-0;
+        height: calc(100% / var(--n));
+
+        & img {
+            @apply size-full object-cover object-top;
+        }
+    }
+
+    .work-list__cursor {
+        @apply size-20 place-items-center rounded-full text-sm font-medium text-white;
+        background: var(--violet-500);
+    }
+
+    /* Only with a mouse, from 768px. */
+    @media (hover: hover) and (pointer: fine) and (min-width: 768px) {
+        .work-list__preview {
+            @apply block;
+        }
+
+        .work-list__cursor {
+            @apply grid;
+        }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .work-list__track {
+            transition: none;
+        }
+    }
+}

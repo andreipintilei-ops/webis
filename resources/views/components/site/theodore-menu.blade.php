@@ -5,14 +5,17 @@
     it is opened by whatever carries data-menu-toggle="theodore" (and
     [data-theo-open]). Without JavaScript, CSS :target shows it.
 
-    Inside, on the mid navy with grain and on the page's content column:
-    - top: the white logo, where the header's logo sits;
-    - left: the sections, numbered, large (Anton), each with its small word
-      under it — they rise in as it opens; on hover the others dim and the
-      label rolls;
-    - right, past a hairline: the grouped links (App\Support\SiteNavigation::
-      groups()), then contact (Setări → Companie) and the call to action;
-    - foot: a hairline, © and the legal links.
+    Inside, on the mid navy with grain and on the page's content column, one
+    column top to bottom:
+    - top: the white logo, centred on the round button, over a hairline;
+    - the three services as rows (Anton, large), each with a line saying
+      what it is — at the right on large screens, under the
+      label on small ones; they rise in as it opens; on hover the others
+      dim and the label rolls;
+    - under them, smaller, the other pages (Clienți, Despre, Blog);
+    - past a hairline, the one way to Contact: the call to action, with the
+      company's e-mail and phone beside it, its address and profiles;
+    - then © and the legal links.
 
     `close`: render the menu's own ✕ — not needed when an outside toggle (the
     round header button) already turns into one.
@@ -21,14 +24,17 @@
 
 @php
     $navigation = \App\Support\SiteNavigation::links(withHome: false);
-    $sections = array_values(array_filter($navigation, fn ($link) => $link['menu']));
+    $services = \App\Support\SiteNavigation::services();
+    $pages = array_values(array_filter($navigation, fn ($link) => $link['place'] === 'section'));
     $cta = collect($navigation)->first(fn ($link) => $link['cta'] !== null);
-    $groups = \App\Support\SiteNavigation::groups();
     $legal = \App\Support\SiteNavigation::legal();
 
     $company = app(\App\Settings\CompanySettings::class);
-    $phoneHref = $company->phone ? 'tel:'.preg_replace('/[^\d+]/', '', $company->phone) : null;
+    $phoneHref = \App\Support\PhoneLink::href($company->phone);
     $address = implode(', ', array_filter([$company->street_address, $company->locality]));
+    // Profiles come from Setări → Companie; the row is left out until there
+    // is at least one.
+    $socials = array_filter($company->social);
     $logo = app(\App\Support\Brand::class)->logoNegative();
 @endphp
 
@@ -46,61 +52,67 @@
 
         <div class="theo-menu__body">
             <nav class="theo-menu__nav" aria-label="Meniu principal">
-                <ol class="theo-menu__list">
-                    @foreach ($sections as $index => $link)
+                <ul class="theo-menu__list">
+                    {{-- The three services, each with what it is. --}}
+                    @foreach ($services as $link)
                         <li>
                             <a href="{{ $link['href'] }}" class="theo-menu__item" data-theo-item @if ($link['current']) aria-current="page" @endif>
-                                <span class="theo-menu__index" aria-hidden="true">{{ sprintf('%02d', $index + 1) }}</span>
-                                <span class="theo-menu__text">
-                                    {{-- The label rolls on hover: a copy waits one line below (css). --}}
-                                    <span class="theo-menu__mask"><span class="theo-menu__label">{{ $link['label'] }}</span></span>
-                                    @if ($link['tiny'])
-                                        <span class="theo-menu__tiny">{{ $link['tiny'] }}</span>
-                                    @endif
-                                </span>
+                                {{-- The label rolls on hover: a copy waits below (css). --}}
+                                <span class="theo-menu__mask"><span class="theo-menu__label">{{ $link['label'] }}</span></span>
+                                <span class="theo-menu__blurb">{{ $link['blurb'] }}</span>
                             </a>
                         </li>
                     @endforeach
-                </ol>
-            </nav>
+                </ul>
 
-            <div class="theo-menu__aside">
-                <div class="theo-menu__groups" data-theo-reveal>
-                    @foreach ($groups as $group)
-                        <nav aria-label="{{ $group['label'] }}" class="theo-menu__group">
-                            <p class="theo-menu__heading">{{ $group['label'] }}</p>
-                            <ul class="theo-menu__group-links">
-                                @foreach ($group['links'] as $link)
-                                    <li><a href="{{ $link['href'] }}" class="theo-menu__detail" data-theo-link>{{ $link['label'] }}</a></li>
-                                @endforeach
-                            </ul>
-                        </nav>
+                <ul class="theo-menu__pages" data-theo-reveal>
+                    @foreach ($pages as $link)
+                        <li>
+                            <a href="{{ $link['href'] }}" class="theo-menu__page" data-theo-link @if ($link['current']) aria-current="page" @endif>{{ $link['label'] }}</a>
+                        </li>
                     @endforeach
-                </div>
+                </ul>
+            </nav>
+        </div>
 
-                <div class="theo-menu__contact" data-theo-reveal>
-                    @if ($company->email || $company->phone || $address !== '')
-                        <div class="theo-menu__contact-info">
-                            <p class="theo-menu__heading">Contact</p>
-                            <ul class="theo-menu__details">
-                                @if ($phoneHref)
-                                    <li><a href="{{ $phoneHref }}" class="theo-menu__detail">{{ $company->phone }}</a></li>
-                                @endif
-                                @if ($company->email)
-                                    <li><a href="mailto:{{ $company->email }}" class="theo-menu__detail">{{ $company->email }}</a></li>
-                                @endif
-                                @if ($address !== '')
-                                    <li class="theo-menu__detail">{{ $address }}</li>
-                                @endif
-                            </ul>
-                        </div>
+        {{-- The one way to Contact: the call to action, and how else to reach us. --}}
+        <div class="theo-menu__contact" data-theo-reveal>
+            @if ($cta)
+                <x-ui.pill :href="$cta['href']" tone="dark" data-theo-link :aria-current="$cta['current'] ? 'page' : null" class="theo-menu__cta">{{ $cta['cta'] }}</x-ui.pill>
+            @endif
+
+            @if ($company->email || $phoneHref)
+                <p class="theo-menu__row">
+                    @if ($company->email)
+                        <a href="mailto:{{ $company->email }}" class="theo-menu__detail">{{ $company->email }}</a>
+                    @endif
+                    @if ($company->email && $phoneHref)
+                        <span aria-hidden="true">·</span>
+                    @endif
+                    @if ($phoneHref)
+                        <a href="{{ $phoneHref }}" class="theo-menu__detail">{{ $company->phone }}</a>
+                    @endif
+                </p>
+            @endif
+
+            @if ($address !== '' || $socials !== [])
+                <div class="theo-menu__where">
+                    @if ($address !== '')
+                        <p class="theo-menu__row theo-menu__row--muted">{{ $address }}</p>
                     @endif
 
-                    @if ($cta)
-                        <x-ui.pill :href="$cta['href']" tone="dark" data-theo-link :aria-current="$cta['current'] ? 'page' : null" class="theo-menu__cta">{{ $cta['cta'] }}</x-ui.pill>
+                    @if ($socials !== [])
+                        <p class="theo-menu__row">
+                            @foreach ($socials as $platform => $url)
+                                @if (! $loop->first)
+                                    <span aria-hidden="true">·</span>
+                                @endif
+                                <a href="{{ $url }}" class="theo-menu__detail" target="_blank" rel="noopener">{{ ucfirst($platform) }}</a>
+                            @endforeach
+                        </p>
                     @endif
                 </div>
-            </div>
+            @endif
         </div>
 
         <div class="theo-menu__foot" data-theo-reveal>

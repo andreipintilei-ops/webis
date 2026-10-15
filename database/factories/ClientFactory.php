@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Enums\ClientType;
 use App\Models\Client;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -16,7 +17,8 @@ class ClientFactory extends Factory
             'name' => fake()->company(),
             'sector' => fake()->randomElement(['Retail', 'Medical', 'Construcții', 'Educație', 'HoReCa']),
             'url' => 'https://'.fake()->domainName(),
-            'is_institution' => false,
+            'type' => ClientType::Company,
+            'products' => null,
             'show_in_logos' => true,
             'sort_order' => 0,
         ];
@@ -24,6 +26,11 @@ class ClientFactory extends Factory
 
     public function institution(): static
     {
-        return $this->state(fn (array $attributes) => ['is_institution' => true]);
+        return $this->state(fn (array $attributes) => ['type' => ClientType::Institution]);
+    }
+
+    public function university(): static
+    {
+        return $this->state(fn (array $attributes) => ['type' => ClientType::University]);
     }
 }

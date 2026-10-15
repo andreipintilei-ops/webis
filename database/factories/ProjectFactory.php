@@ -3,6 +3,7 @@
 namespace Database\Factories;
 
 use App\Enums\ContentStatus;
+use App\Enums\ProjectType;
 use App\Models\Project;
 use Database\Factories\Concerns\PublicationStates;
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -22,9 +23,10 @@ class ProjectFactory extends Factory
         return [
             'title' => $title,
             'slug' => Str::slug($title),
+            'type' => fake()->randomElement(ProjectType::cases()),
             'year' => fake()->numberBetween(2015, (int) now()->format('Y')),
             'url' => 'https://'.fake()->domainName(),
-            'summary' => fake()->paragraph(),
+            'summary' => fake()->sentence(),
             'blocks' => [],
             'metrics' => [],
             'is_featured' => false,

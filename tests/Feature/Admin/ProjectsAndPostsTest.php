@@ -1,6 +1,7 @@
 <?php
 
 use App\Enums\ContentStatus;
+use App\Enums\ProjectType;
 use App\Models\Asset;
 use App\Models\Client;
 use App\Models\Page;
@@ -39,10 +40,15 @@ function projectPayload(array $overrides = []): array
         'title' => 'Magazin online Florăria Iris',
         'slug' => 'magazin-online-floraria-iris',
         'client_id' => null,
+        'type' => 'magazin',
         'year' => 2025,
         'url' => 'https://floraria-iris.ro',
         'summary' => 'Magazin WooCommerce migrat pe Laravel.',
+        'need' => null,
+        'built' => null,
+        'stack' => null,
         'cover_asset_id' => null,
+        'images' => [],
         'blocks' => [],
         'metrics' => [['value' => '+180%', 'label' => 'comenzi online']],
         'is_featured' => true,
@@ -82,6 +88,66 @@ it('creates a published project with metrics and categories', function () {
         ->and($project->metrics)->toEqual([['value' => '+180%', 'label' => 'comenzi online']])
         ->and($project->categories->pluck('id')->all())->toBe([$category->id])
         ->and($cover->usages()->count())->toBe(1);
+});
+
+it('saves the portfolio fields of a project', function () {
+    $first = Asset::factory()->create();
+    $second = Asset::factory()->create();
+
+    $this->post(route('admin.projects.store'), projectPayload([
+        'type' => 'software',
+        'need' => 'Programările se țineau pe hârtie.',
+        'built' => 'O aplicație de programări cu notificări SMS.',
+        'stack' => ' Laravel, Vue,, MySQL , Laravel ',
+        'images' => [$second->id, $first->id],
+    ]))->assertSessionHasNoErrors();
+
+    $project = Project::sole();
+
+    expect($project->type)->toBe(ProjectType::Software)
+        ->and($project->need)->toBe('Programările se țineau pe hârtie.')
+        ->and($project->built)->toBe('O aplicație de programări cu notificări SMS.')
+        ->and($project->stack)->toBe(['Laravel', 'Vue', 'MySQL'])
+        ->and($project->images)->toBe([$second->id, $first->id])
+        ->and($first->usages()->count())->toBe(1);
+
+    $this->get(route('admin.projects.edit', $project->id))
+        ->assertInertia(fn (Assert $page) => $page
+            ->where('project.type', 'software')
+            ->where('project.stack', 'Laravel, Vue, MySQL')
+            ->where('project.images', [$second->id, $first->id])
+            ->where('project.public_url', '/proiect/'.$project->slug)
+            ->has('types', 4));
+
+    $this->put(route('admin.projects.update', $project->id), projectPayload(['stack' => '', 'images' => []]))
+        ->assertSessionHasNoErrors();
+
+    expect($project->fresh()?->stack)->toBeNull()
+        ->and($project->fresh()?->images)->toBeNull()
+        ->and($first->usages()->count())->toBe(0);
+});
+
+it('lists and filters projects by type', function () {
+    Project::factory()->create(['title' => 'Programări', 'type' => ProjectType::Software]);
+    Project::factory()->create(['title' => 'Florăria', 'type' => ProjectType::Shop]);
+
+    $this->get(route('admin.projects.index', ['type' => 'magazin']))
+        ->assertInertia(fn (Assert $page) => $page
+            ->has('projects.data', 1)
+            ->where('projects.data.0.title', 'Florăria')
+            ->where('projects.data.0.type_label', 'Magazin online')
+            ->where('filters.type', 'magazin'));
+});
+
+it('validates the project type, the one-line summary and the gallery', function () {
+    $this->post(route('admin.projects.store'), projectPayload([
+        'type' => 'aplicatie',
+        'summary' => str_repeat('a', 201),
+        'images' => [999],
+    ]))->assertSessionHasErrors(['type', 'summary', 'images.0']);
+
+    $this->post(route('admin.projects.store'), projectPayload(['type' => null]))
+        ->assertSessionHasErrors('type');
 });
 
 it('validates project metrics and the live site address', function () {
@@ -187,7 +253,7 @@ it('manages portfolio categories on one page', function () {
         ->assertOk()
         ->assertInertia(fn (Assert $page) => $page
             ->component('admin/categories/Index')
-            ->where('urlPrefix', '/clienti/categorie/'));
+            ->where('urlPrefix', '/portofoliu/categorie/'));
 
     $this->post(route('admin.project-categories.store'), [
         'name' => 'Magazine online',

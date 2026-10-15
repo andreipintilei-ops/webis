@@ -4,6 +4,7 @@ import { useSortable } from '@vueuse/integrations/useSortable';
 import { GripVertical, ImageOff, Plus } from '@lucide/vue';
 import { computed, onMounted, ref, useTemplateRef, watch } from 'vue';
 import ConfirmAction from '@/components/admin/ConfirmAction.vue';
+import SelectField from '@/components/admin/fields/SelectField.vue';
 import SwitchField from '@/components/admin/fields/SwitchField.vue';
 import TextField from '@/components/admin/fields/TextField.vue';
 import AssetField from '@/components/admin/media/AssetField.vue';
@@ -35,7 +36,8 @@ type ClientRow = {
     logo_url: string | null;
     sector: string | null;
     url: string | null;
-    is_institution: boolean;
+    type: string;
+    products: string[];
     show_in_logos: boolean;
     sort_order: number;
     projects_count: number;
@@ -47,6 +49,8 @@ const props = defineProps<{
     clients: ClientRow[];
     filters: { q: string; trashed: boolean };
     editId: number | null;
+    types: { value: string; label: string }[];
+    products: { value: string; label: string }[];
 }>();
 
 defineOptions({
@@ -114,7 +118,8 @@ const form = useForm({
     logo_asset_id: null as number | null,
     sector: null as string | null,
     url: null as string | null,
-    is_institution: false,
+    type: 'company' as string | null,
+    products: [] as string[],
     show_in_logos: true,
     sort_order: 0 as number | null,
 });
@@ -125,7 +130,8 @@ function openNew(): void {
     form.logo_asset_id = null;
     form.sector = null;
     form.url = null;
-    form.is_institution = false;
+    form.type = 'company';
+    form.products = [];
     form.show_in_logos = true;
     form.sort_order = 0;
     form.clearErrors();
@@ -138,7 +144,8 @@ function openEdit(client: ClientRow): void {
     form.logo_asset_id = client.logo_asset_id;
     form.sector = client.sector;
     form.url = client.url;
-    form.is_institution = client.is_institution;
+    form.type = client.type;
+    form.products = [...client.products];
     form.show_in_logos = client.show_in_logos;
     form.sort_order = client.sort_order;
     form.clearErrors();
@@ -280,9 +287,13 @@ function undelete(client: ClientRow): void {
                                     row.name
                                 }}</span>
                                 <Badge
-                                    v-if="row.is_institution"
+                                    v-if="row.type !== 'company'"
                                     variant="secondary"
-                                    >Instituție</Badge
+                                    >{{
+                                        props.types.find(
+                                            (type) => type.value === row.type,
+                                        )?.label
+                                    }}</Badge
                                 >
                                 <Badge
                                     v-if="!row.show_in_logos"
@@ -414,11 +425,43 @@ function undelete(client: ClientRow): void {
                     placeholder="https://…"
                     :error="form.errors.url"
                 />
-                <SwitchField
-                    v-model="form.is_institution"
-                    label="Instituție publică"
-                    hint="Apare în blocul „Clienți notabili”."
+                <SelectField
+                    v-model="form.type"
+                    label="Tip"
+                    :options="props.types"
+                    hint="Pe /clienti, clienții sunt grupați după tip."
+                    :error="form.errors.type"
                 />
+                <div class="grid gap-1.5">
+                    <Label>Folosește produsele</Label>
+                    <div class="flex flex-wrap gap-3">
+                        <label
+                            v-for="product in props.products"
+                            :key="product.value"
+                            class="flex items-center gap-1.5 text-sm"
+                        >
+                            <input
+                                v-model="form.products"
+                                type="checkbox"
+                                :value="product.value"
+                                class="size-4"
+                            />
+                            {{ product.label }}
+                        </label>
+                    </div>
+                    <p class="text-xs text-muted-foreground">
+                        Apare în banda „Folosit de” de pe pagina produsului.
+                        Produsele nu sunt proiecte.
+                    </p>
+                    <InputError
+                        :message="
+                            form.errors.products ??
+                            Object.entries(form.errors).find(([key]) =>
+                                key.startsWith('products.'),
+                            )?.[1]
+                        "
+                    />
+                </div>
                 <SwitchField
                     v-model="form.show_in_logos"
                     label="Afișează în banda de logo-uri"

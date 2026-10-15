@@ -10,8 +10,9 @@ use Illuminate\Contracts\View\View;
 class HomeController extends Controller
 {
     /**
-     * GET / — the CMS page of type "home". Plain Blade, no Inertia: public
-     * pages ship complete HTML for crawlers.
+     * GET / — the CMS page of type "home", with the stage after its blocks
+     * (public/home.blade.php). Plain Blade, no Inertia: public pages ship
+     * complete HTML for crawlers.
      */
     public function __invoke(): View
     {
@@ -21,13 +22,13 @@ class HomeController extends Controller
     }
 
     /**
-     * GET /clienti — for now a copy of the home page, from its own template
-     * (public/clienti.blade.php) and marked data-variant="clienti", to try
-     * design choices without touching the home page (css/site/variant-clienti.css).
+     * GET /poveste — a design trial kept for later: a copy of the home page,
+     * from its own template (public/poveste.blade.php) and marked
+     * data-variant="poveste" (css/site/variant-poveste.css).
      */
-    public function clienti(): View
+    public function poveste(): View
     {
-        return view('public.clienti', [
+        return view('public.poveste', [
             'page' => Page::query()->ofType(PageType::Home)->published()->first(),
         ]);
     }

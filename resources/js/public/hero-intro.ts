@@ -16,6 +16,10 @@ import { EASE, loadGsap } from '@/public/gsap';
  * 3. The title rises line by line out of its masks; the eyebrow, buttons,
  *    logo strip and header come in after it.
  *
+ * The page is held at the top while that plays — it only reads if it cannot
+ * be scrolled out from under the viewer — and let go shortly before the end,
+ * so the tail plays under someone who has already started scrolling.
+ *
  * Leaving: once the last section on the backdrop ([data-backdrop-area])
  * starts to scroll off, the page after it slides up and the backdrop shrinks
  * into a rounded card just above it, while the gradient inside drifts up at
@@ -87,6 +91,76 @@ export function backdropCovers(x: number, y: number): boolean {
 const LINE_HIDDEN = 140;
 /** How far the inside starts zoomed in; it settles to 1 as the shape grows. */
 const ZOOM = 1.25;
+/**
+ * Seconds before the intro ends that the page is let go, so the last of it
+ * plays under a viewer who can already scroll — and how long the hold lasts
+ * at the very most, in case the timeline never reports finishing.
+ */
+const UNLOCK_BEFORE = 0.7;
+const HOLD_LIMIT = 6000;
+
+/** The keys that would scroll the page, unless something is being typed in. */
+const SCROLL_KEYS = new Set([
+    ' ',
+    'PageDown',
+    'PageUp',
+    'End',
+    'Home',
+    'ArrowDown',
+    'ArrowUp',
+]);
+
+/**
+ * Hold the page at the top while the intro plays: the opening only reads if
+ * it cannot be scrolled out from under the viewer. Wheel, touch and the
+ * scroll keys are swallowed, and a scrollbar drag — which no handler can
+ * prevent — is undone by putting the page back.
+ *
+ * Deliberately not `overflow: hidden`: that takes the scrollbar away and
+ * shifts the whole page sideways the moment the hold is released. Returns
+ * the release, which is safe to call more than once.
+ */
+function holdAtTop(): () => void {
+    const swallow = (event: Event): void => event.preventDefault();
+    const onKey = (event: KeyboardEvent): void => {
+        const target = event.target as HTMLElement | null;
+
+        if (
+            SCROLL_KEYS.has(event.key) &&
+            !target?.closest('input, textarea, select, [contenteditable]')
+        ) {
+            event.preventDefault();
+        }
+    };
+    const rewind = (): void => {
+        if (window.scrollY !== 0) {
+            window.scrollTo(0, 0);
+        }
+    };
+
+    window.addEventListener('wheel', swallow, { passive: false });
+    window.addEventListener('touchmove', swallow, { passive: false });
+    window.addEventListener('keydown', onKey);
+    window.addEventListener('scroll', rewind, { passive: true });
+
+    let released = false;
+    const limit = window.setTimeout(() => release(), HOLD_LIMIT);
+
+    function release(): void {
+        if (released) {
+            return;
+        }
+
+        released = true;
+        window.clearTimeout(limit);
+        window.removeEventListener('wheel', swallow);
+        window.removeEventListener('touchmove', swallow);
+        window.removeEventListener('keydown', onKey);
+        window.removeEventListener('scroll', rewind);
+    }
+
+    return release;
+}
 
 /**
  * @param ready settles once smooth scrolling is set up (or skipped), so the
@@ -273,6 +347,7 @@ function playIntro(
 
     root.classList.add('intro-running');
 
+    const release = holdAtTop();
     const media = backdrop.querySelector<HTMLElement>('[data-intro-media]');
     const lines = Array.from(
         hero.querySelectorAll<HTMLElement>('.hero-line__inner'),
@@ -333,8 +408,11 @@ function playIntro(
                 ...(header ? [header] : []),
                 ...(media ? [media] : []),
             ],
-            { clearProps: 'transform,opacity,visibility' },
+            {
+                clearProps: 'transform,opacity,visibility',
+            },
         );
+        release();
         root.classList.remove('intro-running');
         then();
     };
@@ -408,4 +486,10 @@ function playIntro(
             TIMING.textAt + 0.1,
         );
     }
+
+    // Let the page go shortly before the end: by then the backdrop is open
+    // and the title is in, and the tail of the intro can play under a
+    // viewer who has already started scrolling. Added last, once every part
+    // is on the timeline and its full length is known.
+    tl.call(release, undefined, Math.max(0, tl.duration() - UNLOCK_BEFORE));
 }

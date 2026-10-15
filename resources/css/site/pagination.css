@@ -1,0 +1,57 @@
+/*
+  A listing's pages (components/site/pagination.blade.php): rounded squares,
+  as the cards' arrow buttons — white on the lavender, the current page in
+  the violet, the arrows at the ends.
+*/
+@layer components {
+    .pagination {
+        @apply flex items-center justify-center gap-2 sm:gap-3;
+    }
+
+    .pagination__pages {
+        @apply flex items-center gap-2 sm:gap-3;
+    }
+
+    .pagination__page,
+    .pagination__step {
+        @apply grid size-11 place-items-center rounded-xl bg-white text-[15px] font-medium sm:size-12;
+        color: var(--navy-950);
+        transition:
+            background-color var(--base) var(--ease),
+            color var(--base) var(--ease);
+
+        &:is(a):hover {
+            background: var(--lavender-300);
+            color: #fff;
+        }
+
+        &:focus-visible {
+            outline: 2px solid var(--violet-500);
+            outline-offset: 3px;
+        }
+    }
+
+    .pagination__page[aria-current='page'] {
+        background: var(--violet-cta);
+        color: #fff;
+    }
+
+    .pagination__step {
+        & svg {
+            @apply w-3.5;
+        }
+
+        &.pagination__step--prev svg {
+            transform: rotate(180deg);
+        }
+
+        &:is(span) {
+            @apply opacity-40;
+        }
+    }
+
+    .pagination__gap {
+        @apply w-4 text-center font-micro;
+        color: var(--ink-muted);
+    }
+}

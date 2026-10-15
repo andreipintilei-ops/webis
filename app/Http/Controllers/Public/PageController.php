@@ -33,6 +33,6 @@ class PageController extends Controller
             return redirect('/', 301);
         }
 
-        return view('public.page', ['page' => $page]);
+        return view($page->type === PageType::Contact ? 'public.contact' : 'public.page', ['page' => $page]);
     }
 }

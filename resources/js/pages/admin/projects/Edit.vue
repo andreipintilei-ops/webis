@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { Head, Link, router, useForm } from '@inertiajs/vue3';
-import { ArrowLeft, Trash2 } from '@lucide/vue';
-import { computed } from 'vue';
+import { ArrowLeft, ImagePlus, Trash2 } from '@lucide/vue';
+import { computed, ref } from 'vue';
 import BlockEditor from '@/components/admin/blocks/BlockEditor.vue';
 import { scoped } from '@/components/admin/blocks/errors';
 import ConfirmAction from '@/components/admin/ConfirmAction.vue';
@@ -15,6 +15,8 @@ import SelectField from '@/components/admin/fields/SelectField.vue';
 import SwitchField from '@/components/admin/fields/SwitchField.vue';
 import TextField from '@/components/admin/fields/TextField.vue';
 import AssetField from '@/components/admin/media/AssetField.vue';
+import MediaPicker from '@/components/admin/media/MediaPicker.vue';
+import InputError from '@/components/InputError.vue';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -30,6 +32,7 @@ import type {
     SeoData,
     StoredBlock,
 } from '@/types/content';
+import type { Asset } from '@/types/media';
 
 type Metric = { value: string; label: string };
 
@@ -38,10 +41,16 @@ type ProjectPayload = {
     title: string;
     slug: string;
     client_id: number | null;
+    type: string | null;
     year: number | null;
     url: string | null;
     summary: string | null;
+    need: string | null;
+    built: string | null;
+    /** Comma-separated; the server splits it into a list. */
+    stack: string | null;
     cover_asset_id: number | null;
+    images: (number | null)[];
     blocks: StoredBlock[];
     metrics: Metric[];
     is_featured: boolean;
@@ -57,6 +66,7 @@ type ProjectPayload = {
 const props = defineProps<{
     project: ProjectPayload;
     statuses: Option[];
+    types: Option[];
     blockTypes: BlockType[];
     choices: Choices;
     revisions: RevisionSummary[];
@@ -75,10 +85,15 @@ const form = useForm({
     title: props.project.title,
     slug: props.project.slug,
     client_id: props.project.client_id,
+    type: props.project.type,
     year: props.project.year,
     url: props.project.url,
     summary: props.project.summary,
+    need: props.project.need,
+    built: props.project.built,
+    stack: props.project.stack,
     cover_asset_id: props.project.cover_asset_id,
+    images: props.project.images,
     blocks: props.project.blocks,
     metrics: props.project.metrics,
     is_featured: props.project.is_featured,
@@ -99,6 +114,19 @@ const clientOptions = computed<Option[]>(() =>
         label: client.label,
     })),
 );
+
+const MAX_IMAGES = 30;
+
+const galleryPickerOpen = ref(false);
+
+function addImages(assets: Asset[]): void {
+    const room = MAX_IMAGES - form.images.length;
+    const ids = assets
+        .map((asset) => asset.id)
+        .filter((id) => !form.images.includes(id));
+
+    form.images = [...form.images, ...ids.slice(0, Math.max(room, 0))];
+}
 
 function submit(): void {
     const options = {
@@ -159,24 +187,86 @@ function remove(): void {
                     />
                     <SlugInput
                         v-model="form.slug"
-                        prefix="/clienti/"
+                        prefix="/proiect/"
                         :title="form.title"
                         :original="project.slug"
                         :is-live="project.is_live"
                         :error="form.errors.slug"
                     />
+                    <SelectField
+                        v-model="form.type"
+                        label="Tip"
+                        :options="types"
+                        nullable
+                        empty-label="Alege tipul…"
+                        hint="Filtrul de pe /portofoliu și lucrările arătate pe paginile de servicii."
+                        :error="form.errors.type"
+                    />
                     <TextField
                         v-model="form.summary"
                         label="Rezumat"
-                        multiline
-                        :max="1000"
+                        :max="200"
                         :error="form.errors.summary"
-                        hint="Ce s-a făcut și pentru cine — apare pe cardul proiectului."
+                        hint="O singură frază: ce s-a făcut și pentru cine — apare pe cardul proiectului."
+                    />
+                    <TextField
+                        v-model="form.need"
+                        label="De ce avea nevoie clientul"
+                        multiline
+                        :rows="4"
+                        :max="2000"
+                        :error="form.errors.need"
+                    />
+                    <TextField
+                        v-model="form.built"
+                        label="Ce am construit"
+                        multiline
+                        :rows="4"
+                        :max="2000"
+                        :error="form.errors.built"
+                    />
+                    <TextField
+                        v-model="form.stack"
+                        label="Tehnologii"
+                        placeholder="Laravel, Vue, MySQL"
+                        :max="500"
+                        :error="form.errors.stack"
+                        hint="Separate prin virgulă."
                     />
                     <div class="grid gap-1.5">
                         <Label>Imagine de copertă</Label>
                         <AssetField v-model="form.cover_asset_id" />
+                        <InputError :message="form.errors.cover_asset_id" />
                     </div>
+                    <ItemList
+                        v-model="form.images"
+                        label="Galerie"
+                        :new-item="() => null"
+                        add-label="Adaugă o imagine"
+                        :max="MAX_IMAGES"
+                        :error="form.errors.images"
+                    >
+                        <template #default="{ index: i }">
+                            <AssetField v-model="form.images[i]" />
+                            <InputError :message="errors[`images.${i}`]" />
+                        </template>
+                    </ItemList>
+                    <Button
+                        v-if="form.images.length < MAX_IMAGES"
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        class="-mt-3 self-start"
+                        @click="galleryPickerOpen = true"
+                    >
+                        <ImagePlus /> Adaugă mai multe imagini
+                    </Button>
+                    <MediaPicker
+                        v-model:open="galleryPickerOpen"
+                        multiple
+                        title="Alege imaginile galeriei"
+                        @select="addImages"
+                    />
                     <div class="grid gap-4 sm:grid-cols-3">
                         <SelectField
                             v-model="form.client_id"
@@ -245,9 +335,16 @@ function remove(): void {
                         v-model="form.seo"
                         :title="form.title"
                         :fallback-description="form.summary"
-                        :path="`/clienti/${form.slug}`"
+                        :path="`/proiect/${form.slug}`"
                         :title-suffix="titleSuffix"
-                        :content-text="contentText([form.summary, form.blocks])"
+                        :content-text="
+                            contentText([
+                                form.summary,
+                                form.need,
+                                form.built,
+                                form.blocks,
+                            ])
+                        "
                         :errors="scoped(errors, 'seo')"
                     />
                 </TabsContent>

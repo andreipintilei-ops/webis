@@ -1,7 +1,9 @@
 <?php
 
 use App\Enums\LeadStatus;
+use App\Enums\PageType;
 use App\Models\Lead;
+use App\Models\Page;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 uses(RefreshDatabase::class);
@@ -37,12 +39,13 @@ it('stores a request as a new lead, with its organization and consent', function
 });
 
 it('comes back to the form with a thank-you without JavaScript', function () {
-    // The form is on /clienti (the home page no longer has it).
-    $this->from('/clienti')->post('/cerere-oferta', contactForm())
-        ->assertRedirect(url('/clienti').'#contact')
+    Page::factory()->ofType(PageType::Contact)->create(['title' => 'Contact', 'slug' => 'contact']);
+
+    $this->from('/contact')->post('/cerere-oferta', contactForm())
+        ->assertRedirect(url('/contact').'#contact')
         ->assertSessionHas('contact-sent');
 
-    $this->get('/clienti')->assertSee('Mulțumim! Vă răspundem în aceeași zi lucrătoare.');
+    $this->get('/contact')->assertSee('Mulțumim! Vă răspundem în aceeași zi lucrătoare.');
 });
 
 it('needs a name, a message and one way to answer', function () {

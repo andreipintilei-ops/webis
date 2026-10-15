@@ -575,7 +575,7 @@
         @apply mt-7 text-[17px] font-medium text-pretty md:text-lg;
         line-height: 1.5;
         letter-spacing: -0.015em;
-        color: var(--ink);
+        color: var(--muted);
     }
 
     .chapter-review__author {
