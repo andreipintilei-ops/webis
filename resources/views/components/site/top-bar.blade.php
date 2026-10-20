@@ -45,11 +45,10 @@
                     --}}
                     <li class="site-nav__dropdown hidden md:block">
                         <a href="{{ $link['href'] }}" @class(['site-link', 'is-active' => $link['current']]) @if ($link['current']) aria-current="page" @endif>
-                            <span class="site-link__mask"><span class="site-link__text">{{ $link['label'] }}</span></span>
-                            {{-- A plus rather than a caret: it turns a quarter
-                                 of the way round while the dropdown is open. --}}
-                            <svg class="site-nav__plus" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
-                                <path d="M6 1.75v8.5M1.75 6h8.5" stroke-linecap="round" />
+                            <x-ui.roll :text="$link['label']" />
+                            {{-- A chevron: it turns over while the dropdown is open. --}}
+                            <svg class="site-nav__chevron" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+                                <path d="M3 4.75 6 7.75l3-3" stroke-linecap="round" stroke-linejoin="round" />
                             </svg>
                         </a>
                         <div class="site-dropdown">
@@ -64,9 +63,9 @@
                     </li>
                 @else
                     <li class="hidden md:block">
-                        {{-- Label in a mask so it can roll on hover (css/site/menu-panel.css). --}}
+                        {{-- The label rolls letter by letter on hover (css/site/roll.css). --}}
                         <a href="{{ $link['href'] }}" @class(['site-link', 'is-active' => $link['current']]) @if ($link['current']) aria-current="page" @endif>
-                            <span class="site-link__mask"><span class="site-link__text">{{ $link['label'] }}</span></span>
+                            <x-ui.roll :text="$link['label']" />
                         </a>
                     </li>
                 @endif

@@ -1,12 +1,13 @@
 {{--
     /portofoliu — the client work, "Clienți" in the menu
-    (Public\ClientsController): the internal pages' hero with the planes;
-    the featured projects as a walkthrough (the /despre one, on the light
-    lavender: components/site/featured-work); every project as a list, after
-    dennissnellenberg.com/work, filtered by type — a row of links, so each
-    filter has its own address (?tip=magazin) — a preview following the
-    pointer (components/site/work-list); the clients' logos; a line to
-    Produse SaaS; the footer's closing call, reworded.
+    (Public\ClientsController): the internal pages' hero with the planes and
+    the figures under it (components/site/figures); the featured projects
+    as stacking cards (components/site/featured-work); every project as a
+    list, after dennissnellenberg.com/work, filtered by type — a row of
+    links, so each filter has its own address (?tip=magazin) — a preview
+    following the pointer (components/site/work-list); the home page's strip
+    of logos; a violet panel to Produse SaaS; the footer's closing call,
+    reworded.
 
     Client work only: Webis's own products (SmileSoft, RIMS, Bugetare
     participativă, Confirmo) are on Produse SaaS and their own pages, never
@@ -72,6 +73,16 @@
             'current' => $type === $option,
         ], ProjectType::cases()),
     ];
+
+    // The products panel's W: five plates, a Lucide icon in each.
+    $plates = ['flask', 'vote', 'layers', 'smile', 'calendar-check'];
+    $productIcon = fn (string $name) => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'.[
+        'flask' => '<path d="M14 2v6a2 2 0 0 0 .245.96l5.51 10.08A2 2 0 0 1 18 22H6a2 2 0 0 1-1.755-2.96l5.51-10.08A2 2 0 0 0 10 8V2"/><path d="M6.453 15h11.094"/><path d="M8.5 2h7"/>',
+        'vote' => '<path d="m9 12 2 2 4-4"/><path d="M5 7c0-1.1.9-2 2-2h10a2 2 0 0 1 2 2v12H5V7Z"/><path d="M22 19H2"/>',
+        'layers' => '<path d="M12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83z"/><path d="m22 17.65-9.17 4.16a2 2 0 0 1-1.66 0L2 17.65"/><path d="m22 12.65-9.17 4.16a2 2 0 0 1-1.66 0L2 12.65"/>',
+        'smile' => '<circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" x2="9.01" y1="9" y2="9"/><line x1="15" x2="15.01" y1="9" y2="9"/>',
+        'calendar-check' => '<path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/><path d="m9 16 2 2 4-4"/>',
+    ][$name].'</svg>';
 @endphp
 
 <x-layouts.public
@@ -83,10 +94,14 @@
 >
     <x-site.page-hero
         label="Clienți · Webis"
-        :title="['Ce am construit', 'pentru clienți.']"
-        intro="Software la comandă, site-uri de prezentare, magazine online și identitate vizuală, pentru firme și instituții."
+        :title="['Proiecte', 'pentru clienți.']"
+        intro="Software la comandă, site-uri de prezentare și magazine online realizate de Webis."
         data-reveal-pace="fast"
+        :flush="true"
     />
+
+    {{-- ================================================== The figures --}}
+    <x-site.figures />
 
     {{-- ================================================== Featured --}}
     @if ($featuredItems !== [])
@@ -116,29 +131,33 @@
                 <p class="portfolio-empty">Încă nu am publicat proiecte.</p>
             @endif
         </div>
-    </section>
 
-    {{-- ================================================== Who we worked with --}}
-    @if ($logos->isNotEmpty())
-        <section class="chapter chapter--light portfolio-clients" aria-labelledby="clients-title" data-reveal-pace="fast">
-            <div class="chapter__inner">
-                <h2 id="clients-title" class="portfolio-clients__title" data-reveal>Am lucrat cu</h2>
-                <ul class="client-logos" data-reveal>
-                    @foreach ($logos as $client)
-                        <li data-reveal-child><x-picture :asset="$client->logo" :alt="$client->name" sizes="160px" /></li>
+        {{-- ================================================== Who we worked with --}}
+        {{-- The home page's strip of logos, darkened, on the same ground: the
+             list's section runs on under it, out to the screen's edges. --}}
+        <div class="portfolio-clients">
+            <x-logo-marquee tone="light" class="portfolio-clients__strip" />
+        </div>
+
+        {{-- ================================================== Our own products --}}
+        {{-- A violet panel: what they are and the way to Produse SaaS; beside
+             it five plates standing as the Webis W, each with an icon — no
+             product named here: this page is client work only. --}}
+        <div class="portfolio-products">
+            <div class="portfolio-products__panel" data-reveal>
+                <div class="portfolio-products__text" data-reveal-child>
+                    <p class="portfolio-products__label">Produse SaaS</p>
+                    <h2 id="products-title" class="portfolio-products__title">Aplicații dezvoltate de noi, gata de folosit.</h2>
+                    <p class="portfolio-products__intro">Pe lângă proiectele pentru clienți, construim și întreținem produse proprii, disponibile pe abonament.</p>
+                    <x-ui.pill href="/produse" tone="dark" class="portfolio-products__link">Vezi produsele</x-ui.pill>
+                </div>
+
+                <div class="portfolio-products__mark" aria-hidden="true" data-reveal-child>
+                    @foreach ($plates as $glyph)
+                        <span class="portfolio-products__plate" style="--i: {{ $loop->index }}"><span>{!! $productIcon($glyph) !!}</span></span>
                     @endforeach
-                </ul>
+                </div>
             </div>
-        </section>
-    @endif
-
-    {{-- ================================================== Our own products --}}
-    <section class="chapter chapter--light portfolio-products" aria-label="Produse proprii">
-        <div class="chapter__inner">
-            <p data-reveal>
-                Avem și produse proprii, gata de folosit.
-                <x-ui.arrow-link href="/produse">Vezi Produse SaaS</x-ui.arrow-link>
-            </p>
         </div>
     </section>
 </x-layouts.public>

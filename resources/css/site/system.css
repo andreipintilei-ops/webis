@@ -1,0 +1,116 @@
+/*
+  The site's visual language, as reusable pieces (trial on /web):
+
+  - Type: section titles in the display face (Anton, uppercase), each
+    under its number on a hairline (components/ui/section-head); the
+    title chips the only accent in titles.
+  - Surfaces: the light chapters' lavender by default, the hero's indigo
+    for emphasis (chapter--dark); the violet kept to buttons and at most
+    one call to action a page. No plain white sections.
+  - One card: the notched card with the arrow button (.post-card,
+    css/site/blog-posts.css), for anything that is a link.
+  - One list: hairline rows (.rows), for anything that is not.
+  - One shape: the W's plate, a rounded square on its corner (.plate).
+*/
+@layer components {
+    /* ---- The section heading -------------------------------------------- */
+
+    .section-head {
+        @apply grid gap-6;
+    }
+
+    .section-head__number {
+        @apply flex items-center gap-4 font-micro text-xs tracking-[0.08em];
+        color: var(--accent);
+
+        &::after {
+            content: '';
+            @apply h-px flex-1;
+            background: var(--line);
+        }
+    }
+
+    .section-head__row {
+        @apply grid gap-6 lg:grid-cols-12 lg:items-end lg:gap-10;
+    }
+
+    .section-head__title {
+        @apply font-display font-normal text-balance uppercase lg:col-span-7;
+        font-size: clamp(2.5rem, 5vw, 4.75rem);
+        line-height: 1.05;
+        color: var(--ink);
+    }
+
+    .section-head__intro {
+        @apply max-w-[42ch] text-lg leading-relaxed text-pretty lg:col-span-4 lg:col-start-9 lg:pb-2;
+        color: var(--muted);
+    }
+
+    /* ---- The plate: the W's rounded square on its corner ----------------- */
+
+    .plate {
+        @apply relative inline-grid size-11 shrink-0 place-items-center;
+
+        &::before {
+            content: '';
+            @apply absolute inset-[15%] rounded-[24%];
+            rotate: 45deg;
+            background: linear-gradient(
+                135deg,
+                var(--purple-500),
+                var(--violet-500)
+            );
+            box-shadow: 0 10px 18px -10px rgb(91 63 224 / 0.7);
+        }
+
+        & > * {
+            @apply relative font-micro text-xs text-white;
+        }
+    }
+
+    /* On the indigo: white, its mark in the violet. */
+    .chapter--dark .plate {
+        &::before {
+            background: #fff;
+            box-shadow: none;
+        }
+
+        & > * {
+            color: var(--violet-500);
+        }
+    }
+
+    /* ---- Rows: a list between hairlines ------------------------------------ */
+
+    .rows {
+        @apply grid border-t;
+        border-color: var(--line);
+
+        & > li {
+            @apply grid grid-cols-[auto_minmax(0,1fr)] content-start items-start gap-x-5 gap-y-1 border-b py-6 md:grid-cols-[auto_minmax(0,1fr)_minmax(0,1.3fr)] md:gap-x-8 md:py-7;
+            border-color: var(--line);
+        }
+    }
+
+    /* Two columns of rows from 1024px. */
+    .rows--two {
+        @apply lg:grid-cols-2 lg:gap-x-12;
+
+        & > li {
+            @apply md:grid-cols-[auto_minmax(0,1fr)];
+        }
+    }
+
+    .rows__title {
+        @apply text-xl leading-snug font-medium tracking-[-0.02em] md:text-[22px];
+    }
+
+    .rows__line {
+        @apply col-start-2 text-base leading-relaxed text-pretty md:col-start-auto md:text-lg;
+        color: var(--muted);
+    }
+
+    .rows--two .rows__line {
+        @apply md:col-start-2;
+    }
+}

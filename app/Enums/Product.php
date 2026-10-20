@@ -25,6 +25,12 @@ enum Product: string
         };
     }
 
+    /** Where it is presented: its own site, else its section on /produse. */
+    public function href(): string
+    {
+        return $this->externalUrl() ?? '/produse#'.$this->value;
+    }
+
     /** Its own site, for a product that lives outside webis.ro. */
     public function externalUrl(): ?string
     {

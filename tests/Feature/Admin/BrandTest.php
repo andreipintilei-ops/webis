@@ -72,11 +72,11 @@ it('shows the logos and the favicons on the public site', function () {
     // The negative logo is for dark first screens: a page opening on an image hero.
     $hero = Asset::factory()->withImage()->create();
     Page::factory()->create([
-        'slug' => 'despre',
+        'slug' => 'pagina-test',
         'blocks' => [['id' => 'h', 'type' => 'hero', 'v' => 1, 'data' => ['layout' => 'centered', 'heading' => 'Despre', 'image_asset_id' => $hero->id]]],
     ]);
 
-    expect($this->get('/despre')->assertOk()->getContent())
+    expect($this->get('/pagina-test')->assertOk()->getContent())
         ->toContain('src="'.$negative->file()?->getUrl().'"');
 });
 

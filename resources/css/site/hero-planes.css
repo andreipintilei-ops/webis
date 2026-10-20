@@ -71,9 +71,10 @@
         }
     }
 
-    /* Nothing rises over the contact page's hero: the drawing fades out
-       at its foot instead of being cut by the hero's edge. */
-    .contact-hero .hero-planes {
+    /* Nothing rises over the contact page's hero, nor a flush one (/blog):
+       the drawing fades out at its foot instead of being cut by the hero's
+       edge. */
+    :is(.contact-hero, .page-hero--flush) .hero-planes {
         mask-image: linear-gradient(to bottom, #000 55%, transparent 92%);
     }
 

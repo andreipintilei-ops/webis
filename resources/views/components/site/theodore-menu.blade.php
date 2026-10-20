@@ -1,21 +1,17 @@
 {{--
-    The full-screen menu. The curtain that opens and closes it is Codrops'
-    "Theodore" (MIT): an SVG shape with a curved edge that sweeps over the
-    page, then lifts to reveal the menu. Behaviour: js/public/theodore-menu.ts;
-    it is opened by whatever carries data-menu-toggle="theodore" (and
-    [data-theo-open]). Without JavaScript, CSS :target shows it.
+    The site's menu: a panel on the right of the screen (the whole screen on
+    phones), revealed by Codrops' "Theodore" curtain (MIT) — an SVG band with
+    curved edges that sweeps across the panel from the right and uncovers it
+    behind itself; closing, the band sweeps back over it. The page behind
+    dims, and a click on it closes the menu. Behaviour:
+    js/public/theodore-menu.ts; it is opened by whatever carries
+    data-menu-toggle="theodore" (and [data-theo-open]). Without JavaScript,
+    CSS :target shows it.
 
-    Inside, on the mid navy with grain and on the page's content column, one
-    column top to bottom:
-    - top: the white logo, centred on the round button, over a hairline;
-    - the three services as rows (Anton, large), each with a line saying
-      what it is — at the right on large screens, under the
-      label on small ones; they rise in as it opens; on hover the others
-      dim and the label rolls;
-    - under them, smaller, the other pages (Clienți, Despre, Blog);
-    - past a hairline, the one way to Contact: the call to action, with the
-      company's e-mail and phone beside it, its address and profiles;
-    - then © and the legal links.
+    Inside, after the panel on dennissnellenberg.com: a label over a
+    hairline, the pages large (Contact last; the current one with a dot; on hover
+    the label rolls letter by letter, as in the top bar),
+    the three services smaller, and at the foot how to reach us.
 
     `close`: render the menu's own ✕ — not needed when an outside toggle (the
     round header button) already turns into one.
@@ -23,108 +19,71 @@
 @props(['id' => 'meniu', 'close' => true])
 
 @php
-    $navigation = \App\Support\SiteNavigation::links(withHome: false);
-    $services = \App\Support\SiteNavigation::services();
-    $pages = array_values(array_filter($navigation, fn ($link) => $link['place'] === 'section'));
-    $cta = collect($navigation)->first(fn ($link) => $link['cta'] !== null);
-    $legal = \App\Support\SiteNavigation::legal();
+    // The pages: home, the sections, Contact last.
+    $pages = array_values(array_filter(
+        \App\Support\SiteNavigation::links(),
+        fn ($link) => $link['href'] === '/' || $link['place'] === 'section' || $link['cta'] !== null,
+    ));
 
     $company = app(\App\Settings\CompanySettings::class);
     $phoneHref = \App\Support\PhoneLink::href($company->phone);
-    $address = implode(', ', array_filter([$company->street_address, $company->locality]));
-    // Profiles come from Setări → Companie; the row is left out until there
-    // is at least one.
     $socials = array_filter($company->social);
-    $logo = app(\App\Support\Brand::class)->logoNegative();
 @endphp
+
+{{-- Dims the page beside the panel; a click on it closes the menu. --}}
+<a href="#" class="theo-backdrop" data-theo-backdrop tabindex="-1" aria-hidden="true"></a>
 
 <div id="{{ $id }}" class="theo-menu" data-theo-menu>
     <div class="theo-menu__inner">
-        <div class="theo-menu__top" data-theo-reveal>
-            <a href="/" class="theo-menu__logo" data-theo-link aria-label="{{ $company->name }} — prima pagină">
-                @if ($logo)
-                    <img src="{{ $logo['url'] }}" alt="" width="{{ $logo['width'] }}" height="{{ $logo['height'] }}" class="h-7 w-auto md:h-8">
-                @else
-                    {{ $company->name }}
-                @endif
-            </a>
-        </div>
+        <nav class="theo-menu__nav" aria-label="Meniu principal">
+            <p class="theo-menu__label" data-theo-reveal>Navigare</p>
+            <hr class="theo-menu__stripe" data-theo-reveal>
 
-        <div class="theo-menu__body">
-            <nav class="theo-menu__nav" aria-label="Meniu principal">
-                <ul class="theo-menu__list">
-                    {{-- The three services, each with what it is. --}}
-                    @foreach ($services as $link)
+            <ul class="theo-menu__links">
+                @foreach ($pages as $link)
+                    <li>
+                        <a href="{{ $link['href'] }}" @class(['theo-menu__link', 'is-active' => $link['current']]) data-theo-item @if ($link['current']) aria-current="page" @endif><x-ui.roll :text="$link['label']" /></a>
+                    </li>
+                @endforeach
+            </ul>
+
+            <div data-theo-reveal>
+                <p class="theo-menu__label theo-menu__label--services">Servicii</p>
+                <ul class="theo-menu__services">
+                    @foreach (\App\Support\SiteNavigation::services() as $link)
                         <li>
-                            <a href="{{ $link['href'] }}" class="theo-menu__item" data-theo-item @if ($link['current']) aria-current="page" @endif>
-                                {{-- The label rolls on hover: a copy waits below (css). --}}
-                                <span class="theo-menu__mask"><span class="theo-menu__label">{{ $link['label'] }}</span></span>
-                                <span class="theo-menu__blurb">{{ $link['blurb'] }}</span>
-                            </a>
+                            <a href="{{ $link['href'] }}" @class(['theo-menu__service', 'is-active' => $link['current']]) data-theo-link @if ($link['current']) aria-current="page" @endif><x-ui.roll :text="$link['label']" /></a>
                         </li>
                     @endforeach
                 </ul>
-
-                <ul class="theo-menu__pages" data-theo-reveal>
-                    @foreach ($pages as $link)
-                        <li>
-                            <a href="{{ $link['href'] }}" class="theo-menu__page" data-theo-link @if ($link['current']) aria-current="page" @endif>{{ $link['label'] }}</a>
-                        </li>
-                    @endforeach
-                </ul>
-            </nav>
-        </div>
-
-        {{-- The one way to Contact: the call to action, and how else to reach us. --}}
-        <div class="theo-menu__contact" data-theo-reveal>
-            @if ($cta)
-                <x-ui.pill :href="$cta['href']" tone="dark" data-theo-link :aria-current="$cta['current'] ? 'page' : null" class="theo-menu__cta">{{ $cta['cta'] }}</x-ui.pill>
-            @endif
-
-            @if ($company->email || $phoneHref)
-                <p class="theo-menu__row">
-                    @if ($company->email)
-                        <a href="mailto:{{ $company->email }}" class="theo-menu__detail">{{ $company->email }}</a>
-                    @endif
-                    @if ($company->email && $phoneHref)
-                        <span aria-hidden="true">·</span>
-                    @endif
-                    @if ($phoneHref)
-                        <a href="{{ $phoneHref }}" class="theo-menu__detail">{{ $company->phone }}</a>
-                    @endif
-                </p>
-            @endif
-
-            @if ($address !== '' || $socials !== [])
-                <div class="theo-menu__where">
-                    @if ($address !== '')
-                        <p class="theo-menu__row theo-menu__row--muted">{{ $address }}</p>
-                    @endif
-
-                    @if ($socials !== [])
-                        <p class="theo-menu__row">
-                            @foreach ($socials as $platform => $url)
-                                @if (! $loop->first)
-                                    <span aria-hidden="true">·</span>
-                                @endif
-                                <a href="{{ $url }}" class="theo-menu__detail" target="_blank" rel="noopener">{{ ucfirst($platform) }}</a>
-                            @endforeach
-                        </p>
-                    @endif
-                </div>
-            @endif
-        </div>
+            </div>
+        </nav>
 
         <div class="theo-menu__foot" data-theo-reveal>
-            <span>© {{ now()->year }} {{ $company->name }}</span>
-            <nav aria-label="Informații legale" class="theo-menu__legal">
-                @foreach ($legal as $link)
-                    @if (! $loop->first)
-                        <span aria-hidden="true">·</span>
-                    @endif
-                    <a href="{{ $link['href'] }}" class="theo-menu__detail" data-theo-link>{{ $link['label'] }}</a>
-                @endforeach
-            </nav>
+            @if ($company->email || $phoneHref)
+                <div>
+                    <p class="theo-menu__label">Contact</p>
+                    <ul class="theo-menu__details">
+                        @if ($company->email)
+                            <li><a href="mailto:{{ $company->email }}">{{ $company->email }}</a></li>
+                        @endif
+                        @if ($phoneHref)
+                            <li><a href="{{ $phoneHref }}">{{ $company->phone }}</a></li>
+                        @endif
+                    </ul>
+                </div>
+            @endif
+
+            @if ($socials !== [])
+                <div>
+                    <p class="theo-menu__label">Social</p>
+                    <ul class="theo-menu__details">
+                        @foreach ($socials as $platform => $url)
+                            <li><a href="{{ $url }}" target="_blank" rel="noopener">{{ ucfirst($platform) }}</a></li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
         </div>
     </div>
 

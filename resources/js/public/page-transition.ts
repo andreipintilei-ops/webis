@@ -77,6 +77,16 @@ export function initPageTransitions(): void {
 
     let leaving = false;
 
+    /**
+     * The page's scroll-linked parts (pins, scrubs) measured themselves while
+     * the content was still lifted under the curtain: once it has landed,
+     * they measure again, or every pin and start would be off by the lift.
+     */
+    const remeasure = (): void =>
+        void import('gsap/ScrollTrigger').then(({ ScrollTrigger }) =>
+            ScrollTrigger.refresh(),
+        );
+
     const uncover = (): void => {
         root.classList.remove('curtain-cover');
         path.setAttribute('d', PATHS.bottomFlat);
@@ -84,6 +94,7 @@ export function initPageTransitions(): void {
         for (const element of shifted()) {
             element.style.transform = '';
         }
+        remeasure();
     };
 
     // ---- Arriving ------------------------------------------------------------
@@ -122,6 +133,7 @@ export function initPageTransitions(): void {
                             ease: EASE.out,
                             y: 0,
                             clearProps: 'transform',
+                            onComplete: remeasure,
                         },
                         MOTION.reveal * 0.35,
                     );

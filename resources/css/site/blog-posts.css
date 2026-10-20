@@ -33,6 +33,66 @@
         --card-chip: var(--lavender-50);
     }
 
+    /*
+      /blog: under the featured article (across the column), the articles in
+      the main column, the categories in a column at the right from 1024px; below that the categories come first, as a
+      row of chips that scrolls sideways.
+    */
+    .site-blog__layout {
+        @apply grid gap-8 lg:grid-cols-[minmax(0,1fr)_15rem] lg:items-start lg:gap-x-12 xl:gap-x-16;
+    }
+
+    .site-blog__main {
+        @apply grid min-w-0 gap-5 lg:col-start-1 lg:row-start-1;
+    }
+
+    .blog-categories {
+        @apply min-w-0 lg:col-start-2 lg:row-start-1;
+    }
+
+    .blog-categories__title {
+        @apply mb-4 font-micro text-xs tracking-[0.08em] uppercase max-lg:sr-only;
+        color: var(--accent);
+    }
+
+    .blog-categories__list {
+        @apply -mx-[var(--site-gap)] flex gap-2 overflow-x-auto px-[var(--site-gap)] lg:mx-0 lg:flex-col lg:gap-0 lg:overflow-visible lg:px-0;
+        scrollbar-width: none;
+    }
+
+    /* Phones and tablets: a chip. From 1024px: a row between hairlines,
+       the name and its count. */
+    .blog-categories__link {
+        @apply flex h-10 items-center gap-2 rounded-full bg-white px-4 text-[15px] font-medium whitespace-nowrap;
+        color: var(--muted);
+        transition:
+            color var(--fast) var(--ease),
+            background-color var(--fast) var(--ease);
+
+        &:hover {
+            color: var(--ink);
+        }
+
+        &[aria-current='page'] {
+            background: var(--violet-500);
+            color: #fff;
+        }
+
+        @media (min-width: 1024px) {
+            @apply h-auto justify-between rounded-none border-b bg-transparent px-0 py-3.5 text-base;
+            border-color: var(--line);
+
+            &[aria-current='page'] {
+                background: transparent;
+                color: var(--violet-500);
+            }
+        }
+    }
+
+    .blog-categories__count {
+        @apply font-micro text-xs tabular-nums opacity-70;
+    }
+
     .site-blog--page .pagination {
         @apply mt-4 lg:mt-6;
     }
@@ -41,6 +101,13 @@
 
     /* The home page's violet card (its third), the listing's full width: the
        same ground, notch and button, a larger title and an excerpt. */
+    /* Over the hero's foot, its top half on the gradient (page-hero.css). */
+    .site-blog--carded .post-featured {
+        @apply relative z-[2];
+        margin-top: calc(-1 * var(--card-lift));
+        box-shadow: 0 40px 80px -40px rgb(28 31 94 / 0.55);
+    }
+
     .post-card.post-featured {
         --card-bg: var(--violet-500);
         --card-ink: #fff;

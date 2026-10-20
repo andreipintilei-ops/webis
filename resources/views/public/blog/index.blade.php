@@ -77,6 +77,21 @@
     $featured['excerpt'] = 'Ce este un magazin online, ce avantaje are și ce contează ca să aibă succes — de la factorii-cheie până la felul în care îi crești vizibilitatea.';
     $rest = $posts->reject(fn (array $post) => $post['slug'] === $featured['slug'])->values();
 
+    // The categories, for the sidebar: each with its address (?categorie=seo)
+    // and how many articles it has, most first. An unknown one shows them all.
+    $categories = $posts->countBy('category')->sortDesc()
+        ->map(fn (int $count, string $name) => [
+            'name' => $name,
+            'slug' => \Illuminate\Support\Str::slug($name),
+            'count' => $count,
+        ])->values();
+    $category = $categories->firstWhere('slug', request()->query('categorie'));
+
+    // Filtered, the featured article is among the rest, not above them.
+    if ($category) {
+        $rest = $posts->where('category', $category['name'])->values();
+    }
+
     // Nine to a page (?pagina=2); the featured one on the first only. A page
     // past the last is not found.
     $perPage = 9;
@@ -88,8 +103,13 @@
         $page,
         ['path' => route('posts.index'), 'pageName' => 'pagina'],
     );
+    $paginator->appends(array_filter(['categorie' => $category['slug'] ?? null]));
 
     abort_if($page > $paginator->lastPage(), 404);
+
+    // The featured article: on the first, unfiltered page only, set half
+    // over the hero and half over the list (css/site/blog-posts.css).
+    $showFeatured = $paginator->onFirstPage() && ! $category;
 
     $arrow = '<svg viewBox="0 0 11 10" fill="currentColor" aria-hidden="true"><path d="M0 5.656V4.304l8.419.014-3.359-3.358L5.99 0l5.002 4.973-4.987 4.987-.93-.96 3.358-3.358L0 5.656Z"/></svg>';
 @endphp
@@ -97,14 +117,18 @@
 <x-layouts.public :title="$page > 1 ? 'Blog, pagina '.$page : 'Blog'" description="Articole despre software la comandă, produse SaaS, site-uri și magazine online, scrise de echipa Webis din Iași." header-theme="dark">
     <x-site.page-hero
         label="Blog · Webis"
-        :title="['Din experiența', 'noastră.']"
-        intro="Articole despre software, site-uri și magazine online, scrise de echipa care le construiește."
+        :title="['Articole despre', 'software și web.']"
+        intro="Ghiduri și noutăți despre software la comandă, site-uri, magazine online și SEO."
+        :class="$showFeatured ? 'page-hero--carded' : null"
+        :flush="true"
     />
 
-    <section id="articole" class="site-blog site-blog--page chapter chapter--light" aria-label="Articole">
+    <section id="articole" @class(['site-blog site-blog--page chapter chapter--light', 'site-blog--carded' => $showFeatured]) aria-label="Articole">
         <div class="chapter__inner">
             <!-- DUMMY DATA: the live webis.ro's articles, with spread dates. -->
-            @if ($paginator->onFirstPage())
+            {{-- The featured article across the column, above the list and its
+                 categories, its top half over the hero. --}}
+            @if ($showFeatured)
                 <a href="{{ $featured['href'] }}" class="post-card post-featured" data-reveal>
                     <span class="post-card__frame" aria-hidden="true">
                         <span class="post-card__bg"></span>
@@ -123,19 +147,43 @@
                 </a>
             @endif
 
-            {{-- In rows of three, each coming in as it is reached; all white
-                 here (the home page's colour cycle is for its three alone). --}}
-            <div class="site-blog__rows">
-                @foreach ($paginator->getCollection()->chunk(3) as $row)
-                    <ul class="site-blog__posts" data-reveal>
-                        @foreach ($row as $post)
-                            <x-site.post-card :post="$post" :index="$loop->index" />
+            <div class="site-blog__layout">
+                {{-- The categories: a column at the right from 1024px, a row of
+                     chips above the articles below it; each its own address. --}}
+                <aside class="blog-categories" aria-labelledby="blog-categories-title">
+                    <h2 id="blog-categories-title" class="blog-categories__title">Categorii</h2>
+                    <ul class="blog-categories__list">
+                        <li>
+                            <a href="{{ route('posts.index') }}#articole" class="blog-categories__link"@if (! $category) aria-current="page"@endif>
+                                <span>Toate articolele</span><span class="blog-categories__count">{{ $posts->count() }}</span>
+                            </a>
+                        </li>
+                        @foreach ($categories as $item)
+                            <li>
+                                <a href="{{ route('posts.index', ['categorie' => $item['slug']]) }}#articole" class="blog-categories__link"@if ($category && $category['slug'] === $item['slug']) aria-current="page"@endif>
+                                    <span>{{ $item['name'] }}</span><span class="blog-categories__count">{{ $item['count'] }}</span>
+                                </a>
+                            </li>
                         @endforeach
                     </ul>
-                @endforeach
-            </div>
+                </aside>
 
-            <x-site.pagination :paginator="$paginator" label="Paginile blogului" />
+                <div class="site-blog__main">
+                    {{-- In rows of three, each coming in as it is reached; all white
+                         here (the home page's colour cycle is for its three alone). --}}
+                    <div class="site-blog__rows">
+                        @foreach ($paginator->getCollection()->chunk(3) as $row)
+                            <ul class="site-blog__posts" data-reveal>
+                                @foreach ($row as $post)
+                                    <x-site.post-card :post="$post" :index="$loop->index" />
+                                @endforeach
+                            </ul>
+                        @endforeach
+                    </div>
+
+                    <x-site.pagination :paginator="$paginator" label="Paginile blogului" />
+                </div>
+            </div>
         </div>
     </section>
 </x-layouts.public>

@@ -1,10 +1,11 @@
 /**
- * Full-screen menu with an SVG curtain transition, adapted from Codrops'
- * "Theodore" (https://github.com/codrops/Theodore, MIT).
+ * The menu panel on the right, with an SVG curtain transition adapted from
+ * Codrops' "Theodore" (https://github.com/codrops/Theodore, MIT).
  *
- * Opening: the curtain sweeps up the screen as a band with curved edges, the
- * page lifting away under it, and the menu is uncovered right behind it, its
- * links rising in. Closing plays the mirror image, the band falling.
+ * Opening: the curtain sweeps across the panel from the right as a band with
+ * curved edges, the page drifting away a little and dimming, and the panel is
+ * uncovered right behind it, its links sliding in. Closing plays the mirror
+ * image, the band sweeping back over it. A click on the dimmed page closes it.
  *
  * GSAP is not in the page bundle: it is fetched once the browser is idle after
  * load (or earlier, the moment the visitor reaches for the button), so the
@@ -50,8 +51,8 @@ const TIMING = {
     // The links falling away as the menu closes (expo.in).
     fall: 0.35,
     stagger: 0.04,
-    // How far the page lifts away under the opening curtain.
-    lift: 200,
+    // How far the page drifts away from the opening curtain.
+    drift: 60,
 };
 
 /**
@@ -129,7 +130,7 @@ export function initTheodoreMenu(): void {
 
     const focusBack = (): void => returnFocusTo?.focus({ preventScroll: true });
 
-    /** Elements that lift away while the menu opens (e.g. the hero title). */
+    /** Elements that drift away while the menu opens (the page). */
     const shifted = (): HTMLElement[] =>
         Array.from(document.querySelectorAll<HTMLElement>('[data-theo-shift]'));
 
@@ -149,31 +150,45 @@ export function initTheodoreMenu(): void {
         up: true,
     };
 
+    /*
+      The band runs across the panel only, from the right: in the overlay's
+      0–100 box (the screen), from `from` (the panel's left edge) to 100, its
+      edges bowing in the panel's measure. Opening (`up`), it sweeps in from
+      the right, the menu showing to the right of its trailing edge;
+      closing, it sweeps back over the panel from its left edge, the menu
+      showing to the right of its leading edge.
+    */
     const drawBand = (): void => {
         const { lead, trail, up } = band;
+        const from =
+            (menu.getBoundingClientRect().left / window.innerWidth) * 100;
+        const width = 100 - from;
+        const curve = (p: number): number => (bow(p) * width) / 100;
         let d: string;
-        let clipTop: number;
+        let clip: number;
 
         if (up) {
-            // Rising: the top edge leads, the bottom edge trails; the menu shows below it.
-            const top = 100 - 100 * lead;
-            const bottom = 100 - 100 * trail;
+            // In from the right: the left edge leads, the right edge trails.
+            const left = 100 - width * lead;
+            const right = 100 - width * trail;
 
-            d = `M 0 ${bottom} V ${top} Q 50 ${top - bow(lead)} 100 ${top} V ${bottom} Q 50 ${bottom - bow(trail)} 0 ${bottom} z`;
-            // The trailing edge is highest at its middle.
-            clipTop = bottom - bow(trail) / 2;
+            d = `M ${right} 0 H ${left} Q ${left - curve(lead)} 50 ${left} 100 H ${right} Q ${right - curve(trail)} 50 ${right} 0 z`;
+            // The trailing edge reaches furthest left at its middle.
+            clip = right - curve(trail) / 2;
         } else {
-            // Falling: the bottom edge leads, the top edge trails; the menu shows below the band.
-            const bottom = 100 * lead;
-            const top = 100 * trail;
+            // Back over it from the left: the right edge leads, the left trails.
+            const right = from + width * lead;
+            const left = from + width * trail;
 
-            d = `M 0 ${top} Q 50 ${top + bow(trail)} 100 ${top} V ${bottom} Q 50 ${bottom + bow(lead)} 0 ${bottom} z`;
-            // The leading edge is highest at its sides.
-            clipTop = bottom;
+            d = `M ${left} 0 Q ${left + curve(trail)} 50 ${left} 100 H ${right} Q ${right + curve(lead)} 50 ${right} 0 z`;
+            // The leading edge reaches least far right at its ends.
+            clip = right;
         }
 
+        const inset = ((clip - from) / width) * 100;
+
         overlay.setAttribute('d', d);
-        menu.style.clipPath = `inset(${Math.min(100, Math.max(0, clipTop))}% 0 0 0)`;
+        menu.style.clipPath = `inset(0 0 0 ${Math.min(100, Math.max(0, inset))}%)`;
     };
 
     /** Once the band is off: no clip on the menu, the curtain at rest. */
@@ -211,8 +226,9 @@ export function initTheodoreMenu(): void {
         drawBand();
         // Open from the start, hidden by its clip until the band uncovers it.
         setOpenState(true);
-        gsap.set(items, { opacity: 0, y: 150 });
-        gsap.set(reveals, { opacity: 0, y: 30 });
+        gsap.set(items, { opacity: 0, x: 120 });
+        // x: 0 — closing slid them out to the right.
+        gsap.set(reveals, { opacity: 0, x: 0, y: 30 });
 
         timeline = gsap
             .timeline({ onUpdate: drawBand, onComplete: clearBand })
@@ -226,19 +242,23 @@ export function initTheodoreMenu(): void {
                 { trail: 1, duration: TIMING.cover, ease: EASE.curtain },
                 TIMING.follow,
             )
-            // The page lifts away under the band.
+            // The page drifts away from the band, a little.
             .to(
                 shifted(),
-                { duration: TIMING.cover, ease: EASE.curtain, y: -TIMING.lift },
+                {
+                    duration: TIMING.cover,
+                    ease: EASE.curtain,
+                    x: -TIMING.drift,
+                },
                 0,
             )
-            // The links rise in behind it.
+            // The links slide in behind it.
             .to(
                 items,
                 {
                     duration: TIMING.rise,
                     ease: EASE.out,
-                    y: 0,
+                    x: 0,
                     opacity: 1,
                     stagger: TIMING.stagger,
                 },
@@ -292,13 +312,13 @@ export function initTheodoreMenu(): void {
 
         timeline = gsap
             .timeline({ onUpdate: drawBand, onComplete: clearBand })
-            // The links fall away as the band comes down over them…
+            // The links slide away as the band comes over them…
             .to(
                 [...items, ...reveals],
                 {
                     duration: TIMING.fall,
                     ease: EASE.in,
-                    y: 100,
+                    x: 80,
                     opacity: 0,
                     stagger: -TIMING.stagger,
                 },
@@ -309,7 +329,7 @@ export function initTheodoreMenu(): void {
                 { lead: 1, duration: TIMING.cover, ease: EASE.curtain },
                 0,
             )
-            // …and the page follows right behind it, settling back.
+            // …and the page settles back right behind it.
             .to(
                 band,
                 { trail: 1, duration: TIMING.cover, ease: EASE.curtain },
@@ -320,7 +340,7 @@ export function initTheodoreMenu(): void {
                 {
                     duration: TIMING.rise,
                     ease: EASE.out,
-                    y: 0,
+                    x: 0,
                     // Not even a zero transform left on the page once it
                     // has settled: any transform makes it the box that
                     // position: fixed inside it keeps to — the home page's
@@ -451,6 +471,14 @@ export function initTheodoreMenu(): void {
         event.preventDefault();
         void close();
     });
+
+    // The dimmed page beside the panel closes it.
+    document
+        .querySelector<HTMLElement>('[data-theo-backdrop]')
+        ?.addEventListener('click', (event) => {
+            event.preventDefault();
+            void close();
+        });
 
     // Reaching for a button starts the download at once; otherwise it
     // happens quietly once the page has finished loading.

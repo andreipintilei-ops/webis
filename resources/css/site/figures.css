@@ -1,0 +1,35 @@
+/*
+  Webis in figures (components/site/figures), right under an internal
+  page's hero, on its background: four in a row, two by two on phones,
+  under a hairline.
+*/
+@layer components {
+    /* No sheet rising over the hero here. */
+    .page-hero + .figures {
+        @apply mt-0 rounded-none pt-0;
+    }
+
+    .figures {
+        @apply relative px-[var(--site-gap)] pb-20 text-white md:pb-28;
+    }
+
+    .figures__list {
+        @apply mx-auto grid max-w-[var(--content-max)] grid-cols-2 gap-x-6 gap-y-10 border-t pt-10 md:pt-14 lg:grid-cols-4 lg:gap-10;
+        border-color: var(--statement-rule);
+    }
+
+    .figures__item {
+        @apply flex flex-col;
+    }
+
+    .figures__value {
+        @apply font-display leading-none font-normal;
+        font-size: clamp(3rem, 7vw, 6rem);
+        color: var(--statement-ink);
+    }
+
+    .figures__label {
+        @apply mt-3 text-sm text-pretty md:text-base;
+        color: var(--statement-body);
+    }
+}

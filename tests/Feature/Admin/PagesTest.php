@@ -120,11 +120,11 @@ it('reads schedule times as Romanian local time', function () {
 
 it('announces a page when it goes live, but not on later saves', function () {
     Event::fake([ContentPublished::class]);
-    $page = Page::factory()->draft()->create(['slug' => 'despre']);
+    $page = Page::factory()->draft()->create(['slug' => 'pagina-test']);
 
-    $this->put(route('admin.pages.update', $page->id), pagePayload(['slug' => 'despre', 'status' => 'published']))
+    $this->put(route('admin.pages.update', $page->id), pagePayload(['slug' => 'pagina-test', 'status' => 'published']))
         ->assertRedirect();
-    $this->put(route('admin.pages.update', $page->id), pagePayload(['slug' => 'despre', 'status' => 'published', 'title' => 'Altul']))
+    $this->put(route('admin.pages.update', $page->id), pagePayload(['slug' => 'pagina-test', 'status' => 'published', 'title' => 'Altul']))
         ->assertRedirect();
 
     Event::assertDispatchedTimes(ContentPublished::class, 1);

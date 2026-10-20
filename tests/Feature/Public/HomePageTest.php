@@ -28,48 +28,47 @@ it('ignores a home page that is still a draft', function () {
     $this->get('/')->assertOk()->assertDontSee('Ciornă');
 });
 
-it('opens the Theodore menu from the round header button', function () {
+it('opens the menu panel, behind its curtain, from the round header button and the top bar\'s link', function () {
     $html = $this->get('/')->assertOk()->getContent();
 
     expect($html)
         ->toContain('class="site-burger__button" data-menu-toggle="theodore"')
-        ->toContain('id="meniu" class="theo-menu"')
+        ->toMatch('#class="site-link" data-menu-toggle="theodore" aria-controls="meniu"#')
+        ->toContain('id="meniu" class="theo-menu" data-theo-menu')
+        ->toContain('data-theo-overlay')
+        // The dimmed page beside it closes it.
+        ->toContain('data-theo-backdrop')
         // The round button is the toggle, so the menu has no ✕ of its own.
         ->not->toContain('data-theo-close')
+        // The other panel is a kept variant, not on the site.
         ->not->toContain('id="site-panel"');
 });
 
-it('lays out the full-screen menu: the services with what they are, the other pages, one way to Contact', function () {
-    $html = $this->get('/')->assertOk()->getContent();
-    preg_match('#<div id="meniu" class="theo-menu".*?</svg>#s', $html, $menu);
-    preg_match('#<nav class="theo-menu__nav".*?</nav>#s', $menu[0], $nav);
-    preg_match_all('#<span class="theo-menu__label">([^<]+)</span>#', $nav[0], $labels);
-    preg_match_all('#<a href="([^"]+)" class="theo-menu__page"#', $nav[0], $pages);
+it('lists in the menu the pages (Contact last), the three services and how to reach us', function () {
+    app(\App\Settings\CompanySettings::class)->fill(['email' => 'contact@webis.ro', 'phone' => '0770 700 607'])->save();
 
-    // The three services, each with its line; no numbers.
-    expect($labels[1])->toBe(['Software la comandă', 'Produse SaaS', 'Web și e-commerce'])
-        ->and($nav[0])->not->toContain('theo-menu__index')
-        ->toContain('<span class="theo-menu__blurb">Produse gata de folosit, pe abonament lunar.</span>')
-        ->and(substr_count($nav[0], 'class="theo-menu__blurb"'))->toBe(3)
-        // Under them, the other pages — Contact not among them.
-        ->and($pages[1])->toBe(['/portofoliu', '/despre', '/blog'])
-        // Contact once: the button.
-        ->and(substr_count($menu[0], 'href="/contact"'))->toBe(1)
-        ->and($menu[0])->toMatch('#<a href="/contact" class="pill btn-dark[^"]*" data-theo-link(="data-theo-link")?>.*?Hai să discutăm#s')
-        // Contact: only what is filled in (here, the town — no e-mail or phone).
-        ->toContain('<p class="theo-menu__row theo-menu__row--muted">Iași</p>')
-        ->not->toContain('mailto:')
-        // The grouped links moved to the footer; the legal ones stayed.
-        ->and($menu[0])->not->toContain('theo-menu__heading')
-        ->toMatch('#<a href="/accesibilitate" class="theo-menu__detail" data-theo-link>Accesibilitate</a>#');
+    $html = $this->get('/')->assertOk()->getContent();
+    preg_match('#<div id="meniu".*?<svg class="theo-overlay"#s', $html, $menu);
+    preg_match_all('#<a href="([^"]+)" class="theo-menu__link#', $menu[0], $pages);
+    preg_match_all('#<a href="([^"]+)" class="theo-menu__service#', $menu[0], $services);
+
+    expect($pages[1])->toBe(['/', '/portofoliu', '/despre', '/blog', '/contact'])
+        ->and($services[1])->toBe(['/software-la-comanda', '/produse', '/web'])
+        ->and($menu[0])->toContain('href="mailto:contact@webis.ro"')
+        ->toContain('href="tel:')
+        // The current page is marked.
+        ->toMatch('#href="/" class="theo-menu__link is-active" data-theo-item\s+aria-current="page"#');
 });
 
 it('shows the top bar sections, with the Servicii dropdown and no Produse', function () {
     preg_match('#<header class="site-nav.*?</header>#s', $this->get('/')->assertOk()->getContent(), $bar);
 
     expect($bar[0])
-        // The dropdown opens under a plus, not a caret.
-        ->toMatch('#<li class="site-nav__dropdown hidden md:block">\s*<a href="/solutii" class="site-link"\s*>\s*<span class="site-link__mask"><span class="site-link__text">Servicii</span></span>\s*<svg class="site-nav__plus"#')
+        // The dropdown opens under a chevron.
+        ->toMatch('#<li class="site-nav__dropdown hidden md:block">\s*<a href="/solutii" class="site-link"\s*>\s*<span class="roll">.*?</span>\s*<svg class="site-nav__chevron"#s')
+        // Its label, rolling letter by letter (components/ui/roll).
+        ->and(strip_tags($bar[0]))->toContain('Servicii')
+        ->and($bar[0])
         ->not->toContain('site-nav__caret')
         ->toContain('<div class="site-dropdown">')
         // Its three services.
@@ -86,9 +85,11 @@ it('shows the top bar sections, with the Servicii dropdown and no Produse', func
 it('shows Contact in the top bar as the main button, in the header tone', function () {
     $light = $this->get('/solutii')->assertOk()->getContent();
 
-    expect($light)
-        ->toMatch('/<a href="\/contact" class="pill btn-light">.*?<span data-text="Hai să discutăm">Hai să discutăm<\/span>/s')
-        ->not->toContain('class="site-link" >Contact');
+    preg_match('/<a href="\/contact" class="pill btn-light">.*?<\/a>/s', $light, $pill);
+
+    // The label, rolling letter by letter (components/ui/roll).
+    expect(strip_tags($pill[0]))->toContain('Hai să discutăm')
+        ->and($light)->not->toContain('class="site-link" >Contact');
 
     Page::factory()->create(['slug' => 'contact', 'blocks' => []]);
 

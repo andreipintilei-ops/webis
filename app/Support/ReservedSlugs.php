@@ -11,7 +11,7 @@ final class ReservedSlugs
 {
     public const array ALL = [
         // Content sections
-        'blog', 'clienti', 'portofoliu', 'proiect', 'poveste', 'solutii', 'cerere-oferta', 'multumim',
+        'blog', 'clienti', 'despre', 'portofoliu', 'proiect', 'poveste', 'solutii', 'web', 'cerere-oferta', 'multumim',
         // Admin and account
         'admin', 'settings', 'login', 'logout', 'register', 'forgot-password',
         'reset-password', 'two-factor-challenge', 'user', 'email', 'passkeys',

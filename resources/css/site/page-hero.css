@@ -7,7 +7,12 @@
 */
 @layer components {
     .page-hero {
-        @apply relative px-[var(--site-gap)] pt-40 pb-24 text-white md:pt-48 md:pb-36;
+        @apply relative flex items-center px-[var(--site-gap)] pt-40 pb-28 text-white md:pt-48 md:pb-40;
+        /* Taller than its text from tablet up: room for the planes, and a
+           hero that reads as one. */
+        @media (min-width: 768px) {
+            min-height: min(48rem, 88svh);
+        }
     }
 
     .page-hero__inner {
@@ -47,5 +52,49 @@
         &::before {
             border-radius: inherit;
         }
+    }
+
+    /* Taller (/blog): from 1024px the whole first screen, however tall;
+       tablets as the other heroes. */
+    @media (min-width: 1024px) {
+        .page-hero--tall {
+            min-height: 100svh;
+        }
+    }
+
+    /* Square: the section after it starts on its edge, no rounded sheet
+       rising over it (/blog); the hero's text still sinks back slower. */
+    .page-hero--flush + * {
+        @apply mt-0 rounded-none md:mt-0 md:rounded-none;
+    }
+
+    /*
+      A card set across the hero's foot (/blog's featured article): the
+      hero keeps --card-lift of room under its text for the card's top
+      half; the section after it starts with the card, lifted by as much
+      (css/site/blog-posts.css).
+    */
+    :root {
+        --card-lift: 6rem;
+
+        @media (min-width: 768px) {
+            --card-lift: 10rem;
+        }
+
+        @media (min-width: 1024px) {
+            --card-lift: 13rem;
+        }
+    }
+
+    .page-hero--carded {
+        padding-bottom: calc(4rem + var(--card-lift));
+
+        @media (min-width: 768px) {
+            padding-bottom: calc(5rem + var(--card-lift));
+        }
+    }
+
+    .page-hero--carded + * {
+        @apply pt-0 md:pt-0 lg:pt-0;
     }
 }

@@ -7,15 +7,16 @@
      with a rounded top instead of the backdrop shrinking into a card
      (js/public/hero-intro.ts).
      `description`: the meta description (else the SEO settings' default).
+     `fullTitle`: the whole <title>, as given — without the site suffix.
      `footerCtaTitle`, `footerCtaIntro`: the footer's closing call, reworded.
      `variant`: a design variant under test (e.g. "clienti"), as data-variant
      on <html>, for styles scoped to it. --}}
-@props(['title' => null, 'menu' => 'site', 'headerTheme' => 'light', 'lowerTone' => null, 'variant' => null, 'heroLeave' => null, 'footerCta' => true, 'footerOnBackdrop' => false, 'description' => null, 'footerCtaTitle' => null, 'footerCtaIntro' => null])
+@props(['title' => null, 'fullTitle' => null, 'menu' => 'site', 'headerTheme' => 'light', 'lowerTone' => null, 'variant' => null, 'heroLeave' => null, 'footerCta' => true, 'footerOnBackdrop' => false, 'description' => null, 'footerCtaTitle' => null, 'footerCtaIntro' => null])
 
 @php
     $siteName = app(\App\Settings\CompanySettings::class)->name;
     $suffix = app(\App\Settings\SeoSettings::class)->title_suffix;
-    $fullTitle = $title ? $title.$suffix : $siteName;
+    $fullTitle = $fullTitle ?? ($title ? $title.$suffix : $siteName);
     // The page's own, or the site's default (SEO settings).
     $metaDescription = $description ?: app(\App\Settings\SeoSettings::class)->default_description;
 @endphp

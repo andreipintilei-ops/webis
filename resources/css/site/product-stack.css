@@ -159,7 +159,7 @@
         --btn-ink: #fff;
         --btn-contrast: var(--navy-950);
 
-        & .pill__title > span::after {
+        & .pill__title .roll__char::before {
             color: #fff;
         }
     }

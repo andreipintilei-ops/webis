@@ -64,20 +64,13 @@
         }
     }
 
+    /* The label, above the fill; it rolls letter by letter (css/site/roll.css),
+       the copies falling in already in the colour the label turns. */
     .pill__title {
-        @apply relative z-[2] block overflow-hidden;
+        @apply relative z-[2] block;
 
-        & > span {
-            @apply block;
-            transition: transform 0.8s var(--motion-out);
-
-            &::after {
-                /* Empty alt text: the copy is decoration, not read out twice. */
-                content: attr(data-text) / '';
-                @apply absolute left-0 block;
-                top: 110%;
-                color: var(--btn-ink);
-            }
+        & .roll__char::before {
+            color: var(--btn-ink);
         }
     }
 
@@ -93,10 +86,6 @@
                 transform: translateY(0);
                 transition-duration: 0.5s, 0.9s;
             }
-
-            & .pill__title > span {
-                transform: translateY(-110%);
-            }
         }
     }
 
@@ -111,7 +100,7 @@
         --btn-ink: var(--violet-cta);
         --btn-contrast: #fff;
 
-        & .pill__title > span::after {
+        & .pill__title .roll__char::before {
             color: #fff;
         }
     }

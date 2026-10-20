@@ -2,6 +2,10 @@
 @layer components {
     .contact-hero {
         @apply relative flex items-center px-[var(--site-gap)] pt-44 pb-14 text-white md:pt-48 md:pb-16;
+        /* As tall as the other internal pages' heroes (page-hero.css). */
+        @media (min-width: 768px) {
+            min-height: min(48rem, 88svh);
+        }
     }
 
     .contact-hero__inner {

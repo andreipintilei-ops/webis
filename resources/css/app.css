@@ -5,6 +5,7 @@
 /* Public site components. Motion tokens first: everything else uses them. */
 @import './site/motion.css';
 @import './site/menu-panel.css';
+@import './site/roll.css';
 @import './site/menu-theodore.css';
 @import './site/page-transition.css';
 @import './site/buttons.css';
@@ -27,6 +28,10 @@
 @import './site/portfolio.css';
 @import './site/work-list.css';
 @import './site/work-stack.css';
+@import './site/about.css';
+@import './site/figures.css';
+@import './site/system.css';
+@import './site/web.css';
 @import './site/title-pill.css';
 @import './site/footer.css';
 @import './site/project-list.css';

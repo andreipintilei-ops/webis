@@ -16,8 +16,11 @@
     404) — its text would sink into the footer.
     `planes`: the decorative planes at the right (views/partials/hero-planes);
     false where nothing rises over the hero's foot to cover theirs (the 404).
+    `flush`: the section after it starts on the hero's edge, square, rather
+    than rising over it (/blog); the planes then move with the page and fade
+    out at the hero's foot, while the text still sinks back slower.
 --}}
-@props(['label' => null, 'title', 'intro' => null, 'id' => 'page-hero-title', 'parallax' => true, 'planes' => true])
+@props(['label' => null, 'title', 'intro' => null, 'id' => 'page-hero-title', 'parallax' => true, 'planes' => true, 'flush' => false])
 
 {{-- The gradient fixed behind the page (as on the contact page), hidden
      once the page has covered it (js/public/hero-intro.ts). --}}
@@ -31,10 +34,11 @@
     ])
 @endpush
 
-<section {{ $attributes->class(['page-hero', 'has-hero-planes' => $planes]) }} aria-labelledby="{{ $id }}" data-nav-tone="dark" data-backdrop-area>
+<section {{ $attributes->class(['page-hero', 'has-hero-planes' => $planes, 'page-hero--flush' => $flush]) }} aria-labelledby="{{ $id }}" data-nav-tone="dark" data-backdrop-area>
     @if ($planes)
-        {{-- At the text's speed, so they sink back with it. --}}
-        @include('partials.hero-planes', ['speed' => $parallax ? 'clamp(0.6)' : null])
+        {{-- At the text's speed, so they sink back with it — unless flush:
+             then with the page, their fade on the hero's foot. --}}
+        @include('partials.hero-planes', ['speed' => $parallax && ! $flush ? 'clamp(0.6)' : null])
     @endif
 
     {{-- Slower than the page (ScrollSmoother's data-speed, clamped so it

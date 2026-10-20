@@ -17,7 +17,8 @@ it('moves the client work to the old /portofoliu address, still "Clienți" in th
 
     preg_match('#<header class="site-nav.*?</header>#s', $this->get('/blog')->getContent(), $bar);
 
-    expect($bar[0])->toContain('href="/portofoliu"')->toContain('Clienți')
+    expect($bar[0])->toContain('href="/portofoliu"')
+        ->and(strip_tags($bar[0]))->toContain('Clienți')
         ->and($bar[0])->not->toContain('href="/clienti"');
 });
 
@@ -98,7 +99,7 @@ it('never shows Webis\'s own products as client work, only a line to Produse Saa
         ->and($html)->toContain('Ai un proiect asemănător?');
 });
 
-it('shows the clients\' logos as "Am lucrat cu", with their names as alt text', function () {
+it('shows the home page\'s strip of clients\' logos, with their names as alt text', function () {
     Storage::fake('public');
     $logo = fn () => Asset::factory()->withImage(200, 80)->create();
 
@@ -106,7 +107,7 @@ it('shows the clients\' logos as "Am lucrat cu", with their names as alt text', 
     Client::factory()->create(['name' => 'Ascuns', 'logo_asset_id' => $logo()->id, 'show_in_logos' => false]);
 
     expect($this->get('/portofoliu')->assertOk()->getContent())
-        ->toContain('Am lucrat cu')
+        ->toContain('class="logo-marquee logo-marquee--light portfolio-clients__strip"')
         ->toContain('alt="Universitatea X"')
         ->not->toContain('alt="Ascuns"');
 });
@@ -150,7 +151,6 @@ it('answers 404 for a draft project, and 301 from a slug it used to have', funct
 });
 
 it('shows up to three related client projects of the service page\'s type, and none elsewhere', function () {
-    Page::factory()->create(['title' => 'Web și e-commerce', 'slug' => 'web']);
     Page::factory()->create(['title' => 'Software la comandă', 'slug' => 'software-la-comanda']);
     Page::factory()->create(['title' => 'Despre', 'slug' => 'despre']);
 
@@ -163,7 +163,8 @@ it('shows up to three related client projects of the service page\'s type, and n
     $web = $this->get('/web')->assertOk()->getContent();
     $software = $this->get('/software-la-comanda')->assertOk()->getContent();
 
-    expect(substr_count($web, 'class="work-card"'))->toBe(3)
+    // /web is its own page: its projects as the site's card.
+    expect(substr_count($web, 'class="post-card web-project"'))->toBe(3)
         ->and($web)->not->toContain('Platforma cinci')
         ->and($software)->toContain('Platforma cinci')->not->toContain('Siteul doi')
         ->and(substr_count($software, 'class="work-card"'))->toBe(1)

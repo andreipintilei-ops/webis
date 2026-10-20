@@ -62,14 +62,14 @@ it('lazy-loads images that are not the first block', function () {
     $image = Asset::factory()->withImage()->create();
 
     Page::factory()->create([
-        'slug' => 'despre',
+        'slug' => 'pagina-test',
         'blocks' => [
             ['id' => 'a', 'type' => 'hero', 'v' => 1, 'data' => ['layout' => 'split', 'heading' => 'Despre']],
             ['id' => 'b', 'type' => 'hero', 'v' => 1, 'data' => ['layout' => 'split', 'heading' => 'Al doilea', 'image_asset_id' => $image->id]],
         ],
     ]);
 
-    expect($this->get('/despre')->assertOk()->getContent())
+    expect($this->get('/pagina-test')->assertOk()->getContent())
         ->toContain('loading="lazy"')
         ->not->toContain('fetchpriority="high"');
 });
@@ -177,14 +177,14 @@ it('leaves the marquee out when the hero does not ask for it', function () {
 
 it('gives only an opening full-screen hero the scroll parallax', function () {
     Page::factory()->create([
-        'slug' => 'despre',
+        'slug' => 'pagina-test',
         'blocks' => [
             ['id' => 'a', 'type' => 'hero', 'v' => 1, 'data' => ['layout' => 'centered', 'heading' => 'Primul']],
             ['id' => 'b', 'type' => 'hero', 'v' => 1, 'data' => ['layout' => 'centered', 'heading' => 'Al doilea']],
         ],
     ]);
 
-    expect(preg_match_all('/data-hero-parallax\s+data-speed="clamp\(0\.5\)"/', $this->get('/despre')->assertOk()->getContent()))->toBe(1);
+    expect(preg_match_all('/data-hero-parallax\s+data-speed="clamp\(0\.5\)"/', $this->get('/pagina-test')->assertOk()->getContent()))->toBe(1);
 });
 
 it('keeps the line breaks typed into the hero title, escaped', function () {
@@ -261,8 +261,13 @@ it('renders the primary button as a pill and the secondary as an arrow link', fu
         'secondary_cta' => ['label' => 'Vedeți ce am construit', 'url' => '/portofoliu'],
     ]);
 
-    expect($this->get('/')->assertOk()->getContent())
-        ->toMatch('/<a href="\/contact" class="pill btn-light">.*?<span data-text="Discutați proiectul">Discutați proiectul<\/span>/s')
+    $html = $this->get('/')->assertOk()->getContent();
+    preg_match_all('/<a href="\/contact" class="pill btn-light">.*?<\/a>/s', $html, $pills);
+
+    // The label, rolling letter by letter (components/ui/roll); the top
+    // bar's button comes first.
+    expect(strip_tags(implode('', $pills[0])))->toContain('Discutați proiectul')
+        ->and($html)
         ->toMatch('/<a href="\/portofoliu" class="arrow-link btn-light">/')
         ->toContain('arrow-link__icon');
 });
@@ -303,7 +308,7 @@ it('renders feature cards with their note and a link at the foot', function () {
 
 it('renders the services as illustrated cards when the block asks for them, rising over the hero', function () {
     Page::factory()->create([
-        'slug' => 'despre',
+        'slug' => 'pagina-test',
         'blocks' => [['id' => 'f', 'type' => 'features', 'v' => 1, 'data' => [
             'layout' => 'cards',
             'columns' => 3,
@@ -311,7 +316,7 @@ it('renders the services as illustrated cards when the block asks for them, risi
         ]]],
     ]);
 
-    $html = $this->get('/despre')->assertOk()->getContent();
+    $html = $this->get('/pagina-test')->assertOk()->getContent();
     preg_match('/<section id="f".*?<\/section>/s', $html, $section);
 
     expect($section[0])
@@ -333,9 +338,9 @@ it('renders the services as illustrated cards when the block asks for them, risi
         ->toContain('<section id="proiecte-detalii" class="project-accordion"')
         ->and(substr_count($html, 'data-accordion-item'))->toBe(3)
         ->and(preg_match_all('/<details[^>]*\sopen\s/', $html))->toBe(1)
-        ->and($html)->toContain('Toți clienții')
+        ->and(strip_tags($html))->toContain('Toți clienții')
         // …and, to compare, as a walkthrough.
-        ->toContain('<section id="proiecte-pasi" class="project-steps"')
+        ->and($html)->toContain('<section id="proiecte-pasi" class="project-steps"')
         ->and(substr_count($html, 'data-step-row'))->toBe(3)
         // Then our products, as full-screen cards stacking, SmileSoft first.
         ->and(substr_count($html, 'data-product-card'))->toBe(3)

@@ -114,15 +114,133 @@
 
     /* ---- /portofoliu's other parts ------------------------------------------ */
 
-    .portfolio-clients__title {
-        @apply mb-8 font-micro text-xs tracking-[0.08em] uppercase;
-        color: var(--accent);
+    /* The home page's strip of logos (components/logo-marquee), the logos
+       darkened to the page's ink. */
+    /* Inside the list's section (its ground, its grain), across the
+       screen: out of its side padding. */
+    .portfolio-clients {
+        @apply mt-20 md:mt-28;
+        margin-inline: calc(-1 * var(--site-gap));
     }
 
-    /* One line to Produse SaaS. */
-    .portfolio-products p {
-        @apply flex flex-wrap items-center gap-x-6 gap-y-3 border-t pt-8 text-lg;
-        border-color: var(--line);
+    .portfolio-clients__strip .logo-marquee__logo {
+        opacity: 0.7;
+    }
+
+    /*
+      Our own products: a violet panel on the lavender — what they are and
+      the button on the left, the Webis W of plates on the right.
+    */
+    /* In the list's section too, under the strip. */
+    .portfolio-products {
+        @apply mt-16 md:mt-24;
+    }
+
+    .portfolio-products__panel {
+        @apply mx-auto grid max-w-[var(--content-max)] items-center gap-10 overflow-hidden rounded-[28px] p-8 text-white md:rounded-[32px] md:p-12 lg:grid-cols-12 lg:gap-10 lg:p-16;
+        background:
+            radial-gradient(
+                ellipse 60% 80% at 100% 0%,
+                rgb(239 220 255 / 0.3),
+                transparent 60%
+            ),
+            linear-gradient(
+                135deg,
+                var(--purple-500),
+                var(--violet-500) 55%,
+                #5b3fe0
+            );
+    }
+
+    .portfolio-products__text {
+        @apply flex flex-col items-start lg:col-span-6;
+    }
+
+    .portfolio-products__label {
+        @apply font-micro text-xs tracking-[0.08em] uppercase;
+        color: rgb(255 255 255 / 0.75);
+    }
+
+    .portfolio-products__title {
+        @apply mt-4 font-medium text-balance;
+        font-size: clamp(2rem, 3.6vw, 3rem);
+        line-height: 1.08;
+        letter-spacing: -0.03em;
+    }
+
+    .portfolio-products__intro {
+        @apply mt-5 max-w-[46ch] text-lg leading-relaxed text-pretty;
+        color: rgb(255 255 255 / 0.85);
+    }
+
+    .portfolio-products__link {
+        @apply mt-8;
+    }
+
+    /* White, its label in the violet — over the violet pages' own dark pill
+       (css/site/buttons.css: :root:has(…) .pill.btn-dark), hence the weight. */
+    :root .portfolio-products .portfolio-products__link.pill.btn-dark {
+        --btn-ink: #fff;
+        --btn-contrast: var(--violet-500);
+
+        & .pill__title .roll__char::before {
+            color: #fff;
+        }
+    }
+
+    /*
+      Five plates standing as the Webis W, as the logo's mark: rounded
+      squares on their corners, up, down, up, down, up, edge to edge; each
+      with an icon upright in it, the plates floating on offset beats.
+    */
+    .portfolio-products__mark {
+        @apply relative mx-auto w-full max-w-[26rem] lg:col-span-5 lg:col-start-8;
+        aspect-ratio: 5 / 2.7;
+    }
+
+    .portfolio-products__plate {
+        @apply absolute grid w-[24%] place-items-center rounded-[24%];
+        aspect-ratio: 1;
+        left: calc(12% + var(--i) * 19%);
+        top: 30%;
+        translate: -50% -50%;
+        rotate: 45deg;
+        background: rgb(255 255 255 / 0.16);
+        box-shadow:
+            inset 1px 1px 0 rgb(255 255 255 / 0.35),
+            0 18px 30px -16px rgb(28 31 94 / 0.6);
+        backdrop-filter: blur(6px);
+        animation: products-plate 6s ease-in-out infinite;
+        animation-delay: calc(var(--i) * -1.2s);
+
+        &:nth-child(even) {
+            top: 70%;
+        }
+
+        & > span {
+            rotate: -45deg;
+        }
+
+        & svg {
+            @apply size-[clamp(1.25rem,2.2vw,1.75rem)];
+        }
+    }
+
+    @keyframes products-plate {
+        0%,
+        100% {
+            transform: translate(0, 0);
+        }
+
+        50% {
+            transform: translate(-3px, -3px);
+        }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .portfolio-products__plate {
+            animation: none;
+        }
     }
 
     /* ---- A project's page ----------------------------------------------------- */

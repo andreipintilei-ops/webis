@@ -1,0 +1,188 @@
+/*
+  /web — Web și e-commerce (public/web.blade.php), on the site's visual
+  language (css/site/system.css): what is particular to the page — the
+  offers and projects as the notched card (css/site/blog-posts.css), the
+  steps along a line on the indigo, the questions.
+*/
+@layer components {
+    /* ---- 01 What suits you: two notched cards ------------------------------- */
+
+    .web-offers__list {
+        @apply grid grid-cols-1 gap-5 lg:grid-cols-2;
+    }
+
+    .post-card.web-offer {
+        @apply min-h-0 gap-0 px-8 pt-8 pb-8 lg:min-h-0 lg:px-10 lg:pt-10;
+    }
+
+    /* The shop on the hero's indigo. */
+    .post-card.web-offer--dark {
+        --card-bg: #1f2868;
+        --card-ink: #fff;
+        --card-muted: rgb(255 255 255 / 0.75);
+    }
+
+    .web-offer__title {
+        @apply font-display font-normal uppercase;
+        font-size: clamp(2rem, 3vw, 2.75rem);
+        line-height: 1.05;
+    }
+
+    .web-offer__for {
+        @apply mt-3 max-w-[42ch] text-base leading-relaxed text-pretty;
+        color: var(--card-muted);
+    }
+
+    .web-offer__points {
+        @apply mt-6 mb-8 flex flex-col gap-2.5;
+    }
+
+    .web-offer__point {
+        @apply flex items-start gap-3 text-base leading-snug;
+
+        & svg {
+            @apply mt-0.5 size-5 shrink-0;
+            fill: none;
+            stroke: var(--violet-500);
+            stroke-width: 2.25;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+    }
+
+    .web-offer--dark .web-offer__point svg {
+        stroke: var(--lavender-300);
+    }
+
+    .web-offer .post-card__foot {
+        @apply mt-auto;
+    }
+
+    /* ---- 03 How we work: along a line, on the indigo ------------------------ */
+
+    /* A flat indigo: the chapters' dark glows left out here. */
+    .web-steps.chapter--dark {
+        background: #1f2868;
+    }
+
+    .web-steps__list {
+        @apply relative grid grid-cols-1 gap-10 lg:grid-cols-5 lg:gap-8;
+
+        &::before {
+            content: '';
+            @apply absolute top-6 bottom-6 left-[22px] w-px lg:top-[22px] lg:right-0 lg:bottom-auto lg:left-0 lg:h-px lg:w-auto;
+            background: var(--line);
+        }
+    }
+
+    .web-steps__step {
+        @apply relative pl-16 lg:pl-0;
+
+        & .plate {
+            @apply absolute top-0 left-0 lg:relative;
+        }
+    }
+
+    .web-steps__name {
+        @apply text-xl font-medium tracking-[-0.02em] lg:mt-6;
+    }
+
+    .web-steps__line {
+        @apply mt-2 text-base leading-relaxed text-pretty;
+        color: var(--muted);
+    }
+
+    /* ---- 04 Projects: three notched cards, the screenshot on top ----------- */
+
+    .web-projects__list {
+        @apply grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3;
+    }
+
+    .post-card.web-project {
+        @apply min-h-0 gap-4 pt-4 lg:min-h-0 lg:pt-4;
+    }
+
+    .web-project__media {
+        @apply -mx-3 block overflow-hidden rounded-[14px] lg:-mx-4;
+        aspect-ratio: 3 / 2;
+        background: var(--card-chip);
+
+        & img {
+            @apply size-full object-cover object-top;
+            transition: transform var(--slow) var(--ease);
+        }
+    }
+
+    .web-project:is(:hover, :focus-visible) .web-project__media img {
+        transform: scale(1.03);
+    }
+
+    .web-project .post-card__foot {
+        @apply font-sans text-[15px] tracking-normal text-pretty;
+    }
+
+    .web-projects__foot {
+        @apply flex flex-wrap items-center gap-x-8 gap-y-4;
+
+        & .pill {
+            @apply sm:ml-auto;
+        }
+    }
+
+    /* ---- 06 Questions: rows that open ---------------------------------------- */
+
+    .web-faq__item {
+        @apply border-b;
+        border-color: var(--line);
+
+        &:first-child {
+            @apply border-t;
+        }
+    }
+
+    .web-faq__question {
+        @apply flex cursor-pointer list-none items-center justify-between gap-6 py-6 text-lg font-medium md:text-[22px];
+
+        &::-webkit-details-marker {
+            @apply hidden;
+        }
+    }
+
+    /* The +, turning into a × as the row opens. */
+    .web-faq__icon {
+        @apply relative size-10 shrink-0 rounded-full;
+        border: 1px solid var(--line);
+        transition:
+            transform var(--slow) var(--ease),
+            background-color var(--slow) var(--ease),
+            border-color var(--slow) var(--ease);
+
+        &::before,
+        &::after {
+            content: '';
+            @apply absolute top-1/2 left-1/2 h-px w-3.5 -translate-x-1/2 -translate-y-1/2;
+            background: currentColor;
+        }
+
+        &::after {
+            @apply rotate-90;
+        }
+    }
+
+    .web-faq__item.is-open .web-faq__icon,
+    .web-faq__item[open] .web-faq__icon {
+        transform: rotate(45deg);
+        border-color: var(--violet-500);
+        background: var(--violet-500);
+        color: #fff;
+    }
+
+    .web-faq__answer {
+        @apply overflow-hidden;
+
+        & p {
+            @apply max-w-[60ch] pb-6 text-base leading-relaxed text-pretty md:text-lg;
+            color: var(--muted);
+        }
+    }
+}
