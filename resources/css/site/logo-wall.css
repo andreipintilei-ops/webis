@@ -1,10 +1,9 @@
 /*
   The clients' wall (components/site/logo-wall.blade.php;
   js/public/logo-wall.ts), on the light chapters' lavender
-  (css/site/service-chapters.css): a diamond of white tiles, the middle one
-  violet once the wall rests, its logo white, the rest near black; a tile
-  grows on hover. The script sets --pitch (a tile and its gap), each
-  tile's place, and .is-centre on the middle one at rest.
+  (css/site/service-chapters.css): a diamond of white tiles, the logos near
+  black; a tile grows on hover. The script sets --pitch (a tile and its
+  gap) and each tile's place.
 */
 @layer components {
     .logo-wall__head {
@@ -108,39 +107,13 @@
         }
     }
 
-    /* The logo twice, in one cell: near black, and white over it, hidden. */
     .logo-wall__ink {
         @apply pointer-events-none block w-auto object-contain;
-        grid-area: 1 / 1;
         max-width: 64%;
         height: calc(var(--tile) * 0.42 * var(--logo-scale, 0.7));
-        transition: opacity var(--slow) var(--ease);
-    }
 
-    .logo-wall__ink--dark {
         filter: brightness(0);
         opacity: 0.88;
-    }
-
-    .logo-wall__ink--light {
-        filter: brightness(0) invert(1);
-        opacity: 0;
-    }
-
-    /* At rest, the middle one: violet, the white logo cross-fading in —
-       never a half-violet tile with a grey logo between. */
-    .logo-wall__tile.is-centre {
-        &::before {
-            background-color: var(--violet-500);
-        }
-
-        & .logo-wall__ink--dark {
-            opacity: 0;
-        }
-
-        & .logo-wall__ink--light {
-            opacity: 1;
-        }
     }
 
     @media (hover: hover) and (pointer: fine) {

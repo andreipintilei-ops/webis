@@ -8,8 +8,7 @@ import { loadGsap, prefersReducedMotion } from '@/public/gsap';
  * of the page (the stage's mask): a hint there is more to drag in. A tile is drawn
  * by its distance from the middle, measured so that the diamond's tiles are
  * all at 1 or less and the next ring at 2; so as the field moves, logos
- * come up to full at the diamond's edges and fade at the other side. The
- * one in the middle is violet, its logo white; the rest flat black.
+ * come up to full at the diamond's edges and fade at the other side.
  *
  * The field is a pool of tiles (16 columns × 7 rows) that wrap around as it
  * moves, each taking the logo of the place it lands on; the logos repeat
@@ -74,9 +73,6 @@ async function setUp(stage: HTMLElement): Promise<void> {
     const state = { x: 0, y: 0, form: still ? 1 : 0 };
     let pitch = 0;
     let frame = 0;
-    /** At rest on a tile: only then is the middle one violet. */
-    let settled = true;
-
     const tiles: Tile[] = [];
 
     for (let row = 0; row < ROWS; row++) {
@@ -144,34 +140,25 @@ async function setUp(stage: HTMLElement): Promise<void> {
 
             if (logo !== tile.logo) {
                 tile.logo = logo;
-                // The logo twice, dark and light, to cross-fade between.
-                tile.element.replaceChildren(
-                    ...['dark', 'light'].flatMap((tone) => {
-                        const image = images[logo]?.cloneNode() as
-                            HTMLImageElement | undefined;
+                const image = images[logo]?.cloneNode() as
+                    HTMLImageElement | undefined;
 
-                        if (!image) {
-                            return [];
-                        }
+                if (image) {
+                    image.alt = '';
+                    image.loading = 'eager';
+                    image.className = 'logo-wall__ink';
+                    image.style.setProperty(
+                        '--logo-scale',
+                        logos[logo]!.style.getPropertyValue('--logo-scale'),
+                    );
+                }
 
-                        image.alt = '';
-                        image.loading = 'eager';
-                        image.className = `logo-wall__ink logo-wall__ink--${tone}`;
-                        image.style.setProperty(
-                            '--logo-scale',
-                            logos[logo]!.style.getPropertyValue('--logo-scale'),
-                        );
-
-                        return [image];
-                    }),
-                );
+                tile.element.replaceChildren(...(image ? [image] : []));
             }
 
             tile.element.style.visibility = '';
             tile.element.style.opacity = String(fade * Math.min(1, ease * 1.5));
             tile.element.style.transform = `translate(-50%, -50%) translate3d(${x * pitch * spread}px, ${y * pitch * spread}px, 0) rotate(${turn}deg) scale(${scale})`;
-            // Violet only once the wall has come to rest on it.
-            tile.element.classList.toggle('is-centre', settled && d < 0.02);
             tile.element.dataset.i = String(tile.i);
             tile.element.dataset.j = String(tile.j);
         }
@@ -214,19 +201,16 @@ async function setUp(stage: HTMLElement): Promise<void> {
 
         cancelAnimationFrame(moving);
 
-        // Already there (a click on the middle one), or no motion: rest now.
+        // Already there (a click on the middle one), or no motion: move now.
         if (
             still ||
             Math.abs(to.x - state.x) + Math.abs(to.y - state.y) < 0.001
         ) {
             Object.assign(state, to);
-            settled = true;
             draw();
 
             return;
         }
-
-        settled = false;
 
         const from = { x: state.x, y: state.y };
         const start = performance.now();
@@ -237,7 +221,6 @@ async function setUp(stage: HTMLElement): Promise<void> {
 
             state.x = from.x + (to.x - from.x) * eased;
             state.y = from.y + (to.y - from.y) * eased;
-            settled = t === 1;
             render();
             moving = t < 1 ? requestAnimationFrame(step) : 0;
         };
@@ -285,11 +268,6 @@ async function setUp(stage: HTMLElement): Promise<void> {
         drag.x = event.clientX;
         drag.y = event.clientY;
         drag.moved += Math.abs(dx) + Math.abs(dy);
-
-        // A real drag, not a click: no tile is the middle one until it rests.
-        if (drag.moved >= 6) {
-            settled = false;
-        }
 
         drag.samples.push({
             x: event.clientX,

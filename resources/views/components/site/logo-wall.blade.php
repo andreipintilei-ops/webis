@@ -4,8 +4,8 @@
     logos, the tiles around it faded (js/public/logo-wall.ts;
     css/site/logo-wall.css). It forms from its middle as it scrolls into
     view; dragging moves the field, and it settles with one client in the
-    middle, violet, its logo white. A click on a tile brings it to the
-    middle; so do the arrow keys, the wall in focus.
+    middle, like the rest. A click on a tile brings it to the middle; so do
+    the arrow keys, the wall in focus.
 
     For now the few logos repeat. Without the script, or with reduced
     motion's first paint: the logos as a plain row, each once.
