@@ -26,7 +26,7 @@ import { getSmoother } from '@/public/smooth-scroll';
  * - 03 Web și e-commerce: a screen — a rounded panel with a card and a
  *   triangle in front of it — on a tilted orbit (S3);
  * - the finale: the plates fly into a purple panel and stand as a W of five
- *   rounded squares (S4), and ride it off the screen.
+ *   rounded squares in the logo's colours (S4), and ride it off the screen.
  *
  * Each plate can change its outline: a rounded triangle (`m` 0) and a
  * rounded square (`m` 1) are the same mesh, sampled point for point along
@@ -89,6 +89,10 @@ const PIECES: [number, string, string, string, boolean][] = [
     [0.94, '#B9ACFF', '#D9D1FF', '#F4F1FF', false],
     [0.9, '#C4B8F2', '#EDE9FF', '#FFFFFF', true],
 ];
+
+/** The Webis logo's colours, plate by plate as they stand in the W (left to
+ *  right): the plates take them on as they settle on the panel. */
+const BRAND = ['#5B5EA6', '#62B246', '#FFE000', '#F4A024', '#F24F55'];
 
 // ---- The plate's mesh ------------------------------------------------------
 
@@ -298,8 +302,8 @@ const PINWHEEL: Pose[] = [
 ];
 
 /** The W: five rounded squares on their corners, up–down–up–down–up. */
-const W_STEP = 1.08;
-const W_RISE = 0.54;
+const W_STEP = 0.98;
+const W_RISE = 0.49;
 const W_SIZE = 0.9;
 const W: Pose[] = PIECES.map(([size], i) => {
     const up = i % 2 === 0;
@@ -536,6 +540,8 @@ export async function initShapeshifter(): Promise<void> {
     const silhouettes: Float64Array[] = [];
     const STEP = 8;
 
+    /** Each plate's own gradient, kept to blend from into its brand colour. */
+    const gradients: Float32Array[] = [];
     const slabs: Mesh[] = PIECES.map(([size, inner, mid, outer, frosted]) => {
         const h = size * THICK;
         const triangle = outlineOf(3, size, TRI_ROUND, Math.PI / 2);
@@ -584,7 +590,11 @@ export async function initShapeshifter(): Promise<void> {
             colours.set([c.r, c.g, c.b], i * 3);
         }
 
-        geometry.setAttribute('color', new THREE.BufferAttribute(colours, 3));
+        geometry.setAttribute(
+            'color',
+            new THREE.BufferAttribute(colours.slice(), 3),
+        );
+        gradients.push(colours);
 
         // Both outlines at both faces: enough to measure a form's spread.
         const silhouette = new Float64Array(Math.ceil(COLUMNS / STEP) * 4);
@@ -625,6 +635,60 @@ export async function initShapeshifter(): Promise<void> {
 
     object.add(...slabs);
     scene.add(object);
+
+    // On the panel, the plates come into the logo's colours: each gradient
+    // blends to its flat colour, lit a little from within so it reads as
+    // flat as the logo; the frosted one turns solid, the violet sheen goes.
+    const brand = BRAND.map((hex) => new THREE.Color(hex));
+    let painted = -1;
+
+    const paint = (amount: number): void => {
+        // Eased, and only when it has changed enough to see.
+        const k = amount * amount * (3 - 2 * amount);
+
+        if (Math.abs(k - painted) < 0.002) {
+            return;
+        }
+
+        painted = k;
+
+        // Softer light, and less of the violet rim: bright light is what the
+        // tone mapping turns pastel.
+        hemi.intensity = lerp(1.05, 0.55, k);
+        key.intensity = lerp(1.45, 0.95, k);
+        rim.intensity = lerp(1.5, 0.3, k);
+        scene.environmentIntensity = lerp(0.7, 0.35, k);
+
+        slabs.forEach((mesh, index) => {
+            const from = gradients[index]!;
+            const to = brand[index]!;
+            const attribute = mesh.geometry.getAttribute(
+                'color',
+            ) as InstanceType<typeof THREE.BufferAttribute>;
+            const colours = attribute.array as Float32Array;
+
+            for (let i = 0; i < from.length; i += 3) {
+                colours[i] = lerp(from[i]!, to.r, k);
+                colours[i + 1] = lerp(from[i + 1]!, to.g, k);
+                colours[i + 2] = lerp(from[i + 2]!, to.b, k);
+            }
+
+            attribute.needsUpdate = true;
+
+            const material = mesh.material as InstanceType<
+                typeof THREE.MeshPhysicalMaterial
+            >;
+            const frosted = PIECES[index]![4];
+
+            material.emissive.copy(to);
+            material.emissiveIntensity = 0.2 * k;
+            material.sheen = 0.25 * (1 - k);
+            // No white highlight washing the colour out.
+            material.specularIntensity = 1 - 0.9 * k;
+            material.roughness = lerp(frosted ? 0.75 : 0.62, 0.95, k);
+            material.opacity = frosted ? lerp(0.92, 1, k) : 1;
+        });
+    };
 
     const euler = new THREE.Euler(0, 0, 0, 'ZXY');
     const toQuat = (r: Vec): Quaternion =>
@@ -918,7 +982,7 @@ export async function initShapeshifter(): Promise<void> {
         scrub('s1', stage, 'top 92%', 'top 60%');
         scrub('s2', chapters[1]!.el, 'top 80%', 'top 15%');
         scrub('s3', chapters[2]!.el, 'top 80%', 'top 15%');
-        scrub('s4', panelSlot, 'top 88%', 'center 36%');
+        scrub('s4', panelSlot, 'top 88%', 'center 48%');
     }
 
     /** Phones and tablets with reduced motion: the box that came in last. */
@@ -1182,6 +1246,8 @@ export async function initShapeshifter(): Promise<void> {
                 influences[0] = lerp(pa.m ?? 0, pb.m ?? 0, t);
             }
         });
+
+        paint(clamp01((finale - 0.55) / 0.45));
 
         // How much of each chapter it is: the field it stands in.
         const blueprint = near(phase, 1);

@@ -28,11 +28,13 @@ it('shows only published client projects, each linking to /proiect/{slug}', func
     Project::factory()->draft()->create(['title' => 'Ciornă', 'type' => ProjectType::Shop]);
 
     $html = $this->get('/portofoliu')->assertOk()->getContent();
-    preg_match('#<div class="work-list".*?</ul>#s', $html, $list);
+    preg_match('#<div class="work-list".*?</ul>.*?</ul>#s', $html, $list);
 
-    // A row: the client, what it was, its site.
+    // A card in the grid, a row in the list: the client, what it was, its site.
     expect($html)->toContain('<title>Portofoliu | Webis</title>')
         ->and($list[0])
+        ->toContain('<div class="work-list" data-work-list data-view="grid">')
+        ->toContain('href="'.route('projects.show', 'zyanya').'" class="work-thumb"')
         ->toContain('href="'.route('projects.show', 'zyanya').'" class="work-list__row"')
         ->toContain('Bijuterii SRL')
         ->toContain('Magazin online')

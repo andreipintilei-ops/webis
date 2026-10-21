@@ -2,6 +2,7 @@ import type { Component } from 'vue';
 import { initContactForm } from '@/public/contact-form';
 import { initExplorers } from '@/public/explorer';
 import { initReveals } from '@/public/reveals';
+import { initLogoWalls } from '@/public/logo-wall';
 import { initReviewsCarousels } from '@/public/reviews-carousel';
 import { initHero } from '@/public/hero-intro';
 import { initHeroPlanes } from '@/public/hero-planes';
@@ -107,6 +108,7 @@ function boot(): void {
         void initProjectShowcase();
         void initProjectSteps();
         void initProductStack();
+        initLogoWalls();
 
         // The stage's 3D object (Three.js), its own chunk.
         if (document.querySelector('[data-shapeshifter]')) {

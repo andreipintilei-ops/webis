@@ -7,9 +7,14 @@
 @layer components {
     /* ---- The filter: a row of chips, one address each --------------------- */
 
-    /* The title, then the filter under it; side by side from 1024px. */
+    /* The title with the grid/list switch beside it (under it on phones),
+       the filter centred below both. */
     .portfolio__head {
-        @apply flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between lg:gap-10;
+        @apply grid grid-cols-1 items-center gap-y-6 sm:grid-cols-[minmax(0,1fr)_auto] sm:gap-x-10 md:gap-y-12;
+
+        & .portfolio-filter {
+            @apply sm:col-span-2;
+        }
 
         & .chapter__title {
             @apply mt-0;
@@ -23,7 +28,7 @@
     }
 
     .portfolio-filter ul {
-        @apply flex flex-wrap gap-2 lg:justify-end;
+        @apply flex flex-wrap gap-2 md:justify-center;
     }
 
     .portfolio-filter__link {

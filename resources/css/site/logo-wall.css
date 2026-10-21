@@ -1,0 +1,151 @@
+/*
+  The clients' wall (components/site/logo-wall.blade.php;
+  js/public/logo-wall.ts), on the light chapters' lavender
+  (css/site/service-chapters.css): a diamond of white tiles, the middle one
+  violet once the wall rests, its logo white, the rest near black; a tile
+  grows on hover. The script sets --pitch (a tile and its gap), each
+  tile's place, and .is-centre on the middle one at rest.
+*/
+@layer components {
+    .logo-wall__head {
+        @apply flex flex-col items-center gap-5 text-center lg:gap-6;
+
+        & .chapter__title {
+            @apply mt-0;
+        }
+    }
+
+    .logo-wall .logo-wall__rating {
+        @apply items-center text-center;
+    }
+
+    /* Without the script: the logos in a row, each once. */
+    .logo-wall__logos {
+        @apply mt-12 flex flex-wrap items-center justify-center gap-x-12 gap-y-8;
+    }
+
+    .logo-wall__logo img {
+        @apply block w-auto max-w-[10rem] object-contain;
+        height: calc(4.5rem * var(--logo-scale, 0.7));
+        filter: brightness(0);
+        opacity: 0.7;
+    }
+
+    .logo-wall__stage {
+        @apply relative mx-auto w-full select-none;
+        --tile: calc(var(--pitch, 10rem) * 0.9);
+
+        &:focus-visible {
+            outline: 2px solid var(--accent);
+            outline-offset: 8px;
+            border-radius: 24px;
+        }
+    }
+
+    /* The wall's tiles run off both sides of the page. */
+    .logo-wall {
+        overflow-x: clip;
+    }
+
+    /* The stage brings its own room above the diamond: not the chapter's
+       row gap as well. */
+    .logo-wall .chapter__inner {
+        row-gap: 0;
+    }
+
+    /* The script's: the diamond's height, the page's whole width, the tiles
+       fading out toward either side. */
+    .logo-wall__stage.is-live {
+        @apply mt-8 max-w-none cursor-grab;
+        width: 100vw;
+        margin-inline: calc(50% - 50vw);
+        height: calc(var(--pitch) * 3.5);
+        /* Sideways drags are the wall's; up and down still scroll the page. */
+        touch-action: pan-y;
+        mask-image: linear-gradient(
+            to right,
+            transparent,
+            #000 18%,
+            #000 82%,
+            transparent
+        );
+
+        & .logo-wall__logos {
+            @apply sr-only;
+        }
+
+        &.is-dragging {
+            @apply cursor-grabbing;
+        }
+    }
+
+    .logo-wall__field {
+        @apply absolute inset-0 hidden;
+    }
+
+    .is-live .logo-wall__field {
+        @apply block;
+    }
+
+    .logo-wall__tile {
+        @apply absolute top-1/2 left-1/2 isolate grid cursor-pointer place-items-center;
+        width: var(--tile);
+        height: var(--tile);
+        border-radius: calc(var(--tile) * 0.2);
+        will-change: transform;
+
+        /* The tile itself, a layer behind. Only it grows on hover, as the
+           service cards' white does (css/site/service-cards.css); the logo
+           stays crisp. */
+        &::before {
+            content: '';
+            @apply absolute inset-0 -z-10;
+            border-radius: inherit;
+            background: rgb(255 255 255 / 0.7);
+            transition:
+                transform 0.6s cubic-bezier(0.34, 1.4, 0.64, 1),
+                background-color var(--slow) var(--ease);
+        }
+    }
+
+    /* The logo twice, in one cell: near black, and white over it, hidden. */
+    .logo-wall__ink {
+        @apply pointer-events-none block w-auto object-contain;
+        grid-area: 1 / 1;
+        max-width: 64%;
+        height: calc(var(--tile) * 0.42 * var(--logo-scale, 0.7));
+        transition: opacity var(--slow) var(--ease);
+    }
+
+    .logo-wall__ink--dark {
+        filter: brightness(0);
+        opacity: 0.88;
+    }
+
+    .logo-wall__ink--light {
+        filter: brightness(0) invert(1);
+        opacity: 0;
+    }
+
+    /* At rest, the middle one: violet, the white logo cross-fading in —
+       never a half-violet tile with a grey logo between. */
+    .logo-wall__tile.is-centre {
+        &::before {
+            background-color: var(--violet-500);
+        }
+
+        & .logo-wall__ink--dark {
+            opacity: 0;
+        }
+
+        & .logo-wall__ink--light {
+            opacity: 1;
+        }
+    }
+
+    @media (hover: hover) and (pointer: fine) {
+        .logo-wall__stage:not(.is-dragging) .logo-wall__tile:hover::before {
+            transform: scale(1.06);
+        }
+    }
+}

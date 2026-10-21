@@ -1,4 +1,4 @@
-import { prefersReducedMotion } from '@/public/gsap';
+import { EASE, loadGsap, prefersReducedMotion } from '@/public/gsap';
 
 /**
  * The list of every project (components/site/work-list; css/site/
@@ -12,12 +12,16 @@ import { prefersReducedMotion } from '@/public/gsap';
  * fixed would follow the content, not the screen. Reduced motion: they sit
  * on the pointer, without trailing.
  *
+ * Grid or list ([data-work-view] buttons): the grid by default, the choice
+ * kept in this browser; the preview follows the pointer in the list only.
+ *
  * The type filter (the page's [data-work-filter] links) works in place:
  * the rows of other types hide, the address and the title follow
  * (?tip=magazin), and the page does not reload — nor run its transition.
  */
 export function initWorkLists(): void {
     initFilter();
+    initViews();
 
     const mouse = window.matchMedia(
         '(hover: hover) and (pointer: fine) and (min-width: 768px)',
@@ -82,7 +86,7 @@ export function initWorkLists(): void {
             };
 
             list.addEventListener('pointerenter', (event) => {
-                if (!mouse.matches) {
+                if (!mouse.matches || list.dataset.view !== 'list') {
                     return;
                 }
 
@@ -116,6 +120,112 @@ export function initWorkLists(): void {
                 },
             );
         });
+}
+
+const VIEW_KEY = 'webis:work-view';
+
+/** The grid/list switch: shows it, restores the choice, swaps the panes. */
+function initViews(): void {
+    const list = document.querySelector<HTMLElement>('[data-work-list]');
+    // The switch sits in the page's head, beside the title.
+    const bar = document.querySelector<HTMLElement>('[data-work-views]');
+
+    if (!list || !bar) {
+        return;
+    }
+
+    const buttons = Array.from(
+        bar.querySelectorAll<HTMLButtonElement>('[data-work-view]'),
+    );
+    const panes = Array.from(
+        list.querySelectorAll<HTMLElement>('[data-work-pane]'),
+    );
+
+    const show = (view: string, animate: boolean): void => {
+        list.dataset.view = view;
+
+        for (const button of buttons) {
+            button.setAttribute(
+                'aria-pressed',
+                String(button.dataset.workView === view),
+            );
+        }
+
+        for (const pane of panes) {
+            pane.hidden = pane.dataset.workPane !== view;
+        }
+
+        // Out of the list, the preview has nothing to follow.
+        if (view !== 'list') {
+            document
+                .querySelectorAll<HTMLElement>(
+                    '[data-work-preview], [data-work-cursor]',
+                )
+                .forEach((element) => element.style.setProperty('--show', '0'));
+        }
+
+        void import('gsap/ScrollTrigger').then(({ ScrollTrigger }) =>
+            ScrollTrigger.refresh(),
+        );
+
+        if (!animate || prefersReducedMotion()) {
+            return;
+        }
+
+        // The projects of the view shown rise in, one after another.
+        const items = panes
+            .find((pane) => !pane.hidden)
+            ?.querySelectorAll<HTMLElement>('[data-work-type]:not([hidden])');
+
+        if (items && items.length > 0) {
+            void loadGsap().then((gsap) =>
+                gsap.fromTo(
+                    items,
+                    { y: 24, autoAlpha: 0 },
+                    {
+                        y: 0,
+                        autoAlpha: 1,
+                        duration: 0.6,
+                        stagger: 0.04,
+                        ease: EASE.out,
+                        clearProps: 'transform',
+                    },
+                ),
+            );
+        }
+    };
+
+    let saved: string | null = null;
+
+    try {
+        saved = window.localStorage.getItem(VIEW_KEY);
+    } catch {
+        // Storage blocked: the grid.
+    }
+
+    if (saved === 'list') {
+        show('list', false);
+    }
+
+    bar.hidden = false;
+
+    for (const button of buttons) {
+        button.addEventListener('click', () => {
+            const view = button.dataset.workView ?? 'grid';
+
+            if (view === list.dataset.view) {
+                return;
+            }
+
+            show(view, true);
+
+            try {
+                window.localStorage.setItem(VIEW_KEY, view);
+            } catch {
+                // Not kept: the grid next time.
+            }
+        });
+    }
 }
 
 /** The filter links: show one type's rows (or all), without leaving. */

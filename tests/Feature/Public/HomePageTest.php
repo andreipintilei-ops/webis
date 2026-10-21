@@ -2,10 +2,13 @@
 
 use App\Enums\ContentStatus;
 use App\Enums\PageType;
+use App\Models\Asset;
+use App\Models\Client;
 use App\Models\Page;
 use App\Models\Post;
 use App\Settings\CompanySettings;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Storage;
 
 uses(RefreshDatabase::class);
 
@@ -119,7 +122,25 @@ it('ships the page-transition curtain and the prefetch hints', function () {
         ->toContain('"href_matches": "/admin/*"');
 });
 
-it('keeps the home page to its blocks, then the stage, the reviews and the articles', function () {
+it('shows the clients\' wall after the stage: each logo once, with its name, and none hidden from the logos', function () {
+    Storage::fake('public');
+    $logo = fn () => Asset::factory()->withImage(200, 80)->create();
+
+    Client::factory()->create(['name' => 'Zyanya', 'logo_asset_id' => $logo()->id]);
+    Client::factory()->create(['name' => 'Ascuns', 'logo_asset_id' => $logo()->id, 'show_in_logos' => false]);
+
+    $html = $this->get('/')->assertOk()->getContent();
+    preg_match('#<section id="clienti" class="logo-wall.*?</section>#s', $html, $wall);
+
+    expect($wall[0])
+        ->toContain('data-logo-wall')
+        
+        ->toContain('alt="Zyanya"')
+        ->not->toContain('Ascuns')
+        ->and(strpos($html, '<section id="clienti"'))->toBeGreaterThan(strpos($html, 'data-stage-finale'));
+});
+
+it('keeps the home page to its blocks, then the stage, the clients\' wall and the articles', function () {
     Page::factory()->ofType(PageType::Home)->create([
         'slug' => 'acasa',
         'blocks' => [
@@ -150,11 +171,8 @@ it('keeps the home page to its blocks, then the stage, the reviews and the artic
         // Then the closing panel the plates gather into.
         ->toContain('data-stage-finale')
         ->toContain('Site, platformă sau aplicație?')
-        // The reviews: their own section, after the stage.
-        ->and(substr_count($html, 'class="chapter-review"'))->toBe(3)
-        ->and($html)->toContain('aria-roledescription="carusel"')
-        ->toContain('aria-label="1 din 3" data-review>')
-        ->and(strpos($html, '<section id="recenzii" class="site-reviews'))->toBeGreaterThan(strpos($html, 'id="web-si-e-commerce"'))
+        // The reviews made way for the clients' wall (its own test).
+        ->and($html)->not->toContain('data-reviews-carousel')
         // No SEO anywhere visitors can see.
         ->and($html)->not->toMatch('/>[^<]*SEO/')
         // The earlier sections, and the chapters this replaced, are gone.

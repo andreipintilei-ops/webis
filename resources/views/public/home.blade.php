@@ -18,7 +18,7 @@
 >
     <x-blocks :blocks="$page->blocks ?? []" />
     <x-site.stage />
-    <x-site.reviews />
+    <x-site.logo-wall />
     <x-site.blog-posts>
         <x-slot:title>Ultimele <span class="whitespace-nowrap">articole <x-ui.title-pill variant="blog" /></span></x-slot:title>
     </x-site.blog-posts>

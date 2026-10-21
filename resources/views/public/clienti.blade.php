@@ -114,6 +114,10 @@
             <header class="portfolio__head" data-reveal="head">
                 <h2 id="portfolio-title" class="chapter__title">Toate proiectele</h2>
 
+                @if ($rows !== [])
+                    <x-site.work-views />
+                @endif
+
                 <nav class="portfolio-filter" aria-label="Tipul proiectului">
                     <ul>
                         @foreach ($filters as $filter)
@@ -126,8 +130,7 @@
             </header>
 
             @if ($rows !== [])
-                <x-site.work-list :rows="$rows" :filter="$type" />
-            @else
+                <x-site.work-list :rows="$rows" :filter="$type" />            @else
                 <p class="portfolio-empty">Încă nu am publicat proiecte.</p>
             @endif
         </div>

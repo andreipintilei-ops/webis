@@ -1,5 +1,6 @@
 /*
-  Every project as a list (components/site/work-list), after
+  Every project as a grid of screenshots (the default) or as a list
+  (components/site/work-list), a switch between them. The list, after
   dennissnellenberg.com/work, on the light chapters' lavender and their
   colours (css/site/service-chapters.css): the client large, what it was
   and its site in quiet columns, rows between hairlines. With a mouse a
@@ -8,7 +9,115 @@
 */
 @layer components {
     .work-list {
-        @apply mt-10 md:mt-14;
+        @apply mt-8 md:mt-10;
+    }
+
+    /* ---- Grid or list: the switch, as shops have it ------------------------- */
+
+    .work-list__bar {
+        @apply flex items-center gap-3;
+
+        &[hidden] {
+            @apply hidden;
+        }
+    }
+
+    .work-list__bar-label {
+        @apply font-micro text-[11px] tracking-[0.08em] uppercase;
+        color: var(--muted);
+    }
+
+    /* One white pill, the view shown in violet inside it. */
+    .work-list__switch {
+        @apply inline-flex gap-1 rounded-full bg-white p-1;
+    }
+
+    .work-list__view {
+        @apply inline-flex h-9 cursor-pointer items-center gap-2 rounded-full px-3.5 text-[15px] font-medium;
+        color: var(--muted);
+        transition:
+            color var(--fast) var(--ease),
+            background-color var(--fast) var(--ease);
+
+        & svg {
+            @apply size-4 shrink-0;
+            fill: none;
+            stroke: currentColor;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        &:hover {
+            color: var(--ink);
+        }
+
+        &[aria-pressed='true'] {
+            background: var(--violet-500);
+            color: #fff;
+        }
+
+        &:focus-visible {
+            outline: 2px solid var(--accent);
+            outline-offset: 2px;
+        }
+    }
+
+    /* ---- The grid: the screenshots alone ------------------------------------ */
+
+    .work-list__grid {
+        @apply grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3;
+    }
+
+    /* The screenshot, its name on a white label rising in at the foot on
+       hover; always there on touch screens. */
+    .work-thumb {
+        @apply relative block overflow-hidden rounded-[20px];
+        aspect-ratio: 4 / 3;
+        background: #ece8ff;
+
+        & img {
+            @apply size-full object-cover object-top;
+            transition: transform var(--slow) var(--ease);
+        }
+
+        &:focus-visible {
+            outline: 2px solid var(--accent);
+            outline-offset: 4px;
+        }
+    }
+
+    .work-thumb__caption {
+        @apply absolute bottom-4 left-4 flex max-w-[calc(100%-2rem)] flex-col rounded-[14px] bg-white px-4 py-3;
+        transition:
+            transform var(--slow) var(--ease),
+            opacity var(--slow) var(--ease);
+    }
+
+    .work-thumb__client {
+        @apply truncate text-lg leading-tight font-medium tracking-[-0.01em];
+        color: var(--ink);
+    }
+
+    .work-thumb__type {
+        @apply text-sm;
+        color: var(--muted);
+    }
+
+    @media (hover: hover) and (pointer: fine) {
+        .work-thumb__caption {
+            @apply translate-y-3 opacity-0;
+        }
+
+        .work-thumb:is(:hover, :focus-visible) {
+            & img {
+                transform: scale(1.04);
+            }
+
+            & .work-thumb__caption {
+                @apply translate-y-0 opacity-100;
+            }
+        }
     }
 
     /* Column heads, from 768px: the same grid as the rows. */
