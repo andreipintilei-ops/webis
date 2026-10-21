@@ -64,6 +64,9 @@
                 @endif
 
                 @if ($hasLink)
+                    {{-- TODO(/despre dropped): the statement blocks on the home page
+                         ("acasa") and /produse still link to /despre ("Despre
+                         Webis"), set in the admin. Change or remove those links. --}}
                     <div class="mt-10 md:mt-12">
                         <x-ui.arrow-link :href="$link['url']" :tone="$onBackdrop ? 'dark' : 'light'">{{ $link['label'] }}</x-ui.arrow-link>
                     </div>

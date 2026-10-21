@@ -1,7 +1,7 @@
 {{--
     Webis in figures: a band right under an internal page's hero, on its
     background (statement--dark), four figures in a row (two by two on
-    phones) under a hairline — /despre and /portofoliu. css/site/figures.css.
+    phones) under a hairline — /portofoliu. css/site/figures.css.
 
     DUMMY DATA: the two counts are placeholders, to replace with the real
     figures before launch.

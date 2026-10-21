@@ -78,6 +78,18 @@
         mask-image: linear-gradient(to bottom, #000 55%, transparent 92%);
     }
 
+    /* With an article across the hero's foot (/blog): the drawing kept
+       above its hairline, whole, rather than running behind its text. */
+    @media (min-width: 768px) {
+        .page-hero--led .hero-planes__svg {
+            height: min(calc(100% - 8.5rem - 16rem), 40rem);
+        }
+
+        .page-hero--led .hero-planes {
+            mask-image: none;
+        }
+    }
+
     .plane {
         animation: plane-float 5.5s ease-in-out infinite;
         transform-box: fill-box;

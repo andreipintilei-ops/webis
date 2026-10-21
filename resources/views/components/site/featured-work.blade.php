@@ -3,9 +3,9 @@
     the light lavender: each card the project's client large, what it was,
     one line and its site on the left, its screenshot on the right. From
     1024px each comes in a little smaller and tilted, settles, then holds
-    while the next slides up over it (the same motion as the products on
-    /despre: js/public/product-stack.ts). Below that, and with reduced
-    motion, cards one after another. css/site/work-stack.css.
+    while the next slides up over it (js/public/product-stack.ts). Below
+    that, and with reduced motion, cards one after another.
+    css/site/work-stack.css.
 
     `items`: list of ['href', 'client', 'type' (App\Enums\ProjectType),
     'line', 'site' (or null), 'image' (a URL, or null)].

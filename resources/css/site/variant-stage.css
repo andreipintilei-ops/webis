@@ -7,7 +7,8 @@
 
   Every rule is scoped to :root[data-variant='stage'] rather than written as
   the site's default, so the pages that share these classes — /clienti and
-  its own trial — are left alone.
+  its own trial — are left alone. Except the panel (.stage-finale, from
+  components/site/cta-panel): /portofoliu closes on it too.
 */
 @layer components {
     /* The object's layer: the screen's size, never in the way of a click.
@@ -457,7 +458,7 @@
       (z 2) over it. `overflow: hidden` clips the gradient to the radius and
       creates no context; `isolate` would break the whole arrangement.
     */
-    :root[data-variant='stage'] .stage-finale {
+    .stage-finale {
         @apply relative mx-auto mt-12 grid w-full max-w-[92rem] overflow-hidden rounded-3xl lg:mt-0 lg:rounded-[40px];
         grid-template-rows: 1fr auto;
         min-height: 74vh;
@@ -474,7 +475,7 @@
       It has to stay deep — the W standing on it runs from a near-navy plate
       to a white one, and a bright ground would swallow both ends.
     */
-    :root[data-variant='stage'] .stage-finale__ground {
+    .stage-finale__ground {
         @apply absolute inset-0 z-0;
         background:
             radial-gradient(
@@ -505,11 +506,11 @@
     }
 
     /* Where the W stands: everything above the closing title. */
-    :root[data-variant='stage'] .stage-finale__slot {
+    .stage-finale__slot {
         @apply pointer-events-none relative grid place-items-center;
     }
 
-    :root[data-variant='stage'] .stage-finale__body {
+    .stage-finale__body {
         @apply relative z-[2] grid justify-items-center gap-5 px-[var(--site-gap)] pb-16 text-center text-white lg:gap-6 lg:pb-24;
 
         /* The button stands off the copy above it. */
@@ -520,7 +521,7 @@
 
     /* The hero's title: Anton, in capitals, the second half in lavender.
        1.16 like the hero — Romanian's Î and Ă need the room. */
-    :root[data-variant='stage'] .stage-finale__title {
+    .stage-finale__title {
         @apply max-w-[30ch] font-display text-[clamp(2.5rem,4.4vw,4.75rem)] leading-[1.16] font-normal text-balance uppercase;
 
         & span {
@@ -528,18 +529,19 @@
         }
     }
 
-    :root[data-variant='stage'] .stage-finale__line {
+    .stage-finale__line {
         @apply max-w-[58ch] text-lg text-pretty lg:text-xl;
         line-height: 1.55;
         color: rgb(255 255 255 / 0.8);
     }
 
-    /* Without WebGL (shapeshifter.ts adds the class): the same W, in CSS. */
-    :root[data-variant='stage'] .stage-finale__still {
+    /* Without WebGL (the script adds the class): the same W, in CSS, in the
+       logo's colours as the 3D one ends. */
+    .stage-finale__still {
         @apply hidden;
     }
 
-    :root[data-variant='stage'] .stage-finale--still .stage-finale__still {
+    .stage-finale--still .stage-finale__still {
         @apply relative z-[2] block w-[min(66%,620px)];
         aspect-ratio: 5 / 2.6;
 
@@ -561,27 +563,33 @@
 
         & i:nth-child(1) {
             left: 10%;
-            background: linear-gradient(135deg, #120e3f, #7b5cff);
+            background: #5b5ea6;
         }
 
         & i:nth-child(2) {
             left: 30%;
-            background: linear-gradient(135deg, #2c2390, #a07bff);
+            background: #62b246;
         }
 
         & i:nth-child(3) {
             left: 50%;
-            background: linear-gradient(135deg, #5a3fe0, #d08cf5);
+            background: #ffe000;
         }
 
         & i:nth-child(4) {
             left: 70%;
-            background: linear-gradient(135deg, #b9acff, #f4f1ff);
+            background: #f4a024;
         }
 
         & i:nth-child(5) {
             left: 90%;
-            background: linear-gradient(135deg, #e4deff, #ffffff);
+            background: #f24f55;
         }
+    }
+
+    /* The standalone panel's own W (js/public/finale-w.ts): its canvas
+       fills the slot, behind the text's layer. */
+    .stage-finale__canvas {
+        @apply absolute inset-0 z-[1] block size-full;
     }
 }

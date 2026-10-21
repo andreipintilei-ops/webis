@@ -25,7 +25,9 @@
         @apply block;
     }
 
-    :root.intro [data-intro-backdrop] {
+    /* Only on a page with the intro (the home page): elsewhere the backdrop
+       is there from the first frame, not blank until the script lifts it. */
+    :root.intro:has([data-intro]) [data-intro-backdrop] {
         clip-path: inset(50% round 999px);
     }
 

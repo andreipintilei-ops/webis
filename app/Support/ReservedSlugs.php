@@ -11,6 +11,8 @@ final class ReservedSlugs
 {
     public const array ALL = [
         // Content sections
+        // 'despre' stays reserved: its page was dropped, and the old CMS page
+        // of that name should not come back at it by itself.
         'blog', 'clienti', 'despre', 'portofoliu', 'proiect', 'poveste', 'solutii', 'web', 'cerere-oferta', 'multumim',
         // Admin and account
         'admin', 'settings', 'login', 'logout', 'register', 'forgot-password',

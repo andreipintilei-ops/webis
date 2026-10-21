@@ -2,6 +2,7 @@
     A listing's pages (/blog, and any list like it): the previous page, the
     numbers — the first, the last and those around the current one, with a
     gap between — and the next page. The current page is the violet one.
+    Plain loads, never through the page transition (data-no-transition).
     css/site/pagination.css.
 
     `paginator`: an Illuminate LengthAwarePaginator. Shows nothing for a
@@ -25,7 +26,7 @@
         @if ($paginator->onFirstPage())
             <span class="pagination__step pagination__step--prev" aria-hidden="true">{!! $arrow !!}</span>
         @else
-            <a href="{{ $paginator->previousPageUrl() }}" class="pagination__step pagination__step--prev" rel="prev" aria-label="Pagina anterioară">{!! $arrow !!}</a>
+            <a href="{{ $paginator->previousPageUrl() }}" class="pagination__step pagination__step--prev" rel="prev" aria-label="Pagina anterioară" data-no-transition>{!! $arrow !!}</a>
         @endif
 
         <ol class="pagination__pages">
@@ -37,14 +38,14 @@
                     @if ($page === $current)
                         <span class="pagination__page" aria-current="page">{{ $page }}</span>
                     @else
-                        <a href="{{ $paginator->url($page) }}" class="pagination__page" aria-label="Pagina {{ $page }}">{{ $page }}</a>
+                        <a href="{{ $paginator->url($page) }}" class="pagination__page" aria-label="Pagina {{ $page }}" data-no-transition>{{ $page }}</a>
                     @endif
                 </li>
             @endforeach
         </ol>
 
         @if ($paginator->hasMorePages())
-            <a href="{{ $paginator->nextPageUrl() }}" class="pagination__step" rel="next" aria-label="Pagina următoare">{!! $arrow !!}</a>
+            <a href="{{ $paginator->nextPageUrl() }}" class="pagination__step" rel="next" aria-label="Pagina următoare" data-no-transition>{!! $arrow !!}</a>
         @else
             <span class="pagination__step" aria-hidden="true">{!! $arrow !!}</span>
         @endif

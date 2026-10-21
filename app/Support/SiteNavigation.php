@@ -46,7 +46,6 @@ final class SiteNavigation
             ['label' => 'Acasă', 'href' => '/', 'bar' => false, 'menu' => false, 'place' => null, 'cta' => null, 'children' => []],
             ['label' => 'Servicii', 'href' => '/solutii', 'bar' => true, 'menu' => true, 'place' => null, 'cta' => null, 'children' => self::SERVICES],
             ['label' => 'Clienți', 'href' => '/portofoliu', 'bar' => true, 'menu' => true, 'place' => 'section', 'cta' => null, 'children' => []],
-            ['label' => 'Despre', 'href' => '/despre', 'bar' => true, 'menu' => true, 'place' => 'section', 'cta' => null, 'children' => []],
             ['label' => 'Blog', 'href' => '/blog', 'bar' => true, 'menu' => true, 'place' => 'section', 'cta' => null, 'children' => []],
             ['label' => 'Contact', 'href' => '/contact', 'bar' => true, 'menu' => false, 'place' => null, 'cta' => 'Hai să discutăm', 'children' => []],
         ];

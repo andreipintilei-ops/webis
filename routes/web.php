@@ -25,7 +25,6 @@ Route::get('proiect/{slug}', [ProjectController::class, 'show'])
 // A design trial kept for later: the services as one pinned story (HomeController).
 Route::get('poveste', [HomeController::class, 'poveste'])->name('trials.story');
 Route::view('blog', 'public.blog.index')->name('posts.index');
-Route::view('despre', 'public.about')->name('about');
 Route::view('web', 'public.web')->name('services.web');
 
 // The contact form (components/site/contact). At a reserved slug, so no CMS

@@ -87,7 +87,7 @@ it('filters by type, at its own address, in place, and ignores an unknown one', 
         ->and($row($all, 'logo'))->toBeFalse();
 });
 
-it('never shows Webis\'s own products as client work, only a line to Produse SaaS', function () {
+it('never shows Webis\'s own products as client work', function () {
     $html = $this->get('/portofoliu')->assertOk()->getContent();
     preg_match('#<main.*</main>#s', $html, $main);
 
@@ -96,22 +96,35 @@ it('never shows Webis\'s own products as client work, only a line to Produse Saa
         ->not->toContain('RIMS')
         ->not->toContain('Bugetare participativă')
         ->not->toContain('Confirmo')
-        ->toContain('href="/produse"')
-        // The closing call, in the page's own words.
-        ->and($html)->toContain('Ai un proiect asemănător?');
+        ->not->toContain('portfolio-products');
 });
 
-it('shows the home page\'s strip of clients\' logos, with their names as alt text', function () {
+it('closes on the home page\'s panel, its own W forming on it, instead of the footer\'s call', function () {
+    $html = $this->get('/portofoliu')->assertOk()->getContent();
+
+    expect($html)
+        ->toContain('class="stage-finale stage-finale--standalone portfolio-cta" data-finale-w')
+        ->toContain('Site, platformă sau aplicație?')
+        ->toContain('Un site nou, un magazin online sau o platformă pentru toată organizația.')
+        ->not->toContain('Ai un proiect');
+});
+
+it('shows the home page\'s wall of clients\' logos, in the list\'s section, with their names as alt text', function () {
     Storage::fake('public');
     $logo = fn () => Asset::factory()->withImage(200, 80)->create();
 
     Client::factory()->university()->create(['name' => 'Universitatea X', 'logo_asset_id' => $logo()->id]);
     Client::factory()->create(['name' => 'Ascuns', 'logo_asset_id' => $logo()->id, 'show_in_logos' => false]);
 
-    expect($this->get('/portofoliu')->assertOk()->getContent())
-        ->toContain('class="logo-marquee logo-marquee--light portfolio-clients__strip"')
+    $html = $this->get('/portofoliu')->assertOk()->getContent();
+    preg_match('#<section id="proiecte".*?</section>#s', $html, $section);
+
+    expect($section[0])
+        ->toContain('class="logo-wall logo-wall--embedded portfolio-clients"')
+        ->toContain('data-logo-wall')
         ->toContain('alt="Universitatea X"')
-        ->not->toContain('alt="Ascuns"');
+        ->not->toContain('alt="Ascuns"')
+        ->and($html)->not->toContain('logo-marquee');
 });
 
 it('shows a project at /proiect/{slug}: what was needed, what was built and with what', function () {
@@ -154,7 +167,7 @@ it('answers 404 for a draft project, and 301 from a slug it used to have', funct
 
 it('shows up to three related client projects of the service page\'s type, and none elsewhere', function () {
     Page::factory()->create(['title' => 'Software la comandă', 'slug' => 'software-la-comanda']);
-    Page::factory()->create(['title' => 'Despre', 'slug' => 'despre']);
+    Page::factory()->create(['title' => 'Cariere', 'slug' => 'cariere']);
 
     Project::factory()->create(['title' => 'Magazinul unu', 'type' => ProjectType::Shop]);
     Project::factory()->create(['title' => 'Siteul doi', 'type' => ProjectType::Presentation]);
@@ -170,7 +183,7 @@ it('shows up to three related client projects of the service page\'s type, and n
         ->and($web)->not->toContain('Platforma cinci')
         ->and($software)->toContain('Platforma cinci')->not->toContain('Siteul doi')
         ->and(substr_count($software, 'class="work-card"'))->toBe(1)
-        ->and($this->get('/despre')->getContent())->not->toContain('class="work-card"');
+        ->and($this->get('/cariere')->getContent())->not->toContain('class="work-card"');
 });
 
 it('fills a product page\'s "Folosit de" strip from the clients that use it, as logos only', function () {

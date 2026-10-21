@@ -89,8 +89,9 @@
 
     .work-thumb__caption {
         @apply absolute bottom-4 left-4 flex max-w-[calc(100%-2rem)] flex-col rounded-[14px] bg-white px-4 py-3;
+        /* `translate`, not `transform`: Tailwind's translate-y-* set that. */
         transition:
-            transform var(--slow) var(--ease),
+            translate var(--slow) var(--ease),
             opacity var(--slow) var(--ease);
     }
 

@@ -1,7 +1,7 @@
 {{--
     /blog — the listing: the internal pages' hero (components/site/page-hero),
-    then on the first page one featured article (the home page's violet
-    card, wide), and the articles as the home page's text cards
+    then on the first page one featured article across the hero's foot
+    (css/site/page-hero.css), and the articles as the home page's text cards
     (components/site/post-card), nine to a page (components/site/pagination,
     ?pagina=2). Cards only; the articles' own pages come later (the links
     stay on /blog's slugs). css/site/blog-posts.css.
@@ -107,8 +107,8 @@
 
     abort_if($page > $paginator->lastPage(), 404);
 
-    // The featured article: on the first, unfiltered page only, set half
-    // over the hero and half over the list (css/site/blog-posts.css).
+    // The featured article: on the first, unfiltered page only, across
+    // the hero's foot (css/site/page-hero.css).
     $showFeatured = $paginator->onFirstPage() && ! $category;
 
     $arrow = '<svg viewBox="0 0 11 10" fill="currentColor" aria-hidden="true"><path d="M0 5.656V4.304l8.419.014-3.359-3.358L5.99 0l5.002 4.973-4.987 4.987-.93-.96 3.358-3.358L0 5.656Z"/></svg>';
@@ -119,34 +119,34 @@
         label="Blog · Webis"
         :title="['Articole despre', 'software și web.']"
         intro="Ghiduri și noutăți despre software la comandă, site-uri, magazine online și SEO."
-        :class="$showFeatured ? 'page-hero--carded' : null"
+        :class="$showFeatured ? 'page-hero--led' : null"
         :flush="true"
-    />
-
-    <section id="articole" @class(['site-blog site-blog--page chapter chapter--light', 'site-blog--carded' => $showFeatured]) aria-label="Articole">
-        <div class="chapter__inner">
-            <!-- DUMMY DATA: the live webis.ro's articles, with spread dates. -->
-            {{-- The featured article across the column, above the list and its
-                 categories, its top half over the hero. --}}
-            @if ($showFeatured)
-                <a href="{{ $featured['href'] }}" class="post-card post-featured" data-reveal>
-                    <span class="post-card__frame" aria-hidden="true">
-                        <span class="post-card__bg"></span>
-                        <span class="post-card__button"><span class="post-card__arrow">{!! $arrow !!}</span><span class="post-card__arrow post-card__arrow--next">{!! $arrow !!}</span></span>
+    >
+        {{-- The featured article closes the hero, on a hairline across its
+             foot, as the home page's rating and logos close its own. --}}
+        @if ($showFeatured)
+            <x-slot:after>
+                <a href="{{ $featured['href'] }}" class="blog-lead">
+                    <span class="blog-lead__meta">
+                        <span>Articol recomandat</span>
+                        <span aria-hidden="true">·</span>
+                        <span>{{ $featured['category'] }}</span>
+                        <span aria-hidden="true">·</span>
+                        <time datetime="{{ $featured['date']->toDateString() }}">{{ $featured['date']->locale('ro')->translatedFormat('j F Y') }}</time>
                     </span>
-                    <span class="post-featured__body">
-                        <span class="post-card__meta">
-                            <span class="post-card__category">{{ $featured['category'] }}</span>
-                            <span class="post-featured__flag">Articol recomandat</span>
-                            <time datetime="{{ $featured['date']->toDateString() }}">{{ $featured['date']->locale('ro')->translatedFormat('j F Y') }}</time>
-                        </span>
-                        <span class="post-featured__title"><span>{{ $featured['title'] }}</span></span>
-                        <span class="post-featured__excerpt">{{ $featured['excerpt'] }}</span>
-                        <span class="post-card__foot">Citește articolul</span>
+                    <span class="blog-lead__title"><span>{{ $featured['title'] }}</span></span>
+                    <span class="blog-lead__side">
+                        <span class="blog-lead__excerpt">{{ $featured['excerpt'] }}</span>
+                        <span class="blog-lead__arrow" aria-hidden="true">{!! $arrow !!}</span>
                     </span>
                 </a>
-            @endif
+            </x-slot:after>
+        @endif
+    </x-site.page-hero>
 
+    <section id="articole" class="site-blog site-blog--page chapter chapter--light" aria-label="Articole">
+        <div class="chapter__inner">
+            <!-- DUMMY DATA: the live webis.ro's articles, with spread dates. -->
             <div class="site-blog__layout">
                 {{-- The categories: a column at the right from 1024px, a row of
                      chips above the articles below it; each its own address. --}}
@@ -154,13 +154,13 @@
                     <h2 id="blog-categories-title" class="blog-categories__title">Categorii</h2>
                     <ul class="blog-categories__list">
                         <li>
-                            <a href="{{ route('posts.index') }}#articole" class="blog-categories__link"@if (! $category) aria-current="page"@endif>
+                            <a href="{{ route('posts.index') }}#articole" class="blog-categories__link"@if (! $category) aria-current="page"@endif data-no-transition>
                                 <span>Toate articolele</span><span class="blog-categories__count">{{ $posts->count() }}</span>
                             </a>
                         </li>
                         @foreach ($categories as $item)
                             <li>
-                                <a href="{{ route('posts.index', ['categorie' => $item['slug']]) }}#articole" class="blog-categories__link"@if ($category && $category['slug'] === $item['slug']) aria-current="page"@endif>
+                                <a href="{{ route('posts.index', ['categorie' => $item['slug']]) }}#articole" class="blog-categories__link"@if ($category && $category['slug'] === $item['slug']) aria-current="page"@endif data-no-transition>
                                     <span>{{ $item['name'] }}</span><span class="blog-categories__count">{{ $item['count'] }}</span>
                                 </a>
                             </li>

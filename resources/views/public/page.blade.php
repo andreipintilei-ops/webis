@@ -15,7 +15,7 @@
 >
     <x-blocks :blocks="$page->blocks ?? []" />
 
-    {{-- After the illustrated service cards (for now /despre): the projects,
+    {{-- After the illustrated service cards: the projects,
          on the same lavender as the cards. --}}
     @if ($serviceCards)
         <x-site.selected-projects layout="accordion" />

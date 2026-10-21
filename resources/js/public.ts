@@ -117,6 +117,13 @@ function boot(): void {
             );
         }
 
+        // A closing panel's own W, where there is no stage (/portofoliu).
+        if (document.querySelector('[data-finale-w]')) {
+            void import('@/public/finale-w').then(({ initFinaleW }) =>
+                initFinaleW(),
+            );
+        }
+
         // The services story (/poveste): Three.js, its own chunks, only there.
         if (document.querySelector('[data-story]')) {
             void import('@/public/services-story').then(

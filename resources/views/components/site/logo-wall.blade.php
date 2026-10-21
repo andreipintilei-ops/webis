@@ -1,5 +1,6 @@
 {{--
-    The clients' logos, on the home page after the stage: a diamond of tiles
+    The clients' logos, on the home page after the stage and on
+    /portofoliu under the list: a diamond of tiles
     (1·2·3·2·1, the columns a half tile apart) in an endless field of
     logos, the tiles around it faded (js/public/logo-wall.ts;
     css/site/logo-wall.css). It forms from its middle as it scrolls into
@@ -9,7 +10,12 @@
 
     For now the few logos repeat. Without the script, or with reduced
     motion's first paint: the logos as a plain row, each once.
+
+    `embedded`: inside another section (/portofoliu's list), so a <div>
+    on that section's ground rather than a light chapter of its own.
 --}}
+@props(['embedded' => false])
+
 @php
     // As the logo strip (components/logo-marquee): every client marked
     // "show in logos", in their admin order.
@@ -30,10 +36,11 @@
 @endphp
 
 @if ($clients->isNotEmpty())
-    <section id="clienti" {{ $attributes->class('logo-wall chapter chapter--light') }} aria-labelledby="logo-wall-title">
+    @php($wrapper = $embedded ? 'div role="region"' : 'section id="clienti"')
+    <{!! $wrapper !!} {{ $attributes->class(['logo-wall', 'chapter chapter--light' => ! $embedded, 'logo-wall--embedded' => $embedded]) }} aria-labelledby="logo-wall-title">
         <div class="chapter__inner">
             <header class="chapter__head logo-wall__head" data-reveal="head">
-                <h2 id="logo-wall-title" class="chapter__title">Oameni care <span class="whitespace-nowrap">ne-au ales <x-ui.title-pill variant="reviews" /></span></h2>
+                <h2 id="logo-wall-title" class="chapter__title">Cine <span class="whitespace-nowrap">ne-a ales <x-ui.title-pill variant="reviews" /></span></h2>
                 <x-site.google-rating tone="light" class="chapter-rating logo-wall__rating" />
             </header>
 
@@ -50,5 +57,5 @@
                 <div class="logo-wall__field" aria-hidden="true" data-logo-wall-field></div>
             </div>
         </div>
-    </section>
+    </{{ $embedded ? 'div' : 'section' }}>
 @endif

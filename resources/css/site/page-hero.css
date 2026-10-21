@@ -69,32 +69,84 @@
     }
 
     /*
-      A card set across the hero's foot (/blog's featured article): the
-      hero keeps --card-lift of room under its text for the card's top
-      half; the section after it starts with the card, lifted by as much
-      (css/site/blog-posts.css).
+      An article across the hero's foot (/blog's featured one), as the home
+      page's rating and logos close its hero: on a hairline at the bottom,
+      the title in the hero's text and space above it.
     */
-    :root {
-        --card-lift: 6rem;
+    .page-hero--led {
+        @apply items-stretch pb-10 md:pb-14 lg:min-h-svh;
 
-        @media (min-width: 768px) {
-            --card-lift: 10rem;
+        & .page-hero__inner {
+            @apply flex flex-col;
         }
 
-        @media (min-width: 1024px) {
-            --card-lift: 13rem;
-        }
-    }
-
-    .page-hero--carded {
-        padding-bottom: calc(4rem + var(--card-lift));
-
-        @media (min-width: 768px) {
-            padding-bottom: calc(5rem + var(--card-lift));
+        /* Always some room between the intro and the article under it. */
+        & .page-hero__foot {
+            @apply mb-16;
         }
     }
 
-    .page-hero--carded + * {
-        @apply pt-0 md:pt-0 lg:pt-0;
+    .blog-lead {
+        @apply grid gap-x-12 gap-y-5 border-t pt-8 md:mt-auto md:pt-10 lg:grid-cols-12;
+        border-color: rgb(255 255 255 / 0.25);
+    }
+
+    .blog-lead__meta {
+        @apply flex flex-wrap gap-x-2.5 gap-y-1 font-micro text-[11px] tracking-[0.08em] text-white/75 uppercase lg:col-span-12;
+    }
+
+    .blog-lead__title {
+        @apply font-medium text-balance lg:col-span-7;
+        font-size: clamp(1.75rem, 3vw, 2.75rem);
+        line-height: 1.12;
+        letter-spacing: -0.025em;
+
+        /* The underline drawn in on hover, as on the cards' titles. */
+        & > span {
+            background: linear-gradient(currentColor, currentColor) 0 100% / 0
+                1px no-repeat;
+            transition: background-size var(--slow) var(--ease);
+        }
+    }
+
+    .blog-lead__side {
+        @apply flex items-end justify-between gap-8 lg:col-span-5;
+    }
+
+    .blog-lead__excerpt {
+        @apply max-w-[34rem] text-base leading-relaxed text-pretty text-white/75;
+    }
+
+    /* The round arrow, filling white on hover. */
+    .blog-lead__arrow {
+        @apply grid size-14 shrink-0 place-items-center rounded-full border;
+        border-color: rgb(255 255 255 / 0.35);
+        transition:
+            background-color var(--slow) var(--ease),
+            color var(--slow) var(--ease),
+            border-color var(--slow) var(--ease);
+
+        & svg {
+            @apply w-3.5;
+        }
+    }
+
+    .blog-lead:focus-visible {
+        outline: 2px solid var(--lavender-300);
+        outline-offset: 8px;
+        border-radius: 4px;
+    }
+
+    @media (hover: hover) and (pointer: fine) {
+        .blog-lead:hover {
+            & .blog-lead__title > span {
+                background-size: 100% 1px;
+            }
+
+            & .blog-lead__arrow {
+                @apply border-white bg-white;
+                color: var(--violet-500);
+            }
+        }
     }
 }

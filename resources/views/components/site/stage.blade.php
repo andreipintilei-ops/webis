@@ -166,26 +166,8 @@
 
     {{-- ============================================================ The finale
          The three services gather: the object's plates fly in and stand as a
-         W of five rounded squares, then the closing call. The ground is a
-         plain CSS gradient — no WebGL here, the footer keeps that — and it
-         paints under the object's layer with the text over it; see
-         css/site/variant-stage.css. --}}
-    <div class="stage-finale" data-stage-finale data-nav-tone="dark">
-        {{-- The entry is on the ground, never on the panel: a transform or a
-             part-way opacity there would make it a stacking context, and the
-             object would stop passing between this and the text. --}}
-        <div class="stage-finale__ground" aria-hidden="true" data-reveal></div>
-
-        {{-- Where the W stands. Without WebGL the five squares are drawn in
-             CSS instead (the script adds `stage-finale--still`). --}}
-        <div class="stage-finale__slot" data-stage-slot aria-hidden="true">
-            <div class="stage-finale__still"><i></i><i></i><i></i><i></i><i></i></div>
-        </div>
-
-        <div class="stage-finale__body" data-reveal="head">
-            <h2 class="stage-finale__title">Site, platformă sau aplicație?</h2>
-            <p class="stage-finale__line">Un site nou, un magazin online sau o platformă pentru toată organizația.</p>
-            <x-ui.pill href="/contact" tone="dark">Discută un proiect</x-ui.pill>
-        </div>
-    </div>
+         W of five rounded squares, then the closing call
+         (components/site/cta-panel). The ground paints under the object's
+         layer with the text over it; see css/site/variant-stage.css. --}}
+    <x-site.cta-panel />
 </section>

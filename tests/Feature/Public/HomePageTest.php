@@ -55,7 +55,7 @@ it('lists in the menu the pages (Contact last), the three services and how to re
     preg_match_all('#<a href="([^"]+)" class="theo-menu__link#', $menu[0], $pages);
     preg_match_all('#<a href="([^"]+)" class="theo-menu__service#', $menu[0], $services);
 
-    expect($pages[1])->toBe(['/', '/portofoliu', '/despre', '/blog', '/contact'])
+    expect($pages[1])->toBe(['/', '/portofoliu', '/blog', '/contact'])
         ->and($services[1])->toBe(['/software-la-comanda', '/produse', '/web'])
         ->and($menu[0])->toContain('href="mailto:contact@webis.ro"')
         ->toContain('href="tel:')
@@ -80,7 +80,7 @@ it('shows the top bar sections, with the Servicii dropdown and no Produse', func
         ->toContain('<a href="/web" class="site-dropdown__link">Web și e-commerce</a>')
         // Then the sections, Blog among them; Produse is only in the dropdown.
         ->toContain('href="/portofoliu"')
-        ->toContain('href="/despre"')
+        ->not->toContain('href="/despre"')
         ->toContain('href="/blog"')
         ->and(substr_count($bar[0], 'site-link__text">Produse<'))->toBe(0);
 });

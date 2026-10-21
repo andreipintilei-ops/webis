@@ -60,12 +60,12 @@ it('lists the articles at /blog: a hero, the featured one, then nine cards to a 
 
     expect($html)
         ->toContain('<title>Blog | Webis</title>')
-        ->toContain('class="page-hero has-hero-planes page-hero--flush page-hero--carded"')
+        ->toContain('class="page-hero has-hero-planes page-hero--flush page-hero--led"')
         // The planes, inline so they can float.
         ->toContain('<g class="plane plane--green">')
         ->toContain('DUMMY DATA')
         ->toContain('Cum poți avea un magazin online de succes')
-        ->and(substr_count($html, 'post-featured__title'))->toBe(1)
+        ->and(substr_count($html, 'class="blog-lead"'))->toBe(1)
         ->and(substr_count($html, 'class="post-card"'))->toBe(9)
         ->and($html)->toContain('aria-current="page">1</span>')
         ->toContain('href="'.route('posts.index').'?pagina=2"');
@@ -77,7 +77,7 @@ it('pages through the rest of the articles, without the featured one', function 
 
     expect($html)
         ->toContain('<title>Blog, pagina 5 | Webis</title>')
-        ->not->toContain('post-featured__title')
+        ->not->toContain('class="blog-lead"')
         ->and(substr_count($html, 'class="post-card"'))->toBe(9)
         ->and($html)->toContain('rel="prev"')
         ->not->toContain('rel="next"');
@@ -101,31 +101,10 @@ it('gives the blog its own meta description', function () {
     );
 });
 
-it('serves /despre: its own title and description, one H1, the sections in turn, the footer as its call', function () {
+it('has no /despre: the page was dropped, and an old CMS page of that name does not take its place', function () {
+    Page::factory()->create(['title' => 'Despre', 'slug' => 'despre']);
 
-    $html = $this->get('/despre')->assertOk()->getContent();
-    preg_match_all('#<h2 id="about-[a-z]+-title"[^>]*>(.*?)</h2>#s', $html, $titles);
-    $titles = array_map(fn (string $title) => trim(preg_replace('/\s+/', ' ', strip_tags($title))), $titles[1]);
-
-    expect($html)
-        ->toContain('<title>Despre Webis – firmă de software din Iași</title>')
-        ->toContain('<meta name="description" content="Webis este o firmă de software din Iași. Din 2016 construim aplicații la comandă, produse SaaS, site-uri și magazine online.">')
-        ->and(substr_count($html, '<h1'))->toBe(1)
-        ->and($titles)->toBe(['De la proiecte la produse', 'Cum lucrăm'])
-        // The figures: no Google rating among them.
-        ->and($html)->toContain('Anul în care am început')
-        ->toContain('Organizații care folosesc produsele noastre')
-        ->not->toContain('Evaluare pe Google')
-        // The products: Confirmo on its own site, the rest on /produse.
-        ->toMatch('#href="https://confirmo\.ro/" class="about-card about-card--4"\s+target="_blank" rel="noopener"#')
-        ->toContain('href="/produse#rims" class="about-card about-card--1"')
-        ->toContain('Vezi toate produsele')
-        // The footer's own call, not a page-specific one.
-        ->toContain('Ai un proces care merită')
-        // No duplicate of the home page's sections.
-        ->not->toContain('class="svc-cards"')
-        ->not->toContain('data-statement-text')
-        ->not->toContain('Am lucrat cu');
+    $this->get('/despre')->assertNotFound();
 });
 
 it('lists the blog\'s categories beside the articles, each filtering them at its own address', function () {
@@ -136,13 +115,13 @@ it('lists the blog\'s categories beside the articles, each filtering them at its
         ->toMatch('#href="[^"]*/blog\#articole" class="blog-categories__link"\s*aria-current="page"#')
         ->toContain('/blog?categorie=seo#articole')
         // The featured article leads the unfiltered list only.
-        ->and($all)->toContain('post-featured');
+        ->and($all)->toContain('class="blog-lead"');
 
     $seo = $this->get('/blog?categorie=seo')->assertOk()->getContent();
     preg_match_all('#<span class="post-card__category">([^<]+)</span>#', $seo, $categories);
 
     expect(array_unique($categories[1]))->toBe(['SEO'])
-        ->and($seo)->not->toContain('post-featured')
+        ->and($seo)->not->toContain('class="blog-lead"')
         ->toMatch('#categorie=seo\#articole" class="blog-categories__link"\s*aria-current="page"#');
 });
 
