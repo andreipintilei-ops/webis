@@ -170,7 +170,7 @@ async function setUp(stage: HTMLElement): Promise<void> {
 
     const measure = (): void => {
         // A phone shows the diamond and the next columns' edges.
-        pitch = Math.min(160, stage.clientWidth / 5.8);
+        pitch = Math.min(200, stage.clientWidth / 4.64);
         stage.style.setProperty('--pitch', `${pitch}px`);
         draw();
     };

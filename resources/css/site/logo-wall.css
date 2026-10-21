@@ -43,6 +43,7 @@
 
     /* The wall's tiles run off both sides of the page. */
     .logo-wall {
+        @apply pb-16 lg:pb-24;
         overflow-x: clip;
     }
 
@@ -58,7 +59,7 @@
         @apply mt-8 max-w-none cursor-grab;
         width: 100vw;
         margin-inline: calc(50% - 50vw);
-        height: calc(var(--pitch) * 3.5);
+        height: calc(var(--pitch) * 3.3);
         /* Sideways drags are the wall's; up and down still scroll the page. */
         touch-action: pan-y;
         mask-image: linear-gradient(
