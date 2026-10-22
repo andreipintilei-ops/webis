@@ -8,10 +8,11 @@ use Illuminate\Validation\Rule;
  * The opening section: the page's one <h1>, a short promise and up to two
  * buttons. Its image is the LCP candidate and is preloaded.
  *
- * `background` (centred layout only): "none" — the image if one is chosen,
- * else the page's white; "gradient" — the animated WebGL gradient
- * (js/public/soffit.ts), which takes the place of the image, in the blues;
- * "gradient-violet" — the same in the old site's purples (webis.ro).
+ * `background`: "none" — centred, the image if one is chosen, else the
+ * page's white; split, the page's white. "gradient" — the animated WebGL
+ * gradient (js/public/soffit.ts), in the blues: centred, in the image's
+ * place; split, behind the text and the image. "gradient-violet" — the same
+ * in the old site's purples (webis.ro).
  *
  * `align` (centred layout only): the text "center" or "left" — the latter at
  * the left of the page's content column (--content-max).
@@ -73,18 +74,19 @@ class HeroBlock extends Block
     }
 
     /**
-     * The centred hero's backdrop: "gradient", "image" or "none".
+     * The hero's backdrop: "gradient", "image" (centred only) or "none".
      *
      * @param  array<string, mixed>  $data
      */
     public static function backdrop(array $data): string
     {
-        if (($data['layout'] ?? null) !== 'centered') {
-            return 'none';
-        }
-
         if (in_array($data['background'] ?? null, ['gradient', 'gradient-violet'], true)) {
             return 'gradient';
+        }
+
+        // Split: the image sits beside the text, never behind it.
+        if (($data['layout'] ?? null) !== 'centered') {
+            return 'none';
         }
 
         return empty($data['image_asset_id']) ? 'none' : 'image';

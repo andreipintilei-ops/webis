@@ -58,23 +58,22 @@ it('leads with up to three featured projects as stacking cards', function () {
         ->not->toContain('Obișnuit');
 });
 
-it('filters by type, at its own address, in place, and ignores an unknown one', function () {
+it('filters by type, at its own address, and ignores an unknown one', function () {
     Project::factory()->create(['title' => 'Magazinul A', 'type' => ProjectType::Shop]);
     Project::factory()->create(['title' => 'Siteul B', 'type' => ProjectType::Presentation]);
     Project::factory()->create(['title' => 'Logoul C', 'type' => ProjectType::Logo]);
 
     $shops = $this->get('/portofoliu?tip=magazin')->assertOk()->getContent();
-    // Each row as shown or hidden, by its type.
-    $row = fn (string $html, string $type) => preg_match('#<li data-reveal-child data-work-type="'.$type.'"\s*(hidden)?\s*>#', $html, $match) ? isset($match[1]) : null;
+    $row = fn (string $html, string $type) => str_contains($html, 'data-work-type="'.$type.'"');
 
-    // Every row is there, the other types hidden: the script filters in place.
-    expect($row($shops, 'magazin'))->toBeFalse()
-        ->and($row($shops, 'prezentare'))->toBeTrue()
-        ->and($row($shops, 'logo'))->toBeTrue()
+    // Only that type's projects are sent: the list is paged by type.
+    expect($row($shops, 'magazin'))->toBeTrue()
+        ->and($row($shops, 'prezentare'))->toBeFalse()
+        ->and($row($shops, 'logo'))->toBeFalse()
         ->and($shops)->toContain('<title>Magazine online · Portofoliu | Webis</title>')
-        ->toMatch('#href="[^"]*/portofoliu/\?tip=magazin\#proiecte" class="portfolio-filter__link" data-work-filter="magazin" data-no-transition\s*aria-current="page"\s*>Magazine online#')
+        ->toMatch('#href="[^"]*/portofoliu/\?tip=magazin\#proiecte" class="portfolio-filter__link" data-no-transition\s*aria-current="page"\s*>Magazine online#')
         // Every filter is there, none through the page transition.
-        ->and(preg_match_all('#data-work-filter="[a-z]*" data-no-transition#', $shops))->toBe(5)
+        ->and(preg_match_all('#class="portfolio-filter__link" data-no-transition#', $shops))->toBe(5)
         ->and($shops)->toContain('>Toate</a>')
         ->toContain('>Software la comandă</a>')
         ->toContain('>Site-uri de prezentare</a>')
@@ -82,9 +81,35 @@ it('filters by type, at its own address, in place, and ignores an unknown one', 
 
     $all = $this->get('/portofoliu?tip=altceva')->assertOk()->getContent();
 
-    expect($row($all, 'magazin'))->toBeFalse()
-        ->and($row($all, 'prezentare'))->toBeFalse()
-        ->and($row($all, 'logo'))->toBeFalse();
+    expect($row($all, 'magazin'))->toBeTrue()
+        ->and($row($all, 'prezentare'))->toBeTrue()
+        ->and($row($all, 'logo'))->toBeTrue();
+
+    expect($this->get('/portofoliu?tip=software')->assertOk()->getContent())
+        ->toContain('Încă nu am publicat proiecte de acest tip.');
+});
+
+it('pages the list, twelve at a time, keeping the filter, and 404s past the last page', function () {
+    Project::factory()->count(13)->create(['type' => ProjectType::Shop]);
+    Project::factory()->create(['type' => ProjectType::Logo]);
+
+    $first = $this->get('/portofoliu')->assertOk()->getContent();
+    preg_match('#<ul class="work-list__grid".*?</ul>#s', $first, $grid);
+
+    expect(substr_count($grid[0], 'class="work-thumb"'))->toBe(12)
+        ->and($first)->toContain('class="pagination portfolio-pagination"')
+        ->toContain('/portofoliu/?pagina=2#proiecte');
+
+    $second = $this->get('/portofoliu?pagina=2')->assertOk()->getContent();
+    preg_match('#<ul class="work-list__grid".*?</ul>#s', $second, $grid);
+
+    expect(substr_count($grid[0], 'class="work-thumb"'))->toBe(2);
+
+    // The filter carries over to the pages' links.
+    expect($this->get('/portofoliu?tip=magazin')->getContent())
+        ->toContain('/portofoliu/?tip=magazin&amp;pagina=2#proiecte');
+
+    $this->get('/portofoliu?pagina=3')->assertNotFound();
 });
 
 it('never shows Webis\'s own products as client work', function () {
@@ -166,7 +191,6 @@ it('answers 404 for a draft project, and 301 from a slug it used to have', funct
 });
 
 it('shows up to three related client projects of the service page\'s type, and none elsewhere', function () {
-    Page::factory()->create(['title' => 'Software la comandă', 'slug' => 'software-la-comanda']);
     Page::factory()->create(['title' => 'Cariere', 'slug' => 'cariere']);
 
     Project::factory()->create(['title' => 'Magazinul unu', 'type' => ProjectType::Shop]);
@@ -178,11 +202,12 @@ it('shows up to three related client projects of the service page\'s type, and n
     $web = $this->get('/web')->assertOk()->getContent();
     $software = $this->get('/software-la-comanda')->assertOk()->getContent();
 
-    // /web is its own page: its projects as the site's card.
+    // /web and /software-la-comanda are their own pages: each lists its own
+    // type's projects as the site's card; a plain CMS page lists none.
     expect(substr_count($web, 'class="post-card web-project"'))->toBe(3)
         ->and($web)->not->toContain('Platforma cinci')
         ->and($software)->toContain('Platforma cinci')->not->toContain('Siteul doi')
-        ->and(substr_count($software, 'class="work-card"'))->toBe(1)
+        ->and(substr_count($software, 'class="post-card web-project"'))->toBe(1)
         ->and($this->get('/cariere')->getContent())->not->toContain('class="work-card"');
 });
 

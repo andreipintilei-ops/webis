@@ -1,0 +1,1771 @@
+/*
+  Software la comandă (public/software.blade.php), on the site's visual
+  language (css/site/system.css) and /web's spacing: what is particular to
+  the page. Scoped to its own classes (.sw-*); the shared pieces it reuses
+  (the hero, the statement, the marquee, the section heads, /web's cards
+  and questions) are only adjusted here where they sit on this page.
+
+  Behaviour: js/public/software-explorer.ts (02), software-timeline.ts (03),
+  anchor-scroll.ts (the statement's "Cum lucrăm ↓").
+*/
+@layer components {
+    /* ---- Hero ------------------------------------------------------------------ */
+
+    /*
+      The display title (Anton, capitals) on two lines: as tight as it goes
+      while Ă's breve and Î's circumflex stay clear of the line above. At the
+      shared 1.05 they touch; measured in the browser, about 1.24 keeps them
+      clear. The hero only: the sections' titles are the site's chapter
+      titles, not the display face.
+    */
+    .sw-hero .page-hero__title {
+        line-height: 1.24;
+    }
+
+    /* ---- The statement, on the hero's backdrop --------------------------------- */
+
+    /* Its link goes down the page: the arrow turned to point there. */
+    #de-ce-la-comanda .arrow-link__icon {
+        rotate: 90deg;
+    }
+
+    /* ---- The modules' strip ------------------------------------------------------ */
+
+    /*
+      Along the hero's foot, where the home page's hero has its logos: under
+      a hairline across the column, the same space above the pills as the
+      statement after it leaves below them.
+    */
+    .sw-hero__modules {
+        @apply mt-16 border-t pt-8 md:mt-auto md:pt-10;
+        border-color: rgb(255 255 255 / 0.25);
+    }
+
+    /*
+      As /blog's hero with its featured article (.page-hero--led): the hero
+      fills the first screen on a desktop and the strip sits on its foot, a
+      short step above the fold. The band itself runs the window's full
+      width, out of the column under the hairline; the hero clips the
+      scrollbar's few pixels of overhang.
+    */
+    .sw-hero {
+        @apply items-stretch pb-10 md:pb-14 lg:min-h-svh;
+        overflow-x: clip;
+
+        & .page-hero__inner {
+            @apply flex flex-col;
+        }
+
+        & .page-hero__foot {
+            @apply md:mb-16;
+        }
+    }
+
+    .sw-hero__modules .sw-marquee {
+        width: 100vw;
+        margin-inline: calc(50% - 50vw);
+    }
+
+    /*
+      The marquee's items, as cards packed close together where the home
+      page spaces its logos wide: one band of outlined cards, no fill, the
+      icon at the top and the module's name at the foot. Every card is the
+      same size, so the band keeps an even rhythm as it slides.
+    */
+    .sw-marquee .sw-strip__item {
+        padding-inline: 0.25rem;
+    }
+
+    .sw-module {
+        @apply flex flex-col justify-between rounded-[1.25rem] border p-5 text-white;
+        width: clamp(9.5rem, 13vw, 13rem);
+        height: clamp(6.5rem, 8.5vw, 8.5rem);
+        border-color: rgb(255 255 255 / 0.2);
+        background: transparent;
+        transition: border-color var(--fast) var(--ease);
+
+        & .sw-icon {
+            @apply size-6 shrink-0;
+            color: rgb(255 255 255 / 0.7);
+        }
+    }
+
+    .sw-strip__item:hover .sw-module {
+        border-color: rgb(255 255 255 / 0.4);
+    }
+
+    .sw-module__label {
+        @apply text-base leading-tight font-medium tracking-[-0.01em] text-balance md:text-lg;
+    }
+
+    /* Reduced motion: still, the one set centred, wrapping as it needs. */
+    @media (prefers-reduced-motion: reduce) {
+        .sw-marquee {
+            mask-image: none;
+
+            & .logo-marquee__track {
+                @apply w-auto justify-center;
+            }
+
+            & .logo-marquee__set {
+                @apply shrink flex-wrap justify-center gap-y-3;
+            }
+
+            & .logo-marquee__set[aria-hidden='true'] {
+                @apply hidden;
+            }
+        }
+    }
+
+    /* ---- The light panel: rising over the dark area ----------------------------- */
+
+    /* As a section rises over an internal page's hero (css/site/page-hero.css). */
+    .chapter.sw-compare {
+        @apply -mt-10 rounded-t-[2.5rem] pt-12 md:-mt-20 md:rounded-t-[5rem] md:pt-16 lg:pt-20;
+
+        &::before {
+            border-radius: inherit;
+        }
+    }
+
+    /* ---- Links in the copy ("Vezi produsele SaaS →") ------------------------------ */
+
+    .sw-link {
+        @apply inline-flex items-center font-medium whitespace-nowrap underline decoration-1 underline-offset-[0.3em];
+        color: var(--ink);
+        text-decoration-color: color-mix(in srgb, currentColor 35%, transparent);
+        transition:
+            color var(--fast) var(--ease),
+            text-decoration-color var(--fast) var(--ease);
+
+        &:hover {
+            color: var(--violet-500);
+            text-decoration-color: currentColor;
+        }
+
+        &:focus-visible {
+            outline: 2px solid var(--accent);
+            outline-offset: 4px;
+            border-radius: 2px;
+        }
+    }
+
+    /* ---- 01 Now and with an application --------------------------------------------- */
+
+    .sw-compare {
+        --sw-grey: #e9e8ef;
+        --sw-red: #c8463c;
+    }
+
+    .sw-compare__grid {
+        @apply grid;
+    }
+
+    .sw-compare__ground {
+        @apply hidden;
+    }
+
+    .sw-compare__label {
+        @apply font-micro text-xs tracking-[0.08em] uppercase;
+        color: var(--muted);
+    }
+
+    .sw-compare__art {
+        @apply relative;
+        container-type: inline-size;
+    }
+
+    .sw-compare__mark {
+        @apply mt-0.5 grid size-6 shrink-0 place-items-center rounded-full;
+
+        & .sw-icon {
+            @apply size-3.5;
+            stroke-width: 2.5;
+        }
+    }
+
+    .sw-compare__now,
+    .sw-compare__app {
+        @apply relative z-[1] flex items-start gap-3.5;
+
+        & p {
+            @apply text-pretty;
+        }
+    }
+
+    .sw-compare__now {
+        & .sw-compare__mark {
+            color: var(--sw-red);
+            background: rgb(200 70 60 / 0.12);
+        }
+
+        & p {
+            @apply text-base leading-relaxed;
+            color: var(--muted);
+        }
+
+        & strong {
+            @apply font-medium;
+            color: var(--ink);
+        }
+    }
+
+    .sw-compare__app {
+        & .sw-compare__mark {
+            @apply text-white;
+            background: var(--violet-500);
+        }
+
+        & p {
+            @apply text-base leading-relaxed font-medium md:text-[17px];
+            color: var(--ink);
+        }
+    }
+
+    /*
+      Below 1024px: the two pictures on their grounds, then each row now
+      followed by its counterpart, as one card in two parts.
+    */
+    @media (max-width: 1023px) {
+        .sw-compare__label {
+            @apply rounded-t-[1.5rem] px-6 pt-6 pb-4;
+        }
+
+        .sw-compare__art {
+            @apply mb-4 rounded-b-[1.5rem] px-6 pb-6;
+        }
+
+        .sw-compare__label--now,
+        .sw-compare__art--now {
+            background: var(--sw-grey);
+        }
+
+        .sw-compare__label--app,
+        .sw-compare__art--app {
+            @apply border-violet-500 bg-white;
+            border-width: 1.5px;
+            border-color: var(--violet-500);
+        }
+
+        .sw-compare__label--app {
+            @apply border-b-0;
+        }
+
+        .sw-compare__art--app {
+            @apply border-t-0;
+        }
+
+        /* The rows: the grey half on top, the white half under it. */
+        .sw-compare__now {
+            @apply mt-4 rounded-t-[1.25rem] px-5 pt-5 pb-4;
+            background: var(--sw-grey);
+        }
+
+        .sw-compare__app {
+            @apply rounded-b-[1.25rem] bg-white px-5 pt-4 pb-5;
+            border: 1.5px solid var(--violet-500);
+            border-top: 0;
+        }
+    }
+
+    /*
+      From 1024px: two panels side by side, one grid — their labels, their
+      pictures, then the four rows, each row level across both; each panel's
+      ground drawn behind its column.
+    */
+    @media (min-width: 1024px) {
+        .sw-compare__grid {
+            @apply gap-x-5;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .sw-compare__ground {
+            @apply block rounded-[1.75rem];
+            grid-row: 1 / 7;
+        }
+
+        .sw-compare__ground--now {
+            grid-column: 1;
+            background: var(--sw-grey);
+        }
+
+        .sw-compare__ground--app {
+            grid-column: 2;
+            background: #fff;
+            border: 1.5px solid var(--violet-500);
+            box-shadow: 0 1.5rem 3rem -1.5rem rgb(91 63 224 / 0.25);
+        }
+
+        .sw-compare__label {
+            @apply relative px-10 pt-9 pb-5;
+            grid-row: 1;
+        }
+
+        .sw-compare__art {
+            @apply self-center px-10 pb-8;
+            grid-row: 2;
+        }
+
+        .sw-compare__label--now,
+        .sw-compare__art--now,
+        .sw-compare__now {
+            grid-column: 1;
+        }
+
+        .sw-compare__label--app,
+        .sw-compare__art--app,
+        .sw-compare__app {
+            grid-column: 2;
+        }
+
+        .sw-compare__now,
+        .sw-compare__app {
+            @apply mx-10 border-t py-5;
+            grid-row: var(--row-at);
+            border-color: var(--line);
+
+            &:nth-last-child(-n + 2) {
+                @apply pb-9;
+            }
+        }
+    }
+
+    .sw-compare__foot {
+        @apply -mt-4 flex flex-wrap items-baseline gap-x-4 gap-y-2 text-base leading-relaxed text-pretty md:text-lg lg:-mt-6;
+        color: var(--muted);
+    }
+
+    /* "Acum": a few things piled on the grey, a little askew. */
+    .sw-now {
+        @apply relative w-full;
+        aspect-ratio: 3 / 2;
+
+        @media (min-width: 640px) {
+            aspect-ratio: 2 / 1;
+        }
+        font-size: clamp(9px, 2.35cqi, 13px);
+        color: var(--navy-950);
+
+        & > * {
+            @apply absolute;
+            box-shadow:
+                0 1px 2px rgb(1 15 28 / 0.08),
+                0 0.75em 1.75em -0.75em rgb(1 15 28 / 0.25);
+        }
+
+        & .sw-icon {
+            @apply size-[1.3em] shrink-0;
+        }
+    }
+
+    .sw-now__sheet {
+        top: 6%;
+        left: 0;
+        width: 56%;
+        rotate: -2.5deg;
+        background: #fff;
+
+        & table {
+            @apply w-full border-collapse;
+            table-layout: fixed;
+        }
+
+        & th,
+        & td {
+            @apply overflow-hidden border text-left whitespace-nowrap;
+            padding: 0.35em 0.5em;
+            border-color: #d9dbe2;
+        }
+
+        & th {
+            @apply text-center font-normal;
+            background: #f1f2f5;
+            color: #6f7385;
+        }
+
+        & tr th:first-child {
+            width: 2.2em;
+        }
+
+        & tr:nth-child(2) td {
+            @apply font-semibold;
+        }
+
+        & .is-error {
+            @apply font-semibold;
+            color: var(--sw-red);
+            background: #fde3e0;
+            outline: 2px solid var(--sw-red);
+            outline-offset: -2px;
+        }
+    }
+
+    .sw-now__mail {
+        top: 0;
+        right: 0;
+        width: 50%;
+        rotate: 2deg;
+        padding: 0.9em 1em;
+        border-radius: 0.6em;
+        background: #fff;
+    }
+
+    .sw-now__mail-head {
+        @apply flex items-center gap-[0.5em];
+
+        & b {
+            @apply truncate font-semibold;
+        }
+
+        & .sw-icon {
+            color: #6f7385;
+        }
+    }
+
+    .sw-now__mail-line {
+        @apply mt-[0.4em] truncate;
+        color: #6f7385;
+    }
+
+    .sw-now__mail-count {
+        @apply absolute grid place-items-center rounded-full font-semibold text-white;
+        top: -0.6em;
+        right: -0.6em;
+        width: 1.8em;
+        height: 1.8em;
+        background: var(--sw-red);
+    }
+
+    .sw-now__file {
+        @apply flex items-center gap-[0.5em] font-medium whitespace-nowrap;
+        left: 9%;
+        bottom: 4%;
+        rotate: -4deg;
+        padding: 0.6em 0.9em;
+        border-radius: 0.5em;
+        background: #fff;
+
+        & .sw-icon {
+            color: #1d7a45;
+        }
+    }
+
+    .sw-now__paper {
+        right: 3%;
+        bottom: 0;
+        width: 30%;
+        rotate: 5deg;
+        padding: 0.9em 1em 1em;
+        background: #fbfaf6;
+
+        & i {
+            @apply mt-[0.55em] block h-[0.3em] rounded-full;
+            background: #e2e0d8;
+
+            &:last-of-type {
+                @apply w-2/3;
+            }
+        }
+    }
+
+    .sw-now__paper-title {
+        @apply font-semibold tracking-[0.06em] uppercase;
+        font-size: 0.85em;
+    }
+
+    .sw-now__sign {
+        @apply mt-[1.6em] border-t pt-[0.3em];
+        font-size: 0.8em;
+        color: #6f7385;
+        border-color: #9a9686;
+    }
+
+    /* "Cu o aplicație": one calm screen. */
+    .sw-screen {
+        @apply w-full overflow-hidden rounded-[0.9em] border bg-white;
+        font-size: clamp(9px, 2.35cqi, 13px);
+        border-color: rgb(38 42 111 / 0.12);
+        box-shadow: 0 1em 2.5em -1.25em rgb(91 63 224 / 0.35);
+        color: var(--navy-950);
+    }
+
+    .sw-screen__bar {
+        @apply flex items-center gap-[0.75em] border-b;
+        padding: 0.85em 1em;
+        border-color: rgb(38 42 111 / 0.08);
+
+        & b {
+            @apply font-semibold;
+            font-size: 1.1em;
+        }
+    }
+
+    .sw-screen__tile,
+    .sw-mock__tile {
+        @apply grid shrink-0 place-items-center text-white;
+        width: 2em;
+        height: 2em;
+        border-radius: 0.55em;
+        background: linear-gradient(135deg, var(--purple-500), var(--violet-500));
+        box-shadow: 0 0.4em 0.8em -0.4em rgb(119 90 252 / 0.8);
+
+        & .sw-icon {
+            width: 1.1em;
+            height: 1.1em;
+        }
+    }
+
+    .sw-screen__search {
+        @apply ml-auto flex items-center gap-[0.4em] rounded-full border;
+        padding: 0.35em 0.9em 0.35em 0.7em;
+        border-color: rgb(38 42 111 / 0.12);
+        color: var(--ink-muted);
+
+        & .sw-icon {
+            width: 1em;
+            height: 1em;
+        }
+    }
+
+    .sw-screen__rows li {
+        @apply grid items-center gap-[0.9em] border-b;
+        grid-template-columns: auto minmax(0, 1fr) auto;
+        padding: 0.75em 1em;
+        border-color: rgb(38 42 111 / 0.06);
+
+        &:last-child {
+            @apply border-b-0;
+        }
+    }
+
+    .sw-screen__no {
+        @apply font-micro;
+        font-size: 0.85em;
+        color: var(--ink-muted);
+    }
+
+    .sw-screen__what {
+        @apply flex min-w-0 flex-col;
+
+        & b {
+            @apply truncate font-medium;
+        }
+
+        & small {
+            font-size: 0.85em;
+            color: var(--ink-muted);
+        }
+    }
+
+    /* Status pills, shared by the mock-ups. */
+    .sw-status {
+        @apply rounded-full font-medium whitespace-nowrap;
+        padding: 0.3em 0.75em;
+        font-size: 0.85em;
+    }
+
+    .sw-status--ok {
+        color: #17663a;
+        background: #dcf3e4;
+    }
+
+    .sw-status--work {
+        color: #4b33c9;
+        background: #ebe6ff;
+    }
+
+    .sw-status--wait {
+        color: #8a5300;
+        background: #fdf0d5;
+    }
+
+    /* ---- 02 What we build: the explorer --------------------------------------------- */
+
+    .sw-explorer__tabs {
+        @apply border-t;
+        border-color: var(--line);
+    }
+
+    .sw-tab {
+        @apply relative grid w-full cursor-pointer items-center gap-5 border-b py-5 pr-2 pl-5 text-left;
+        grid-template-columns: auto minmax(0, 1fr) auto;
+        border-color: var(--line);
+        color: var(--muted);
+
+        /* The active row's bar, growing from the top. */
+        &::before {
+            content: '';
+            @apply absolute top-0 bottom-0 left-0 w-0.5 origin-top;
+            background: var(--violet-500);
+            transform: scaleY(0);
+            transition: transform var(--slow) var(--ease);
+        }
+
+        &:focus-visible {
+            outline: 2px solid var(--accent);
+            outline-offset: -2px;
+        }
+    }
+
+    .sw-tab__index {
+        @apply font-micro text-xs;
+    }
+
+    .sw-tab__name {
+        @apply font-medium text-balance;
+        font-size: clamp(1.25rem, 1.9vw, 1.625rem);
+        line-height: 1.2;
+        letter-spacing: -0.015em;
+        transition: color var(--base) var(--ease);
+    }
+
+    /* Tabs: a small arrow on the active row. Accordion: the +/×. */
+    .sw-tab__icon {
+        @apply relative grid size-10 shrink-0 place-items-center rounded-full;
+        border: 1px solid var(--line);
+        transition:
+            transform var(--slow) var(--ease),
+            background-color var(--slow) var(--ease),
+            border-color var(--slow) var(--ease),
+            opacity var(--base) var(--ease);
+
+        &::before,
+        &::after {
+            content: '';
+            @apply absolute top-1/2 left-1/2 h-px w-3.5 -translate-x-1/2 -translate-y-1/2;
+            background: currentColor;
+        }
+
+        &::after {
+            @apply rotate-90;
+        }
+    }
+
+    .sw-tab[aria-selected='true'],
+    .sw-tab[aria-expanded='true'],
+    .sw-tab.is-preview {
+        color: var(--ink);
+    }
+
+    .sw-tab[aria-selected='true']::before,
+    .sw-tab[aria-expanded='true']::before {
+        transform: scaleY(1);
+    }
+
+    /* The panel: its title and text over the mock-up. */
+    .sw-panel {
+        @apply outline-none;
+
+        &:focus-visible {
+            outline: 2px solid var(--accent);
+            outline-offset: 6px;
+            border-radius: 1.75rem;
+        }
+    }
+
+    .sw-panel__copy {
+        @apply mb-6 grid gap-2;
+    }
+
+    .sw-panel__title {
+        @apply text-xl leading-snug font-medium tracking-[-0.02em] md:text-[22px];
+    }
+
+    .sw-panel__text {
+        @apply max-w-[48ch] text-base leading-relaxed text-pretty md:text-lg;
+        color: var(--muted);
+    }
+
+    /* Tabs, from 1024px: the list (4 of 10) beside the stage (6 of 10). */
+    .sw-explorer.is-tabs {
+        @apply grid items-start gap-12 xl:gap-16;
+        grid-template-columns: minmax(0, 4fr) minmax(0, 6fr);
+
+        & .sw-tab__icon {
+            @apply opacity-0;
+            border-color: transparent;
+
+            /* An arrow: the cross's bar and a chevron. */
+            &::before {
+                @apply w-3.5;
+            }
+
+            &::after {
+                @apply h-2 w-2 rotate-45 border-t border-r;
+                left: calc(50% + 0.15rem);
+                background: transparent;
+                border-color: currentColor;
+            }
+        }
+
+        & .sw-tab[aria-selected='true'] .sw-tab__icon {
+            @apply opacity-100 text-white;
+            background: var(--violet-500);
+        }
+
+        /* The panels in one cell, so the stage is as tall as the tallest
+           and never jumps; the shown one cross-fades in over 200ms. */
+        & .sw-explorer__stage {
+            @apply grid;
+        }
+
+        & .sw-panel {
+            grid-area: 1 / 1;
+            visibility: hidden;
+            opacity: 0;
+            transition:
+                opacity 200ms linear,
+                visibility 0s linear 200ms;
+        }
+
+        & .sw-panel.is-shown {
+            visibility: visible;
+            opacity: 1;
+            transition:
+                opacity 200ms linear,
+                visibility 0s;
+        }
+    }
+
+    /* Accordion, below 1024px: each row opens its panel under it; the
+       panel's own title is the row's, so it is left to screen readers. */
+    .sw-explorer.is-accordion {
+        & .sw-tab {
+            @apply py-6;
+        }
+
+        & .sw-tab__icon {
+            @apply size-10;
+        }
+
+        & .sw-tab[aria-expanded='true'] .sw-tab__icon {
+            transform: rotate(45deg);
+            border-color: var(--violet-500);
+            background: var(--violet-500);
+            color: #fff;
+        }
+
+        & .sw-panel {
+            @apply overflow-hidden border-b;
+            border-color: var(--line);
+        }
+
+        & .sw-panel__body {
+            @apply pt-1 pb-8;
+        }
+
+        & .sw-panel__title {
+            @apply sr-only;
+        }
+
+        & .sw-panel__copy {
+            @apply mb-5;
+        }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .sw-explorer .sw-panel,
+        .sw-explorer .sw-panel.is-shown,
+        .sw-tab::before,
+        .sw-tab__icon {
+            transition: none;
+        }
+    }
+
+    /* ---- 02 The mock-ups: the home page's purple UI card ---------------------------- */
+
+    /*
+      The card: the lavender ground with a faint grid and a purple glow, the
+      application's window on it, running off the card's foot. Everything in
+      the window is sized in em off the card's width (the container).
+    */
+    .sw-mock {
+        @apply relative overflow-hidden rounded-[1.5rem];
+        container-type: inline-size;
+        padding: 6% 6% 0;
+        background:
+            radial-gradient(
+                ellipse 70% 60% at 78% 30%,
+                rgb(164 76 238 / 0.22),
+                transparent 70%
+            ),
+            radial-gradient(
+                ellipse 60% 55% at 10% 100%,
+                rgb(119 90 252 / 0.18),
+                transparent 70%
+            ),
+            linear-gradient(160deg, #f8f6ff, #ece8ff);
+
+        /* The faint grid, fading out from the middle. */
+        &::before {
+            content: '';
+            @apply pointer-events-none absolute inset-0;
+            background-image:
+                linear-gradient(rgb(38 42 111 / 0.07) 1px, transparent 1px),
+                linear-gradient(90deg, rgb(38 42 111 / 0.07) 1px, transparent 1px);
+            background-size: 2.5rem 2.5rem;
+            mask-image: radial-gradient(
+                ellipse 70% 70% at 50% 40%,
+                #000 20%,
+                transparent 80%
+            );
+        }
+    }
+
+    .sw-mock__window {
+        @apply relative overflow-hidden rounded-t-[0.9em] border border-b-0 bg-white;
+        font-size: clamp(8.5px, 2cqi, 14px);
+        min-height: 31em;
+        border-color: rgb(38 42 111 / 0.12);
+        box-shadow: 0 1.5em 3em -1.5em rgb(91 63 224 / 0.45);
+        color: var(--navy-950);
+
+        & .sw-icon {
+            width: 1.15em;
+            height: 1.15em;
+        }
+    }
+
+    .sw-mock__bar {
+        @apply flex items-center gap-[0.75em] border-b;
+        padding: 0.9em 1.25em;
+        border-color: rgb(38 42 111 / 0.08);
+
+        & > b {
+            @apply font-semibold;
+            font-size: 1.1em;
+        }
+    }
+
+    .sw-mock__crumb {
+        @apply truncate;
+        color: var(--ink-muted);
+
+        &::before {
+            content: '/';
+            margin-right: 0.6em;
+            opacity: 0.5;
+        }
+    }
+
+    .sw-mock__dots {
+        @apply ml-auto flex gap-[0.35em];
+
+        & i {
+            @apply block rounded-full;
+            width: 0.5em;
+            height: 0.5em;
+            background: #dcd7f7;
+        }
+    }
+
+    .sw-mock__body {
+        padding: 1.25em;
+    }
+
+    .sw-mock__tools {
+        @apply mb-[1em] flex items-center justify-between gap-[1em];
+    }
+
+    .sw-mock__search {
+        @apply flex items-center gap-[0.5em] rounded-full border;
+        padding: 0.45em 1.2em 0.45em 0.85em;
+        min-width: 45%;
+        border-color: rgb(38 42 111 / 0.12);
+        color: var(--ink-muted);
+    }
+
+    .sw-mock__button {
+        @apply flex items-center gap-[0.4em] rounded-full font-medium whitespace-nowrap text-white;
+        padding: 0.45em 1em 0.45em 0.8em;
+        background: var(--violet-cta);
+    }
+
+    /* ERP: the stock. */
+    .sw-stock {
+        @apply w-full border-collapse text-left;
+
+        & th {
+            @apply font-micro font-normal tracking-[0.06em] uppercase;
+            font-size: 0.8em;
+            padding: 0 0.75em 0.75em;
+            color: var(--ink-muted);
+        }
+
+        & td {
+            @apply border-t;
+            padding: 0.85em 0.75em;
+            border-color: rgb(38 42 111 / 0.08);
+        }
+
+        & td:nth-child(2) {
+            @apply font-micro;
+            font-size: 0.92em;
+        }
+
+        & td:last-child {
+            color: var(--ink-muted);
+        }
+
+        & tr.is-low td {
+            background: #fff8eb;
+        }
+    }
+
+    .sw-pill-warn {
+        @apply ml-[0.5em] inline-flex items-center gap-[0.3em] rounded-full align-middle font-medium whitespace-nowrap;
+        padding: 0.2em 0.65em 0.2em 0.5em;
+        font-size: 0.82em;
+        color: #8a5300;
+        background: #fde9c2;
+
+        & .sw-icon {
+            width: 1em;
+            height: 1em;
+        }
+    }
+
+    /* CRM: the offers' pipeline. */
+    .sw-pipeline {
+        @apply grid grid-cols-3 gap-[0.75em];
+    }
+
+    .sw-pipeline__col {
+        @apply flex flex-col gap-[0.6em] rounded-[0.75em];
+        padding: 0.75em;
+        background: #f6f4ff;
+    }
+
+    .sw-pipeline__head {
+        @apply mb-[0.2em] flex items-center justify-between font-semibold;
+        font-size: 0.92em;
+
+        & span {
+            @apply grid place-items-center rounded-full font-micro font-normal;
+            min-width: 1.7em;
+            height: 1.7em;
+            font-size: 0.85em;
+            background: #fff;
+            color: var(--ink-muted);
+        }
+    }
+
+    .sw-deal {
+        @apply flex flex-col gap-[0.6em] rounded-[0.6em] border bg-white;
+        padding: 0.75em 0.8em;
+        border-color: rgb(38 42 111 / 0.08);
+        box-shadow: 0 0.2em 0.5em -0.3em rgb(38 42 111 / 0.2);
+
+        & b {
+            @apply font-medium;
+            line-height: 1.3;
+        }
+    }
+
+    .sw-deal__foot {
+        @apply flex items-center justify-between;
+
+        & span {
+            @apply font-micro;
+            font-size: 0.88em;
+            color: var(--ink-muted);
+        }
+
+        & i {
+            @apply grid place-items-center rounded-full font-semibold not-italic text-white;
+            width: 2em;
+            height: 2em;
+            font-size: 0.75em;
+            background: linear-gradient(135deg, var(--purple-500), var(--violet-500));
+        }
+    }
+
+    .sw-pipeline__col.is-won {
+        background: #ecf8f0;
+
+        & .sw-deal {
+            border-color: rgb(23 102 58 / 0.15);
+        }
+    }
+
+    /* Registratură: the register. */
+    .sw-register__next {
+        @apply mb-[0.75em] rounded-[0.6em];
+        padding: 0.6em 0.9em;
+        font-size: 0.92em;
+        color: var(--ink-muted);
+        background: #f6f4ff;
+
+        & b {
+            @apply font-micro font-semibold;
+            color: var(--violet-500);
+        }
+    }
+
+    .sw-register li {
+        @apply grid items-center gap-x-[1em] border-t;
+        grid-template-columns: auto minmax(0, 1fr) auto;
+        padding: 0.8em 0.25em;
+        border-color: rgb(38 42 111 / 0.08);
+    }
+
+    .sw-register__no {
+        @apply font-micro whitespace-nowrap;
+        font-size: 0.88em;
+        color: var(--ink-muted);
+    }
+
+    .sw-register__title {
+        @apply truncate font-medium;
+    }
+
+    .sw-way {
+        @apply rounded-full font-medium;
+        padding: 0.25em 0.7em;
+        font-size: 0.82em;
+    }
+
+    .sw-way--intrare {
+        color: #17663a;
+        background: #dcf3e4;
+    }
+
+    .sw-way--iesire {
+        color: #4b33c9;
+        background: #ebe6ff;
+    }
+
+    .sw-way--intern {
+        color: var(--ink-muted);
+        background: #eef0f4;
+    }
+
+    /* Approvals: one request on its way up. */
+    .sw-request {
+        @apply rounded-[0.8em] border;
+        padding: 1.1em 1.2em 1.3em;
+        border-color: rgb(38 42 111 / 0.1);
+        box-shadow: 0 0.6em 1.5em -0.9em rgb(91 63 224 / 0.35);
+    }
+
+    .sw-request__head {
+        @apply flex items-start gap-[0.8em];
+
+        & > span:nth-child(2) {
+            @apply flex min-w-0 flex-1 flex-col gap-[0.2em];
+        }
+
+        & b {
+            @apply font-semibold;
+            font-size: 1.05em;
+        }
+
+        & small {
+            font-size: 0.9em;
+            color: var(--ink-muted);
+        }
+    }
+
+    .sw-request__icon {
+        @apply grid shrink-0 place-items-center rounded-[0.55em];
+        width: 2.2em;
+        height: 2.2em;
+        color: var(--violet-500);
+        background: #ebe6ff;
+    }
+
+    .sw-flow {
+        @apply relative mt-[1.6em] grid grid-cols-3;
+
+        /* The line through the steps: done in violet, to come dashed. */
+        &::before,
+        &::after {
+            content: '';
+            @apply absolute;
+            top: 1em;
+            height: 2px;
+        }
+
+        &::before {
+            left: 16.66%;
+            width: 33.33%;
+            background: var(--violet-500);
+        }
+
+        &::after {
+            left: 50%;
+            width: 33.33%;
+            background: repeating-linear-gradient(
+                90deg,
+                #c9c0f7 0 0.4em,
+                transparent 0.4em 0.7em
+            );
+        }
+
+        & li {
+            @apply relative z-[1] flex flex-col items-center gap-[0.25em] text-center;
+        }
+
+        & b {
+            @apply mt-[0.4em] font-semibold;
+        }
+
+        & small {
+            font-size: 0.85em;
+            color: var(--ink-muted);
+        }
+    }
+
+    .sw-flow__dot {
+        @apply grid place-items-center rounded-full text-white;
+        width: 2em;
+        height: 2em;
+
+        & .sw-icon {
+            stroke-width: 2.75;
+            width: 1em;
+            height: 1em;
+        }
+    }
+
+    .sw-flow .is-done .sw-flow__dot {
+        background: var(--violet-500);
+    }
+
+    .sw-flow .is-now .sw-flow__dot {
+        @apply bg-white;
+        border: 2px solid var(--violet-500);
+        box-shadow: 0 0 0 0.35em rgb(119 90 252 / 0.18);
+    }
+
+    .sw-flow .is-now small {
+        @apply font-medium;
+        color: #8a5300;
+    }
+
+    .sw-toast {
+        @apply mt-[1.1em] ml-auto flex w-fit items-center gap-[0.6em] rounded-full text-white;
+        padding: 0.6em 1.1em 0.6em 0.9em;
+        font-size: 0.92em;
+        background: var(--navy-950);
+        box-shadow: 0 0.8em 1.6em -0.8em rgb(1 15 28 / 0.6);
+
+        & .sw-icon {
+            color: var(--lavender-300);
+        }
+    }
+
+    /* Reports: two figures and the bars. */
+    .sw-report__figures {
+        @apply mb-[0.9em] grid grid-cols-2 gap-[0.75em];
+    }
+
+    .sw-figure {
+        @apply flex flex-col rounded-[0.75em] border;
+        padding: 0.85em 1em;
+        border-color: rgb(38 42 111 / 0.1);
+
+        & small {
+            font-size: 0.88em;
+            color: var(--ink-muted);
+        }
+
+        & b {
+            @apply font-semibold;
+            margin-top: 0.15em;
+            font-size: 1.9em;
+            line-height: 1.15;
+            letter-spacing: -0.02em;
+        }
+
+        & span {
+            @apply font-medium;
+            font-size: 0.82em;
+            color: #17663a;
+        }
+    }
+
+    .sw-chart {
+        @apply rounded-[0.75em] border;
+        padding: 0.85em 1em 0.75em;
+        border-color: rgb(38 42 111 / 0.1);
+    }
+
+    .sw-chart__head {
+        @apply mb-[0.75em] flex items-center justify-between;
+
+        & b {
+            @apply font-semibold;
+        }
+    }
+
+    .sw-chart__bars {
+        @apply grid h-[8.5em] grid-cols-6 items-end gap-[0.9em];
+
+        & > span {
+            @apply flex h-full flex-col justify-end gap-[0.4em] text-center;
+        }
+
+        & i {
+            @apply block rounded-t-[0.35em];
+            height: var(--h);
+            background: #e4defd;
+        }
+
+        & .is-now i {
+            background: linear-gradient(var(--purple-500), var(--violet-500));
+        }
+
+        & small {
+            font-size: 0.8em;
+            color: var(--ink-muted);
+        }
+    }
+
+    /* Integrations: the application in the middle, three lines out. */
+    .sw-links {
+        @apply relative;
+        height: 25em;
+
+        & b {
+            @apply font-semibold;
+        }
+
+        & small {
+            font-size: 0.85em;
+            color: var(--ink-muted);
+        }
+    }
+
+    .sw-links__lines {
+        @apply absolute inset-0 size-full;
+
+        & path {
+            stroke: var(--violet-500);
+            stroke-opacity: 0.55;
+            stroke-width: 1.5;
+            stroke-dasharray: 5 6;
+            vector-effect: non-scaling-stroke;
+            animation: sw-flow 1.4s linear infinite;
+        }
+    }
+
+    @keyframes sw-flow {
+        to {
+            stroke-dashoffset: -11;
+        }
+    }
+
+    .sw-node {
+        @apply absolute flex -translate-x-1/2 -translate-y-1/2 flex-col items-center gap-[0.3em] rounded-[0.8em] border bg-white text-center;
+        padding: 0.8em 1.1em;
+        min-width: 9em;
+        border-color: rgb(38 42 111 / 0.12);
+        box-shadow: 0 0.6em 1.4em -0.8em rgb(91 63 224 / 0.45);
+
+        & > .sw-icon {
+            width: 1.5em;
+            height: 1.5em;
+            color: var(--violet-500);
+        }
+    }
+
+    .sw-node--app {
+        @apply flex-row gap-[0.7em];
+        left: 50%;
+        top: 50%;
+        padding: 0.9em 1.3em;
+        border-color: var(--violet-500);
+        box-shadow:
+            0 0 0 0.45em rgb(119 90 252 / 0.12),
+            0 1em 2em -1em rgb(91 63 224 / 0.6);
+
+        & b {
+            font-size: 1.1em;
+        }
+    }
+
+    .sw-node--a {
+        left: 17.5%;
+        top: 18.2%;
+    }
+
+    .sw-node--b {
+        left: 82.5%;
+        top: 18.2%;
+    }
+
+    .sw-node--c {
+        left: 50%;
+        top: 86.4%;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .sw-links__lines path {
+            animation: none;
+        }
+    }
+
+    /* ---- 03 How we work: the delivery as a timeline, on the indigo ------------------ */
+
+    /* A flat indigo, as /web's steps: the chapters' dark glows left out. */
+    .sw-steps.chapter--dark {
+        background: #1f2868;
+    }
+
+    .sw-timeline {
+        --step: 380ms;
+        --fill: 520ms;
+    }
+
+    .sw-seg {
+        @apply relative flex flex-col;
+    }
+
+    .sw-seg__label {
+        @apply font-micro text-xs tracking-[0.08em] whitespace-nowrap uppercase;
+        color: rgb(255 255 255 / 0.7);
+        transition: color var(--base) var(--ease);
+        transition-delay: calc(var(--i) * var(--step) + var(--fill) * 0.5);
+    }
+
+    .sw-seg__bar {
+        @apply relative block h-2 overflow-hidden rounded-full;
+        background: rgb(255 255 255 / 0.1);
+    }
+
+    .sw-seg__fill {
+        @apply absolute inset-0 block origin-left rounded-full;
+        background: rgb(255 255 255 / 0.5);
+        transition: transform var(--fill) cubic-bezier(0.65, 0, 0.35, 1);
+        transition-delay: calc(var(--i) * var(--step));
+    }
+
+    .sw-seg--module .sw-seg__fill {
+        background: linear-gradient(90deg, var(--lavender-300), #b98bff);
+        box-shadow: 0 0 1rem rgb(161 142 255 / 0.6);
+    }
+
+    .sw-seg--module .sw-seg__label {
+        @apply text-white;
+    }
+
+    /* Maintenance: it carries on, fading out to the right. */
+    .sw-seg--care .sw-seg__bar {
+        mask-image: linear-gradient(90deg, #000 30%, transparent);
+    }
+
+    .sw-seg--care .sw-seg__fill {
+        background: linear-gradient(90deg, rgb(255 255 255 / 0.55), rgb(161 142 255 / 0.6));
+    }
+
+    .sw-seg__tag {
+        @apply w-fit rounded-full border font-micro text-[11px] tracking-[0.04em] whitespace-nowrap;
+        padding: 0.2rem 0.6rem;
+        color: var(--lavender-300);
+        border-color: rgb(161 142 255 / 0.45);
+        background: rgb(161 142 255 / 0.12);
+        transition:
+            opacity var(--base) var(--ease),
+            transform var(--base) var(--ease);
+        transition-delay: calc(var(--i) * var(--step) + var(--fill));
+    }
+
+    .sw-stage__name {
+        @apply text-xl font-medium tracking-[-0.02em];
+    }
+
+    .sw-stage__line {
+        @apply mt-2 text-base leading-relaxed text-pretty;
+        color: var(--muted);
+    }
+
+    .sw-stage__text {
+        transition: opacity var(--slow) var(--ease);
+        transition-delay: calc(var(--at) * var(--step));
+    }
+
+    /* Before it plays (set by the script, never without it): unlit. */
+    .sw-timeline[data-state='waiting'] {
+        & .sw-seg__fill {
+            transform: scaleX(0);
+            transition: none;
+        }
+
+        & .sw-seg__tag {
+            opacity: 0;
+            transform: translateY(0.375rem);
+            transition: none;
+        }
+
+        & .sw-seg--module .sw-seg__label {
+            color: rgb(255 255 255 / 0.7);
+            transition: none;
+        }
+
+        & .sw-stage__text {
+            opacity: 0.35;
+            transition: none;
+        }
+    }
+
+    /* Wide: one horizontal track — six segments in a row, the five stages
+       described under it (one grid of 30 columns: a segment takes 5, a
+       stage 6; two to a row below 1024px). */
+    @media (min-width: 768px) {
+        .sw-timeline {
+            @apply grid gap-y-12;
+            grid-template-columns: repeat(30, minmax(0, 1fr));
+        }
+
+        .sw-stage,
+        .sw-stage__track {
+            display: contents;
+        }
+
+        .sw-seg {
+            @apply gap-3 pr-2;
+            grid-row: 1;
+            grid-column: span 5;
+        }
+
+        .sw-seg--care {
+            @apply pr-0;
+        }
+
+        .sw-stage__text {
+            @apply pr-8;
+            grid-column: span 15;
+        }
+
+        .sw-stage__chips {
+            @apply hidden;
+        }
+    }
+
+    @media (min-width: 1024px) {
+        .sw-timeline {
+            @apply gap-y-14;
+        }
+
+        .sw-stage__text {
+            grid-column: span 6;
+        }
+    }
+
+    /* Phones: the track runs down the left, each stage beside its
+       segments; the modules' tags in a row over their two stages. */
+    @media (max-width: 767px) {
+        .sw-stage {
+            @apply relative grid gap-y-6 pb-10 pl-8;
+
+            &:last-child {
+                @apply pb-0;
+            }
+        }
+
+        .sw-stage__track {
+            @apply absolute top-1 bottom-0 left-0 flex w-2 flex-col gap-1.5;
+        }
+
+        .sw-stage:not(:last-child) .sw-stage__track {
+            bottom: 0.375rem;
+        }
+
+        .sw-seg {
+            @apply flex-1;
+        }
+
+        .sw-seg__label {
+            @apply sr-only;
+        }
+
+        .sw-seg__tag {
+            @apply hidden;
+        }
+
+        .sw-seg__bar {
+            @apply h-full w-2;
+        }
+
+        .sw-seg__fill {
+            @apply origin-top;
+        }
+
+        .sw-seg--care .sw-seg__bar {
+            mask-image: linear-gradient(180deg, #000 20%, transparent);
+        }
+
+        .sw-timeline[data-state='waiting'] .sw-seg__fill {
+            transform: scaleY(0);
+        }
+
+        .sw-stage__chips {
+            @apply flex flex-wrap gap-2;
+
+            & span {
+                @apply rounded-full border font-micro text-[11px] tracking-[0.04em] whitespace-nowrap;
+                padding: 0.3rem 0.65rem;
+                color: var(--lavender-300);
+                border-color: rgb(161 142 255 / 0.45);
+                background: rgb(161 142 255 / 0.12);
+            }
+        }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .sw-timeline *,
+        .sw-timeline *::before,
+        .sw-timeline *::after {
+            transition: none !important;
+        }
+    }
+
+    /* ---- 04 What every project gets: the bento --------------------------------------- */
+
+    .sw-bento {
+        @apply grid gap-4 md:grid-cols-2 lg:grid-cols-3 lg:gap-5;
+    }
+
+    .sw-card {
+        @apply relative flex min-h-56 flex-col justify-between gap-8 overflow-hidden rounded-[1.75rem] bg-white p-7 md:p-8;
+        color: var(--ink);
+    }
+
+    .sw-card__copy {
+        @apply grid gap-2;
+    }
+
+    .sw-card__title {
+        @apply text-xl leading-snug font-medium tracking-[-0.02em] md:text-[22px];
+    }
+
+    .sw-card__text {
+        @apply max-w-[38ch] text-base leading-relaxed text-pretty;
+        color: var(--muted);
+    }
+
+    /* Text only: on a deeper lavender, so the grid keeps its rhythm. */
+    .sw-card--plain {
+        @apply min-h-0 justify-end md:min-h-56;
+        background: #e9e4ff;
+    }
+
+    @media (min-width: 768px) {
+        .sw-card--log {
+            @apply col-span-2;
+        }
+
+        .sw-bento > :last-child {
+            @apply col-span-2;
+        }
+    }
+
+    @media (min-width: 1024px) {
+        .sw-card--log {
+            @apply col-span-2 row-span-2;
+        }
+
+        .sw-bento > :last-child {
+            @apply col-span-1;
+        }
+    }
+
+    /* The large one: its history, as a log on the indigo. */
+    .sw-card--log {
+        @apply justify-start gap-10;
+    }
+
+    .sw-log {
+        @apply mt-auto rounded-[1.25rem] p-6 md:p-8;
+        background: #1f2868;
+        color: rgb(255 255 255 / 0.85);
+    }
+
+    .sw-log__head {
+        @apply mb-5 flex items-center justify-between border-b pb-4 font-micro text-xs tracking-[0.08em] uppercase;
+        border-color: rgb(255 255 255 / 0.14);
+        color: rgb(255 255 255 / 0.6);
+    }
+
+    .sw-log__lines {
+        @apply grid gap-3.5 font-micro text-[13px] leading-snug md:text-sm;
+
+        & li {
+            @apply grid gap-x-3;
+            grid-template-columns: auto auto minmax(0, 1fr);
+        }
+
+        & time {
+            color: var(--lavender-300);
+        }
+
+        & span:nth-child(2) {
+            color: rgb(255 255 255 / 0.35);
+        }
+
+        & li:first-child span:last-child {
+            @apply text-white;
+        }
+
+        & li:nth-child(n + 4) {
+            opacity: 0.6;
+        }
+    }
+
+    /* Roles: three badges, two open, one locked. */
+    .sw-roles {
+        @apply flex flex-wrap gap-2;
+    }
+
+    .sw-role {
+        @apply inline-flex items-center gap-2 rounded-full border py-2 pr-4 pl-3 text-sm font-medium;
+        border-color: var(--line);
+        color: var(--muted);
+        background: #f6f4ff;
+
+        & .sw-icon {
+            @apply size-4;
+        }
+    }
+
+    .sw-role--open {
+        color: var(--ink);
+
+        & .sw-icon {
+            color: var(--violet-500);
+        }
+    }
+
+    /* Devices: a laptop and a phone, the same screen in both. */
+    .sw-devices {
+        @apply relative h-32;
+    }
+
+    .sw-devices__laptop {
+        @apply absolute top-0 left-0 block;
+        width: 68%;
+    }
+
+    .sw-devices__laptop .sw-devices__screen {
+        @apply block rounded-t-lg border-[2.5px] border-b-0 p-2;
+        border-color: var(--navy-950);
+        height: 6.75rem;
+    }
+
+    .sw-devices__base {
+        @apply block h-2.5 rounded-b-md;
+        margin-inline: -8%;
+        background: var(--navy-950);
+    }
+
+    .sw-devices__phone {
+        @apply absolute bottom-0 block rounded-[0.7rem] border-[2.5px] bg-white p-1.5;
+        left: 60%;
+        width: 4.25rem;
+        height: 7.25rem;
+        border-color: var(--navy-950);
+
+        & .sw-devices__screen {
+            @apply block h-full;
+        }
+    }
+
+    .sw-mini {
+        @apply flex h-full flex-col gap-1.5;
+    }
+
+    .sw-mini__bar,
+    .sw-mini__row {
+        @apply flex items-center justify-between gap-2;
+
+        & i {
+            @apply block h-1.5 flex-1 rounded-full;
+            background: #e6e3f5;
+        }
+
+        & b {
+            @apply block h-2.5 w-6 shrink-0 rounded-full;
+        }
+    }
+
+    .sw-mini__bar {
+        @apply mb-1 border-b pb-1.5;
+        border-color: #eceaf6;
+
+        & i {
+            @apply max-w-12;
+            background: var(--navy-950);
+        }
+
+        & b {
+            @apply w-4;
+            background: linear-gradient(135deg, var(--purple-500), var(--violet-500));
+        }
+    }
+
+    .sw-mini b.is-ok {
+        background: #bfe9cd;
+    }
+
+    .sw-mini b.is-work {
+        background: #d6ccff;
+    }
+
+    .sw-mini b.is-wait {
+        background: #fadfa6;
+    }
+
+    .sw-devices__phone .sw-mini__row i {
+        @apply max-w-5;
+    }
+
+    .sw-devices__phone .sw-mini__row b {
+        @apply w-4;
+    }
+
+    /* Backup: one status line. */
+    .sw-backup {
+        @apply inline-flex w-fit items-center gap-3 rounded-full border py-2.5 pr-5 pl-4 font-micro text-[13px];
+        border-color: var(--line);
+        background: #f6f4ff;
+    }
+
+    .sw-backup__dot {
+        @apply relative size-2.5 rounded-full;
+        background: #22a15a;
+
+        &::after {
+            content: '';
+            @apply absolute inset-0 rounded-full;
+            background: #22a15a;
+            animation: sw-ping 2.4s var(--ease) infinite;
+        }
+    }
+
+    @keyframes sw-ping {
+        0% {
+            opacity: 0.6;
+            transform: scale(1);
+        }
+
+        80%,
+        100% {
+            opacity: 0;
+            transform: scale(2.6);
+        }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .sw-backup__dot::after {
+            animation: none;
+            opacity: 0;
+        }
+    }
+
+    /* ---- 05 Projects: /web's, the link on its own --------------------------------- */
+
+    .sw-projects .web-projects__foot {
+        @apply text-lg;
+    }
+}

@@ -252,12 +252,24 @@ it('shows the Google rating above the client logos, linked to the reviews, and n
     expect($this->get('/')->getContent())->not->toContain('google-rating');
 });
 
-it('ignores the gradient on a split hero', function () {
-    homeWithHero(['layout' => 'split', 'background' => 'gradient', 'heading' => 'Titlu']);
+it('sets a split hero on the gradient, in its own section, white, when one is chosen', function () {
+    homeWithHero(['layout' => 'split', 'background' => 'gradient-violet', 'heading' => 'Titlu']);
+
+    $html = $this->get('/')->assertOk()->getContent();
+    // Before the footer (which always has its own gradient).
+    $page = strstr($html, '<footer', true);
+
+    expect($page)->toContain('<canvas data-soffit data-palette="violet"')
+        // Not the centred hero's fixed backdrop and intro.
+        ->not->toContain('data-intro-backdrop')
+        ->and($html)->toContain('site-nav--dark');
+});
+
+it('leaves a split hero without a gradient on the page\'s white', function () {
+    homeWithHero(['layout' => 'split', 'background' => 'none', 'heading' => 'Titlu']);
 
     $html = $this->get('/')->assertOk()->getContent();
 
-    // No gradient before the footer (which always has its own).
     expect(strstr($html, '<footer', true))->not->toContain('data-soffit')
         ->and($html)->not->toContain('site-nav--dark');
 });

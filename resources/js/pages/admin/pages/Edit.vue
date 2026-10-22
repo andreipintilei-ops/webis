@@ -19,6 +19,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useUnsavedChanges } from '@/composables/useUnsavedChanges';
 import { contentText } from '@/lib/contentText';
 import { destroy, index, store, update } from '@/routes/admin/pages';
+import { index as blogIndex } from '@/routes/admin/posts';
 import type {
     BlockType,
     Choices,
@@ -66,6 +67,7 @@ defineOptions({
 });
 
 const isNew = props.page.id === null;
+const newTitle = props.page.type === 'article' ? 'Articol nou' : 'Pagină nouă';
 
 const form = useForm({
     type: props.page.type,
@@ -137,7 +139,7 @@ function remove(): void {
 </script>
 
 <template>
-    <Head :title="isNew ? 'Pagină nouă' : page.title" />
+    <Head :title="isNew ? newTitle : page.title" />
 
     <form class="flex flex-col gap-4 p-4" @submit.prevent="submit">
         <div class="flex items-center gap-3">
@@ -145,12 +147,19 @@ function remove(): void {
                 as-child
                 variant="ghost"
                 size="icon"
-                aria-label="Înapoi la pagini"
+                :aria-label="
+                    page.type === 'article'
+                        ? 'Înapoi la blog'
+                        : 'Înapoi la pagini'
+                "
             >
-                <Link :href="index()"><ArrowLeft /></Link>
+                <!-- An article goes back to Blog, where the articles are listed. -->
+                <Link :href="page.type === 'article' ? blogIndex() : index()"
+                    ><ArrowLeft
+                /></Link>
             </Button>
             <h1 class="truncate text-2xl font-bold tracking-tight">
-                {{ isNew ? 'Pagină nouă' : form.title || page.title }}
+                {{ isNew ? newTitle : form.title || page.title }}
             </h1>
         </div>
 

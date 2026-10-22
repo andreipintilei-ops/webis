@@ -14,13 +14,8 @@ import { EASE, loadGsap, prefersReducedMotion } from '@/public/gsap';
  *
  * Grid or list ([data-work-view] buttons): the grid by default, the choice
  * kept in this browser; the preview follows the pointer in the list only.
- *
- * The type filter (the page's [data-work-filter] links) works in place:
- * the rows of other types hide, the address and the title follow
- * (?tip=magazin), and the page does not reload — nor run its transition.
  */
 export function initWorkLists(): void {
-    initFilter();
     initViews();
 
     const mouse = window.matchMedia(
@@ -226,78 +221,4 @@ function initViews(): void {
             }
         });
     }
-}
-
-/** The filter links: show one type's rows (or all), without leaving. */
-function initFilter(): void {
-    const links = Array.from(
-        document.querySelectorAll<HTMLAnchorElement>('[data-work-filter]'),
-    );
-    const list = document.querySelector<HTMLElement>('[data-work-list]');
-
-    if (links.length === 0 || !list) {
-        return;
-    }
-
-    const rows = Array.from(
-        list.querySelectorAll<HTMLElement>('[data-work-type]'),
-    );
-    const empty = list.querySelector<HTMLElement>('[data-work-empty]');
-    // The page's own name, without a type before it.
-    const title = document.title.replace(/^.+ · (?=Portofoliu)/, '');
-
-    links.forEach((link) => {
-        link.addEventListener('click', (event) => {
-            // A new tab or window still opens the filtered address.
-            if (
-                event.metaKey ||
-                event.ctrlKey ||
-                event.shiftKey ||
-                event.altKey
-            ) {
-                return;
-            }
-
-            event.preventDefault();
-
-            const type = link.dataset.workFilter ?? '';
-            let shown = 0;
-
-            for (const row of rows) {
-                row.hidden = type !== '' && row.dataset.workType !== type;
-                shown += row.hidden ? 0 : 1;
-            }
-
-            if (empty) {
-                empty.hidden = shown > 0;
-            }
-
-            for (const other of links) {
-                if (other === link) {
-                    other.setAttribute('aria-current', 'page');
-                } else {
-                    other.removeAttribute('aria-current');
-                }
-            }
-
-            const url = new URL(window.location.href);
-
-            if (type === '') {
-                url.searchParams.delete('tip');
-            } else {
-                url.searchParams.set('tip', type);
-            }
-
-            url.hash = '';
-            window.history.replaceState(window.history.state, '', url);
-            document.title =
-                type === '' ? title : `${link.textContent?.trim()} · ${title}`;
-
-            // The page below got shorter or longer: the scroll-linked parts
-            // measure again.
-            void import('gsap/ScrollTrigger').then(({ ScrollTrigger }) =>
-                ScrollTrigger.refresh(),
-            );
-        });
-    });
 }

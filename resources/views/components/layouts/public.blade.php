@@ -9,9 +9,11 @@
      `description`: the meta description (else the SEO settings' default).
      `fullTitle`: the whole <title>, as given — without the site suffix.
      `footerCtaTitle`, `footerCtaIntro`: the footer's closing call, reworded.
+     `canonical`: the page's canonical URL, as <link rel="canonical">;
+     nothing when left out.
      `variant`: a design variant under test (e.g. "clienti"), as data-variant
      on <html>, for styles scoped to it. --}}
-@props(['title' => null, 'fullTitle' => null, 'menu' => 'site', 'headerTheme' => 'light', 'lowerTone' => null, 'variant' => null, 'heroLeave' => null, 'footerCta' => true, 'footerOnBackdrop' => false, 'description' => null, 'footerCtaTitle' => null, 'footerCtaIntro' => null])
+@props(['title' => null, 'fullTitle' => null, 'menu' => 'site', 'headerTheme' => 'light', 'lowerTone' => null, 'variant' => null, 'heroLeave' => null, 'footerCta' => true, 'footerOnBackdrop' => false, 'description' => null, 'footerCtaTitle' => null, 'footerCtaIntro' => null, 'canonical' => null])
 
 @php
     $siteName = app(\App\Settings\CompanySettings::class)->name;
@@ -66,6 +68,9 @@
         </script>
 
         <title>{{ $fullTitle }}</title>
+        @if ($canonical)
+            <link rel="canonical" href="{{ $canonical }}">
+        @endif
         @if ($metaDescription)
             <meta name="description" content="{{ $metaDescription }}">
         @endif

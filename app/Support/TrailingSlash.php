@@ -29,6 +29,7 @@ final class TrailingSlash
         'home',
         'services.index',
         'services.web',
+        'services.software',
         'projects.index',
         'projects.show',
         'posts.index',

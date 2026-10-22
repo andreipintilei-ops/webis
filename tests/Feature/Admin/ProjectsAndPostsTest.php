@@ -1,6 +1,7 @@
 <?php
 
 use App\Enums\ContentStatus;
+use App\Enums\PageType;
 use App\Enums\ProjectType;
 use App\Models\Asset;
 use App\Models\Client;
@@ -236,14 +237,31 @@ it('requires a body document', function () {
         ->assertSessionHasErrors('body');
 });
 
-it('lists drafts before published posts', function () {
-    Post::factory()->published()->create(['title' => 'Publicat']);
-    Post::factory()->draft()->create(['title' => 'Ciornă']);
+it('lists the articles under Blog, drafts first, and not the other pages', function () {
+    $seo = PostCategory::factory()->create(['name' => 'SEO']);
+    Page::factory()->published()->create(['type' => PageType::Article, 'title' => 'Publicat', 'post_category_id' => $seo->id]);
+    Page::factory()->draft()->create(['type' => PageType::Article, 'title' => 'Ciornă']);
+    Page::factory()->published()->create(['title' => 'Despre noi']);
 
     $this->get(route('admin.posts.index'))
         ->assertInertia(fn (Assert $page) => $page
+            ->has('posts.data', 2)
             ->where('posts.data.0.title', 'Ciornă')
-            ->where('posts.data.1.title', 'Publicat'));
+            ->where('posts.data.1.title', 'Publicat')
+            ->where('posts.data.1.category', 'SEO'));
+
+    // Pagini leaves them out, in its list and its type filter.
+    $this->get(route('admin.pages.index'))
+        ->assertInertia(fn (Assert $page) => $page
+            ->has('pages.data', 1)
+            ->where('pages.data.0.title', 'Despre noi')
+            ->where('types', fn ($types) => ! collect($types)->contains('value', 'article')));
+});
+
+it('returns to Blog after moving an article to the trash', function () {
+    $article = Page::factory()->create(['type' => PageType::Article]);
+
+    $this->delete(route('admin.pages.destroy', $article))->assertRedirect(route('admin.posts.index'));
 });
 
 // ---- Categories -----------------------------------------------------------

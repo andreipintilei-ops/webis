@@ -107,6 +107,11 @@
         aspect-ratio: 3 / 2;
         background: var(--card-chip);
 
+        /* A project's cover, as <x-picture> renders it (components/site/project-card). */
+        & picture {
+            @apply block size-full;
+        }
+
         & img {
             @apply size-full object-cover object-top;
             transition: transform var(--slow) var(--ease);

@@ -6,7 +6,8 @@
       bottom. Over a dark backdrop — the animated
       gradient or an image — it is white (and the header switches to its
       light-on-dark variant); without one it is dark on the page's white.
-    - split: text beside the image on the page background.
+    - split: text beside the image, on the page's white or, with a gradient
+      background, on the gradient in its own section (white text).
 --}}
 @php
     $image = isset($data['image_asset_id']) ? $assets->get($data['image_asset_id']) : null;
@@ -38,7 +39,8 @@
     // the page (blocks after it may sit on it too), rests as a card that opens
     // out on scroll, and plays the intro (js/public/hero-intro.ts). The
     // data-intro-* hooks do nothing on their own.
-    $intro = $isFirst && $dark;
+    $centered = ($data['layout'] ?? 'split') === 'centered';
+    $intro = $isFirst && $dark && $centered;
 @endphp
 
 @if ($intro)
@@ -47,7 +49,7 @@
     @endpush
 @endif
 
-@if (($data['layout'] ?? 'split') === 'centered')
+@if ($centered)
     <section id="{{ $block['id'] }}" @class([
         'relative isolate flex min-h-svh items-center overflow-hidden pt-32',
         // Room for the logo strip along the bottom.
@@ -115,25 +117,32 @@
         @endif
     </section>
 @else
-    <section id="{{ $block['id'] }}" class="px-[var(--site-gap)] pt-36 pb-20 md:pt-44">
+    <section id="{{ $block['id'] }}" @class([
+        'px-[var(--site-gap)] pt-36 pb-20 md:pt-44',
+        'relative isolate overflow-hidden text-white md:pb-28' => $dark,
+    ]) @if ($dark) data-nav-tone="dark" @endif>
+        @if ($dark)
+            @include('blocks.partials.hero-backdrop', ['fixed' => false])
+        @endif
+
         <div @class(['mx-auto grid max-w-[var(--content-max)] items-center gap-12', 'lg:grid-cols-2' => $image])>
             <div>
                 @if (! empty($data['eyebrow']))
-                    <p class="mb-5 text-sm text-neutral-600 md:text-base">{{ $data['eyebrow'] }}</p>
+                    <p @class(['mb-5 text-sm md:text-base', 'text-white/85' => $dark, 'text-neutral-600' => ! $dark])>{{ $data['eyebrow'] }}</p>
                 @endif
 
-                <h1 class="{{ $headingWidth }} {{ $headingType }} text-black">
+                <h1 @class([$headingWidth, $headingType, 'text-white' => $dark, 'text-black' => ! $dark])>
                     @foreach ($headingLines as $line){{ $line }}@if (! $loop->last)<br>@endif @endforeach
                 </h1>
 
                 @if (! empty($data['subheading']))
-                    <p class="mt-6 max-w-2xl text-lg text-pretty text-neutral-600">{{ $data['subheading'] }}</p>
+                    <p @class(['mt-6 max-w-2xl text-lg text-pretty', 'text-white/85' => $dark, 'text-neutral-600' => ! $dark])>{{ $data['subheading'] }}</p>
                 @endif
 
                 @include('blocks.partials.ctas', [
                     'primary' => $data['primary_cta'] ?? null,
                     'secondary' => $data['secondary_cta'] ?? null,
-                    'tone' => 'light',
+                    'tone' => $dark ? 'dark' : 'light',
                     'class' => 'mt-10',
                 ])
             </div>

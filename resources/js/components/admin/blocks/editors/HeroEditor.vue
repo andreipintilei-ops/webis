@@ -88,18 +88,24 @@ const data = defineModel<HeroData>('data', { required: true });
             "
         />
         <SelectField
-            v-if="data.layout === 'centered'"
             :model-value="data.background ?? 'none'"
             label="Fundal"
             :options="[
-                { value: 'none', label: 'Alb / imagine' },
+                {
+                    value: 'none',
+                    label: data.layout === 'centered' ? 'Alb / imagine' : 'Alb',
+                },
                 { value: 'gradient', label: 'Gradient animat' },
                 {
                     value: 'gradient-violet',
                     label: 'Gradient animat (violet)',
                 },
             ]"
-            hint="Gradientul animat înlocuiește imaginea; textul devine alb."
+            :hint="
+                data.layout === 'centered'
+                    ? 'Gradientul animat înlocuiește imaginea; textul devine alb.'
+                    : 'Gradientul animat stă în spatele textului și al imaginii; textul devine alb.'
+            "
             :error="errors.background"
             @update:model-value="
                 data.background =

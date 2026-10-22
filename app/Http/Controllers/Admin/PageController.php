@@ -26,16 +26,19 @@ class PageController extends Controller
 
     /**
      * GET /admin/pagini — filter by type to see (and drag) the order used on
-     * the site; the trash lists deleted pages for restore.
+     * the site; the trash lists deleted pages for restore. Without the
+     * articles: they are listed under Blog (PostController@index).
      */
     public function index(Request $request): Response
     {
         $search = trim((string) $request->query('q', ''));
         $type = PageType::tryFrom((string) $request->query('type', ''));
+        $type = $type === PageType::Article ? null : $type;
         $status = ContentStatus::tryFrom((string) $request->query('status', ''));
         $trashed = $request->boolean('trashed');
 
         $pages = Page::query()
+            ->where('type', '!=', PageType::Article)
             ->when($trashed, fn (Builder $query) => $query->onlyTrashed())
             ->when($search !== '', fn (Builder $query) => $query->where(fn (Builder $where) => $where
                 ->where('title', 'like', "%{$search}%")
@@ -67,7 +70,10 @@ class PageController extends Controller
                 'status' => $status->value ?? '',
                 'trashed' => $trashed,
             ],
-            'types' => $this->typeOptions(),
+            'types' => array_values(array_filter(
+                $this->typeOptions(),
+                fn (array $option): bool => $option['value'] !== PageType::Article->value,
+            )),
             'statuses' => $this->statusOptions(),
         ]);
     }
@@ -131,7 +137,10 @@ class PageController extends Controller
 
     public function destroy(Page $page): RedirectResponse
     {
-        return $this->trash($page);
+        $response = $this->trash($page);
+
+        // An article goes back to Blog, where the articles are listed.
+        return $page->type === PageType::Article ? to_route('admin.posts.index') : $response;
     }
 
     public function restore(Page $page): RedirectResponse
@@ -141,7 +150,9 @@ class PageController extends Controller
 
     public function forceDestroy(Page $page): RedirectResponse
     {
-        return $this->purge($page);
+        $response = $this->purge($page);
+
+        return $page->type === PageType::Article ? to_route('admin.posts.index', ['trashed' => 1]) : $response;
     }
 
     /**

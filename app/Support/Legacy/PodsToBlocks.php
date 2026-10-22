@@ -59,6 +59,8 @@ final class PodsToBlocks
             'subheading' => $heroIntro,
             'image_asset_id' => $heroImage,
             'layout' => $heroImage !== null ? 'split' : 'centered',
+            // On the old site's purples, as the internal pages' heroes.
+            'background' => 'gradient-violet',
             'primary_cta' => self::QUOTE_CTA,
         ])];
 

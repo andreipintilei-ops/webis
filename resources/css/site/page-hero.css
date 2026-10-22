@@ -149,4 +149,22 @@
             }
         }
     }
+
+    /*
+      An article's hero (public/page): the title in the text face, as /blog's
+      featured one, since some titles run to a dozen words; shorter than the
+      other heroes, as it holds only the title.
+    */
+    .page-hero--article {
+        @media (min-width: 768px) {
+            min-height: min(36rem, 70svh);
+        }
+
+        & .page-hero__title {
+            @apply max-w-[20em] font-sans font-medium normal-case;
+            font-size: clamp(2rem, 4.2vw, 3.75rem);
+            line-height: 1.1;
+            letter-spacing: -0.03em;
+        }
+    }
 }

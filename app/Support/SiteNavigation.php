@@ -32,9 +32,9 @@ final class SiteNavigation
      * @var list<array{label: string, href: string, blurb: string}>
      */
     private const array SERVICES = [
-        ['label' => 'Software la comandă', 'href' => '/software-la-comanda', 'blurb' => 'ERP, CRM, registratură și integrări, construite de la zero.'],
-        ['label' => 'Produse SaaS', 'href' => '/produse', 'blurb' => 'Produse gata de folosit, pe abonament lunar.'],
-        ['label' => 'Web și e-commerce', 'href' => '/web', 'blurb' => 'Site-uri de prezentare și magazine online.'],
+        ['label' => 'Software la comandă', 'href' => '/software-la-comanda/', 'blurb' => 'ERP, CRM, registratură și integrări, construite de la zero.'],
+        ['label' => 'Produse SaaS', 'href' => '/produse/', 'blurb' => 'Produse gata de folosit, pe abonament lunar.'],
+        ['label' => 'Web și e-commerce', 'href' => '/web/', 'blurb' => 'Site-uri de prezentare și magazine online.'],
     ];
 
     /**
@@ -109,7 +109,9 @@ final class SiteNavigation
     private static function mark(array $link): array
     {
         $path = self::path();
-        $href = (string) $link['href'];
+        // Compared without a trailing slash: "/web/" marks "/web" (the
+        // request's path never ends in one).
+        $href = rtrim((string) $link['href'], '/') ?: '/';
 
         return [
             ...$link,

@@ -11,11 +11,14 @@ use Illuminate\Http\Request;
 
 class ClientsController extends Controller
 {
+    /** Projects per page of the list: four rows of the grid's three. */
+    public const int PER_PAGE = 12;
+
     /**
      * GET /portofoliu — the client work (the menu's "Clienți"): up to three
      * featured projects, then the published projects as a list, all or one
-     * type (?tip=magazin). Only client work: Webis's own products are on
-     * Produse SaaS. The clients' logos load their own (x-logo-marquee).
+     * type (?tip=magazin), a page at a time (?pagina=2). Only client work:
+     * Webis's own products are on Produse SaaS. The clients' logos load their own (x-logo-marquee).
      *
      * Its CMS page is the one at the slug "portofoliu" ("Clienți" in the
      * admin): the page's own blocks go under the hero, and its SEO title and
@@ -23,19 +26,25 @@ class ClientsController extends Controller
      */
     public function __invoke(Request $request): View
     {
-        // The filter in effect. Every project is sent: the list hides the
-        // others, and filters in place from there (js/public/work-list.ts).
-        // An unknown ?tip= shows them all.
+        // The filter in effect, applied here: the list is paged, so each
+        // page holds that type's projects only. An unknown ?tip= shows them
+        // all. A page past the last is not found.
         $type = ProjectType::tryFrom((string) $request->query('tip', ''));
 
         $projects = Project::query()
             ->published()
             ->whereNotNull('type')
+            ->when($type, fn ($query, ProjectType $type) => $query->where('type', $type))
             ->with(['client:id,name', 'cover.media'])
             ->orderBy('sort_order')
             ->orderByDesc('year')
             ->latest('id')
-            ->get();
+            ->paginate(self::PER_PAGE, pageName: 'pagina')
+            ->withPath(route('projects.index'))
+            ->appends(array_filter(['tip' => $type?->value]))
+            ->fragment('proiecte');
+
+        abort_if($projects->currentPage() > $projects->lastPage(), 404);
 
         // The featured ones lead the page, whatever the filter.
         $featured = Project::query()

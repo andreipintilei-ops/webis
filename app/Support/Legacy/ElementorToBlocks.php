@@ -954,7 +954,8 @@ final class ElementorToBlocks
             'subheading' => $hero['subheading'],
             'image_asset_id' => $hero['image_asset_id'],
             'layout' => $hero['image_asset_id'] !== null ? 'split' : 'centered',
-            'background' => 'none',
+            // On the old site's purples, as the internal pages' heroes.
+            'background' => 'gradient-violet',
             'align' => 'center',
             'logos' => false,
             'primary_cta' => $hero['primary_cta'],

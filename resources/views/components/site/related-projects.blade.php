@@ -1,10 +1,8 @@
 {{--
-    Up to three published client projects of the given types, as cards on the
-    light chapters' lavender (css/site/portfolio.css), with the way to the
-    rest of them on /portofoliu. At the foot of Software la comandă and Web
-    și e-commerce (public/page, by App\Enums\ProjectType::forServicePage) and
-    of a project's page. Client work only — never a product. Nothing at all
-    when there is no such project.
+    Up to three published client projects of the given types, as /web's
+    project cards (components/site/project-card), with the way to the rest
+    of them on /portofoliu. At the foot of a project's page. Client work
+    only — never a product. Nothing at all when there is no such project.
 
     `types`: list of App\Enums\ProjectType. `except`: a project's id to leave
     out (the one being shown). `title`: the section's title.
@@ -18,7 +16,7 @@
         ->published()
         ->whereIn('type', $types)
         ->when($except, fn ($query, $id) => $query->whereKeyNot($id))
-        ->with(['client:id,name', 'cover.media'])
+        ->with('cover.media')
         ->orderBy('sort_order')
         ->orderByDesc('year')
         ->latest('id')
@@ -40,7 +38,7 @@
                 <x-ui.arrow-link :href="$more">Vezi toate proiectele</x-ui.arrow-link>
             </header>
 
-            <ul class="portfolio-grid" data-reveal>
+            <ul class="web-projects__list" data-reveal>
                 @foreach ($projects as $project)
                     <x-site.project-card :project="$project" :index="$loop->index" />
                 @endforeach

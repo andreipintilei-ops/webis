@@ -59,6 +59,11 @@
         color: var(--muted);
     }
 
+    /* The list's pages, under it (components/site/pagination). */
+    .portfolio-pagination {
+        @apply mt-12 lg:mt-16;
+    }
+
     .work-card {
         @apply flex flex-col;
 

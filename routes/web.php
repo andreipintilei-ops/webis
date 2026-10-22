@@ -6,6 +6,7 @@ use App\Http\Controllers\Public\ContactController;
 use App\Http\Controllers\Public\HomeController;
 use App\Http\Controllers\Public\PageController;
 use App\Http\Controllers\Public\ProjectController;
+use App\Http\Controllers\Public\SoftwareController;
 use App\Support\ReservedSlugs;
 use Illuminate\Support\Facades\Route;
 
@@ -34,6 +35,9 @@ Route::get('blog/categorie/{slug}', [ArticleController::class, 'category'])
     ->where('slug', '[a-z0-9]+(?:-[a-z0-9]+)*')
     ->name('posts.category');
 Route::view('web', 'public.web')->name('services.web');
+// Software la comandă: its canonical address ends in a slash
+// (/software-la-comanda/); its own copy, and its software projects.
+Route::get('software-la-comanda', SoftwareController::class)->name('services.software');
 
 // The contact form (components/site/contact). At a reserved slug, so no CMS
 // page can take it.

@@ -8,13 +8,9 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { index as categoriesIndex } from '@/routes/admin/post-categories';
-import {
-    create,
-    edit,
-    forceDestroy,
-    index,
-    restore,
-} from '@/routes/admin/posts';
+// The articles are pages of the Article type, edited in the page editor.
+import { create, edit, forceDestroy, restore } from '@/routes/admin/pages';
+import { index } from '@/routes/admin/posts';
 import type { Option } from '@/types/content';
 import type { Paginated } from '@/types/media';
 
@@ -23,8 +19,6 @@ type PostRow = {
     title: string;
     url: string;
     category: string | null;
-    author: string | null;
-    reading_minutes: number | null;
     status: string;
     status_label: string;
     is_live: boolean;
@@ -83,7 +77,9 @@ watch([search, status, category, trashed], () => {
                     <Link :href="categoriesIndex()">Categorii</Link>
                 </Button>
                 <Button as-child>
-                    <Link :href="create()"><Plus /> Articol nou</Link>
+                    <Link :href="create({ query: { type: 'article' } })"
+                        ><Plus /> Articol nou</Link
+                    >
                 </Button>
             </div>
         </div>
@@ -119,7 +115,6 @@ watch([search, status, category, trashed], () => {
                     <tr>
                         <th class="px-4 py-2">Titlu</th>
                         <th class="px-4 py-2">Categorie</th>
-                        <th class="px-4 py-2">Autor</th>
                         <th class="px-4 py-2">Stare</th>
                         <th class="px-4 py-2">Publicat</th>
                         <th class="px-4 py-2"></th>
@@ -147,9 +142,6 @@ watch([search, status, category, trashed], () => {
                         </td>
                         <td class="px-4 py-2 text-muted-foreground">
                             {{ row.category ?? '—' }}
-                        </td>
-                        <td class="px-4 py-2 text-muted-foreground">
-                            {{ row.author ?? '—' }}
                         </td>
                         <td class="px-4 py-2">
                             <Badge
@@ -204,7 +196,7 @@ watch([search, status, category, trashed], () => {
                     </tr>
                     <tr v-if="posts.data.length === 0">
                         <td
-                            colspan="6"
+                            colspan="5"
                             class="px-4 py-8 text-center text-muted-foreground"
                         >
                             {{

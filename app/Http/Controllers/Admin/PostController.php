@@ -3,10 +3,12 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Enums\ContentStatus;
+use App\Enums\PageType;
 use App\Http\Controllers\Admin\Concerns\EditsContent;
 use App\Http\Controllers\Admin\Concerns\ManagesTrash;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\PostRequest;
+use App\Models\Page;
 use App\Models\Post;
 use App\Models\PostCategory;
 use App\Models\User;
@@ -25,7 +27,9 @@ class PostController extends Controller
     use EditsContent, ManagesTrash;
 
     /**
-     * GET /admin/blog
+     * GET /admin/blog — the articles: pages of the Article type (they keep
+     * the old site's root addresses), edited in the page editor. Not the
+     * Post model, which backs nothing public (Public\ArticleController).
      */
     public function index(Request $request): Response
     {
@@ -34,8 +38,9 @@ class PostController extends Controller
         $category = (int) $request->query('category', 0);
         $trashed = $request->boolean('trashed');
 
-        $posts = Post::query()
-            ->with(['category:id,name', 'author:id,name'])
+        $posts = Page::query()
+            ->where('type', PageType::Article)
+            ->with('category:id,name')
             ->when($trashed, fn (Builder $query) => $query->onlyTrashed())
             ->when($search !== '', fn (Builder $query) => $query->where(fn (Builder $where) => $where
                 ->where('title', 'like', "%{$search}%")
@@ -48,13 +53,11 @@ class PostController extends Controller
             ->latest('id')
             ->paginate(30)
             ->withQueryString()
-            ->through(fn (Post $post): array => [
+            ->through(fn (Page $post): array => [
                 'id' => $post->id,
                 'title' => $post->title,
                 'url' => PublicUrls::for($post),
                 'category' => $post->category?->name,
-                'author' => $post->author?->name,
-                'reading_minutes' => $post->reading_minutes,
                 'status' => $post->status->value,
                 'status_label' => $post->status->label(),
                 'is_live' => $post->isPublished(),

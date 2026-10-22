@@ -70,9 +70,9 @@
         $rows = $dummyItems;
     }
 
-    // The filter: links, so each type has its own address — followed only
-    // without the script, which filters the list in place
-    // (js/public/work-list.ts); never through the page transition.
+    // The filter: links, so each type has its own address, its list paged
+    // on its own (ClientsController); plain loads, as the pagination's,
+    // never through the page transition.
     $filters = [
         ['label' => 'Toate', 'value' => '', 'href' => route('projects.index').'#proiecte', 'current' => $type === null],
         ...array_map(fn (ProjectType $option): array => [
@@ -125,7 +125,7 @@
                     <ul>
                         @foreach ($filters as $filter)
                             <li>
-                                <a href="{{ $filter['href'] }}" class="portfolio-filter__link" data-work-filter="{{ $filter['value'] }}" data-no-transition @if ($filter['current']) aria-current="page"@endif>{{ $filter['label'] }}</a>
+                                <a href="{{ $filter['href'] }}" class="portfolio-filter__link" data-no-transition @if ($filter['current']) aria-current="page"@endif>{{ $filter['label'] }}</a>
                             </li>
                         @endforeach
                     </ul>
@@ -133,8 +133,10 @@
             </header>
 
             @if ($rows !== [])
-                <x-site.work-list :rows="$rows" :filter="$type" />            @else
-                <p class="portfolio-empty">Încă nu am publicat proiecte.</p>
+                <x-site.work-list :rows="$rows" />
+                <x-site.pagination :paginator="$projects" label="Paginile proiectelor" class="portfolio-pagination" />
+            @else
+                <p class="portfolio-empty">{{ $type ? 'Încă nu am publicat proiecte de acest tip.' : 'Încă nu am publicat proiecte.' }}</p>
             @endif
         </div>
 
