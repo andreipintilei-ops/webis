@@ -15,6 +15,8 @@ use App\Models\Testimonial;
 use App\Models\User;
 use App\Routing\UrlGenerator;
 use App\Support\Brand;
+use App\Support\Legacy\Import\BodyConverter;
+use App\Support\Legacy\Import\UnavailableBodyConverter;
 use App\Support\RichText\RichText;
 use Carbon\CarbonImmutable;
 use Illuminate\Database\Eloquent\Model;
@@ -36,6 +38,10 @@ class AppServiceProvider extends ServiceProvider
         $this->app->singleton(BlockRegistry::class);
         $this->app->singleton(RichText::class);
         $this->app->scoped(Brand::class);
+
+        // legacy:import's articles, pages and industries steps refuse to run
+        // until the content converters are bound here in its place.
+        $this->app->bind(BodyConverter::class, UnavailableBodyConverter::class);
 
         // route(), url() and action() emit the public pages' trailing slash.
         // An extension, not a new binding, so the framework's own wiring (the
