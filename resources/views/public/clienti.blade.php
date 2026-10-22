@@ -32,6 +32,15 @@
     $featuredItems = $featured->map($item)->all();
     $rows = $projects->map($item)->all();
 
+    // The page's CMS entry (ClientsController) titles it, and the filter in
+    // effect goes in front: "Magazine · Portofoliu". Only an SEO title set in
+    // the admin replaces "Portofoliu" — the entry's own title names it in the
+    // page list, where the menu's word for it ("Clienți") belongs.
+    $title = $page?->seo->title ?: 'Portofoliu';
+    $title = $type ? $type->plural().' · '.$title : $title;
+    $description = $page?->seo->description
+        ?: 'Proiecte Webis pentru clienți: software la comandă, site-uri de prezentare, magazine online și identitate vizuală.';
+
     // DUMMY DATA: until the projects are in the admin — a few of the live
     // webis.ro's, their screenshots straight from it, to check the design.
     // Nothing of this is in the database; the links lead nowhere yet.
@@ -76,8 +85,8 @@
 @endphp
 
 <x-layouts.public
-    :title="$type ? $type->plural().' · Portofoliu' : 'Portofoliu'"
-    description="Proiecte Webis pentru clienți: software la comandă, site-uri de prezentare, magazine online și identitate vizuală."
+    :title="$title"
+    :description="$description"
     header-theme="dark"
     :footer-cta="false"
 >
@@ -88,6 +97,11 @@
         data-reveal-pace="fast"
         :flush="true"
     />
+
+    {{-- ============================================= The page's own --}}
+    {{-- Whatever the admin puts on the page, between the hero and the work
+         (nothing by default: the entry exists for the title and the SEO). --}}
+    <x-blocks :blocks="$page->blocks ?? []" />
 
     {{-- ================================================== The figures --}}
     <x-site.figures />

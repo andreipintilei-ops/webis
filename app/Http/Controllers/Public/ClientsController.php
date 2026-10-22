@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Public;
 
 use App\Enums\ProjectType;
 use App\Http\Controllers\Controller;
+use App\Models\Page;
 use App\Models\Project;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\Request;
@@ -15,6 +16,10 @@ class ClientsController extends Controller
      * featured projects, then the published projects as a list, all or one
      * type (?tip=magazin). Only client work: Webis's own products are on
      * Produse SaaS. The clients' logos load their own (x-logo-marquee).
+     *
+     * Its CMS page is the one at the slug "portofoliu" ("Clienți" in the
+     * admin): the page's own blocks go under the hero, and its SEO title and
+     * description stand in for the ones written here.
      */
     public function __invoke(Request $request): View
     {
@@ -44,6 +49,7 @@ class ClientsController extends Controller
             ->get();
 
         return view('public.clienti', [
+            'page' => Page::query()->where('slug', 'portofoliu')->published()->first(),
             'type' => $type,
             'featured' => $featured,
             'projects' => $projects,
