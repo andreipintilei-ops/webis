@@ -141,7 +141,7 @@
       but by the home page's 32px (css/site/service-cards.css): the statement
       above then ends as far below its link as the home page's does.
     */
-    .chapter.sw-compare {
+    .chapter.sw-fit {
         @apply -mt-8 rounded-t-[2.5rem] pt-12 md:rounded-t-[5rem] md:pt-16 lg:pt-20;
 
         &::before {
@@ -149,7 +149,7 @@
         }
     }
 
-    /* ---- Links in the copy ("Vezi produsele SaaS →") ------------------------------ */
+    /* ---- Links in the copy ("produs gata de folosit", "Vezi proiectele →") -------- */
 
     .sw-link {
         @apply inline-flex items-center font-medium whitespace-nowrap underline decoration-1 underline-offset-[0.3em];
@@ -171,357 +171,43 @@
         }
     }
 
-    /* ---- 01 Now and with an application --------------------------------------------- */
+    /* ---- 01 When it makes sense, and when not ------------------------------------ */
 
-    .sw-compare {
-        --sw-grey: #e9e8ef;
-        --sw-red: #c8463c;
+    /* Two plain lists, each under its heading, the items on hairlines. */
+    .sw-fit__columns {
+        @apply grid gap-12 md:grid-cols-2 md:gap-10 lg:gap-16;
     }
 
-    .sw-compare__grid {
-        @apply grid;
+    .sw-fit__heading {
+        @apply text-xl font-medium tracking-[-0.01em] md:text-2xl;
+        color: var(--ink);
     }
 
-    .sw-compare__ground {
-        @apply hidden;
-    }
+    .sw-fit__list {
+        @apply mt-6 border-b;
+        border-color: var(--line);
 
-    .sw-compare__label {
-        @apply font-micro text-xs tracking-[0.08em] uppercase;
-        color: var(--muted);
-    }
-
-    .sw-compare__art {
-        @apply relative;
-        container-type: inline-size;
-    }
-
-    .sw-compare__mark {
-        @apply mt-0.5 grid size-6 shrink-0 place-items-center rounded-full;
-
-        & .sw-icon {
-            @apply size-3.5;
-            stroke-width: 2.5;
-        }
-    }
-
-    .sw-compare__now,
-    .sw-compare__app {
-        @apply relative z-[1] flex items-start gap-3.5;
-
-        & p {
-            @apply text-pretty;
-        }
-    }
-
-    .sw-compare__now {
-        & .sw-compare__mark {
-            color: var(--sw-red);
-            background: rgb(200 70 60 / 0.12);
-        }
-
-        & p {
-            @apply text-base leading-relaxed;
+        & li {
+            @apply border-t py-4 text-base leading-relaxed text-pretty md:text-lg;
+            border-color: var(--line);
             color: var(--muted);
         }
 
-        & strong {
-            @apply font-medium;
-            color: var(--ink);
+        /* Inline here: it may wrap with the sentence. */
+        & .sw-link {
+            @apply whitespace-normal;
         }
     }
 
-    .sw-compare__app {
-        & .sw-compare__mark {
-            @apply text-white;
-            background: var(--violet-500);
-        }
+    .sw-fit__foot {
+        @apply mt-12 flex flex-col items-start gap-6 md:mt-16 lg:flex-row lg:items-center lg:justify-between lg:gap-10;
 
         & p {
-            @apply text-base leading-relaxed font-medium md:text-[17px];
+            @apply max-w-[40rem] text-base leading-relaxed text-pretty md:text-lg;
             color: var(--ink);
         }
     }
 
-    /*
-      Below 1024px: the two pictures on their grounds, then each row now
-      followed by its counterpart, as one card in two parts.
-    */
-    @media (max-width: 1023px) {
-        .sw-compare__label {
-            @apply rounded-t-[1.5rem] px-6 pt-6 pb-4;
-        }
-
-        .sw-compare__art {
-            @apply mb-4 rounded-b-[1.5rem] px-6 pb-6;
-        }
-
-        .sw-compare__label--now,
-        .sw-compare__art--now {
-            background: var(--sw-grey);
-        }
-
-        .sw-compare__label--app,
-        .sw-compare__art--app {
-            @apply border-violet-500 bg-white;
-            border-width: 1.5px;
-            border-color: var(--violet-500);
-        }
-
-        .sw-compare__label--app {
-            @apply border-b-0;
-        }
-
-        .sw-compare__art--app {
-            @apply border-t-0;
-        }
-
-        /* The rows: the grey half on top, the white half under it. */
-        .sw-compare__now {
-            @apply mt-4 rounded-t-[1.25rem] px-5 pt-5 pb-4;
-            background: var(--sw-grey);
-        }
-
-        .sw-compare__app {
-            @apply rounded-b-[1.25rem] bg-white px-5 pt-4 pb-5;
-            border: 1.5px solid var(--violet-500);
-            border-top: 0;
-        }
-    }
-
-    /*
-      From 1024px: two panels side by side, one grid — their labels, their
-      pictures, then the four rows, each row level across both; each panel's
-      ground drawn behind its column.
-    */
-    @media (min-width: 1024px) {
-        .sw-compare__grid {
-            @apply gap-x-5;
-            grid-template-columns: repeat(2, minmax(0, 1fr));
-        }
-
-        .sw-compare__ground {
-            @apply block rounded-[1.75rem];
-            grid-row: 1 / 7;
-        }
-
-        .sw-compare__ground--now {
-            grid-column: 1;
-            background: var(--sw-grey);
-        }
-
-        .sw-compare__ground--app {
-            grid-column: 2;
-            background: #fff;
-            border: 1.5px solid var(--violet-500);
-            box-shadow: 0 1.5rem 3rem -1.5rem rgb(91 63 224 / 0.25);
-        }
-
-        .sw-compare__label {
-            @apply relative px-10 pt-9 pb-5;
-            grid-row: 1;
-        }
-
-        .sw-compare__art {
-            @apply self-center px-10 pb-8;
-            grid-row: 2;
-        }
-
-        .sw-compare__label--now,
-        .sw-compare__art--now,
-        .sw-compare__now {
-            grid-column: 1;
-        }
-
-        .sw-compare__label--app,
-        .sw-compare__art--app,
-        .sw-compare__app {
-            grid-column: 2;
-        }
-
-        .sw-compare__now,
-        .sw-compare__app {
-            @apply mx-10 border-t py-5;
-            grid-row: var(--row-at);
-            border-color: var(--line);
-
-            &:nth-last-child(-n + 2) {
-                @apply pb-9;
-            }
-        }
-    }
-
-    .sw-compare__foot {
-        @apply -mt-4 flex flex-wrap items-baseline gap-x-4 gap-y-2 text-base leading-relaxed text-pretty md:text-lg lg:-mt-6;
-        color: var(--muted);
-    }
-
-    /* "Acum": a few things piled on the grey, a little askew. */
-    .sw-now {
-        @apply relative w-full;
-        aspect-ratio: 3 / 2;
-
-        @media (min-width: 640px) {
-            aspect-ratio: 2 / 1;
-        }
-        font-size: clamp(9px, 2.35cqi, 13px);
-        color: var(--navy-950);
-
-        & > * {
-            @apply absolute;
-            box-shadow:
-                0 1px 2px rgb(1 15 28 / 0.08),
-                0 0.75em 1.75em -0.75em rgb(1 15 28 / 0.25);
-        }
-
-        & .sw-icon {
-            @apply size-[1.3em] shrink-0;
-        }
-    }
-
-    .sw-now__sheet {
-        top: 6%;
-        left: 0;
-        width: 56%;
-        rotate: -2.5deg;
-        background: #fff;
-
-        & table {
-            @apply w-full border-collapse;
-            table-layout: fixed;
-        }
-
-        & th,
-        & td {
-            @apply overflow-hidden border text-left whitespace-nowrap;
-            padding: 0.35em 0.5em;
-            border-color: #d9dbe2;
-        }
-
-        & th {
-            @apply text-center font-normal;
-            background: #f1f2f5;
-            color: #6f7385;
-        }
-
-        & tr th:first-child {
-            width: 2.2em;
-        }
-
-        & tr:nth-child(2) td {
-            @apply font-semibold;
-        }
-
-        & .is-error {
-            @apply font-semibold;
-            color: var(--sw-red);
-            background: #fde3e0;
-            outline: 2px solid var(--sw-red);
-            outline-offset: -2px;
-        }
-    }
-
-    .sw-now__mail {
-        top: 0;
-        right: 0;
-        width: 50%;
-        rotate: 2deg;
-        padding: 0.9em 1em;
-        border-radius: 0.6em;
-        background: #fff;
-    }
-
-    .sw-now__mail-head {
-        @apply flex items-center gap-[0.5em];
-
-        & b {
-            @apply truncate font-semibold;
-        }
-
-        & .sw-icon {
-            color: #6f7385;
-        }
-    }
-
-    .sw-now__mail-line {
-        @apply mt-[0.4em] truncate;
-        color: #6f7385;
-    }
-
-    .sw-now__mail-count {
-        @apply absolute grid place-items-center rounded-full font-semibold text-white;
-        top: -0.6em;
-        right: -0.6em;
-        width: 1.8em;
-        height: 1.8em;
-        background: var(--sw-red);
-    }
-
-    .sw-now__file {
-        @apply flex items-center gap-[0.5em] font-medium whitespace-nowrap;
-        left: 9%;
-        bottom: 4%;
-        rotate: -4deg;
-        padding: 0.6em 0.9em;
-        border-radius: 0.5em;
-        background: #fff;
-
-        & .sw-icon {
-            color: #1d7a45;
-        }
-    }
-
-    .sw-now__paper {
-        right: 3%;
-        bottom: 0;
-        width: 30%;
-        rotate: 5deg;
-        padding: 0.9em 1em 1em;
-        background: #fbfaf6;
-
-        & i {
-            @apply mt-[0.55em] block h-[0.3em] rounded-full;
-            background: #e2e0d8;
-
-            &:last-of-type {
-                @apply w-2/3;
-            }
-        }
-    }
-
-    .sw-now__paper-title {
-        @apply font-semibold tracking-[0.06em] uppercase;
-        font-size: 0.85em;
-    }
-
-    .sw-now__sign {
-        @apply mt-[1.6em] border-t pt-[0.3em];
-        font-size: 0.8em;
-        color: #6f7385;
-        border-color: #9a9686;
-    }
-
-    /* "Cu o aplicație": one calm screen. */
-    .sw-screen {
-        @apply w-full overflow-hidden rounded-[0.9em] border bg-white;
-        font-size: clamp(9px, 2.35cqi, 13px);
-        border-color: rgb(38 42 111 / 0.12);
-        box-shadow: 0 1em 2.5em -1.25em rgb(91 63 224 / 0.35);
-        color: var(--navy-950);
-    }
-
-    .sw-screen__bar {
-        @apply flex items-center gap-[0.75em] border-b;
-        padding: 0.85em 1em;
-        border-color: rgb(38 42 111 / 0.08);
-
-        & b {
-            @apply font-semibold;
-            font-size: 1.1em;
-        }
-    }
-
-    .sw-screen__tile,
     .sw-mock__tile {
         @apply grid shrink-0 place-items-center text-white;
         width: 2em;
@@ -533,48 +219,6 @@
         & .sw-icon {
             width: 1.1em;
             height: 1.1em;
-        }
-    }
-
-    .sw-screen__search {
-        @apply ml-auto flex items-center gap-[0.4em] rounded-full border;
-        padding: 0.35em 0.9em 0.35em 0.7em;
-        border-color: rgb(38 42 111 / 0.12);
-        color: var(--ink-muted);
-
-        & .sw-icon {
-            width: 1em;
-            height: 1em;
-        }
-    }
-
-    .sw-screen__rows li {
-        @apply grid items-center gap-[0.9em] border-b;
-        grid-template-columns: auto minmax(0, 1fr) auto;
-        padding: 0.75em 1em;
-        border-color: rgb(38 42 111 / 0.06);
-
-        &:last-child {
-            @apply border-b-0;
-        }
-    }
-
-    .sw-screen__no {
-        @apply font-micro;
-        font-size: 0.85em;
-        color: var(--ink-muted);
-    }
-
-    .sw-screen__what {
-        @apply flex min-w-0 flex-col;
-
-        & b {
-            @apply truncate font-medium;
-        }
-
-        & small {
-            font-size: 0.85em;
-            color: var(--ink-muted);
         }
     }
 

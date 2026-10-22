@@ -9,7 +9,8 @@
     - the home page's statement (blocks/statement), on the hero's backdrop;
     - the modules as a strip of pills, where the home page has its logos.
     Then the light panel, rising over it:
-    - 01 when it makes sense: now and with an application, row by row;
+    - 01 when it makes sense, and when not: an honest recommendation, two
+      plain lists side by side;
     - 02 what we build: the modules as tabs beside their mock-ups, an
       accordion below 1024px (js/public/software-explorer.ts);
     - 03 how we work, on the indigo: the delivery as a timeline lighting up
@@ -35,12 +36,20 @@
         ['SPV', 'landmark'],
     ];
 
-    // Now, and with an application: the same four rows, side by side.
-    $compare = [
-        ['Lucrezi în Excel și pe email.', 'Datele sunt împrăștiate în fișiere și conversații, iar fiecare raport înseamnă ore de copiat și verificat.', 'Toate datele într-un singur loc.'],
-        ['Hârtia încă circulă între birouri.', 'Cererile se semnează pe rând, pe hârtie, și nimeni nu știe exact unde au rămas.', 'Cereri și aprobări online, cu status vizibil.'],
-        ['Ai sisteme care nu comunică între ele.', 'Aceleași date se introduc de două ori, în locuri diferite.', 'Datele se introduc o singură dată.'],
-        ['Nu ai o imagine clară.', 'Ca să afli unde e o cerere sau o comandă, trebuie să întrebi pe cineva.', 'Rapoarte în timp real, fără Excel intermediar.'],
+    // When it makes sense, and when it probably does not: each list
+    // continues its heading's sentence. One item links to /produse/.
+    $fit = [
+        'Are sens când:' => [
+            'procesul tău are reguli și excepții pe care programele standard nu le acoperă;',
+            'mai mulți oameni sau departamente lucrează pe aceleași documente și aprobări;',
+            'ai deja programe pe care vrei să le legi între ele;',
+            'volumul a crescut și Excelul nu mai ține pasul.',
+        ],
+        'Probabil nu are sens când:' => [
+            'un program existent face deja ce îți trebuie, cu mici compromisuri;',
+            'nevoia ta e comună în domeniu: atunci un <a href="/produse/" class="sw-link">produs gata de folosit</a> e mai rapid și mai ieftin;',
+            'procesul încă se schimbă des și nu e clar cum ar trebui să arate.',
+        ],
     ];
 
     $modules = [
@@ -165,48 +174,36 @@
     ])
 
     {{-- ================================================== 01 When it makes sense --}}
-    {{-- The light panel, rising over the dark area. Two panels whose rows
-         line up: one grid, each panel's ground behind its column. Phones:
-         the two pictures, then each row now followed by its counterpart. --}}
-    <section class="chapter chapter--light sw-compare" aria-labelledby="sw-compare-title" data-reveal-pace="fast">
+    {{-- The light panel, rising over the dark area. An honest recommendation,
+         not a pitch: the intro beside the title, then two plain lists on
+         hairlines (stacked on phones), then the way to ask. --}}
+    <section class="chapter chapter--light sw-fit" aria-labelledby="sw-fit-title" data-reveal-pace="fast">
         <div class="chapter__inner">
             <header class="chapter__head" data-reveal="head">
                 <div class="chapter__head-main">
                     <p class="chapter__label">01</p>
-                    <h2 id="sw-compare-title" class="chapter__title">Când are sens.</h2>
+                    <h2 id="sw-fit-title" class="chapter__title">Când are sens.</h2>
                 </div>
+                <p class="chapter__intro">Nu orice proces are nevoie de o aplicație construită de la zero. Uneori un program existent sau unul dintre produsele noastre e alegerea mai bună, și îți spunem asta de la prima discuție.</p>
             </header>
 
-            <div class="sw-compare__grid" data-reveal>
-                <div class="sw-compare__ground sw-compare__ground--now" aria-hidden="true"></div>
-                <div class="sw-compare__ground sw-compare__ground--app" aria-hidden="true"></div>
-
-                <h3 class="sw-compare__label sw-compare__label--now">Acum</h3>
-                <div class="sw-compare__art sw-compare__art--now" data-reveal-child>
-                    @include('public.software.now-collage')
-                </div>
-
-                <h3 class="sw-compare__label sw-compare__label--app">Cu o aplicație</h3>
-                <div class="sw-compare__art sw-compare__art--app" data-reveal-child>
-                    @include('public.software.app-screen')
-                </div>
-
-                @foreach ($compare as [$title, $line, $better])
-                    <div class="sw-compare__now" style="--row-at: {{ $loop->iteration + 2 }}">
-                        <span class="sw-compare__mark" aria-hidden="true"><x-software.icon name="x" /></span>
-                        <p><strong>{{ $title }}</strong> {{ $line }}</p>
-                    </div>
-                    <div class="sw-compare__app" style="--row-at: {{ $loop->iteration + 2 }}">
-                        <span class="sw-compare__mark" aria-hidden="true"><x-software.icon name="check" /></span>
-                        <p>{{ $better }}</p>
+            <div class="sw-fit__columns" data-reveal>
+                @foreach ($fit as $heading => $items)
+                    <div class="sw-fit__column" data-reveal-child>
+                        <h3 class="sw-fit__heading">{{ $heading }}</h3>
+                        <ul class="sw-fit__list">
+                            @foreach ($items as $item)
+                                <li>{!! $item !!}</li>
+                            @endforeach
+                        </ul>
                     </div>
                 @endforeach
             </div>
 
-            <p class="sw-compare__foot">
-                Dacă nevoia ta e comună în domeniu, un produs gata de folosit poate fi mai potrivit.
-                <a href="/produse/" class="sw-link">Vezi produsele SaaS →</a>
-            </p>
+            <div class="sw-fit__foot" data-reveal>
+                <p>Nu ești sigur? Povestește-ne cum lucrezi acum și îți spunem sincer ce variantă are sens.</p>
+                <x-ui.arrow-link href="/contact/">Hai să discutăm</x-ui.arrow-link>
+            </div>
         </div>
     </section>
 
