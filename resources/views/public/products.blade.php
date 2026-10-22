@@ -10,9 +10,9 @@
     - the home page's statement (blocks/statement), on the hero's backdrop,
       the four products under it as links to their sections.
     Then the light panel, rising over it:
-    - the products, one after another between hairlines: who it is for,
-      what it does, the clients using it (components/site/used-by), the way
-      to ask for a demo;
+    - the products as /portofoliu's stacking cards: who it is for, what it
+      does, the clients using it (components/site/used-by), the way to ask
+      for a demo;
     - why a ready product: the home page's cells between hairlines;
     - how to start, and product or made to order: two short paragraphs;
     - questions, as /web's rows that open, and as FAQPage JSON-LD from the
@@ -124,41 +124,48 @@
     ])
 
     {{-- ================================================== The products --}}
-    {{-- The light panel, rising over the dark area. One product after
-         another between hairlines: its name and audience on the left, what
-         it does and the way to a demo on the right. --}}
-    <section class="chapter chapter--light saas-products" aria-labelledby="saas-products-title" data-reveal-pace="fast">
-        <div class="chapter__inner">
-            <header class="chapter__head" data-reveal="head">
-                <div class="chapter__head-main">
-                    <h2 id="saas-products-title" class="chapter__title">Produsele noastre.</h2>
-                </div>
-            </header>
+    {{-- /portofoliu's featured projects (components/site/featured-work,
+         css/site/work-stack.css): a screen-high card each, stacking on
+         scroll from 1024px (js/public/product-stack.ts) — white, lilac,
+         violet, white. No screenshots yet: the name large on the left, what
+         it does and the way to a demo on the right. The sheet rises over the
+         dark area. --}}
+    <section id="produsele" class="work-stack saas-stack" aria-labelledby="saas-products-title" data-product-stack data-reveal-pace="fast">
+        <header class="work-stack__head" data-reveal="head">
+            <div class="chapter__head-main md:col-span-7">
+                <h2 id="saas-products-title" class="chapter__title">Produsele noastre.</h2>
+            </div>
+        </header>
 
-            <div class="saas-products__list">
-                @foreach ($products as $item)
-                    @php($product = $item['product'])
-                    <article id="{{ $product->value }}" class="saas-product" aria-labelledby="{{ $product->value }}-title" data-scroll-target data-reveal>
-                        <div class="saas-product__head">
-                            <p class="saas-product__for">{{ $item['for'] }}</p>
-                            <h3 id="{{ $product->value }}-title" class="saas-product__name">{{ $product->label() }}</h3>
-                        </div>
-
-                        <div class="saas-product__body">
-                            <p class="saas-product__text">{{ $item['text'] }}</p>
-
-                            <div class="saas-product__links">
-                                <x-ui.arrow-link :href="'/contact/?produs='.$product->value">Cere o prezentare</x-ui.arrow-link>
-                                @if ($product->externalUrl())
-                                    <x-ui.arrow-link :href="$product->externalUrl()" target="_blank" rel="noopener">{{ parse_url($product->externalUrl(), PHP_URL_HOST) }}</x-ui.arrow-link>
-                                @endif
+        <div class="work-stack__cards">
+            @foreach ($products as $item)
+                @php($product = $item['product'])
+                <article id="{{ $product->value }}" class="work-stack__card work-stack__card--{{ $loop->iteration }}" style="--i: {{ $loop->index }}" aria-labelledby="{{ $product->value }}-title" data-product-card data-scroll-target>
+                    {{-- The entry moves this frame; being covered moves the panel. --}}
+                    <div class="work-stack__frame" data-product-entry>
+                        <div class="work-stack__panel saas-stack__panel" data-product-panel>
+                            <div class="saas-stack__head">
+                                <p class="work-stack__count">{{ sprintf('%02d', $loop->iteration) }} / {{ sprintf('%02d', count($products)) }} · {{ $item['for'] }}</p>
+                                <h3 id="{{ $product->value }}-title" class="work-stack__client">{{ $product->label() }}</h3>
                             </div>
 
-                            <x-site.used-by :product="$product" class="saas-product__used-by" />
+                            <div class="saas-stack__body">
+                                <p class="saas-stack__text">{{ $item['text'] }}</p>
+
+                                <div class="saas-stack__links">
+                                    {{-- On the violet card (every third), the white button. --}}
+                                    <x-ui.pill :href="'/contact/?produs='.$product->value" :tone="$loop->iteration % 3 === 0 ? 'dark' : 'light'" class="work-stack__link">Cere o prezentare</x-ui.pill>
+                                    @if ($product->externalUrl())
+                                        <x-ui.arrow-link :href="$product->externalUrl()" :tone="$loop->iteration % 3 === 0 ? 'dark' : 'light'" target="_blank" rel="noopener">{{ parse_url($product->externalUrl(), PHP_URL_HOST) }}</x-ui.arrow-link>
+                                    @endif
+                                </div>
+
+                                <x-site.used-by :product="$product" />
+                            </div>
                         </div>
-                    </article>
-                @endforeach
-            </div>
+                    </div>
+                </article>
+            @endforeach
         </div>
     </section>
 
