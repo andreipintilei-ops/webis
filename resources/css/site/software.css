@@ -171,13 +171,6 @@
         }
     }
 
-    /* ---- Section heads: no number above the titles on this page ----------------- */
-
-    :is(.sw-why, .sw-build, .sw-steps, .sw-gets, .sw-projects, .sw-faq)
-        .chapter__title {
-        @apply mt-0;
-    }
-
     /* ---- Why made to order: the cells, then the alternative ------------------------ */
 
     /*

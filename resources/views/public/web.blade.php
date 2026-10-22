@@ -1,16 +1,18 @@
 {{--
-    /web — Web și e-commerce, the first page on the site's visual language
-    (css/site/system.css, css/site/web.css): each section under its
-    numbered display heading (components/ui/section-head); links as the
-    notched card, the rest as hairline rows with the W's plate; the
-    lavender throughout, the hero's indigo for the steps.
+    /web — Web și e-commerce, on the site's visual language
+    (css/site/system.css, css/site/web.css): each section under the
+    chapters' head (the title in the text face, as on the home page and
+    /software-la-comanda/), unnumbered; links as the notched card, the rest
+    as hairline rows with the W's plate; the lavender throughout, the
+    hero's indigo for the steps.
     - the internal pages' hero with the planes;
-    - 01 what suits you: the presentation site and the online shop;
-    - 02 what every project gets: six rows, two columns;
-    - 03 how we work: five steps along a line, on the indigo;
-    - 04 projects: three from the portfolio, the way to the rest;
-    - 05 after launch: maintenance and SEO;
-    - 06 questions, as rows that open (js/public/project-accordion.ts);
+    - what suits you: the presentation site and the online shop;
+    - what every project gets: six rows, two columns;
+    - how we work: five steps along a line, on the indigo;
+    - projects: three from the portfolio, as their screenshots, the way to
+      the rest;
+    - after launch: maintenance and SEO;
+    - questions, as rows that open (js/public/project-accordion.ts);
     then the footer's closing call.
 
     [Bracketed] values are placeholders to fill in.
@@ -80,9 +82,9 @@
     // their screenshots straight from it. The links lead nowhere yet.
     $old = 'https://www.webis.ro/wp-content/uploads/';
     $samples = [
-        ['zyanya', 'Zyanya', ProjectType::Shop, '2024/03/zyanya.ro-final-e1709281891782-1-768x510.jpg', 'Magazin online de bijuterii, cu un design minimalist și curat.'],
-        ['floraria-armony', 'Florăria Armony', ProjectType::Shop, '2024/03/armony-11-e1709283660316-768x510.jpg', 'Magazin online pentru o florărie, cu un design proaspăt.'],
-        ['duo-stone', 'Duo Stone', ProjectType::Presentation, '2024/07/duostoen.ro-1-768x512.jpg', 'Site de prezentare elegant, care pune în valoare marmura.'],
+        ['zyanya', 'Zyanya', ProjectType::Shop, '2024/03/zyanya.ro-final-e1709281891782-1-768x510.jpg'],
+        ['floraria-armony', 'Florăria Armony', ProjectType::Shop, '2024/03/armony-11-e1709283660316-768x510.jpg'],
+        ['duo-stone', 'Duo Stone', ProjectType::Presentation, '2024/07/duostoen.ro-1-768x512.jpg'],
     ];
 
     // The projects as the cards take them: the portfolio's, else the samples.
@@ -92,14 +94,12 @@
             'client' => $project->client?->name ?? $project->title,
             'type' => $project->type,
             'image' => $project->cover?->file()?->getUrl(),
-            'line' => $project->summary,
         ])->all()
         : array_map(fn (array $sample): array => [
             'href' => route('projects.show', $sample[0]),
             'client' => $sample[1],
             'type' => $sample[2],
             'image' => $old.$sample[3],
-            'line' => $sample[4],
         ], $samples);
 
     $arrow = '<svg viewBox="0 0 11 10" fill="currentColor" aria-hidden="true"><path d="M0 5.656V4.304l8.419.014-3.359-3.358L5.99 0l5.002 4.973-4.987 4.987-.93-.96 3.358-3.358L0 5.656Z"/></svg>';
@@ -120,7 +120,11 @@
     {{-- ================================================== What suits you --}}
     <section class="chapter chapter--light web-offers" aria-labelledby="web-offers-title" data-reveal-pace="fast">
         <div class="chapter__inner">
-            <x-ui.section-head number="01" title="Ce ți se potrivește" id="web-offers-title" />
+            <header class="chapter__head" data-reveal="head">
+                <div class="chapter__head-main">
+                    <h2 id="web-offers-title" class="chapter__title">Ce ți se potrivește.</h2>
+                </div>
+            </header>
 
             {{-- The site's card (the notched one, css/site/blog-posts.css):
                  the presentation site on white, the shop on the indigo. --}}
@@ -150,7 +154,11 @@
     {{-- ================================================== What every project gets --}}
     <section class="chapter chapter--light" aria-labelledby="web-included-title" data-reveal-pace="fast">
         <div class="chapter__inner">
-            <x-ui.section-head number="02" title="Ce primești în orice proiect" id="web-included-title" />
+            <header class="chapter__head" data-reveal="head">
+                <div class="chapter__head-main">
+                    <h2 id="web-included-title" class="chapter__title">Ce primești în orice proiect.</h2>
+                </div>
+            </header>
 
             <ul class="rows rows--two" data-reveal>
                 @foreach ($included as [$title, $line])
@@ -168,7 +176,12 @@
     {{-- On the hero's indigo: the page's one dark band. --}}
     <section class="chapter chapter--dark web-steps" aria-labelledby="web-steps-title" data-nav-tone="dark" data-reveal-pace="fast">
         <div class="chapter__inner">
-            <x-ui.section-head number="03" title="Cum lucrăm" id="web-steps-title" tone="dark" intro="Un magazin online durează, de obicei, 2–4 săptămâni, în funcție de complexitate." />
+            <header class="chapter__head" data-reveal="head">
+                <div class="chapter__head-main">
+                    <h2 id="web-steps-title" class="chapter__title">Cum lucrăm.</h2>
+                </div>
+                <p class="chapter__intro">Un magazin online durează, de obicei, 2–4 săptămâni, în funcție de complexitate.</p>
+            </header>
 
             <ol class="web-steps__list" data-reveal>
                 @foreach ($steps as [$title, $line])
@@ -185,9 +198,13 @@
     {{-- ================================================== Projects --}}
     <section class="chapter chapter--light web-projects" aria-labelledby="web-projects-title" data-reveal-pace="fast">
         <div class="chapter__inner">
-            <x-ui.section-head number="04" title="Proiecte" id="web-projects-title" />
+            <header class="chapter__head" data-reveal="head">
+                <div class="chapter__head-main">
+                    <h2 id="web-projects-title" class="chapter__title">Proiecte.</h2>
+                </div>
+            </header>
 
-            {{-- The site's card again, its screenshot at the top. --}}
+            {{-- The site's card again: its screenshot, the type and the name. --}}
             <ul class="web-projects__list" data-reveal>
                 @foreach ($cards as $card)
                     <li data-reveal-child>
@@ -203,7 +220,6 @@
                             </span>
                             <span class="post-card__meta"><span class="post-card__category">{{ $card['type']->label() }}</span></span>
                             <span class="post-card__title"><span>{{ $card['client'] }}</span></span>
-                            <span class="post-card__foot">{{ $card['line'] }}</span>
                         </a>
                     </li>
                 @endforeach
@@ -220,7 +236,11 @@
     {{-- ================================================== After launch --}}
     <section class="chapter chapter--light" aria-labelledby="web-after-title" data-reveal-pace="fast">
         <div class="chapter__inner">
-            <x-ui.section-head number="05" title="După lansare" id="web-after-title" />
+            <header class="chapter__head" data-reveal="head">
+                <div class="chapter__head-main">
+                    <h2 id="web-after-title" class="chapter__title">După lansare.</h2>
+                </div>
+            </header>
 
             <ul class="rows" data-reveal>
                 @foreach ($after as [$title, $line])
@@ -237,7 +257,11 @@
     {{-- ================================================== Questions --}}
     <section class="chapter chapter--light web-faq" aria-labelledby="web-faq-title" data-reveal-pace="fast">
         <div class="chapter__inner">
-            <x-ui.section-head number="06" title="Întrebări frecvente" id="web-faq-title" />
+            <header class="chapter__head" data-reveal="head">
+                <div class="chapter__head-main">
+                    <h2 id="web-faq-title" class="chapter__title">Întrebări frecvente.</h2>
+                </div>
+            </header>
 
             <div class="web-faq__list" data-reveal>
                 @foreach ($questions as [$question, $answer])

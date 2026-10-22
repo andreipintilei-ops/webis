@@ -116,6 +116,12 @@
 
     .chapter__title {
         @apply mt-5 font-medium text-balance;
+
+        /* No label above it. */
+        .chapter__head-main > &:first-child {
+            @apply mt-0;
+        }
+
         font-size: 36px;
         line-height: 1.1;
         letter-spacing: -0.02em;
