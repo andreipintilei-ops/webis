@@ -39,6 +39,7 @@
     // What an application made to order changes: plain prose, no numbers.
     $benefits = [
         ['name' => 'Fiecare știe ce are de făcut.', 'text' => 'Cererile și documentele ajung singure la persoana potrivită, iar stadiul lor se vede oricând.'],
+        ['name' => 'Excepțiile au locul lor.', 'text' => 'Regulile și cazurile speciale ale procesului tău sunt construite în aplicație, nu ținute minte de oameni.'],
         ['name' => 'Datele sunt într-un singur loc.', 'text' => 'Se introduc o dată și sunt aceleași pentru toată echipa, de la birou până la conducere.'],
         ['name' => 'Rapoartele sunt gata când ai nevoie de ele.', 'text' => 'Se generează direct din datele reale, în formatul pe care îl folosești.'],
         ['name' => 'Programele tale lucrează împreună.', 'text' => 'Aplicația se leagă de ce folosești deja, inclusiv de e-Factura și SPV.'],
