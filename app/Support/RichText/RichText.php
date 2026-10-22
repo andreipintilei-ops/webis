@@ -94,6 +94,51 @@ final class RichText
     }
 
     /**
+     * HTML → a sanitized document, parsed with the same extensions render()
+     * uses, so nothing it produces is discarded by sanitize() on save. Markup
+     * the editor has no node for is unwrapped or dropped here; imported HTML
+     * goes through App\Support\Legacy\WordPressHtml first, which rescues what
+     * this would lose.
+     *
+     * @return TiptapDoc
+     */
+    public function fromHtml(string $html): array
+    {
+        if (trim($html) === '') {
+            return self::emptyDocument();
+        }
+
+        $json = (new Editor(['extensions' => $this->extensions()]))
+            ->setContent($html)
+            ->getJSON();
+
+        $doc = json_decode($json, true);
+        $doc = is_array($doc) ? $doc : [];
+
+        // Text whose element has no node (an h1, a bare div) lands at the top
+        // level; it goes into a paragraph rather than out unwrapped.
+        $content = [];
+
+        foreach ($this->children($doc) as $node) {
+            if (in_array($node['type'] ?? null, ['text', 'hardBreak'], true)) {
+                $last = array_key_last($content);
+
+                if ($last !== null && ($content[$last]['inline'] ?? false)) {
+                    $content[$last]['content'][] = $node;
+                } else {
+                    $content[] = ['type' => 'paragraph', 'inline' => true, 'content' => [$node]];
+                }
+
+                continue;
+            }
+
+            $content[] = $node;
+        }
+
+        return $this->sanitize(['type' => 'doc', 'content' => $content]);
+    }
+
+    /**
      * h2 and h3 headings, in order, for the table of contents.
      *
      * @param  array<mixed>  $doc  a sanitized document

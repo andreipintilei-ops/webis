@@ -177,3 +177,43 @@ it('tracks images embedded in a post body', function () {
     expect($image->usages()->sole()->field)->toBe('body')
         ->and($image->usages()->sole()->usable_id)->toBe($post->id);
 });
+
+/**
+ * HTML → fromHtml → render: what an imported body looks like on the page.
+ */
+function roundTrip(string $html): string
+{
+    $richText = app(RichText::class);
+
+    return $richText->render($richText->sanitize($richText->fromHtml($html)));
+}
+
+it('parses HTML into the same nodes the editor makes', function () {
+    $richText = app(RichText::class);
+
+    expect($richText->fromHtml('<h2>Ce primești</h2><p>Site <strong>rapid</strong> și <em>optimizat</em></p>'))->toBe(rtDoc([
+        ['type' => 'heading', 'attrs' => ['level' => 2, 'id' => 'ce-primesti'], 'content' => [['type' => 'text', 'text' => 'Ce primești']]],
+        rtPara([
+            ['type' => 'text', 'text' => 'Site '],
+            ['type' => 'text', 'text' => 'rapid', 'marks' => [['type' => 'bold']]],
+            ['type' => 'text', 'text' => ' și '],
+            ['type' => 'text', 'text' => 'optimizat', 'marks' => [['type' => 'italic']]],
+        ]),
+    ]))->and($richText->fromHtml('  '))->toBe(RichText::emptyDocument());
+});
+
+it('round-trips representative HTML through fromHtml, sanitize and render', function (string $html, string $expected) {
+    expect(roundTrip($html))->toBe($expected);
+})->with([
+    'headings and marks' => ['<h2>Titlu</h2><p><b>Gros</b>, <i>înclinat</i>, <u>subliniat</u>, <s>tăiat</s> și <code>cod</code></p>', '<h2 id="titlu">Titlu</h2><p><strong>Gros</strong>, <em>înclinat</em>, <u>subliniat</u>, <s>tăiat</s> și <code>cod</code></p>'],
+    'lists' => ['<ul><li><p>Unu</p></li><li><p>Doi</p></li></ul><ol start="3"><li><p>Trei</p></li></ol>', '<ul><li><p>Unu</p></li><li><p>Doi</p></li></ul><ol start="3"><li><p>Trei</p></li></ol>'],
+    'quote, rule and break' => ['<blockquote><p>Citat</p></blockquote><hr><p>Rând<br>nou</p>', '<blockquote><p>Citat</p></blockquote><hr><p>Rând<br>nou</p>'],
+    'links' => ['<p><a href="/contact/">Contact</a> și <a href="https://example.com" rel="nofollow">extern</a></p>', '<p><a href="/contact/">Contact</a> și <a href="https://example.com" target="_blank" rel="noopener noreferrer nofollow">extern</a></p>'],
+    'table' => ['<table><tbody><tr><th><p>Pachet</p></th></tr><tr><td colspan="2"><p>Basic</p></td></tr></tbody></table>', '<table><tbody><tr><th><p>Pachet</p></th></tr><tr><td colspan="2"><p>Basic</p></td></tr></tbody></table>'],
+    'code block' => ['<pre><code class="language-php">echo 1;</code></pre>', '<pre><code class="language-php">echo 1;</code></pre>'],
+]);
+
+it('drops from HTML what the allowlist does not allow', function () {
+    expect(roundTrip('<h1>Prea mare</h1><p>Text<script>alert(1)</script></p><iframe src="https://evil.test"></iframe><p><a href="javascript:alert(1)">link</a></p>'))
+        ->toBe('<p>Prea mare</p><p>Text</p><p>link</p>');
+});
