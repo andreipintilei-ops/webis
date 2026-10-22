@@ -765,7 +765,7 @@ it('lets the quote form stand in for the footer\'s contact call', function () {
 it('keeps the footer\'s contact call on pages without a quote form', function () {
     expect(renderBlocks([contentBlock('h', 'hero', ['layout' => 'split', 'heading' => 'Titlu'])]))
         ->toContain('site-footer__cta')
-        ->toContain('Site,<br> platformă sau aplicație?')
+        ->toContain('un sistem mai bun?')
         ->not->toContain('data-contact-form');
 
     // The home page too.

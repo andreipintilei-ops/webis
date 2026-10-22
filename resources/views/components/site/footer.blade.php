@@ -43,7 +43,7 @@
         <div class="site-footer__cta" data-reveal="head">
             <div>
                 <p class="site-footer__label">Contact</p>
-                <h2 class="site-footer__title">@if ($ctaTitle){{ $ctaTitle }}@else Site,<br> platformă sau aplicație?@endif</h2>
+                <h2 class="site-footer__title">@if ($ctaTitle){{ $ctaTitle }}@else Ai un proces care merită<br> un sistem mai bun?@endif</h2>
                 <p class="site-footer__intro">{{ $ctaIntro ?? 'Spune-ne cum lucrezi acum. Îți răspundem în aceeași zi lucrătoare.' }}</p>
             </div>
             <div class="site-footer__reach">

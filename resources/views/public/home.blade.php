@@ -8,9 +8,6 @@
     The stage's styling is scoped to data-variant="stage" rather than written
     as the site's default, so the pages that share its classes — /clienti and
     its own trial — are left alone.
-
-    The footer's call keeps its own question here: the stage's closing panel
-    already asks "Site, platformă sau aplicație?".
 --}}
 <x-layouts.public
     :title="$page?->seo->title ?: $page?->title"
@@ -19,7 +16,6 @@
     variant="stage"
     hero-leave="overlap"
     :footer-cta="! \App\Blocks\QuoteFormBlock::appearsIn($page?->blocks)"
-    :footer-cta-title="new \Illuminate\Support\HtmlString('Ai un proces care merită<br> un sistem mai bun?')"
 >
     <x-blocks :blocks="$page->blocks ?? []" />
     <x-site.stage />
