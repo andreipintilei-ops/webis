@@ -6,6 +6,16 @@
   page.
 */
 @layer components {
+    /* ---- Hero: as tall as its text, the first card coming up under it ---------- */
+
+    .page-hero.saas-hero {
+        @apply pb-10 md:pb-14;
+
+        @media (min-width: 768px) {
+            min-height: 0;
+        }
+    }
+
     /* ---- The products: /portofoliu's stacking cards (css/site/work-stack.css) ---- */
 
     /* On the hero's backdrop, straight after it: no lavender, no grain, the

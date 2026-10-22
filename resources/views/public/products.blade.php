@@ -4,7 +4,8 @@
     /contact) and /software-la-comanda/'s order; its own pieces in
     css/site/products.css.
 
-    - /web's hero, with the planes, flush;
+    - /web's hero, with the planes, flush, only as tall as its text so the
+      first card shows on the first screen;
     - straight after it, on the same backdrop, the products as
       /portofoliu's stacking cards: who it is for, what it
       does, the clients using it (components/site/used-by), the way to ask
@@ -96,7 +97,7 @@
         :title="['Produse SaaS.']"
         intro="Aplicații gata de folosit, pe abonament lunar."
         :flush="true"
-        class="page-hero--tall"
+        class="saas-hero"
         data-reveal-pace="fast"
     />
 
