@@ -32,32 +32,38 @@
     /* ---- The modules' strip ------------------------------------------------------ */
 
     /*
-      Along the hero's foot, where the home page's hero has its logos: under
-      a hairline across the column, the same space above the pills as the
-      statement after it leaves below them.
+      Along the hero's foot, where the home page's hero has its logos; no
+      hairline of its own, the statement's after it closing the strip.
     */
     .sw-hero__modules {
-        @apply mt-16 border-t pt-8 md:mt-auto md:pt-10;
-        border-color: rgb(255 255 255 / 0.25);
+        @apply mt-16;
     }
 
     /*
       As /blog's hero with its featured article (.page-hero--led): the hero
       fills the first screen on a desktop and the strip sits on its foot, a
       short step above the fold. The band itself runs the window's full
-      width, out of the column under the hairline; the hero clips the
-      scrollbar's few pixels of overhang.
+      width, out of the column; the hero clips the scrollbar's few pixels of
+      overhang.
+
+      The text centred between the logo and the strip: the hero starts just
+      under the logo, and the room left over goes equally above the label
+      and below the intro.
     */
     .sw-hero {
-        @apply items-stretch pb-10 md:pb-14 lg:min-h-svh;
+        @apply items-stretch pb-10 md:pt-24 md:pb-14 lg:min-h-svh;
         overflow-x: clip;
 
         & .page-hero__inner {
             @apply flex flex-col;
         }
 
+        & .page-hero__label {
+            @apply mt-auto;
+        }
+
         & .page-hero__foot {
-            @apply md:mb-16;
+            @apply mb-auto;
         }
     }
 
@@ -119,9 +125,13 @@
 
     /* ---- The light panel: rising over the dark area ----------------------------- */
 
-    /* As a section rises over an internal page's hero (css/site/page-hero.css). */
+    /*
+      As a section rises over an internal page's hero (css/site/page-hero.css),
+      but by the home page's 32px (css/site/service-cards.css): the statement
+      above then ends as far below its link as the home page's does.
+    */
     .chapter.sw-compare {
-        @apply -mt-10 rounded-t-[2.5rem] pt-12 md:-mt-20 md:rounded-t-[5rem] md:pt-16 lg:pt-20;
+        @apply -mt-8 rounded-t-[2.5rem] pt-12 md:rounded-t-[5rem] md:pt-16 lg:pt-20;
 
         &::before {
             border-radius: inherit;
