@@ -2,18 +2,17 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Actions\Seo\ImportRedirects;
 use App\Enums\RedirectCode;
 use App\Enums\RedirectMatchType;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\RedirectRequest;
 use App\Models\Redirect;
 use App\Support\AdminTime;
-use App\Support\LinkTarget;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\UploadedFile;
-use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 use Inertia\Response;
 use Symfony\Component\HttpFoundation\StreamedResponse;
@@ -88,9 +87,10 @@ class RedirectController extends Controller
     /**
      * POST /admin/redirectionari/import — CSV with columns
      * `sursa;destinatie[;cod[;tip]]` (comma also accepted). Existing sources are
-     * updated; invalid rows are skipped and reported.
+     * updated; invalid rows are skipped and reported (ImportRedirects, which
+     * `legacy:import --load-redirects` shares).
      */
-    public function import(Request $request): RedirectResponse
+    public function import(Request $request, ImportRedirects $importRedirects): RedirectResponse
     {
         $request->validate([
             'file' => ['required', 'file', 'max:2048', 'mimes:csv,txt'],
@@ -98,31 +98,7 @@ class RedirectController extends Controller
 
         /** @var UploadedFile $file */
         $file = $request->file('file');
-        $rows = $this->readCsv((string) file_get_contents($file->getRealPath()));
-
-        $saved = 0;
-        $skipped = [];
-
-        DB::transaction(function () use ($rows, &$saved, &$skipped): void {
-            foreach ($rows as $line => $row) {
-                $source = Redirect::normalisePath($row[0] ?? '');
-                $target = trim($row[1] ?? '');
-                $code = RedirectCode::tryFrom((int) ($row[2] ?? 301)) ?? RedirectCode::Permanent;
-                $type = RedirectMatchType::tryFrom(trim($row[3] ?? '')) ?? RedirectMatchType::Exact;
-
-                if ($source === '/' || ($code->needsTarget() && ! LinkTarget::isAllowed($target))) {
-                    $skipped[] = $line;
-
-                    continue;
-                }
-
-                Redirect::query()->updateOrCreate(
-                    ['source_path' => $source],
-                    ['target' => $code->needsTarget() ? $target : null, 'status_code' => $code, 'match_type' => $type],
-                );
-                $saved++;
-            }
-        });
+        ['saved' => $saved, 'skipped' => $skipped] = $importRedirects((string) file_get_contents($file->getRealPath()));
 
         $message = "Importate: {$saved}.";
 
@@ -159,37 +135,5 @@ class RedirectController extends Controller
 
             fclose($out);
         }, 'redirectionari-'.now(AdminTime::ZONE)->format('Y-m-d').'.csv', ['Content-Type' => 'text/csv; charset=UTF-8']);
-    }
-
-    /**
-     * Rows keyed by their 1-based line number, header row dropped when it
-     * does not start with a path.
-     *
-     * @return array<int, list<string>>
-     */
-    private function readCsv(string $contents): array
-    {
-        $contents = preg_replace('/^\xEF\xBB\xBF/', '', $contents) ?? $contents;
-        $lines = preg_split('/\r\n|\r|\n/', $contents) ?: [];
-        $delimiter = substr_count($lines[0] ?? '', ';') >= substr_count($lines[0] ?? '', ',') ? ';' : ',';
-
-        $rows = [];
-
-        foreach ($lines as $index => $line) {
-            if (trim($line) === '') {
-                continue;
-            }
-
-            $cells = array_map(fn (?string $cell): string => trim((string) $cell), str_getcsv($line, $delimiter, '"', ''));
-
-            // A header ("sursa", "source"...) or a comment line.
-            if ($index === 0 && ! str_starts_with($cells[0], '/') && ! str_starts_with($cells[0], 'http')) {
-                continue;
-            }
-
-            $rows[$index + 1] = $cells;
-        }
-
-        return $rows;
     }
 }
