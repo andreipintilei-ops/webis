@@ -325,7 +325,7 @@ it('renders the services as illustrated cards when the block asks for them, risi
         // on phones the chip comes under the title instead.
         ->toMatch('/<h2[^>]*>Tot de ce ai nevoie, <span class="title-pill max-md:hidden" aria-hidden="true" data-title-pill>.*?<\/span><\/span>\s*<br> de la site la sistemul de gestiune.<\/h2>\s*<span class="title-pill svc-cards__pill-below md:hidden"/s')
         ->and(substr_count($section[0], '<article class="svc-card">'))->toBe(3)
-        ->and($section[0])->toContain('Sisteme construite pentru procesele organizației voastre.')
+        ->and($section[0])->toContain('Sisteme construite pentru procesele organizației tale.')
         // The illustrations: one inline SVG each, nothing loaded.
         ->and(substr_count($section[0], '<svg class="il"'))->toBe(3)
         // The SaaS one: a product in the cloud, no product named.

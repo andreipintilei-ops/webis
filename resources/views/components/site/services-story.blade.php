@@ -83,7 +83,7 @@
             <article id="produse-saas" class="story-panel story-panel--dark" data-story-panel aria-labelledby="story-2-title">
                 <p class="chapter__label">02 · Produse SaaS</p>
                 <h2 id="story-2-title" class="chapter__title">Produse <x-ui.title-pill variant="saas" /> gata de folosit.</h2>
-                <p class="story-panel__intro">Pentru procesele comune unui domeniu nu are sens să construiești de la zero. Produsele noastre se activează în câteva zile, se plătesc lunar și le actualizăm continuu.</p>
+                <p class="story-panel__intro">Pentru procesele comune unui domeniu nu are sens să construiești de la zero. Produsele noastre se pun în funcțiune rapid, se plătesc lunar și le actualizăm continuu.</p>
                 <ul class="story-panel__products">
                     @foreach ([
                         ['SmileSoft', 'Clinici stomatologice', 'https://smilesoft.ro'],

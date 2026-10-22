@@ -60,7 +60,7 @@
 
     $questions = [
         ['Cât costă un site?', 'Depinde de numărul de pagini și de funcții. După o discuție scurtă primești o ofertă detaliată.'],
-        ['Cât durează?', 'Un site de prezentare, de obicei [X] săptămâni. Un magazin online, în jur de 30 de zile.'],
+        ['Cât durează?', 'Un site de prezentare, de obicei 1–2 săptămâni. Un magazin online, 2–4 săptămâni, în funcție de numărul de produse și de funcții.'],
         ['Pot modifica singur conținutul?', 'Da. Primești acces la panoul de administrare și instruire la predare.'],
         ['Am deja un site. Îl puteți reface?', 'Da. Păstrăm adresele importante sau le redirecționăm, ca să nu pierzi pozițiile din Google.'],
         ['Pot adăuga mai târziu un magazin sau o limbă nouă?', 'Da, site-ul e construit să poată fi extins.'],
@@ -168,7 +168,7 @@
     {{-- On the hero's indigo: the page's one dark band. --}}
     <section class="chapter chapter--dark web-steps" aria-labelledby="web-steps-title" data-nav-tone="dark" data-reveal-pace="fast">
         <div class="chapter__inner">
-            <x-ui.section-head number="03" title="Cum lucrăm" id="web-steps-title" tone="dark" intro="Un magazin online durează, de obicei, în jur de 30 de zile, în funcție de complexitate." />
+            <x-ui.section-head number="03" title="Cum lucrăm" id="web-steps-title" tone="dark" intro="Un magazin online durează, de obicei, 2–4 săptămâni, în funcție de complexitate." />
 
             <ol class="web-steps__list" data-reveal>
                 @foreach ($steps as [$title, $line])

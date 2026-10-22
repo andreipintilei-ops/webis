@@ -23,7 +23,7 @@
         [
             'art' => 'software',
             'title' => 'Software la comandă',
-            'text' => 'Sisteme construite pentru procesele organizației voastre.',
+            'text' => 'Sisteme construite pentru procesele organizației tale.',
             'link' => ['label' => 'Află mai multe', 'url' => '/software-la-comanda'],
         ],
         [

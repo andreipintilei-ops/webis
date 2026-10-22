@@ -90,7 +90,7 @@
                 <header class="stage-chapter__head" data-reveal="head">
                     <p class="chapter__label">02 · Produse SaaS</p>
                     <h2 id="chapter-2-title" class="chapter__title">Produse <x-ui.title-pill variant="saas" /> gata de folosit.</h2>
-                    <p class="stage-chapter__intro">Pentru procesele comune unui domeniu nu are sens să construiești de la zero. Produsele noastre se activează în câteva zile, se plătesc lunar și le actualizăm continuu.</p>
+                    <p class="stage-chapter__intro">Pentru procesele comune unui domeniu nu are sens să construiești de la zero. Produsele noastre se pun în funcțiune rapid, se plătesc lunar și le actualizăm continuu.</p>
                 </header>
 
                 {{-- TODO: the products' logos. --}}
@@ -135,7 +135,7 @@
                 <header class="stage-chapter__head" data-reveal="head">
                     <p class="chapter__label">03 · Web și e-commerce</p>
                     <h2 id="chapter-3-title" class="chapter__title">Site-uri <x-ui.title-pill variant="web" /> și magazine online.</h2>
-                    <p class="stage-chapter__intro">Construim site-uri rapide și ușor de administrat, pentru ca tu să te concentrezi pe business.</p>
+                    <p class="stage-chapter__intro">Construim site-uri rapide și ușor de administrat, pentru ca tu să te concentrezi pe afacerea ta.</p>
                 </header>
 
                 {{-- Three columns, as 01's four: the icon over its name and a

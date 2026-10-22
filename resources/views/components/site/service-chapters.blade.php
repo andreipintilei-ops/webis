@@ -81,7 +81,7 @@
                 <p class="chapter__label">02 · Produse SaaS</p>
                 <h2 id="chapter-2-title" class="chapter__title">Produse <x-ui.title-pill variant="saas" /> gata de folosit.</h2>
             </div>
-            <p class="chapter__intro">Pentru procesele comune unui domeniu nu are sens să construiești de la zero. Produsele noastre se activează în câteva zile, se plătesc lunar și le actualizăm continuu.</p>
+            <p class="chapter__intro">Pentru procesele comune unui domeniu nu are sens să construiești de la zero. Produsele noastre se pun în funcțiune rapid, se plătesc lunar și le actualizăm continuu.</p>
         </header>
 
         <x-site.chapter.subsection label="Produse">
