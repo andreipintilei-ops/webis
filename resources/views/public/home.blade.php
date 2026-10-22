@@ -15,6 +15,7 @@
     :lower-tone="config('site.lower_tone')"
     variant="stage"
     hero-leave="overlap"
+    :footer-cta="! \App\Blocks\QuoteFormBlock::appearsIn($page?->blocks)"
 >
     <x-blocks :blocks="$page->blocks ?? []" />
     <x-site.stage />

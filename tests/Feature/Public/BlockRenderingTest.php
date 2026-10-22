@@ -4,6 +4,7 @@ use App\Enums\PageType;
 use App\Models\Asset;
 use App\Models\Client;
 use App\Models\Page;
+use App\Models\Project;
 use App\Settings\CompanySettings;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Storage;
@@ -490,7 +491,7 @@ it('renders a rich-text block from its saved HTML, its images filled in', functi
     ])])], 'rt');
 
     expect($section)
-        ->toContain('class="chapter chapter--light block-rich-text"')
+        ->toContain('class="chapter chapter--light block-rich-text block-rich-text--centred"')
         ->toContain('class="rich-text block-rich-text__body"')
         ->toMatch('/<h2 id="[^"]+">Cum lucrăm<\/h2>/')
         ->toContain('<p>Un site <strong>rapid</strong> și &lt;sigur&gt;.</p>')
@@ -499,6 +500,74 @@ it('renders a rich-text block from its saved HTML, its images filled in', functi
         ->toContain('width="1600" height="900"')
         ->toContain('<figcaption>Biroul din Iași</figcaption>')
         ->not->toContain('data-asset-id');
+});
+
+/**
+ * A rich-text document with these h2s, a paragraph under each.
+ *
+ * @param  list<string>  $headings
+ * @return array<string, mixed>
+ */
+function tiptapSections(array $headings): array
+{
+    $content = [];
+
+    foreach ($headings as $heading) {
+        $content[] = ['type' => 'heading', 'attrs' => ['level' => 2], 'content' => [['type' => 'text', 'text' => $heading]]];
+        $content[] = ['type' => 'heading', 'attrs' => ['level' => 3], 'content' => [['type' => 'text', 'text' => "Detalii {$heading}"]]];
+        $content[] = tiptapText("Despre {$heading}.");
+    }
+
+    return tiptap($content);
+}
+
+it('gives rich text with three h2s or more a contents rail linking to its headings', function () {
+    $section = renderBlocks([contentBlock('rt', 'rich_text', [
+        'content' => tiptapSections(['De ce noi', 'Ce primești', 'Cât costă & cât durează', 'După lansare']),
+    ])], 'rt');
+
+    preg_match_all('/<h2 id="([^"]+)">/', $section, $ids);
+    preg_match_all('/<a href="#([^"]+)" class="block-rich-text__link" data-toc-link>([^<]+)<\/a>/', $section, $links);
+
+    expect($section)
+        ->toContain('block-rich-text--rail')
+        ->not->toContain('block-rich-text--centred')
+        ->toContain('data-toc')
+        ->toMatch('/<nav class="block-rich-text__rail" aria-labelledby="rt-cuprins">/')
+        ->toMatch('/<p id="rt-cuprins" class="section-head__number block-rich-text__label">Cuprins<\/p>/')
+        ->and($ids[1])->toBe(['de-ce-noi', 'ce-primesti', 'cat-costa-cat-dureaza', 'dupa-lansare'])
+        // One link per h2 (none for the h3s), each to its heading.
+        ->and($links[1])->toBe($ids[1])
+        ->and($links[2])->toBe(['De ce noi', 'Ce primești', 'Cât costă &amp; cât durează', 'După lansare']);
+});
+
+it('leaves out the rail with fewer than three h2s and centres the text', function () {
+    $section = renderBlocks([contentBlock('rt', 'rich_text', [
+        'content' => tiptapSections(['De ce noi', 'Ce primești']),
+    ])], 'rt');
+
+    expect($section)
+        ->toContain('class="chapter chapter--light block-rich-text block-rich-text--centred"')
+        ->not->toContain('block-rich-text--rail')
+        ->not->toContain('Cuprins')
+        ->not->toContain('data-toc');
+});
+
+it('lists in each rail only its own block\'s headings', function () {
+    $html = renderBlocks([
+        contentBlock('a', 'rich_text', ['content' => tiptapSections(['Analiză', 'Design', 'Dezvoltare'])]),
+        contentBlock('b', 'rich_text', ['content' => tiptapSections(['Lansare', 'Instruire', 'Mentenanță', 'SEO'])]),
+    ]);
+
+    $links = function (string $id) use ($html): array {
+        preg_match('/<section id="'.$id.'".*?<\/section>/s', $html, $section);
+        preg_match_all('/data-toc-link>([^<]+)<\/a>/', $section[0], $links);
+
+        return $links[1];
+    };
+
+    expect($links('a'))->toBe(['Analiză', 'Design', 'Dezvoltare'])
+        ->and($links('b'))->toBe(['Lansare', 'Instruire', 'Mentenanță', 'SEO']);
 });
 
 it('renders nothing for an empty rich-text block', function () {
@@ -667,6 +736,48 @@ it('renders the quote form as the site\'s contact form, posting to cerere-oferta
         ->toContain('<p class="contact__intro">Spune-ne ce ai nevoie.</p>')
         ->not->toContain('contact__details')
         ->and(substr_count($html, 'data-contact-form'))->toBe(1);
+});
+
+it('lets the quote form stand in for the footer\'s contact call', function () {
+    $html = renderBlocks([
+        contentBlock('h', 'hero', ['layout' => 'split', 'heading' => 'Titlu']),
+        contentBlock('q', 'quote_form', ['show_contact_details' => true]),
+    ]);
+
+    expect($html)
+        ->toContain('data-contact-form')
+        ->toContain('<footer class="site-footer')
+        ->not->toContain('site-footer__cta');
+});
+
+it('keeps the footer\'s contact call on pages without a quote form', function () {
+    expect(renderBlocks([contentBlock('h', 'hero', ['layout' => 'split', 'heading' => 'Titlu'])]))
+        ->toContain('site-footer__cta')
+        ->toContain('un sistem mai bun?')
+        ->not->toContain('data-contact-form');
+
+    // The home page too.
+    homeWithHero(['layout' => 'split', 'heading' => 'Acasă']);
+
+    expect($this->get('/')->assertOk()->getContent())->toContain('site-footer__cta');
+});
+
+it('drops the footer\'s contact call on the home page when it has a quote form', function () {
+    homeWithHero(['layout' => 'split', 'heading' => 'Acasă']);
+    $page = Page::sole();
+    $page->update(['blocks' => [...$page->blocks, contentBlock('q', 'quote_form', ['show_contact_details' => true])]]);
+
+    expect($this->get('/')->assertOk()->getContent())
+        ->toContain('data-contact-form')
+        ->not->toContain('site-footer__cta');
+});
+
+it('keeps a project page\'s own footer call', function () {
+    Project::factory()->create(['slug' => 'zyanya']);
+
+    expect($this->get(route('projects.show', 'zyanya'))->assertOk()->getContent())
+        ->toContain('site-footer__cta')
+        ->toContain('Ai un proiect asemănător?');
 });
 
 it('keeps the contact details beside the quote form by default', function () {

@@ -12,6 +12,7 @@
     :title="$page->seo->title ?: $page->title"
     :header-theme="\App\Blocks\HeroBlock::headerThemeFor($page->blocks)"
     :hero-leave="$heroLeave"
+    :footer-cta="! \App\Blocks\QuoteFormBlock::appearsIn($page->blocks)"
 >
     <x-blocks :blocks="$page->blocks ?? []" />
 

@@ -9,6 +9,7 @@
     :lower-tone="config('site.lower_tone')"
     variant="poveste"
     hero-leave="overlap"
+    :footer-cta="! \App\Blocks\QuoteFormBlock::appearsIn($page?->blocks)"
 >
     <x-blocks :blocks="$page->blocks ?? []" />
     <x-site.services-story />

@@ -39,4 +39,22 @@ class QuoteFormBlock extends Block
             "{$p}show_contact_details" => ['required', 'boolean'],
         ];
     }
+
+    /**
+     * Whether a page's blocks hold the quote form. The form then stands in
+     * for the footer's contact call (layouts/public `footer-cta`), which
+     * would only repeat its phone and email.
+     *
+     * @param  array<mixed>|null  $blocks
+     */
+    public static function appearsIn(?array $blocks): bool
+    {
+        foreach ($blocks ?? [] as $block) {
+            if (is_array($block) && ($block['type'] ?? null) === self::type()) {
+                return true;
+            }
+        }
+
+        return false;
+    }
 }

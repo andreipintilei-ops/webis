@@ -14,6 +14,7 @@ import { initProjectAccordion } from '@/public/project-accordion';
 import { initProductStack } from '@/public/product-stack';
 import { initProjectShowcase } from '@/public/project-showcase';
 import { initProjectSteps } from '@/public/project-steps';
+import { initRichTextTocs } from '@/public/rich-text-toc';
 import { initSiteNav } from '@/public/site-nav';
 import { initSmoothScroll } from '@/public/smooth-scroll';
 import { initServices } from '@/public/services';
@@ -104,6 +105,7 @@ function boot(): void {
     initProjectAccordion();
     void smooth.then(() => {
         void initStatements();
+        void initRichTextTocs();
         void initServices();
         void initServiceCards();
         void initReveals();
