@@ -1,6 +1,7 @@
 {{--
     The featured client projects as screen-high cards stacking on scroll, on
-    the light lavender: each card the project's client large, what it was,
+    the light lavender: each card in a colour of the hero's, the project's
+    client large, what it was,
     one line and its site on the left, its screenshot on the right. From
     1024px each comes in a little smaller and tilted, settles, then holds
     while the next slides up over it (js/public/product-stack.ts). Below
@@ -36,8 +37,8 @@
                             @if ($item['site'])
                                 <p class="work-stack__site">{{ $item['site'] }}</p>
                             @endif
-                            {{-- On the violet card (every third), the white button. --}}
-                            <x-ui.pill :href="$item['href']" :tone="$loop->iteration % 3 === 0 ? 'dark' : 'light'" class="work-stack__link">Vezi proiectul</x-ui.pill>
+                            {{-- The white button, on the card's colour. --}}
+                            <x-ui.pill :href="$item['href']" tone="dark" class="work-stack__link">Vezi proiectul</x-ui.pill>
                         </div>
 
                         <a href="{{ $item['href'] }}" class="work-stack__visual" tabindex="-1" aria-hidden="true">

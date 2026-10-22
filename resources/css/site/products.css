@@ -30,38 +30,6 @@
     }
 
     /*
-      Every card in a colour of the hero's, white on it: the purple, the
-      violet, the purple into the violet (as /portofoliu's third), the deep
-      violet that gradient ends in.
-    */
-    .saas-stack .work-stack__panel {
-        @apply text-white;
-        border-color: transparent;
-        --muted: rgb(255 255 255 / 0.8);
-        --accent: #fff;
-    }
-
-    /* The lightest: its text at full white, for the contrast. */
-    .saas-stack .work-stack__card--1 .work-stack__panel {
-        background: var(--purple-500);
-        --muted: #fff;
-    }
-
-    .saas-stack .work-stack__card--2 .work-stack__panel {
-        background: var(--violet-500);
-    }
-
-    .saas-stack .work-stack__card--4 .work-stack__panel {
-        background: #5b3fe0;
-    }
-
-    /* The white button on every card, as on /portofoliu's violet one. */
-    .saas-stack .work-stack__card .work-stack__link.pill.btn-dark {
-        --btn-ink: #fff;
-        --btn-contrast: var(--violet-500);
-    }
-
-    /*
       The name at the top of the left column, what it does at its foot
       (1–6); the placeholder on the right (8–12), upright. From 1024px the
       card's full height, inset top and bottom.

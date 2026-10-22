@@ -1,7 +1,9 @@
 /*
   /portofoliu's featured projects (components/site/featured-work): on the
   light chapters' lavender and grain, a head, then each project as a
-  screen-high rounded card — white, then lilac, then violet — its client
+  screen-high rounded card in a colour of the hero's, white on it — the
+  purple, the violet, the purple into the violet, the deep violet, and
+  round again — its client
   large with what it was, a line and its site on the left, its screenshot on
   the right. From 1024px they stack on scroll
   (js/public/product-stack.ts): each grows into place, holds, and shrinks
@@ -66,29 +68,36 @@
     }
 
     .work-stack__panel {
-        @apply relative grid gap-8 overflow-hidden rounded-[28px] bg-white p-6 sm:p-8 md:p-12 lg:h-full lg:grid-cols-12 lg:items-center lg:gap-10 lg:rounded-[32px] lg:px-[max(3.5rem,calc((100%-var(--content-max))/2))] lg:py-0;
-        border: 1px solid var(--line);
+        @apply relative grid gap-8 overflow-hidden rounded-[28px] p-6 text-white sm:p-8 md:p-12 lg:h-full lg:grid-cols-12 lg:items-center lg:gap-10 lg:rounded-[32px] lg:px-[max(3.5rem,calc((100%-var(--content-max))/2))] lg:py-0;
         box-shadow: 0 30px 60px -40px rgb(45 43 120 / 0.35);
         transform-origin: 50% 0%;
         will-change: transform;
+        --muted: rgb(255 255 255 / 0.8);
+        --accent: #fff;
     }
 
-    .work-stack__card--2 .work-stack__panel {
-        background: linear-gradient(160deg, #f1edff, #e2dbff);
+    /* The colours, by place, round every four. The purple, the lightest:
+       its text at full white, for the contrast. */
+    .work-stack__card:nth-child(4n + 1) .work-stack__panel {
+        background: var(--purple-500);
+        --muted: #fff;
     }
 
-    /* The third in the violet, white on it. */
-    .work-stack__card--3 .work-stack__panel {
-        @apply text-white;
-        border-color: transparent;
+    .work-stack__card:nth-child(4n + 2) .work-stack__panel {
+        background: var(--violet-500);
+    }
+
+    .work-stack__card:nth-child(4n + 3) .work-stack__panel {
         background: linear-gradient(
             135deg,
             var(--purple-500),
             var(--violet-500) 60%,
             #5b3fe0
         );
-        --muted: rgb(255 255 255 / 0.8);
-        --accent: #fff;
+    }
+
+    .work-stack__card:nth-child(4n + 4) .work-stack__panel {
+        background: #5b3fe0;
     }
 
     .work-stack__content {
@@ -122,9 +131,9 @@
         @apply mt-8 lg:mt-10;
     }
 
-    /* On the violet card: white, its label in the violet — over the violet
-       pages' own dark pill (css/site/buttons.css), hence the weight. */
-    .work-stack .work-stack__card--3 .work-stack__link.pill.btn-dark {
+    /* White, its label in the violet — over the violet pages' own dark pill
+       (css/site/buttons.css), hence the weight. */
+    .work-stack .work-stack__card .work-stack__link.pill.btn-dark {
         --btn-ink: #fff;
         --btn-contrast: var(--violet-500);
     }
