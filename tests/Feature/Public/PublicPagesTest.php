@@ -161,7 +161,7 @@ it('serves /web: its own title, one H1, the sections in order, the offers to the
 
     expect($html)->toContain('<title>Site-uri și magazine online | Webis</title>')
         ->and(substr_count($html, '<h1'))->toBe(1)
-        ->and($titles[1])->toBe(['Ce ți se potrivește', 'Ce primești în orice proiect', 'Cum lucrăm', 'Proiecte', 'După lansare', 'Întrebări frecvente'])
+        ->and($titles[1])->toBe(['Ce ți se potrivește.', 'Ce primești în orice proiect.', 'Cum lucrăm.', 'Proiecte.', 'După lansare.', 'Întrebări frecvente.'])
         ->and($html)->toContain('href="/creare-site-de-prezentare/" class="post-card web-offer"')
         ->toContain('href="/magazin-online/" class="post-card web-offer web-offer--dark"')
         ->and(substr_count($html, 'class="web-faq__item"'))->toBe(5);

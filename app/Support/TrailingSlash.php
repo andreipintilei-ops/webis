@@ -30,6 +30,7 @@ final class TrailingSlash
         'services.index',
         'services.web',
         'services.software',
+        'services.products',
         'projects.index',
         'projects.show',
         'posts.index',

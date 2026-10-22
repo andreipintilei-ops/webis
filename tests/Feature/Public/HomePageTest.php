@@ -280,7 +280,7 @@ it('keeps the services story trial at /poveste, on a copy of the home page', fun
     expect($this->get('/')->getContent())->not->toContain('data-variant="poveste"');
 });
 
-it('builds the home page around the stage, and leaves /produse to the CMS', function () {
+it('builds the home page around the stage, and serves /produse from its own template', function () {
     Page::factory()->ofType(PageType::Home)->create([
         'slug' => 'acasa',
         'title' => 'Acasă',
@@ -297,8 +297,10 @@ it('builds the home page around the stage, and leaves /produse to the CMS', func
         ->toContain('data-stage-finale')
         ->toContain('Site, platformă sau aplicație?');
 
-    // The slug the trial used to hide now serves its own CMS page.
+    // /produse is its own page (public/products), whatever the CMS page of
+    // that slug holds.
     expect($this->get('/produse')->assertOk()->getContent())
-        ->toContain('Pagina din CMS')
+        ->toContain('<title>Produse SaaS')
+        ->not->toContain('Pagina din CMS')
         ->not->toContain('data-shapeshifter');
 });
