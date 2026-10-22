@@ -3,8 +3,9 @@
 namespace App\Support\Legacy\Import;
 
 /**
- * The binding until the content converters (WP5b) land: nothing converts, so
- * the articles, pages and industries steps refuse with a clear message.
+ * A converter that converts nothing: bound in place of LegacyBodyConverter,
+ * the articles, pages and industries steps refuse with a clear message and
+ * projects keep empty bodies.
  */
 final class UnavailableBodyConverter implements BodyConverter
 {

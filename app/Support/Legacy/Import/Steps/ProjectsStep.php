@@ -2,18 +2,23 @@
 
 namespace App\Support\Legacy\Import\Steps;
 
+use App\Blocks\BlockRegistry;
 use App\Enums\ClientType;
 use App\Enums\ContentStatus;
 use App\Enums\ProjectType;
 use App\Models\Client;
 use App\Models\Project;
 use App\Support\Legacy\AttachmentMetadata;
+use App\Support\Legacy\Import\BodyConverter;
+use App\Support\Legacy\Import\ConversionContext;
 use App\Support\Legacy\Import\ImportContext;
 use App\Support\Legacy\Import\LegacyPost;
 use App\Support\Legacy\Import\ReviewedMap;
 use App\Support\Legacy\Import\SpamReview;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
+use Illuminate\Validation\ValidationException;
+use Throwable;
 
 /**
  * The 80 portfolio projects (`proiect` posts): classic HTML of a sentence or
@@ -44,10 +49,15 @@ final class ProjectsStep
     ];
 
     /** Fields only filled while empty, or replaced with --force. */
-    private const array CONTENT_FIELDS = ['type', 'url', 'year', 'client_id', 'cover_asset_id', 'images', 'need', 'built'];
+    private const array CONTENT_FIELDS = ['type', 'url', 'year', 'client_id', 'cover_asset_id', 'images', 'need', 'built', 'blocks'];
 
     /** @var Collection<int, Client> */
     private Collection $clients;
+
+    public function __construct(
+        private readonly BodyConverter $converter,
+        private readonly BlockRegistry $blocks,
+    ) {}
 
     public function run(ImportContext $context): void
     {
@@ -58,6 +68,11 @@ final class ProjectsStep
         $terms = $context->legacy->postTerms($ids, 'categorie_proiect');
         $yoastTitles = $context->legacy->yoastTitles('post', $ids);
         $this->clients = Client::query()->get();
+        $conversion = $this->converter->available() ? ConversionContext::for($context) : null;
+
+        if ($conversion === null) {
+            $report->add(self::NAME, 'notes', 'No body converter: project bodies (blocks) left empty.');
+        }
 
         // Websites before logos, so a client is named after its site's
         // project ("Implantofix Dental Clinic"), not its logo's.
@@ -80,7 +95,7 @@ final class ProjectsStep
                 continue;
             }
 
-            $this->importOne($context, $row, $post, $terms[$post->id] ?? [], $yoastTitles[$post->id] ?? '');
+            $this->importOne($context, $row, $post, $terms[$post->id] ?? [], $yoastTitles[$post->id] ?? '', $conversion);
         }
     }
 
@@ -88,7 +103,7 @@ final class ProjectsStep
      * @param  array<string, string>  $row
      * @param  list<string>  $terms
      */
-    private function importOne(ImportContext $context, array $row, LegacyPost $post, array $terms, string $yoastTitle): void
+    private function importOne(ImportContext $context, array $row, LegacyPost $post, array $terms, string $yoastTitle, ?ConversionContext $conversion): void
     {
         $report = $context->report;
         $slug = ReviewedMap::targetSlug($row);
@@ -129,6 +144,7 @@ final class ProjectsStep
             'images' => $images !== [] ? $images : null,
             'need' => $this->plain($post->meta('cercetare_si_planificare')),
             'built' => $this->plain($post->meta('dezvoltare_i_implementare')),
+            'blocks' => $conversion !== null ? $this->body($context, $post, $slug, $conversion) : null,
         ];
 
         if ($type === null) {
@@ -160,6 +176,36 @@ final class ProjectsStep
 
         $report->count(self::NAME, $state);
         $report->count(self::NAME, 'type_'.($project->type->value ?? 'none'));
+    }
+
+    /**
+     * The project's body as blocks (its classic HTML, a sentence or two),
+     * validated; null — and reported — when it converts to nothing valid.
+     *
+     * @return list<array<string, mixed>>|null
+     */
+    private function body(ImportContext $context, LegacyPost $post, string $slug, ConversionContext $conversion): ?array
+    {
+        try {
+            $body = $this->converter->convert($post, 'project', $conversion);
+            $blocks = $this->blocks->validate($body->blocks);
+        } catch (ValidationException $e) {
+            $context->report->add(self::NAME, 'body_invalid', ['slug' => $slug, 'errors' => $e->errors()]);
+
+            return null;
+        } catch (Throwable $e) {
+            $context->report->add(self::NAME, 'body_failed', ['slug' => $slug, 'error' => $e->getMessage()]);
+
+            return null;
+        }
+
+        foreach ($body->unresolved as $what => $urls) {
+            foreach ($urls as $url) {
+                $context->report->add(self::NAME, "unresolved_{$what}", ['slug' => $slug, 'url' => $url]);
+            }
+        }
+
+        return $blocks === [] ? null : $blocks;
     }
 
     /**

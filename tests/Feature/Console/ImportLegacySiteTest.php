@@ -17,6 +17,7 @@ use App\Support\Legacy\Import\BodyConverter;
 use App\Support\Legacy\Import\ConversionContext;
 use App\Support\Legacy\Import\ConvertedBody;
 use App\Support\Legacy\Import\LegacyPost;
+use App\Support\Legacy\Import\UnavailableBodyConverter;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
@@ -147,8 +148,21 @@ function legacyImportSchema(): void
         $post(40, 'page', 'creare-magazin-online', 'Creare magazin online', '<p>Magazine online.</p>'),
     ]);
 
+    $article = '<h2>De ce contează SEO</h2><p>'.str_repeat('Un site bine optimizat aduce clienți noi în fiecare lună. ', 20).'</p>'
+        .'<p>Vezi <a href="https://www.webis.ro/gazduire/">găzduirea</a> și <a href="/12705-2/">tipurile de găzduire</a>.</p>'
+        .'<p><img src="https://www.webis.ro/wp-content/uploads/2024/07/zyanya-300x200.jpg" alt="Zyanya"></p>'
+        .'<p><img src="https://www.webis.ro/wp-content/uploads/2016/01/vechi.jpg" alt="Lipsă"></p>';
+
     $db->table('postmeta')->insert([
         ['post_id' => 11, 'meta_key' => '_thumbnail_id', 'meta_value' => '50'],
+        ['post_id' => 11, 'meta_key' => '_elementor_data', 'meta_value' => json_encode([[
+            'id' => 'a1', 'elType' => 'section', 'settings' => [], 'elements' => [[
+                'id' => 'b1', 'elType' => 'column', 'settings' => [], 'elements' => [[
+                    'id' => 'c1', 'elType' => 'widget', 'widgetType' => 'text-editor', 'settings' => ['editor' => $article], 'elements' => [],
+                ]],
+            ]],
+        ]])],
+        ['post_id' => 30, 'meta_key' => 'descriere_h1', 'meta_value' => '<p>Un site pentru florăria ta, gata în câteva săptămâni.</p>'],
         ['post_id' => 20, 'meta_key' => 'website_link', 'meta_value' => 'https://zyanya.ro/'],
         ['post_id' => 20, 'meta_key' => 'text_link', 'meta_value' => 'www.zyanya.ro'],
         ['post_id' => 20, 'meta_key' => '_thumbnail_id', 'meta_value' => '50'],
@@ -430,6 +444,8 @@ it('writes nothing on a dry run', function () {
 });
 
 it('refuses the articles, pages and industries steps while no converter is bound', function (string $step) {
+    app()->bind(BodyConverter::class, UnavailableBodyConverter::class);
+
     expect(runLegacyImport($this, ['--only' => [$step]]))->toBe(1)
         ->and(Artisan::output())->toContain('No body converter is available')
         ->and(Page::count())->toBe(0)
@@ -513,6 +529,49 @@ describe('with a body converter', function () {
         expect(Page::count())->toBe(0)
             ->and(legacyImportReport($this)['steps']['articles']['counts']['refused'])->toBe(2)
             ->and(legacyImportReport($this)['steps']['articles']['refused'][0]['reason'])->toStartWith('invalid blocks');
+    });
+});
+
+describe('with the real converters', function () {
+    it('converts an Elementor article with real asset ids and final link targets, counting unresolved images', function () {
+        expect(runLegacyImport($this, ['--only' => ['categories', 'media', 'articles']]))->toBe(0);
+
+        $page = Page::where('slug', 'ghid-seo')->sole();
+        $json = json_encode($page->blocks, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+        $zyanya = legacyMediaMap($this)['https://www.webis.ro/wp-content/uploads/2024/07/zyanya.jpg'];
+
+        // The hero is the title; the body is rich text.
+        expect($page->blocks[0]['type'])->toBe('hero')
+            ->and($page->blocks[0]['data']['heading'])->toBe('Ghid SEO')
+            ->and(array_column($page->blocks, 'type'))->toContain('rich_text')
+            // The resized copy resolves to its original's real asset.
+            ->and($json)->toContain('"assetId":'.$zyanya)
+            // Links to the old site land on their final targets, slash form.
+            ->and($json)->toContain('"href":"/blog/categorie/web-development/"')
+            ->and($json)->toContain('"href":"/care-sunt-tipurile-de-gazduire/"')
+            ->and($json)->not->toContain('vechi.jpg');
+
+        $report = legacyImportReport($this)['steps']['articles'];
+        expect($report['counts'])->toMatchArray(['created' => 2, 'unresolved_image_urls' => 1])
+            ->and($report['unresolved_image'])->toContain(['slug' => 'ghid-seo', 'url' => 'https://www.webis.ro/wp-content/uploads/2016/01/vechi.jpg']);
+    });
+
+    it('converts an industry page from its Pods fields', function () {
+        expect(runLegacyImport($this, ['--only' => ['industries']]))->toBe(0);
+
+        $page = Page::where('slug', 'creare-site-florarie')->sole();
+
+        expect($page->type)->toBe(PageType::Industry)
+            ->and(json_encode($page->blocks, JSON_UNESCAPED_UNICODE))->toContain('Un site pentru florăria ta');
+    });
+
+    it('gives each project its body as rich text', function () {
+        runLegacyImport($this, ['--only' => ['projects']]);
+
+        $zyanya = Project::where('slug', 'zyanya')->sole();
+
+        expect(array_column($zyanya->blocks, 'type'))->toBe(['rich_text'])
+            ->and(json_encode($zyanya->blocks, JSON_UNESCAPED_UNICODE))->toContain('Designul este minimalist');
     });
 });
 

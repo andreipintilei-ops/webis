@@ -2,7 +2,6 @@
 
 namespace App\Support\Legacy\Import;
 
-use App\Support\TrailingSlash;
 use Carbon\CarbonImmutable;
 use Illuminate\Support\Facades\File;
 use RuntimeException;
@@ -93,26 +92,6 @@ final class ImportContext
 
         File::ensureDirectoryExists(dirname($path));
         File::put($path, $contents);
-    }
-
-    /**
-     * Each old address's final target, for the converters' link rewriting:
-     * content keeps its address or moves to its target, redirects go to
-     * theirs. Gone and undecided rows are left out.
-     *
-     * @return array<string, string>
-     */
-    public function links(): array
-    {
-        $links = [];
-
-        foreach ($this->map->rows() as $row) {
-            if ($row['target_path'] !== '' && $row['decision'] !== 'gone') {
-                $links[$row['old_path']] = TrailingSlash::append($row['target_path']);
-            }
-        }
-
-        return $links;
     }
 
     /**

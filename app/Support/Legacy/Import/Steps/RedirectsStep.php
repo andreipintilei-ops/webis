@@ -10,6 +10,7 @@ use App\Models\Project;
 use App\Models\Redirect;
 use App\Models\SlugHistory;
 use App\Support\Legacy\Import\ImportContext;
+use App\Support\Legacy\Import\ImportUrlResolver;
 use App\Support\Legacy\Import\ReviewedMap;
 use App\Support\TrailingSlash;
 
@@ -355,21 +356,7 @@ final class RedirectsStep
      */
     private function legacyIds(ImportContext $context): array
     {
-        $ids = [];
-
-        foreach ($context->map->rows() as $row) {
-            $id = (int) ($row['wp_id'] ?? 0);
-
-            if ($id <= 0 || ($row['object_type'] ?? '') !== 'post' || $row['target_path'] === '' || $row['decision'] === 'gone') {
-                continue;
-            }
-
-            // The post's own row wins over the rows of its old addresses.
-            if (! isset($ids[$id]) || ! str_contains($row['sources'] ?? '', 'wp-old-url')) {
-                $ids[$id] = TrailingSlash::append($row['target_path']);
-            }
-        }
-
+        $ids = ImportUrlResolver::fromMap($context->map)->ids();
         ksort($ids);
 
         return $ids;

@@ -2,29 +2,26 @@
 
 namespace App\Support\Legacy\Import;
 
-use App\Models\Redirect;
+use App\Support\Legacy\MediaResolver;
+use App\Support\Legacy\UrlResolver;
 
 /**
- * What a body converter needs besides the post itself: the media map, to turn
- * every `<img src>` into an asset id, and each old address's final target, to
- * rewrite internal links so none goes through a redirect.
+ * What a body converter needs besides the post itself: the media resolver,
+ * to turn every image into a real asset id, and the link resolver, to point
+ * internal links at their final targets so none goes through a redirect.
  */
 final readonly class ConversionContext
 {
-    /**
-     * @param  array<string, string>  $links  normalised old path → its final target (slash form, `/x/`)
-     */
     public function __construct(
-        public MediaMap $media,
-        public array $links = [],
+        public MediaResolver $media,
+        public UrlResolver $urls,
     ) {}
 
-    /**
-     * Where a link to the old site should point now: its final target, or
-     * null when the address isn't one the map knows (or is gone).
-     */
-    public function linkTarget(string $href): ?string
+    public static function for(ImportContext $context): self
     {
-        return $this->links[Redirect::normalisePath($href)] ?? null;
+        return new self(
+            new ImportMediaResolver($context->media(), $context->mediaSource()),
+            ImportUrlResolver::fromMap($context->map),
+        );
     }
 }

@@ -3,6 +3,7 @@
 namespace App\Support\Legacy\Import\Steps;
 
 use App\Blocks\BlockRegistry;
+use App\Console\Commands\ConvertLegacyContent;
 use App\Enums\ContentStatus;
 use App\Enums\PageType;
 use App\Models\Page;
@@ -44,7 +45,10 @@ final class ContentStep
     public const array PROTECTED_SLUGS = ['acasa', 'contact', 'produse', 'portofoliu', 'despre', 'demo-blocuri-1', 'demo-blocuri-2'];
 
     /** Below this, a converted body probably lost its content. */
-    public const int MIN_WORDS = 120;
+    public const int MIN_WORDS = ConvertLegacyContent::MIN_WORDS;
+
+    /** @var array<string, array<string, true>> `image` / `link` → unique old URLs left unresolved in this step */
+    private array $unresolved = [];
 
     public function __construct(
         private readonly BodyConverter $converter,
@@ -71,7 +75,7 @@ final class ContentStep
         $ids = array_values(array_filter(array_map(fn (array $row): int => (int) $row['wp_id'], $rows)));
         $posts = $context->legacy->posts($ids);
         $yoastTitles = $context->legacy->yoastTitles('post', $ids);
-        $conversion = new ConversionContext($context->media(), $context->links());
+        $conversion = ConversionContext::for($context);
 
         foreach ($rows as $row) {
             try {
@@ -82,6 +86,12 @@ final class ContentStep
                 return false;
             }
         }
+
+        foreach ($this->unresolved as $what => $urls) {
+            $report->count($step, "unresolved_{$what}_urls", count($urls));
+        }
+
+        $this->unresolved = [];
 
         return true;
     }
@@ -150,6 +160,15 @@ final class ContentStep
 
         foreach ($body->dropped as $what => $n) {
             $report->count($step, "dropped:{$what}", $n);
+        }
+
+        // Unresolved images (files the archive never had) and links (old
+        // addresses with no target): counted and listed, never fatal.
+        foreach ($body->unresolved as $what => $urls) {
+            foreach ($urls as $url) {
+                $this->unresolved[$what][$url] = true;
+                $report->add($step, "unresolved_{$what}", ['slug' => $slug, 'url' => $url]);
+            }
         }
 
         if ($body->wordCount < self::MIN_WORDS) {
