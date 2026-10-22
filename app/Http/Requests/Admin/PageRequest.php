@@ -30,6 +30,7 @@ class PageRequest extends ContentRequest
                     ->whereNull('deleted_at')
                     ->ignore($pageId),
             ],
+            'post_category_id' => ['nullable', 'integer', Rule::exists('post_categories', 'id')],
             'title' => ['required', 'string', 'max:200'],
             ...$this->slugRules('pages', $pageId),
             'excerpt' => ['nullable', 'string', 'max:500'],
@@ -82,9 +83,12 @@ class PageRequest extends ContentRequest
     public function pageAttributes(): array
     {
         $details = array_filter((array) $this->input('details', []), fn (mixed $value): bool => $value !== null && $value !== '');
+        $type = PageType::from((string) $this->input('type'));
 
         return [
-            'type' => PageType::from((string) $this->input('type')),
+            'type' => $type,
+            // Only an article has a category; any other type drops it.
+            'post_category_id' => $type === PageType::Article ? $this->input('post_category_id') : null,
             'title' => $this->string('title')->trim()->toString(),
             'slug' => $this->string('slug')->toString(),
             'excerpt' => $this->input('excerpt'),

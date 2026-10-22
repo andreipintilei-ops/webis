@@ -32,6 +32,7 @@ import type {
 type PagePayload = {
     id: number | null;
     type: string;
+    post_category_id: number | null;
     title: string;
     slug: string;
     excerpt: string | null;
@@ -68,6 +69,7 @@ const isNew = props.page.id === null;
 
 const form = useForm({
     type: props.page.type,
+    post_category_id: props.page.post_category_id,
     title: props.page.title,
     slug: props.page.slug,
     excerpt: props.page.excerpt,
@@ -100,6 +102,14 @@ const hasRelatedWork = computed(() =>
 );
 
 const path = computed(() => (form.type === 'home' ? '/' : `/${form.slug}`));
+
+// An article's category: the blog's categories, listed on /blog.
+const categoryOptions = computed<Option[]>(() =>
+    props.choices.postCategories.map((category) => ({
+        value: String(category.id),
+        label: category.label,
+    })),
+);
 
 const errors = computed(() => form.errors as Record<string, string>);
 
@@ -229,6 +239,17 @@ function remove(): void {
                         label="Tip"
                         :options="types"
                         :error="form.errors.type"
+                    />
+                    <SelectField
+                        v-if="form.type === 'article'"
+                        v-model="form.post_category_id"
+                        label="Categorie"
+                        :options="categoryOptions"
+                        numeric
+                        nullable
+                        empty-label="Fără categorie"
+                        :error="form.errors.post_category_id"
+                        hint="Articolul apare pe /blog și pe pagina categoriei."
                     />
                     <template v-if="form.type === 'service'">
                         <TextField

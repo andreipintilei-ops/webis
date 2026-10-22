@@ -5,6 +5,7 @@ use App\Enums\PageType;
 use App\Events\ContentPublished;
 use App\Models\Asset;
 use App\Models\Page;
+use App\Models\PostCategory;
 use App\Models\Project;
 use App\Models\SlugHistory;
 use App\Models\User;
@@ -79,6 +80,38 @@ it('creates a page with its blocks and details', function () {
         ->and($page->status)->toBe(ContentStatus::Draft)
         ->and($page->blocks[0]['data']['heading'] ?? null)->toBe('Magazine online')
         ->and($page->details)->toBe(['price_from' => 'de la 4.500 lei']);
+});
+
+it('creates an article in a blog category, and keeps a category off other page types', function () {
+    $category = PostCategory::factory()->create();
+
+    $this->post(route('admin.pages.store'), pagePayload([
+        'type' => 'article',
+        'slug' => 'ce-este-seo-on-page',
+        'post_category_id' => $category->id,
+    ]))->assertSessionHasNoErrors();
+
+    $article = Page::sole();
+
+    expect($article->type)->toBe(PageType::Article)
+        ->and($article->category?->is($category))->toBeTrue();
+
+    $this->get(route('admin.pages.edit', $article->id))
+        ->assertInertia(fn (Assert $inertia) => $inertia
+            ->where('page.post_category_id', $category->id)
+            ->where('types', fn ($types) => collect($types)->contains(['value' => 'article', 'label' => 'Articol']))
+            ->has('choices.postCategories', 1));
+
+    $this->put(route('admin.pages.update', $article->id), pagePayload([
+        'type' => 'page',
+        'slug' => 'ce-este-seo-on-page',
+        'post_category_id' => $category->id,
+    ]))->assertSessionHasNoErrors();
+
+    expect($article->fresh()?->post_category_id)->toBeNull();
+
+    $this->post(route('admin.pages.store'), pagePayload(['type' => 'article', 'slug' => 'alt-articol', 'post_category_id' => 999]))
+        ->assertSessionHasErrors('post_category_id');
 });
 
 it('reports block errors under the block and field', function () {

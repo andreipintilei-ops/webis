@@ -174,6 +174,7 @@ class PageController extends Controller
             'page' => [
                 'id' => $page->exists ? $page->id : null,
                 'type' => $page->type->value,
+                'post_category_id' => $page->post_category_id,
                 'title' => $page->title,
                 'slug' => $page->slug,
                 'excerpt' => $page->excerpt,
