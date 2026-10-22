@@ -95,7 +95,7 @@
                     @endforeach
 
                     <div class="contact__field contact__field--wide">
-                        <label for="contact-message" class="contact__label">{{ $page ? 'Ce ai în minte?' : 'Ce aveți nevoie' }}@if ($page) <span aria-hidden="true">*</span>@endif</label>
+                        <label for="contact-message" class="contact__label">{{ $page ? 'Ce ai în minte?' : 'De ce ai nevoie?' }}@if ($page) <span aria-hidden="true">*</span>@endif</label>
                         <textarea id="contact-message" name="message" rows="4" maxlength="5000" @if ($page) placeholder="De exemplu: ce vrei să construiești sau să îmbunătățești și pentru cine." @endif class="contact__input contact__input--area" aria-describedby="contact-message-error" required @error('message') aria-invalid="true" @enderror>{{ old('message') }}</textarea>
                         <p id="contact-message-error" class="contact__error" data-error-for="message">@error('message'){{ $message }}@enderror</p>
                     </div>
