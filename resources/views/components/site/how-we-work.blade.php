@@ -37,7 +37,7 @@
 
             <div class="how-we-work__foot">
                 <p>Lucrăm cu instituții publice din 2016.</p>
-                <x-ui.arrow-link href="/institutii-publice">Ce înseamnă pentru ele</x-ui.arrow-link>
+                <x-ui.arrow-link href="/institutii-publice/">Ce înseamnă pentru ele</x-ui.arrow-link>
             </div>
         </div>
     </div>

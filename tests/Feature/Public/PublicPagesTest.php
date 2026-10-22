@@ -80,7 +80,7 @@ it('lists the articles at /blog: a hero, the latest one featured, then nine card
         ->not->toContain('DUMMY DATA')
         ->and(substr_count($html, 'class="blog-lead"'))->toBe(1)
         // The lead goes to the article's own root address.
-        ->and($lead[1])->toBe('/cum-poti-avea-un-magazin-online-de-succes')
+        ->and($lead[1])->toBe('/cum-poti-avea-un-magazin-online-de-succes/')
         ->and($lead[0])->toContain('Cum poți avea un magazin online de succes')
         ->toContain('Ce contează ca un magazin online să aibă succes.')
         ->and(substr_count($html, 'class="post-card"'))->toBe(9)
@@ -139,8 +139,8 @@ it('lists the blog\'s categories beside the articles, each filtering them at its
     preg_match_all('#<span>([^<]+)</span><span class="blog-categories__count">(\d+)</span>#', $aside[0], $counts);
 
     expect($aside[0])
-        ->toMatch('#href="[^"]*/blog\#articole" class="blog-categories__link"\s*aria-current="page"#')
-        ->toContain('/blog/categorie/seo#articole')
+        ->toMatch('#href="[^"]*/blog/\#articole" class="blog-categories__link"\s*aria-current="page"#')
+        ->toContain('/blog/categorie/seo/#articole')
         ->not->toContain('?categorie=')
         // Every article, then the categories, most first.
         ->and(array_combine($counts[1], $counts[2]))->toBe(['Toate articolele' => '5', 'SEO' => '3', 'Design' => '2'])
@@ -152,7 +152,7 @@ it('lists the blog\'s categories beside the articles, each filtering them at its
 
     expect($categories[1])->toBe(['SEO', 'SEO', 'SEO'])
         ->and($html)->not->toContain('class="blog-lead"')
-        ->toMatch('#/blog/categorie/seo\#articole" class="blog-categories__link"\s*aria-current="page"#');
+        ->toMatch('#/blog/categorie/seo/\#articole" class="blog-categories__link"\s*aria-current="page"#');
 });
 
 it('serves /web: its own title, one H1, the sections in order, the offers to their pages', function () {
@@ -162,7 +162,7 @@ it('serves /web: its own title, one H1, the sections in order, the offers to the
     expect($html)->toContain('<title>Site-uri și magazine online | Webis</title>')
         ->and(substr_count($html, '<h1'))->toBe(1)
         ->and($titles[1])->toBe(['Ce ți se potrivește', 'Ce primești în orice proiect', 'Cum lucrăm', 'Proiecte', 'După lansare', 'Întrebări frecvente'])
-        ->and($html)->toContain('href="/creare-site-de-prezentare" class="post-card web-offer"')
-        ->toContain('href="/magazin-online" class="post-card web-offer web-offer--dark"')
+        ->and($html)->toContain('href="/creare-site-de-prezentare/" class="post-card web-offer"')
+        ->toContain('href="/magazin-online/" class="post-card web-offer web-offer--dark"')
         ->and(substr_count($html, 'class="web-faq__item"'))->toBe(5);
 });

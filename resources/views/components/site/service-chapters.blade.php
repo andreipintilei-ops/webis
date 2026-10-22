@@ -67,8 +67,8 @@
         </x-site.chapter.subsection>
 
         <div class="chapter-cta" data-reveal>
-            <x-ui.pill href="/contact">Discută un proiect</x-ui.pill>
-            <x-ui.arrow-link href="/software-la-comanda">Software la comandă</x-ui.arrow-link>
+            <x-ui.pill href="/contact/">Discută un proiect</x-ui.pill>
+            <x-ui.arrow-link href="/software-la-comanda/">Software la comandă</x-ui.arrow-link>
         </div>
     </div>
 </section>
@@ -135,7 +135,7 @@
                         'name' => 'RIMS',
                         'for' => 'Pentru universități și institute de cercetare.',
                         'checks' => ['Proiecte, bugete și termene într-un singur loc', 'Deconturi și achiziții urmărite pe fiecare proiect', 'Rapoarte pentru finanțatori, generate automat'],
-                        'link' => ['label' => 'Cere o prezentare', 'href' => '/contact', 'external' => false],
+                        'link' => ['label' => 'Cere o prezentare', 'href' => '/contact/', 'external' => false],
                         'screen' => 'Proiecte de cercetare',
                         'rows' => [['Materiale avansate', 72, '72% din buget'], ['Energie regenerabilă', 45, '45% din buget'], ['Digitalizare în sănătate', 88, '88% din buget']],
                     ],
@@ -188,7 +188,7 @@
 
         <div class="chapter-cta" data-reveal>
             <x-ui.pill href="https://smilesoft.ro" tone="dark" target="_blank" rel="noopener">smilesoft.ro</x-ui.pill>
-            <x-ui.arrow-link href="/produse" tone="dark">Toate produsele</x-ui.arrow-link>
+            <x-ui.arrow-link href="/produse/" tone="dark">Toate produsele</x-ui.arrow-link>
         </div>
     </div>
 </section>
@@ -209,20 +209,20 @@
             <!-- DUMMY DATA: the two projects, until approved ones replace them. -->
             <x-site.explorer id="explorer-web" :items="[
                 ['name' => 'Site de prezentare', 'text' => 'Un site clar despre ce faci, ușor de actualizat de tine.',
-                    'link' => ['label' => 'Despre site-urile de prezentare', 'href' => '/creare-site-iasi'],
+                    'link' => ['label' => 'Despre site-urile de prezentare', 'href' => '/creare-site-iasi/'],
                     'project' => ['type' => 'Site de prezentare', 'visual' => 'site', 'title' => 'zyanya.ro', 'line' => 'Un site de prezentare pe care clientul îl actualizează singur.', 'href' => route('projects.index')]],
                 ['name' => 'Magazin online', 'text' => 'Catalog, plăți, livrare și facturare, legate între ele.',
-                    'link' => ['label' => 'Despre magazinele online', 'href' => '/creare-magazin-online'],
+                    'link' => ['label' => 'Despre magazinele online', 'href' => '/creare-magazin-online/'],
                     'project' => ['type' => 'Magazin online', 'visual' => 'site', 'title' => 'Nira Mob Design', 'line' => 'Catalogul de mobilier, comenzile și plățile, într-un singur magazin.', 'href' => route('projects.index')]],
                 ['name' => 'Mentenanță și găzduire', 'text' => 'Actualizări, backup și securitate, fără să te ocupi tu.',
-                    'link' => ['label' => 'Despre mentenanță', 'href' => '/mentenanta'],
+                    'link' => ['label' => 'Despre mentenanță', 'href' => '/mentenanta/'],
                     'modules' => ['Actualizări și backup', 'Monitorizare', 'Securitate']],
             ]" />
         </x-site.chapter.subsection>
 
         <div class="chapter-cta" data-reveal>
-            <x-ui.pill href="/contact">Discută despre site</x-ui.pill>
-            <x-ui.arrow-link href="/web">Web și e-commerce</x-ui.arrow-link>
+            <x-ui.pill href="/contact/">Discută despre site</x-ui.pill>
+            <x-ui.arrow-link href="/web/">Web și e-commerce</x-ui.arrow-link>
         </div>
     </div>
 </section>

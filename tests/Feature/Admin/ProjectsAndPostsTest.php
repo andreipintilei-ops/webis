@@ -116,7 +116,7 @@ it('saves the portfolio fields of a project', function () {
             ->where('project.type', 'software')
             ->where('project.stack', 'Laravel, Vue, MySQL')
             ->where('project.images', [$second->id, $first->id])
-            ->where('project.public_url', '/proiect/'.$project->slug)
+            ->where('project.public_url', '/proiect/'.$project->slug.'/')
             ->has('types', 4));
 
     $this->put(route('admin.projects.update', $project->id), projectPayload(['stack' => '', 'images' => []]))

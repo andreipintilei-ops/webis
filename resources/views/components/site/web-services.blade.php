@@ -1,8 +1,8 @@
 {{-- Section 7: secondary web services, using the existing menu destinations. --}}
 @php
     $services = [
-        ['label' => 'Creare site de prezentare', 'href' => '/creare-site-de-prezentare'],
-        ['label' => 'Creare magazin online', 'href' => '/magazin-online'],
+        ['label' => 'Creare site de prezentare', 'href' => '/creare-site-de-prezentare/'],
+        ['label' => 'Creare magazin online', 'href' => '/magazin-online/'],
     ];
 @endphp
 

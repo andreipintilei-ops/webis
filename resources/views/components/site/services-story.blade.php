@@ -74,8 +74,8 @@
                     @endforeach
                 </ul>
                 <div class="chapter-cta story-panel__cta">
-                    <x-ui.pill href="/contact">Discută un proiect</x-ui.pill>
-                    <x-ui.arrow-link href="/software-la-comanda">Software la comandă</x-ui.arrow-link>
+                    <x-ui.pill href="/contact/">Discută un proiect</x-ui.pill>
+                    <x-ui.arrow-link href="/software-la-comanda/">Software la comandă</x-ui.arrow-link>
                 </div>
             </article>
 
@@ -87,7 +87,7 @@
                 <ul class="story-panel__products">
                     @foreach ([
                         ['SmileSoft', 'Clinici stomatologice', 'https://smilesoft.ro'],
-                        ['RIMS', 'Universități și institute de cercetare', '/contact'],
+                        ['RIMS', 'Universități și institute de cercetare', '/contact/'],
                         ['Bugetare participativă', 'Primării', 'https://bugetare.ro'],
                     ] as [$name, $for, $href])
                         <li>
@@ -98,8 +98,8 @@
                     @endforeach
                 </ul>
                 <div class="chapter-cta story-panel__cta">
-                    <x-ui.pill href="/contact" tone="dark">Cere o prezentare</x-ui.pill>
-                    <x-ui.arrow-link href="/produse" tone="dark">Toate produsele</x-ui.arrow-link>
+                    <x-ui.pill href="/contact/" tone="dark">Cere o prezentare</x-ui.pill>
+                    <x-ui.arrow-link href="/produse/" tone="dark">Toate produsele</x-ui.arrow-link>
                 </div>
             </article>
 
@@ -114,8 +114,8 @@
                     @endforeach
                 </ul>
                 <div class="chapter-cta story-panel__cta">
-                    <x-ui.pill href="/contact">Discută despre site</x-ui.pill>
-                    <x-ui.arrow-link href="/web">Web și e-commerce</x-ui.arrow-link>
+                    <x-ui.pill href="/contact/">Discută despre site</x-ui.pill>
+                    <x-ui.arrow-link href="/web/">Web și e-commerce</x-ui.arrow-link>
                 </div>
             </article>
         </div>

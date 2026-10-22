@@ -47,7 +47,7 @@
                 <p class="site-footer__intro">{{ $ctaIntro ?? 'Spune-ne cum lucrezi acum. Îți răspundem în aceeași zi lucrătoare.' }}</p>
             </div>
             <div class="site-footer__reach">
-                <x-ui.pill href="/contact" tone="dark">Hai să discutăm</x-ui.pill>
+                <x-ui.pill href="/contact/" tone="dark">Hai să discutăm</x-ui.pill>
                 <div class="site-footer__direct">
                     @if ($phoneHref)
                         <a href="{{ $phoneHref }}">{{ $company->phone }}</a>
@@ -67,7 +67,7 @@
                     <h3 class="site-footer__group-label">{{ $group['label'] }}</h3>
                     <ul>
                         @foreach ($group['links'] as $link)
-                            <li><a href="{{ $link['href'] }}">{{ $link['label'] }}</a></li>
+                            <li><a href="{{ \App\Support\TrailingSlash::href($link['href']) }}">{{ $link['label'] }}</a></li>
                         @endforeach
                     </ul>
                 </div>
@@ -77,7 +77,7 @@
                 <h3 class="site-footer__group-label">Webis</h3>
                 <ul>
                     @foreach ($pages as $page)
-                        <li><a href="{{ $page['href'] }}">{{ $page['label'] }}</a></li>
+                        <li><a href="{{ \App\Support\TrailingSlash::href($page['href']) }}">{{ $page['label'] }}</a></li>
                     @endforeach
                 </ul>
             </div>
@@ -119,7 +119,7 @@
             </p>
             <ul class="site-footer__legal-links">
                 @foreach (\App\Support\SiteNavigation::legal() as $link)
-                    <li><a href="{{ $link['href'] }}">{{ $link['label'] }}</a></li>
+                    <li><a href="{{ \App\Support\TrailingSlash::href($link['href']) }}">{{ $link['label'] }}</a></li>
                 @endforeach
             </ul>
         </div>

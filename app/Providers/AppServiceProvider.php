@@ -13,11 +13,13 @@ use App\Models\Project;
 use App\Models\ProjectCategory;
 use App\Models\Testimonial;
 use App\Models\User;
+use App\Routing\UrlGenerator;
 use App\Support\Brand;
 use App\Support\RichText\RichText;
 use Carbon\CarbonImmutable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\Relation;
+use Illuminate\Routing\UrlGenerator as BaseUrlGenerator;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
@@ -34,6 +36,11 @@ class AppServiceProvider extends ServiceProvider
         $this->app->singleton(BlockRegistry::class);
         $this->app->singleton(RichText::class);
         $this->app->scoped(Brand::class);
+
+        // route(), url() and action() emit the public pages' trailing slash.
+        // An extension, not a new binding, so the framework's own wiring (the
+        // request and route rebinding, the session and key resolvers) stays.
+        $this->app->extend('url', fn (BaseUrlGenerator $url) => UrlGenerator::from($url));
     }
 
     /**

@@ -30,7 +30,7 @@
             <ul class="site-panel__links">
                 @foreach (\App\Support\SiteNavigation::links() as $link)
                     <li class="site-panel__item">
-                        <a href="{{ $link['href'] }}" @class(['site-panel__link', 'is-active' => $link['current']]) @if ($link['current']) aria-current="page" @endif>
+                        <a href="{{ \App\Support\TrailingSlash::href($link['href']) }}" @class(['site-panel__link', 'is-active' => $link['current']]) @if ($link['current']) aria-current="page" @endif>
                             {{ $link['label'] }}
                         </a>
                     </li>

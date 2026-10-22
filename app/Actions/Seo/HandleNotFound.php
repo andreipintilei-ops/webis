@@ -6,6 +6,7 @@ use App\Enums\RedirectCode;
 use App\Models\Page;
 use App\Models\Project;
 use App\Models\Redirect;
+use App\Support\TrailingSlash;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
@@ -86,7 +87,8 @@ class HandleNotFound
         $lower = mb_strtolower($typed);
 
         if ($typed !== $lower && $this->isLive($lower)) {
-            return $this->redirectTo($lower, RedirectCode::Permanent, $request);
+            // A live page in its canonical form, so not via a second 301.
+            return $this->redirectTo(TrailingSlash::href($lower), RedirectCode::Permanent, $request);
         }
 
         ($this->logNotFound)($request, $path);
@@ -148,7 +150,7 @@ class HandleNotFound
     private function archive(string $archive, Request $request): ?Response
     {
         if ($this->isLive($archive)) {
-            return $this->redirectTo($archive, RedirectCode::Permanent, $request);
+            return $this->redirectTo(TrailingSlash::href($archive), RedirectCode::Permanent, $request);
         }
 
         $redirect = ($this->resolveRedirect)($archive, $request->getHost());

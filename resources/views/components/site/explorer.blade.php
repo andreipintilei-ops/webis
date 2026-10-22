@@ -71,7 +71,7 @@
                                     <li>{{ $module }}</li>
                                 @endforeach
                             </ul>
-                            <x-ui.arrow-link href="/contact" class="explorer-modules__link">Discută un proiect de acest tip</x-ui.arrow-link>
+                            <x-ui.arrow-link href="/contact/" class="explorer-modules__link">Discută un proiect de acest tip</x-ui.arrow-link>
                         </div>
                     @endif
                 </div>

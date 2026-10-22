@@ -47,8 +47,8 @@
                 </header>
 
                 <div class="chapter-cta stage-software__actions" data-reveal>
-                    <x-ui.pill href="/contact">Discută un proiect</x-ui.pill>
-                    <x-ui.arrow-link href="/software-la-comanda">Află mai multe</x-ui.arrow-link>
+                    <x-ui.pill href="/contact/">Discută un proiect</x-ui.pill>
+                    <x-ui.arrow-link href="/software-la-comanda/">Află mai multe</x-ui.arrow-link>
                 </div>
 
                 <ul class="stage-items stage-software__items" data-reveal>
@@ -97,7 +97,7 @@
                 <ul class="stage-products" data-reveal>
                     @foreach ([
                         ['smile', 'SmileSoft', 'Programări, tratamente și încasări pentru clinici stomatologice.', 'https://smilesoft.ro'],
-                        ['graduation-cap', 'RIMS', 'Proiecte și bugete pentru universități și cercetare.', '/contact'],
+                        ['graduation-cap', 'RIMS', 'Proiecte și bugete pentru universități și cercetare.', '/contact/'],
                         ['landmark', 'Bugetare participativă', 'Propuneri și voturi pentru proiectele comunității.', 'https://bugetare.ro'],
                     ] as [$glyph, $name, $text, $href])
                         @php($external = str_starts_with($href, 'http'))
@@ -121,8 +121,8 @@
                 </ul>
 
                 <div class="chapter-cta stage-chapter__cta" data-reveal>
-                    <x-ui.pill href="/contact">Cere o prezentare</x-ui.pill>
-                    <x-ui.arrow-link href="/produse">Toate produsele</x-ui.arrow-link>
+                    <x-ui.pill href="/contact/">Cere o prezentare</x-ui.pill>
+                    <x-ui.arrow-link href="/produse/">Toate produsele</x-ui.arrow-link>
                 </div>
             </div>
         </article>
@@ -142,9 +142,9 @@
                      single line, hairlines between. --}}
                 <ul class="stage-items stage-web__items" data-reveal>
                     @foreach ([
-                        ['monitor', 'Site de prezentare', 'Un site clar, ușor de actualizat.', '/creare-site-iasi'],
-                        ['shopping-bag', 'Magazin online', 'Catalog, plăți și livrare la un loc.', '/creare-magazin-online'],
-                        ['shield-check', 'Mentenanță și găzduire', 'Actualizări, backup și suport.', '/mentenanta'],
+                        ['monitor', 'Site de prezentare', 'Un site clar, ușor de actualizat.', '/creare-site-iasi/'],
+                        ['shopping-bag', 'Magazin online', 'Catalog, plăți și livrare la un loc.', '/creare-magazin-online/'],
+                        ['shield-check', 'Mentenanță și găzduire', 'Actualizări, backup și suport.', '/mentenanta/'],
                     ] as [$glyph, $name, $text, $href])
                         <li data-reveal-child>
                             <a href="{{ $href }}" class="stage-item stage-item--link">
@@ -157,8 +157,8 @@
                 </ul>
 
                 <div class="chapter-cta stage-chapter__cta" data-reveal>
-                    <x-ui.pill href="/contact">Discută despre site</x-ui.pill>
-                    <x-ui.arrow-link href="/web">Web și e-commerce</x-ui.arrow-link>
+                    <x-ui.pill href="/contact/">Discută despre site</x-ui.pill>
+                    <x-ui.arrow-link href="/web/">Web și e-commerce</x-ui.arrow-link>
                 </div>
             </div>
         </article>

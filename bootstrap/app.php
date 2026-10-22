@@ -1,6 +1,7 @@
 <?php
 
 use App\Actions\Seo\HandleNotFound;
+use App\Http\Middleware\CanonicalTrailingSlash;
 use App\Http\Middleware\EnsureCanAccessAdmin;
 use App\Http\Middleware\HandleAppearance;
 use App\Http\Middleware\HandleInertiaRequests;
@@ -31,6 +32,8 @@ return Application::configure(basePath: dirname(__DIR__))
             HandleAppearance::class,
             HandleInertiaRequests::class,
             AddLinkHeadersForPreloadedAssets::class,
+            // After routing, on the response: see its docblock.
+            CanonicalTrailingSlash::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

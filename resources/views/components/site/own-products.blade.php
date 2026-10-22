@@ -21,7 +21,7 @@
             'name' => '[Numele produsului]',
             'for' => 'Pentru universități.',
             'detail' => 'Administrarea proiectelor, a finanțărilor și a raportărilor.',
-            'link' => ['label' => 'Află mai multe', 'href' => '/produse'],
+            'link' => ['label' => 'Află mai multe', 'href' => '/produse/'],
             'variant' => 'university',
         ],
         // TODO: a placeholder for a third product — only in the stack for now.
@@ -29,7 +29,7 @@
             'name' => '[Numele produsului]',
             'for' => 'Pentru instituții publice.',
             'detail' => 'Registratură, documente și termene, într-un singur loc.',
-            'link' => ['label' => 'Află mai multe', 'href' => '/produse'],
+            'link' => ['label' => 'Află mai multe', 'href' => '/produse/'],
             'variant' => 'company',
             'stack_only' => true,
         ],

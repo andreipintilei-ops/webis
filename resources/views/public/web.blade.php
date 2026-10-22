@@ -26,13 +26,13 @@
             'title' => 'Site de prezentare',
             'for' => 'Pentru firme care vor să fie găsite și să explice clar ce fac.',
             'points' => ['Pagini de servicii, despre, contact, blog', 'Formulare de contact și cerere de ofertă', 'Structură gândită pentru Google'],
-            'href' => '/creare-site-de-prezentare',
+            'href' => '/creare-site-de-prezentare/',
         ],
         [
             'title' => 'Magazin online',
             'for' => 'Pentru cine vinde produse și vrea comenzi online.',
             'points' => ['Produse și categorii nelimitate', 'Plată cu cardul, ramburs sau transfer bancar', 'Facturare automată'],
-            'href' => '/magazin-online',
+            'href' => '/magazin-online/',
         ],
     ];
 

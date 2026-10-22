@@ -42,7 +42,7 @@
             <ul class="theo-menu__links">
                 @foreach ($pages as $link)
                     <li>
-                        <a href="{{ $link['href'] }}" @class(['theo-menu__link', 'is-active' => $link['current']]) data-theo-item @if ($link['current']) aria-current="page" @endif><x-ui.roll :text="$link['label']" /></a>
+                        <a href="{{ \App\Support\TrailingSlash::href($link['href']) }}" @class(['theo-menu__link', 'is-active' => $link['current']]) data-theo-item @if ($link['current']) aria-current="page" @endif><x-ui.roll :text="$link['label']" /></a>
                     </li>
                 @endforeach
             </ul>
@@ -52,7 +52,7 @@
                 <ul class="theo-menu__services">
                     @foreach (\App\Support\SiteNavigation::services() as $link)
                         <li>
-                            <a href="{{ $link['href'] }}" @class(['theo-menu__service', 'is-active' => $link['current']]) data-theo-link @if ($link['current']) aria-current="page" @endif><x-ui.roll :text="$link['label']" /></a>
+                            <a href="{{ \App\Support\TrailingSlash::href($link['href']) }}" @class(['theo-menu__service', 'is-active' => $link['current']]) data-theo-link @if ($link['current']) aria-current="page" @endif><x-ui.roll :text="$link['label']" /></a>
                         </li>
                     @endforeach
                 </ul>

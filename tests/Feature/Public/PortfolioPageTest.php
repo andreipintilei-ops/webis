@@ -17,9 +17,9 @@ it('moves the client work to the old /portofoliu address, still "Clienți" in th
 
     preg_match('#<header class="site-nav.*?</header>#s', $this->get('/blog')->getContent(), $bar);
 
-    expect($bar[0])->toContain('href="/portofoliu"')
+    expect($bar[0])->toContain('href="/portofoliu/"')
         ->and(strip_tags($bar[0]))->toContain('Clienți')
-        ->and($bar[0])->not->toContain('href="/clienti"');
+        ->and($bar[0])->not->toContain('href="/clienti/"');
 });
 
 it('shows only published client projects, each linking to /proiect/{slug}', function () {
@@ -72,7 +72,7 @@ it('filters by type, at its own address, in place, and ignores an unknown one', 
         ->and($row($shops, 'prezentare'))->toBeTrue()
         ->and($row($shops, 'logo'))->toBeTrue()
         ->and($shops)->toContain('<title>Magazine online · Portofoliu | Webis</title>')
-        ->toMatch('#href="[^"]*/portofoliu\?tip=magazin\#proiecte" class="portfolio-filter__link" data-work-filter="magazin" data-no-transition\s*aria-current="page"\s*>Magazine online#')
+        ->toMatch('#href="[^"]*/portofoliu/\?tip=magazin\#proiecte" class="portfolio-filter__link" data-work-filter="magazin" data-no-transition\s*aria-current="page"\s*>Magazine online#')
         // Every filter is there, none through the page transition.
         ->and(preg_match_all('#data-work-filter="[a-z]*" data-no-transition#', $shops))->toBe(5)
         ->and($shops)->toContain('>Toate</a>')
@@ -204,7 +204,7 @@ it('fills a product page\'s "Folosit de" strip from the clients that use it, as 
 
 it('links the footer\'s "Portofoliu" group to the type filters', function () {
     expect($this->get('/blog')->getContent())
-        ->toContain('href="/portofoliu?tip=magazin"')
-        ->toContain('href="/portofoliu?tip=prezentare"')
+        ->toContain('href="/portofoliu/?tip=magazin"')
+        ->toContain('href="/portofoliu/?tip=prezentare"')
         ->not->toContain('/clienti#');
 });

@@ -57,8 +57,8 @@ it('lists in the menu the pages (Contact last), the three services and how to re
     preg_match_all('#<a href="([^"]+)" class="theo-menu__link#', $menu[0], $pages);
     preg_match_all('#<a href="([^"]+)" class="theo-menu__service#', $menu[0], $services);
 
-    expect($pages[1])->toBe(['/', '/portofoliu', '/blog', '/contact'])
-        ->and($services[1])->toBe(['/software-la-comanda', '/produse', '/web'])
+    expect($pages[1])->toBe(['/', '/portofoliu/', '/blog/', '/contact/'])
+        ->and($services[1])->toBe(['/software-la-comanda/', '/produse/', '/web/'])
         ->and($menu[0])->toContain('href="mailto:contact@webis.ro"')
         ->toContain('href="tel:')
         // The current page is marked.
@@ -70,27 +70,27 @@ it('shows the top bar sections, with the Servicii dropdown and no Produse', func
 
     expect($bar[0])
         // The dropdown opens under a chevron.
-        ->toMatch('#<li class="site-nav__dropdown hidden md:block">\s*<a href="/solutii" class="site-link"\s*>\s*<span class="roll">.*?</span>\s*<svg class="site-nav__chevron"#s')
+        ->toMatch('#<li class="site-nav__dropdown hidden md:block">\s*<a href="/solutii/" class="site-link"\s*>\s*<span class="roll">.*?</span>\s*<svg class="site-nav__chevron"#s')
         // Its label, rolling letter by letter (components/ui/roll).
         ->and(strip_tags($bar[0]))->toContain('Servicii')
         ->and($bar[0])
         ->not->toContain('site-nav__caret')
         ->toContain('<div class="site-dropdown">')
         // Its three services.
-        ->toContain('<a href="/software-la-comanda" class="site-dropdown__link">Software la comandă</a>')
-        ->toContain('<a href="/produse" class="site-dropdown__link">Produse SaaS</a>')
-        ->toContain('<a href="/web" class="site-dropdown__link">Web și e-commerce</a>')
+        ->toContain('<a href="/software-la-comanda/" class="site-dropdown__link">Software la comandă</a>')
+        ->toContain('<a href="/produse/" class="site-dropdown__link">Produse SaaS</a>')
+        ->toContain('<a href="/web/" class="site-dropdown__link">Web și e-commerce</a>')
         // Then the sections, Blog among them; Produse is only in the dropdown.
-        ->toContain('href="/portofoliu"')
-        ->not->toContain('href="/despre"')
-        ->toContain('href="/blog"')
+        ->toContain('href="/portofoliu/"')
+        ->not->toContain('href="/despre/"')
+        ->toContain('href="/blog/"')
         ->and(substr_count($bar[0], 'site-link__text">Produse<'))->toBe(0);
 });
 
 it('shows Contact in the top bar as the main button, in the header tone', function () {
     $light = $this->get('/solutii')->assertOk()->getContent();
 
-    preg_match('/<a href="\/contact" class="pill btn-light">.*?<\/a>/s', $light, $pill);
+    preg_match('/<a href="\/contact\/" class="pill btn-light">.*?<\/a>/s', $light, $pill);
 
     // The label, rolling letter by letter (components/ui/roll).
     expect(strip_tags($pill[0]))->toContain('Hai să discutăm')
@@ -168,8 +168,8 @@ it('keeps the home page to its blocks, then the stage, the clients\' wall and th
         ->and(substr_count($html, 'class="stage-item stage-item--link"'))->toBe(3)
         ->and($html)->toMatch('#<a href="https://smilesoft.ro"[^>]*target="_blank"[^>]*rel="noopener"#')
         ->toMatch('#<a href="https://bugetare.ro"[^>]*target="_blank"[^>]*rel="noopener"#')
-        ->toContain('href="/creare-magazin-online"')
-        ->toContain('href="/mentenanta"')
+        ->toContain('href="/creare-magazin-online/"')
+        ->toContain('href="/mentenanta/"')
         // Then the closing panel the plates gather into.
         ->toContain('data-stage-finale')
         ->toContain('Site, platformă sau aplicație?')
@@ -209,7 +209,7 @@ it('shows the three latest articles after the clients\' wall, each at its root a
     preg_match_all('#<a href="([^"]+)" class="post-card">#', $section[0], $links);
 
     expect(strpos($html, '<section id="blog" class="site-blog'))->toBeGreaterThan(strpos($html, '<section id="clienti"'))
-        ->and($links[1])->toBe(['/al-doilea', '/al-treilea', '/primul-articol'])
+        ->and($links[1])->toBe(['/al-doilea/', '/al-treilea/', '/primul-articol/'])
         ->and($section[0])->toContain('<span class="post-card__category">E-commerce</span>')
         ->toContain('<time datetime="2026-09-22">22 septembrie 2026</time>')
         ->toContain('href="'.route('posts.index').'"')
@@ -241,7 +241,7 @@ it('closes every page with the footer on the violet gradient: the call, the link
 
     expect($footer[0])
         ->toContain('<canvas data-soffit data-palette="violet"')
-        ->toContain('href="/contact"')
+        ->toContain('href="/contact/"')
         ->toContain('href="tel:+40770700607"')
         ->toContain('href="mailto:contact@webis.ro"')
         ->toContain('Software la comandă')

@@ -33,7 +33,7 @@
                 @if ($link['cta'])
                     {{-- The call to action: the main button, as in the hero. --}}
                     <li class="hidden md:ml-4 md:block">
-                        <x-ui.pill :href="$link['href']" :tone="$theme" :aria-current="$link['current'] ? 'page' : null">
+                        <x-ui.pill :href="\App\Support\TrailingSlash::href($link['href'])" :tone="$theme" :aria-current="$link['current'] ? 'page' : null">
                             {{ $link['cta'] }}
                         </x-ui.pill>
                     </li>
@@ -44,7 +44,7 @@
                         item itself stays a link to the section overview.
                     --}}
                     <li class="site-nav__dropdown hidden md:block">
-                        <a href="{{ $link['href'] }}" @class(['site-link', 'is-active' => $link['current']]) @if ($link['current']) aria-current="page" @endif>
+                        <a href="{{ \App\Support\TrailingSlash::href($link['href']) }}" @class(['site-link', 'is-active' => $link['current']]) @if ($link['current']) aria-current="page" @endif>
                             <x-ui.roll :text="$link['label']" />
                             {{-- A chevron: it turns over while the dropdown is open. --}}
                             <svg class="site-nav__chevron" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
@@ -55,7 +55,7 @@
                             <ul class="site-dropdown__list">
                                 @foreach ($link['children'] as $child)
                                     <li>
-                                        <a href="{{ $child['href'] }}" class="site-dropdown__link">{{ $child['label'] }}</a>
+                                        <a href="{{ \App\Support\TrailingSlash::href($child['href']) }}" class="site-dropdown__link">{{ $child['label'] }}</a>
                                     </li>
                                 @endforeach
                             </ul>
@@ -64,7 +64,7 @@
                 @else
                     <li class="hidden md:block">
                         {{-- The label rolls letter by letter on hover (css/site/roll.css). --}}
-                        <a href="{{ $link['href'] }}" @class(['site-link', 'is-active' => $link['current']]) @if ($link['current']) aria-current="page" @endif>
+                        <a href="{{ \App\Support\TrailingSlash::href($link['href']) }}" @class(['site-link', 'is-active' => $link['current']]) @if ($link['current']) aria-current="page" @endif>
                             <x-ui.roll :text="$link['label']" />
                         </a>
                     </li>

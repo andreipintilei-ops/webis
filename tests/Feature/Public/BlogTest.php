@@ -28,7 +28,7 @@ it('makes an article a page type, at its own root address', function () {
 
     expect(PageType::from('article'))->toBe(PageType::Article)
         ->and(PageType::Article->label())->toBe('Articol')
-        ->and(PublicUrls::for($article))->toBe('/ce-este-seo-on-page');
+        ->and(PublicUrls::for($article))->toBe('/ce-este-seo-on-page/');
 
     // Served by the catch-all, like any other page.
     $this->get('/ce-este-seo-on-page')->assertOk();
@@ -72,8 +72,8 @@ it('lists only published articles at /blog, newest first, each linking to its ro
     $html = $this->get('/blog')->assertOk()->getContent();
     preg_match('#<a href="([^"]+)" class="blog-lead">#', $html, $lead);
 
-    expect($lead[1])->toBe('/cel-mai-nou')
-        ->and(cardLinks($html))->toBe(['/al-doilea', '/al-treilea', '/al-patrulea'])
+    expect($lead[1])->toBe('/cel-mai-nou/')
+        ->and(cardLinks($html))->toBe(['/al-doilea/', '/al-treilea/', '/al-patrulea/'])
         ->and($html)->toContain('<span class="blog-categories__count">4</span>')
         ->not->toContain('Articol ciornă')
         ->not->toContain('Articol programat')
@@ -91,10 +91,10 @@ it('pages through the articles with ?pagina=, and finds no page past the last', 
     $first = $this->get('/blog')->assertOk()->getContent();
     $second = $this->get('/blog?pagina=2')->assertOk()->getContent();
 
-    expect(cardLinks($first))->toHaveCount(9)->toContain('/articol-2')->not->toContain('/articol-1')
+    expect(cardLinks($first))->toHaveCount(9)->toContain('/articol-2/')->not->toContain('/articol-1/')
         ->and($second)->toContain('<title>Blog, pagina 2 | Webis</title>')
         ->not->toContain('class="blog-lead"')
-        ->and(cardLinks($second))->toBe(['/articol-11', '/articol-12', '/articol-13']);
+        ->and(cardLinks($second))->toBe(['/articol-11/', '/articol-12/', '/articol-13/']);
 
     $this->get('/blog?pagina=3')->assertNotFound();
 });
@@ -129,10 +129,10 @@ it('lists one category\'s articles at /blog/categorie/{slug}, with its own title
         ->toContain('<meta name="description" content="Cum te găsesc clienții pe Google.">')
         // No lead on a category: all its articles are cards.
         ->not->toContain('class="blog-lead"')
-        ->and(cardLinks($html))->toHaveCount(9)->toContain('/seo-1')->not->toContain('/alt-subiect')
+        ->and(cardLinks($html))->toHaveCount(9)->toContain('/seo-1/')->not->toContain('/alt-subiect/')
         ->and($html)->toContain('href="'.route('posts.category', 'seo').'?pagina=2"');
 
-    expect(cardLinks($this->get('/blog/categorie/seo?pagina=2')->assertOk()->getContent()))->toBe(['/seo-10']);
+    expect(cardLinks($this->get('/blog/categorie/seo?pagina=2')->assertOk()->getContent()))->toBe(['/seo-10/']);
 
     $this->get('/blog/categorie/seo?pagina=3')->assertNotFound();
 });
@@ -159,5 +159,5 @@ it('redirects a renamed category from its old address', function () {
 });
 
 it('sends the old site\'s project archive to the portfolio', function () {
-    $this->get('/proiect')->assertStatus(301)->assertRedirect('/portofoliu');
+    $this->get('/proiect')->assertStatus(301)->assertRedirect('/portofoliu/');
 });

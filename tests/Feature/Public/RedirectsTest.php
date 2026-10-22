@@ -29,9 +29,9 @@ it('answers an exact row with a 301 to its target', function () {
 });
 
 it('answers a temporary row with a 302', function () {
-    Redirect::factory()->create(['source_path' => '/promotie', 'target' => '/oferta', 'status_code' => 302]);
+    Redirect::factory()->create(['source_path' => '/promotie', 'target' => '/oferta/', 'status_code' => 302]);
 
-    $this->get('/promotie')->assertStatus(302)->assertRedirect('/oferta');
+    $this->get('/promotie')->assertStatus(302)->assertRedirect('/oferta/');
 });
 
 it('emits the target exactly as stored', function () {
@@ -62,27 +62,27 @@ it('matches a prefix row against everything under it', function () {
 });
 
 it('prefers the longest matching prefix', function () {
-    Redirect::factory()->prefix()->create(['source_path' => '/servicii-vechi', 'target' => '/solutii']);
-    Redirect::factory()->prefix()->create(['source_path' => '/servicii-vechi/web', 'target' => '/web']);
+    Redirect::factory()->prefix()->create(['source_path' => '/servicii-vechi', 'target' => '/solutii/']);
+    Redirect::factory()->prefix()->create(['source_path' => '/servicii-vechi/web', 'target' => '/web/']);
 
-    $this->get('/servicii-vechi/web/magazine')->assertRedirect('/web');
-    $this->get('/servicii-vechi/seo')->assertRedirect('/solutii');
+    $this->get('/servicii-vechi/web/magazine')->assertRedirect('/web/');
+    $this->get('/servicii-vechi/seo')->assertRedirect('/solutii/');
 });
 
 it('prefers an exact row over a prefix that also matches', function () {
-    Redirect::factory()->prefix()->create(['source_path' => '/tag', 'target' => '/blog']);
-    Redirect::factory()->prefix()->create(['source_path' => '/tag/seo', 'target' => '/blog/categorie/marketing']);
-    Redirect::factory()->create(['source_path' => '/tag/seo/ghid', 'target' => '/ce-este-seo']);
+    Redirect::factory()->prefix()->create(['source_path' => '/tag', 'target' => '/blog/']);
+    Redirect::factory()->prefix()->create(['source_path' => '/tag/seo', 'target' => '/blog/categorie/marketing/']);
+    Redirect::factory()->create(['source_path' => '/tag/seo/ghid', 'target' => '/ce-este-seo/']);
 
-    $this->get('/tag/seo/ghid')->assertRedirect('/ce-este-seo');
-    $this->get('/tag/seo/altceva')->assertRedirect('/blog/categorie/marketing');
+    $this->get('/tag/seo/ghid')->assertRedirect('/ce-este-seo/');
+    $this->get('/tag/seo/altceva')->assertRedirect('/blog/categorie/marketing/');
 });
 
 it('never matches an exact row against the paths under it', function () {
-    Redirect::factory()->prefix()->create(['source_path' => '/autor', 'target' => '/blog']);
-    Redirect::factory()->create(['source_path' => '/autor/andrei', 'target' => '/despre-noi']);
+    Redirect::factory()->prefix()->create(['source_path' => '/autor', 'target' => '/blog/']);
+    Redirect::factory()->create(['source_path' => '/autor/andrei', 'target' => '/despre-noi/']);
 
-    $this->get('/autor/andrei/pagina')->assertRedirect('/blog');
+    $this->get('/autor/andrei/pagina')->assertRedirect('/blog/');
 });
 
 it('answers a gone row with a 410 page and no Location', function () {
@@ -197,7 +197,7 @@ it('sends an archive page to the archive', function () {
         ->assertStatus(301)
         ->assertHeader('Location', absolute('/blog/categorie/seo/'));
     // A live archive is its own target.
-    $this->get('/blog/page/2/')->assertStatus(301)->assertHeader('Location', absolute('/blog'));
+    $this->get('/blog/page/2/')->assertStatus(301)->assertHeader('Location', absolute('/blog/'));
 });
 
 it('leaves a bare /page/N to the table', function () {
@@ -214,9 +214,9 @@ it('sends an uppercase address to its lowercase page', function () {
 
     $this->get('/Ce-Este-SEO?utm_source=x')
         ->assertStatus(301)
-        ->assertHeader('Location', absolute('/ce-este-seo?utm_source=x'));
-    $this->get('/Proiect/Magazin-Online')->assertStatus(301)->assertHeader('Location', absolute('/proiect/magazin-online'));
-    $this->get('/BLOG')->assertStatus(301)->assertHeader('Location', absolute('/blog'));
+        ->assertHeader('Location', absolute('/ce-este-seo/?utm_source=x'));
+    $this->get('/Proiect/Magazin-Online')->assertStatus(301)->assertHeader('Location', absolute('/proiect/magazin-online/'));
+    $this->get('/BLOG')->assertStatus(301)->assertHeader('Location', absolute('/blog/'));
 });
 
 it('leaves an uppercase address with no page behind it a 404', function () {
