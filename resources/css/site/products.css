@@ -24,13 +24,51 @@
         }
     }
 
-    /* No screenshot: the name on the left (1–6), the rest on the right (8–12). */
-    .saas-stack__head {
-        @apply relative z-[1] lg:col-span-6;
+    /*
+      Every card in a colour of the hero's, white on it: the indigo, the
+      violet, the purple into the violet (as /portofoliu's third), the
+      deeper indigo.
+    */
+    .saas-stack .work-stack__panel {
+        @apply text-white;
+        border-color: transparent;
+        --muted: rgb(255 255 255 / 0.8);
+        --accent: #fff;
     }
 
-    .saas-stack__body {
-        @apply relative z-[1] flex flex-col items-start gap-8 lg:col-span-5 lg:col-start-8;
+    .saas-stack .work-stack__card--1 .work-stack__panel {
+        background: #1f2868;
+    }
+
+    .saas-stack .work-stack__card--2 .work-stack__panel {
+        background: var(--violet-500);
+    }
+
+    .saas-stack .work-stack__card--4 .work-stack__panel {
+        background: var(--indigo-800);
+    }
+
+    /* The white button on every card, as on /portofoliu's violet one. */
+    .saas-stack .work-stack__card .work-stack__link.pill.btn-dark {
+        --btn-ink: #fff;
+        --btn-contrast: var(--violet-500);
+    }
+
+    /*
+      The name at the top of the left column, what it does at its foot
+      (1–5); the placeholder on the right (7–12). From 1024px the card's
+      full height, inset top and bottom.
+    */
+    .saas-stack__panel {
+        @apply lg:items-stretch lg:py-16;
+    }
+
+    .saas-stack__main {
+        @apply relative z-[1] flex flex-col justify-between gap-10 lg:col-span-5;
+    }
+
+    .saas-stack__foot {
+        @apply flex flex-col items-start gap-8;
     }
 
     .saas-stack__text {
@@ -44,6 +82,14 @@
         & .work-stack__link {
             @apply mt-0 lg:mt-0;
         }
+    }
+
+    /* Where the screenshot will go: a plain tint of white, for now. */
+    .saas-stack__visual {
+        @apply rounded-2xl lg:col-span-7 lg:self-center;
+        aspect-ratio: 3 / 2;
+        background: rgb(255 255 255 / 0.12);
+        border: 1px solid rgb(255 255 255 / 0.18);
     }
 
     /* ---- How to start, product or made to order --------------------------------- */

@@ -126,10 +126,10 @@
     {{-- ================================================== The products --}}
     {{-- /portofoliu's featured projects (components/site/featured-work,
          css/site/work-stack.css): a screen-high card each, stacking on
-         scroll from 1024px (js/public/product-stack.ts) — white, lilac,
-         violet, white. No screenshots yet: the name large on the left, what
-         it does and the way to a demo on the right. The sheet rises over the
-         dark area. --}}
+         scroll from 1024px (js/public/product-stack.ts), each in a colour
+         of the hero's. On the left the name at the top, what it does and
+         the way to a demo at the foot; on the right a plain placeholder
+         until there are screenshots. The sheet rises over the dark area. --}}
     <section id="produsele" class="work-stack saas-stack" aria-labelledby="saas-products-title" data-product-stack data-reveal-pace="fast">
         <header class="work-stack__head" data-reveal="head">
             <div class="chapter__head-main md:col-span-7">
@@ -144,24 +144,29 @@
                     {{-- The entry moves this frame; being covered moves the panel. --}}
                     <div class="work-stack__frame" data-product-entry>
                         <div class="work-stack__panel saas-stack__panel" data-product-panel>
-                            <div class="saas-stack__head">
-                                <p class="work-stack__count">{{ sprintf('%02d', $loop->iteration) }} / {{ sprintf('%02d', count($products)) }} · {{ $item['for'] }}</p>
-                                <h3 id="{{ $product->value }}-title" class="work-stack__client">{{ $product->label() }}</h3>
-                            </div>
-
-                            <div class="saas-stack__body">
-                                <p class="saas-stack__text">{{ $item['text'] }}</p>
-
-                                <div class="saas-stack__links">
-                                    {{-- On the violet card (every third), the white button. --}}
-                                    <x-ui.pill :href="'/contact/?produs='.$product->value" :tone="$loop->iteration % 3 === 0 ? 'dark' : 'light'" class="work-stack__link">Cere o prezentare</x-ui.pill>
-                                    @if ($product->externalUrl())
-                                        <x-ui.arrow-link :href="$product->externalUrl()" :tone="$loop->iteration % 3 === 0 ? 'dark' : 'light'" target="_blank" rel="noopener">{{ parse_url($product->externalUrl(), PHP_URL_HOST) }}</x-ui.arrow-link>
-                                    @endif
+                            <div class="saas-stack__main">
+                                <div>
+                                    <p class="work-stack__count">{{ sprintf('%02d', $loop->iteration) }} / {{ sprintf('%02d', count($products)) }} · {{ $item['for'] }}</p>
+                                    <h3 id="{{ $product->value }}-title" class="work-stack__client">{{ $product->label() }}</h3>
                                 </div>
 
-                                <x-site.used-by :product="$product" />
+                                <div class="saas-stack__foot">
+                                    <p class="saas-stack__text">{{ $item['text'] }}</p>
+
+                                    <div class="saas-stack__links">
+                                        {{-- The white button, on the card's colour. --}}
+                                        <x-ui.pill :href="'/contact/?produs='.$product->value" tone="dark" class="work-stack__link">Cere o prezentare</x-ui.pill>
+                                        @if ($product->externalUrl())
+                                            <x-ui.arrow-link :href="$product->externalUrl()" tone="dark" target="_blank" rel="noopener">{{ parse_url($product->externalUrl(), PHP_URL_HOST) }}</x-ui.arrow-link>
+                                        @endif
+                                    </div>
+
+                                    <x-site.used-by :product="$product" />
+                                </div>
                             </div>
+
+                            {{-- TODO: the product's own screenshots. --}}
+                            <div class="saas-stack__visual" aria-hidden="true"></div>
                         </div>
                     </div>
                 </article>
