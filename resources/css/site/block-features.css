@@ -1,0 +1,40 @@
+/*
+  Features block, its columns (blocks/features.blade.php): the cards
+  between hairlines, over as many rows as they need. Each card draws a line
+  on its right and below, as the chapters' cells do
+  (css/site/service-chapters.css); the grid clips the ones on its outer
+  edges and closes with its own lines above and below. The cards in the
+  first column start on the heading's edge.
+*/
+@layer components {
+    .feature-grid {
+        @apply overflow-hidden;
+        --line: var(--color-neutral-200);
+
+        & > li {
+            @apply py-10 md:py-12 md:pr-8 lg:pr-10;
+            box-shadow: 1px 1px 0 0 var(--line);
+        }
+    }
+
+    /* Two columns from 768px: the second inset (four columns: until 1024px). */
+    .feature-grid--2 > li:nth-child(even),
+    .feature-grid--4 > li:nth-child(even) {
+        @apply md:pl-8 lg:pl-10;
+    }
+
+    .feature-grid--3 > li:not(:nth-child(3n + 1)) {
+        @apply md:pl-8 lg:pl-10;
+    }
+
+    /* Four from 1024px: all inset but the first of each row. */
+    @media (min-width: 1024px) {
+        .feature-grid--4 > li:nth-child(n) {
+            @apply pl-10;
+        }
+
+        .feature-grid--4 > li:nth-child(4n + 1) {
+            @apply pl-0;
+        }
+    }
+}

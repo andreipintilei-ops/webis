@@ -51,6 +51,7 @@
 @import './site/variant-stage.css';
 /* The page-builder blocks' own (blocks/*.blade.php), on the system above. */
 @import './site/block-rich-text.css';
+@import './site/block-features.css';
 @import './site/block-faq.css';
 @import './site/block-pricing-tiers.css';
 @import './site/block-stats.css';

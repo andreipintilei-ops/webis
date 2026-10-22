@@ -1,7 +1,8 @@
 {{--
     Features block (App\Blocks\FeaturesBlock): cards in columns, divided by
-    hairlines. Each card: title, text, an optional note (when it fits) and an
-    optional link, held to the foot of the card so the links line up.
+    hairlines, over as many rows as they need (css/site/block-features.css).
+    Each card: title, text, an optional note (when it fits) and an optional
+    link, held to the foot of the card so the links line up.
 
     The layout: a page template's featuresLayout (home: blocks/partials/
     services; /clienti: services-plain), else the block's own `layout` —
@@ -35,14 +36,13 @@
             @endif
 
             <ul @class([
-                'mt-14 grid divide-y divide-neutral-200 border-y border-neutral-200 md:mt-20 md:divide-x md:divide-y-0',
+                'feature-grid feature-grid--'.$columns.' mt-14 grid border-y border-neutral-200 md:mt-20',
                 'md:grid-cols-2' => $columns === 2,
                 'md:grid-cols-3' => $columns === 3,
                 'md:grid-cols-2 lg:grid-cols-4' => $columns === 4,
             ])>
                 @foreach ($items as $item)
-                    {{-- Hairlines between cards: rows on phones, columns from md up. --}}
-                    <li class="flex flex-col py-10 md:px-8 md:py-12 md:first:pl-0 md:last:pr-0 lg:px-10">
+                    <li class="flex flex-col">
                         <h3 class="text-2xl leading-tight font-semibold tracking-[-0.01em] text-balance">{{ $item['title'] }}</h3>
 
                         @if (! empty($item['text']))
