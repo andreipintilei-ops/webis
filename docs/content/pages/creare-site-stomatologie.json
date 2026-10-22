@@ -1,0 +1,325 @@
+{
+    "type": "industry",
+    "title": "Creare site stomatologie",
+    "url": "/creare-site-stomatologie/",
+    "category": null,
+    "excerpt": null,
+    "published_at": "2024-05-16",
+    "seo": {
+        "title": null,
+        "description": null,
+        "canonical": null,
+        "noindex": false,
+        "og_image_asset_id": null,
+        "focus_keyword": null
+    },
+    "blocks": [
+        {
+            "id": "01m5hq65faw11f62jwqzjwtjme",
+            "type": "hero",
+            "v": 1,
+            "data": {
+                "eyebrow": null,
+                "heading": "Creare site stomatologie",
+                "subheading": "Prin serviciul de creare site stomatologie, veti obtine un site modern si inovator pentru prezentarea activitatii, oferind posibilitatea clientilor de alege serviciile sau pachetele de servicii potrivite pentru nevoile lor.",
+                "image_asset_id": 360,
+                "layout": "split",
+                "background": "gradient-violet",
+                "align": "center",
+                "logos": false,
+                "primary_cta": {
+                    "label": "Cere o ofertă",
+                    "url": "/contact/"
+                },
+                "secondary_cta": null
+            }
+        },
+        {
+            "id": "01m5hq65faw11f62jwqzjwtjmf",
+            "type": "rich_text",
+            "v": 1,
+            "data": {
+                "content": {
+                    "type": "doc",
+                    "content": [
+                        {
+                            "type": "paragraph",
+                            "content": [
+                                {
+                                    "type": "text",
+                                    "text": "Creare site stomatologie, creare site clinica dentara."
+                                }
+                            ]
+                        }
+                    ]
+                },
+                "content_html": "<p>Creare site stomatologie, creare site clinica dentara.</p>"
+            }
+        },
+        {
+            "id": "01m5hq65fbyvb43mnerpvdjen3",
+            "type": "features",
+            "v": 1,
+            "data": {
+                "heading": "Creare site stomatologie",
+                "intro": "Serviciul de creare site stomatologie sau clinica dentara cuprinde",
+                "layout": "columns",
+                "columns": 3,
+                "items": [
+                    {
+                        "icon": null,
+                        "title": "Logo si identitate vizuala personalizata",
+                        "text": null,
+                        "note": null,
+                        "link": null
+                    },
+                    {
+                        "icon": null,
+                        "title": "Integrarea modulului de plata online",
+                        "text": null,
+                        "note": null,
+                        "link": null
+                    },
+                    {
+                        "icon": null,
+                        "title": "Program de fidelizare",
+                        "text": null,
+                        "note": null,
+                        "link": null
+                    },
+                    {
+                        "icon": null,
+                        "title": "Vanzare produse din domeniul stomatologiei",
+                        "text": null,
+                        "note": null,
+                        "link": null
+                    },
+                    {
+                        "icon": null,
+                        "title": "Pachete servicii",
+                        "text": null,
+                        "note": null,
+                        "link": null
+                    },
+                    {
+                        "icon": null,
+                        "title": "Administrare usoara prin panou de control",
+                        "text": null,
+                        "note": null,
+                        "link": null
+                    }
+                ]
+            }
+        },
+        {
+            "id": "01m5hq65fbyvb43mnerpvdjen4",
+            "type": "features",
+            "v": 1,
+            "data": {
+                "heading": "Site stomatologie",
+                "intro": null,
+                "layout": "columns",
+                "columns": 3,
+                "items": [
+                    {
+                        "icon": null,
+                        "title": "Website la cheie",
+                        "text": "Domeniu .ro gratuit · Pachet gazduire 12 luni GRATUIT · Adaptare design pentru orice device ( laptop, desktop, mobile, tableta)",
+                        "note": null,
+                        "link": null
+                    },
+                    {
+                        "icon": null,
+                        "title": "Optimizare SEO / Tehnic",
+                        "text": "SEO (Optimizare pentru motoarele de cautare) On-Page · Adresa de email unica",
+                        "note": null,
+                        "link": null
+                    },
+                    {
+                        "icon": null,
+                        "title": "Panou de control nelimitat",
+                        "text": "Panou de control cu acces securizat cu nume de utilizator si parola · Adresa de email unica (ex: exemplu@domeniultau.ro)",
+                        "note": null,
+                        "link": null
+                    },
+                    {
+                        "icon": null,
+                        "title": "Identitate vizuala",
+                        "text": "Creare logo site personalizat · Localizare pe harta",
+                        "note": null,
+                        "link": null
+                    },
+                    {
+                        "icon": null,
+                        "title": "Social media",
+                        "text": "Creare pagina de facebook · Creare pagina de instagram · Integrare blog",
+                        "note": null,
+                        "link": null
+                    },
+                    {
+                        "icon": null,
+                        "title": "Alte beneficii",
+                        "text": "Colaboarea pe partea tehnica cu echipa noastra · Design flexibil, cu posibilitatea de a adauga elemente",
+                        "note": null,
+                        "link": null
+                    }
+                ]
+            }
+        },
+        {
+            "id": "01m5hq65fc1f8g90kt1tjgsqk7",
+            "type": "rich_text",
+            "v": 1,
+            "data": {
+                "content": {
+                    "type": "doc",
+                    "content": [
+                        {
+                            "type": "heading",
+                            "attrs": {
+                                "level": 2,
+                                "id": "model-site-stomatologie"
+                            },
+                            "content": [
+                                {
+                                    "type": "text",
+                                    "text": "Model site stomatologie"
+                                }
+                            ]
+                        },
+                        {
+                            "type": "paragraph",
+                            "content": [
+                                {
+                                    "type": "text",
+                                    "text": "In continuare sunt prezentate modele de "
+                                },
+                                {
+                                    "type": "text",
+                                    "text": "site-uri stomatologice",
+                                    "marks": [
+                                        {
+                                            "type": "bold"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "type": "text",
+                                    "text": ", cu un design inovator si o utilizare facila. Puteti alege unul din modelele propuse de noi sau putem implementa un design "
+                                },
+                                {
+                                    "type": "text",
+                                    "text": "site stomatologie",
+                                    "marks": [
+                                        {
+                                            "type": "bold"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "type": "text",
+                                    "text": ", imaginat de dumneavoastra. Daca sunteti interesati serviciile noastre de creare "
+                                },
+                                {
+                                    "type": "text",
+                                    "text": "site stomatologie ",
+                                    "marks": [
+                                        {
+                                            "type": "bold"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "type": "text",
+                                    "text": "sau creare "
+                                },
+                                {
+                                    "type": "text",
+                                    "text": "site clinica dentara",
+                                    "marks": [
+                                        {
+                                            "type": "bold"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "type": "text",
+                                    "text": ", ne puteti contacta pentru a stabili o intalnire."
+                                }
+                            ]
+                        }
+                    ]
+                },
+                "content_html": "<h2 id=\"model-site-stomatologie\">Model site stomatologie</h2><p>In continuare sunt prezentate modele de <strong>site-uri stomatologice</strong>, cu un design inovator si o utilizare facila. Puteti alege unul din modelele propuse de noi sau putem implementa un design <strong>site stomatologie</strong>, imaginat de dumneavoastra. Daca sunteti interesati serviciile noastre de creare <strong>site stomatologie </strong>sau creare <strong>site clinica dentara</strong>, ne puteti contacta pentru a stabili o intalnire.</p>"
+            }
+        },
+        {
+            "id": "01m5hq65fc1f8g90kt1tjgsqk8",
+            "type": "gallery",
+            "v": 1,
+            "data": {
+                "heading": null,
+                "columns": 3,
+                "images": [
+                    {
+                        "asset_id": 363,
+                        "caption": null
+                    },
+                    {
+                        "asset_id": 362,
+                        "caption": null
+                    },
+                    {
+                        "asset_id": 361,
+                        "caption": null
+                    },
+                    {
+                        "asset_id": 360,
+                        "caption": null
+                    },
+                    {
+                        "asset_id": 359,
+                        "caption": null
+                    },
+                    {
+                        "asset_id": 358,
+                        "caption": null
+                    }
+                ]
+            }
+        },
+        {
+            "id": "01m5hq65fc1f8g90kt1tjgsqk9",
+            "type": "rich_text",
+            "v": 1,
+            "data": {
+                "content": {
+                    "type": "doc",
+                    "content": [
+                        {
+                            "type": "paragraph",
+                            "content": [
+                                {
+                                    "type": "text",
+                                    "text": "In urma procesului de creare site stomatologie, puteti prezenta clientilor activitatea dumneavoastra intr-un mod atractiv prin expunerea beneficiilor, serviciilor si ofertelor."
+                                }
+                            ]
+                        }
+                    ]
+                },
+                "content_html": "<p>In urma procesului de creare site stomatologie, puteti prezenta clientilor activitatea dumneavoastra intr-un mod atractiv prin expunerea beneficiilor, serviciilor si ofertelor.</p>"
+            }
+        },
+        {
+            "id": "01m5hq65fc1f8g90kt1tjgsqka",
+            "type": "quote_form",
+            "v": 1,
+            "data": {
+                "heading": "Cere o ofertă",
+                "intro": null,
+                "service_page_id": null,
+                "show_contact_details": true
+            }
+        }
+    ]
+}

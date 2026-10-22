@@ -1,0 +1,17 @@
+{
+    "type": "contact",
+    "title": "Contact",
+    "url": "/contact/",
+    "category": null,
+    "excerpt": null,
+    "published_at": "2026-10-01",
+    "seo": {
+        "title": null,
+        "description": null,
+        "canonical": null,
+        "noindex": false,
+        "og_image_asset_id": null,
+        "focus_keyword": null
+    },
+    "blocks": []
+}

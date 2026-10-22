@@ -1,0 +1,99 @@
+{
+    "type": "home",
+    "title": "Acasa",
+    "url": "/",
+    "category": null,
+    "excerpt": null,
+    "published_at": "2026-09-30",
+    "seo": {
+        "title": null,
+        "description": null,
+        "canonical": null,
+        "noindex": false,
+        "og_image_asset_id": null,
+        "focus_keyword": null
+    },
+    "blocks": [
+        {
+            "id": "049fe5a0-1c47-4a34-8221-ba11de16832d",
+            "type": "hero",
+            "v": 1,
+            "data": {
+                "eyebrow": "Pentru companii, instituții publice și universități.",
+                "heading": "Software care înțelege organizația și simplifică procesele",
+                "subheading": null,
+                "image_asset_id": null,
+                "layout": "centered",
+                "background": "gradient-violet",
+                "align": "left",
+                "logos": true,
+                "primary_cta": {
+                    "url": "/contact",
+                    "label": "Hai să discutăm"
+                },
+                "secondary_cta": {
+                    "url": "/clienti",
+                    "label": "Proiecte"
+                }
+            }
+        },
+        {
+            "id": "01m3xyvvy9d98h3xd6s2g2r90y",
+            "type": "statement",
+            "v": 1,
+            "data": {
+                "eyebrow": "Despre noi",
+                "statement": "Din 2016 dezvoltăm software,\npentru organizații care nu găsesc\nde-a gata ce le trebuie.",
+                "text": "Unii clienți vin pentru un site, alții pentru o platformă care le ține toată activitatea în ordine. Mulți ajung, cu timpul, la amândouă, și le facem pe toate cu aceeași echipă.",
+                "link": {
+                    "label": "Vezi proiectele",
+                    "url": "/portofoliu/"
+                },
+                "background": "hero"
+            }
+        },
+        {
+            "id": "01m3xsgf77s5pmhc6k6f4yhpgn",
+            "type": "features",
+            "v": 1,
+            "data": {
+                "heading": "Ce dezvoltăm",
+                "intro": null,
+                "layout": "cards",
+                "columns": 3,
+                "items": [
+                    {
+                        "icon": null,
+                        "link": {
+                            "url": "/software-la-comanda",
+                            "label": "Află mai multe"
+                        },
+                        "note": null,
+                        "text": "Sisteme construite pentru o singură organizație, pornind de la procesele ei. Analiză, dezvoltare, implementare, mentenanță.",
+                        "title": "Software la comandă"
+                    },
+                    {
+                        "icon": null,
+                        "link": {
+                            "url": "/produse",
+                            "label": "Vezi produsele"
+                        },
+                        "note": null,
+                        "text": "Produse proprii, pe abonament lunar. SmileSoft, pentru clinici stomatologice. Gata de folosit, fără proiect de implementare.",
+                        "title": "Produse SaaS"
+                    },
+                    {
+                        "icon": null,
+                        "link": {
+                            "url": "/web-si-e-commerce",
+                            "label": "Află mai multe"
+                        },
+                        "note": null,
+                        "text": "Site-uri de prezentare și magazine online. De aici am pornit în 2016 și le facem în continuare.",
+                        "title": "Web și e-commerce"
+                    }
+                ]
+            }
+        }
+    ]
+}

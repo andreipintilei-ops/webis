@@ -1,0 +1,220 @@
+{
+    "type": "page",
+    "title": "Creare magazin online",
+    "url": "/creare-magazin-online/",
+    "category": null,
+    "excerpt": "Ai nevoie de un magazin online? Oferim soluții personalizate și ușor de utilizat pentru a transforma visul tău de afacere online în realitate. Cere Oferta Vezi Portofoliul Serviciile noastre Creare…",
+    "published_at": "2024-03-05",
+    "seo": {
+        "title": null,
+        "description": null,
+        "canonical": null,
+        "noindex": false,
+        "og_image_asset_id": null,
+        "focus_keyword": null
+    },
+    "blocks": [
+        {
+            "id": "01m5hq64yg7emycd28w9x6r5ff",
+            "type": "hero",
+            "v": 1,
+            "data": {
+                "eyebrow": null,
+                "heading": "Ai nevoie de un magazin online?",
+                "subheading": "Oferim soluții personalizate și ușor de utilizat pentru a transforma visul tău de afacere online în realitate.",
+                "image_asset_id": 148,
+                "layout": "split",
+                "background": "gradient-violet",
+                "align": "center",
+                "logos": false,
+                "primary_cta": {
+                    "label": "Cere Oferta",
+                    "url": "/contact/"
+                },
+                "secondary_cta": {
+                    "label": "Vezi Portofoliul",
+                    "url": "/portofoliu/"
+                }
+            }
+        },
+        {
+            "id": "01m5hq64yg7emycd28w9x6r5fg",
+            "type": "features",
+            "v": 1,
+            "data": {
+                "heading": "Creare magazin online",
+                "intro": null,
+                "layout": "columns",
+                "columns": 3,
+                "items": [
+                    {
+                        "icon": null,
+                        "title": "Design responsive",
+                        "text": "Clientii vor putea accesa site-ul atat de pe calculator, cat si de pe dispozitivele mobile precum tableta si telefonul.",
+                        "note": null,
+                        "link": null
+                    },
+                    {
+                        "icon": null,
+                        "title": "Optimizare SEO",
+                        "text": "Magazinul online va fi realizat conform cerintelor SEO pentru a obtine o pozitionare buna in motoarele de cautare.",
+                        "note": null,
+                        "link": null
+                    },
+                    {
+                        "icon": null,
+                        "title": "Produse fara limita",
+                        "text": "Prin intermediul panoului de administrare puteti adauga un numar nelimitat de produse, categorii sau pagini.",
+                        "note": null,
+                        "link": null
+                    },
+                    {
+                        "icon": null,
+                        "title": "Generare factura",
+                        "text": "Nu veti mai pierde timp cu generarea manuala a facturilor. Prin apasarea unui singur buton factura este creata automat.",
+                        "note": null,
+                        "link": null
+                    },
+                    {
+                        "icon": null,
+                        "title": "Plati online & ramburs",
+                        "text": "Clientii dvs. vor avea posibilitatea de a achita comanda prin plata online, ramburs sau transfer bancar.",
+                        "note": null,
+                        "link": null
+                    },
+                    {
+                        "icon": null,
+                        "title": "Simplu de utilizat",
+                        "text": "“The last but not the least” – siteul trebuie sa fie foarte usor de folosit de catre clienti pentru a obtine o rata de conversie cat mai mare.",
+                        "note": null,
+                        "link": null
+                    }
+                ]
+            }
+        },
+        {
+            "id": "01m5hq64yg7emycd28w9x6r5fh",
+            "type": "stats",
+            "v": 1,
+            "data": {
+                "heading": null,
+                "items": [
+                    {
+                        "value": "7+",
+                        "label": "Ani de experienta",
+                        "note": null
+                    },
+                    {
+                        "value": "237",
+                        "label": "Proiecte finalizate",
+                        "note": null
+                    },
+                    {
+                        "value": "184",
+                        "label": "Clienti fericiti",
+                        "note": null
+                    },
+                    {
+                        "value": "1820",
+                        "label": "Cafele baute",
+                        "note": null
+                    }
+                ]
+            }
+        },
+        {
+            "id": "01m5hq64yh8caxjm9hjpaf154m",
+            "type": "rich_text",
+            "v": 1,
+            "data": {
+                "content": {
+                    "type": "doc",
+                    "content": [
+                        {
+                            "type": "heading",
+                            "attrs": {
+                                "level": 2,
+                                "id": "intrebari-frecvente"
+                            },
+                            "content": [
+                                {
+                                    "type": "text",
+                                    "text": "Intrebari frecvente"
+                                }
+                            ]
+                        },
+                        {
+                            "type": "paragraph",
+                            "content": [
+                                {
+                                    "type": "text",
+                                    "text": "Oferim servicii SEO atat pentru clienti din Iasi, cat si pentru cei din restul tarii. Webis se ocupa de web design, web development & SEO."
+                                }
+                            ]
+                        },
+                        {
+                            "type": "assetImage",
+                            "attrs": {
+                                "assetId": 61
+                            }
+                        }
+                    ]
+                },
+                "content_html": "<h2 id=\"intrebari-frecvente\">Intrebari frecvente</h2><p>Oferim servicii SEO atat pentru clienti din Iasi, cat si pentru cei din restul tarii. Webis se ocupa de web design, web development &amp; SEO.</p><figure class=\"rt-image\" data-asset-id=\"61\"></figure>"
+            }
+        },
+        {
+            "id": "01m5hq64yh8caxjm9hjpaf154n",
+            "type": "faq",
+            "v": 1,
+            "data": {
+                "heading": "Întrebări frecvente",
+                "items": [
+                    {
+                        "question": "Cat costa un magazin online profesional?",
+                        "answer": "Prețul unui magazin online profesional poate varia în funcție de complexitatea proiectului, cerințele specifice și platforma utilizată. La Webis, oferim o evaluare detaliată a cerințelor și un raport calitate-preț excelent, adaptat nevoilor și bugetului dvs. Contactați-ne pentru a începe colaborarea și pentru a obține cel mai bun magazin online pentru afacerea dvs."
+                    },
+                    {
+                        "question": "Este greu sa administrez site-ul? Cum adaug produse?",
+                        "answer": "Fiecare magazin online realizat de Webis include panou de administrare pentru a gestiona produsele, categoriile, comenzile, clientii si paginile interne precum „contact”, „termeni si conditii”, etc.\nRealizarea site-ului include instructajul dvs. sau al angajatilor. Dupa instructaj veti putea adauga/modifica/sterge produse in cateva secunde."
+                    },
+                    {
+                        "question": "Magazinul online poate avea mai multe limbi?",
+                        "answer": "Da, platforma folosita permite gestiunea a 2 sau mai multe limbi."
+                    },
+                    {
+                        "question": "Nu stiu de unde sa incep. Oferiti consiliere?",
+                        "answer": "Majoritatea clientilor vin la noi in birou cu o simpla idee si pleaca cu un plan bine elaborat.\nExerienta noastra este la dispozita dumneavoastra!"
+                    },
+                    {
+                        "question": "Care sunt pasii pentru realizarea unui magazin online?",
+                        "answer": "1. Analiza. Probabil cel mai important pas este cel de a analiza impreuna cu clientul cerintele si mai ales obiectivele pentru termen scurt si lung.\n2. Grafica & model. Fiecare site realizat de Webis are un concept grafic unic. Nu lucram pe teme deja realizate, element care ne diferentiaza de majoritatea firmelor de web design din Iasi si din tara.\n3. Implementare funtionalitati. In cursul acestui pas ne ocupam de realizarea magazinului web in sine si de implementarea cerintelor extra: module de plata / module de facturare / etc.\n4. Testare. Introducem produse demo si verificam functionalitata generala a site-ului.\n5. Predare. Deschidem sampania!"
+                    },
+                    {
+                        "question": "Cat dureaza realizarea unui magazin online?",
+                        "answer": "Timpul necesar pentru realizarea unui magazin online la cheie este de aproximativ 30 de zile calendaristice, dar poate varia in functie de complexitate si de domeniu de activitate."
+                    },
+                    {
+                        "question": "Magazinul va fi vizibil pe telefoanele mobile?",
+                        "answer": "Da, site-ul dvs. va fi optimizat atat pentru telefoanele mobile cat si pentru tableta sau laptopuri cu rezolutie mica.\nFiecare site creat de Webis este responsive."
+                    },
+                    {
+                        "question": "Pot integra un Blog sau alte sectiuni?",
+                        "answer": "Da, putem integra un blog pentru articole, dar si alte sectiuni precum:\n– noutati\n– locuri de munca disponibile\n– harta magazine\n– portofoliu\n– etc\nPutem integra aproapre orice sectiune."
+                    }
+                ]
+            }
+        },
+        {
+            "id": "01m5hq64yh8caxjm9hjpaf154p",
+            "type": "quote_form",
+            "v": 1,
+            "data": {
+                "heading": "Hai să lucrăm împreună",
+                "intro": "Ai nevoie de un site bine făcut? Completeaza formularul de alaturi si vei primi o oferta personalizata GRATUITA!",
+                "service_page_id": null,
+                "show_contact_details": true
+            }
+        }
+    ]
+}
