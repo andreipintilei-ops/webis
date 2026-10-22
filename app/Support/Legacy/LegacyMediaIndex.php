@@ -52,7 +52,9 @@ final class LegacyMediaIndex implements MediaResolver
 
     public static function fromFile(string $path): self
     {
-        return self::fromMediaSource(is_file($path) ? (array) json_decode((string) file_get_contents($path), true) : []);
+        $media = is_file($path) ? json_decode((string) file_get_contents($path), true) : [];
+
+        return self::fromMediaSource(is_array($media) ? array_values(array_filter($media, is_array(...))) : []);
     }
 
     /**

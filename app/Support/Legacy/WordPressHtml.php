@@ -96,7 +96,7 @@ final class WordPressHtml
             $marker = $this->marker($node);
 
             if ($marker !== null && $marker[0] === self::VIDEO_MARKER) {
-                $segments[] = ['type' => 'doc', 'doc' => ['type' => 'doc', 'content' => $content]];
+                $this->appendDoc($segments, $content);
                 $segments[] = ['type' => 'video', 'url' => $clean['videos'][$marker[1]]];
                 $content = [];
 
@@ -111,23 +111,24 @@ final class WordPressHtml
             $content[] = $node;
         }
 
-        $segments[] = ['type' => 'doc', 'doc' => ['type' => 'doc', 'content' => $content]];
+        $this->appendDoc($segments, $content);
 
-        $result = [];
+        return $segments;
+    }
 
-        foreach ($segments as $segment) {
-            if ($segment['type'] === 'doc') {
-                $segment['doc'] = $this->richText->sanitize($segment['doc']);
+    /**
+     * Appends the nodes as a sanitized document, unless nothing is left.
+     *
+     * @param  list<array{type: 'doc', doc: array{type: 'doc', content: list<array<string, mixed>>}}|array{type: 'video', url: string}>  $segments
+     * @param  list<array<mixed>>  $content
+     */
+    private function appendDoc(array &$segments, array $content): void
+    {
+        $doc = $this->richText->sanitize(['type' => 'doc', 'content' => $content]);
 
-                if ($segment['doc']['content'] === []) {
-                    continue;
-                }
-            }
-
-            $result[] = $segment;
+        if ($doc['content'] !== []) {
+            $segments[] = ['type' => 'doc', 'doc' => $doc];
         }
-
-        return $result;
     }
 
     /**
@@ -148,7 +149,7 @@ final class WordPressHtml
         libxml_use_internal_errors($previous);
 
         $xpath = new DOMXPath($dom);
-        $root = $xpath->query('/html/body/div')?->item(0);
+        $root = $this->nodes($xpath, '/html/body/div')[0] ?? null;
 
         if (! $root instanceof DOMElement) {
             return ['html' => '', 'images' => [], 'videos' => []];
@@ -157,7 +158,7 @@ final class WordPressHtml
         $images = [];
         $videos = [];
 
-        foreach (iterator_to_array($xpath->query('.//comment()', $root) ?: []) as $comment) {
+        foreach ($this->nodes($xpath, './/comment()', $root) as $comment) {
             if (str_starts_with(trim((string) $comment->nodeValue), 'wp:') || str_starts_with(trim((string) $comment->nodeValue), '/wp:')) {
                 $report->drop('wp-block-comment');
             }
@@ -222,7 +223,7 @@ final class WordPressHtml
         // Deepest first, so a container sees its children already settled.
         $containers = [];
 
-        foreach (iterator_to_array($xpath->query('.//*', $root) ?: []) as $element) {
+        foreach ($this->nodes($xpath, './/*', $root) as $element) {
             if ($element instanceof DOMElement && in_array($element->nodeName, self::CONTAINERS, true)) {
                 $containers[] = $element;
             }
@@ -232,7 +233,7 @@ final class WordPressHtml
             $this->settleContainer($container);
         }
 
-        foreach (iterator_to_array($xpath->query('.//*', $root) ?: []) as $element) {
+        foreach ($this->nodes($xpath, './/*', $root) as $element) {
             if ($element instanceof DOMElement) {
                 $this->stripAttributes($element);
             }
@@ -244,7 +245,7 @@ final class WordPressHtml
 
         // The editor's schema wants paragraphs at the top level and inside
         // list items, cells and quotes.
-        foreach (iterator_to_array($xpath->query('.//li|.//td|.//th|.//blockquote', $root) ?: []) as $holder) {
+        foreach ($this->nodes($xpath, './/li|.//td|.//th|.//blockquote', $root) as $holder) {
             if ($holder instanceof DOMElement) {
                 $this->wrapInlineRuns($holder);
             }
@@ -588,7 +589,7 @@ final class WordPressHtml
         $trimmed = ['p', 'h2', 'h3', 'h4', 'li', 'td', 'th'];
         $xpath = new DOMXPath($root->ownerDocument);
 
-        foreach (iterator_to_array($xpath->query('.//text()', $root) ?: []) as $text) {
+        foreach ($this->nodes($xpath, './/text()', $root) as $text) {
             $parent = $text->parentNode;
 
             if ($parent !== null && in_array($parent->nodeName, $structural, true) && trim((string) $text->nodeValue) === '') {
@@ -596,12 +597,12 @@ final class WordPressHtml
             }
         }
 
-        foreach (iterator_to_array($xpath->query('.//*', $root) ?: []) as $block) {
+        foreach ($this->nodes($xpath, './/*', $root) as $block) {
             if (! $block instanceof DOMElement || ! in_array($block->nodeName, $trimmed, true)) {
                 continue;
             }
 
-            $texts = iterator_to_array($xpath->query('.//text()', $block) ?: []);
+            $texts = $this->nodes($xpath, './/text()', $block);
 
             if ($texts !== []) {
                 $texts[0]->nodeValue = ltrim((string) $texts[0]->nodeValue);
@@ -618,7 +619,7 @@ final class WordPressHtml
      */
     private function removeEmpty(DOMElement $root, DOMXPath $xpath): void
     {
-        foreach (iterator_to_array($xpath->query('.//p|.//h2|.//h3|.//h4|.//li', $root) ?: []) as $block) {
+        foreach ($this->nodes($xpath, './/p|.//h2|.//h3|.//h4|.//li', $root) as $block) {
             if (! $block instanceof DOMElement) {
                 continue;
             }
@@ -634,13 +635,13 @@ final class WordPressHtml
             }
         }
 
-        foreach (iterator_to_array($xpath->query('.//strong|.//b|.//em|.//i|.//u|.//s|.//a', $root) ?: []) as $inline) {
+        foreach ($this->nodes($xpath, './/strong|.//b|.//em|.//i|.//u|.//s|.//a', $root) as $inline) {
             if ($inline instanceof DOMElement && $inline->textContent === '') {
                 $inline->parentNode?->removeChild($inline);
             }
         }
 
-        foreach (iterator_to_array($xpath->query('.//ul|.//ol', $root) ?: []) as $list) {
+        foreach ($this->nodes($xpath, './/ul|.//ol', $root) as $list) {
             if ($list instanceof DOMElement && trim($list->textContent) === '') {
                 $list->parentNode?->removeChild($list);
             }
@@ -656,30 +657,10 @@ final class WordPressHtml
     {
         $run = [];
 
-        $flush = function () use (&$run, $parent): void {
-            $text = implode('', array_map(fn (DOMNode $node): string => (string) $node->textContent, $run));
-
-            if (trim($text) === '') {
-                foreach ($run as $node) {
-                    $parent->removeChild($node);
-                }
-            } else {
-                $p = $parent->ownerDocument->createElement('p');
-                $parent->insertBefore($p, $run[0]);
-
-                foreach ($run as $node) {
-                    $p->appendChild($node);
-                }
-            }
-
-            $run = [];
-        };
-
         foreach (iterator_to_array($parent->childNodes) as $child) {
             if ($child instanceof DOMElement && in_array($child->nodeName, self::BLOCKS, true)) {
-                if ($run !== []) {
-                    $flush();
-                }
+                $this->wrapRun($parent, $run);
+                $run = [];
 
                 continue;
             }
@@ -687,8 +668,31 @@ final class WordPressHtml
             $run[] = $child;
         }
 
-        if ($run !== []) {
-            $flush();
+        $this->wrapRun($parent, $run);
+    }
+
+    /**
+     * @param  list<DOMNode>  $run  consecutive inline children of $parent
+     */
+    private function wrapRun(DOMElement $parent, array $run): void
+    {
+        if ($run === []) {
+            return;
+        }
+
+        if (trim(implode('', array_map(fn (DOMNode $node): string => (string) $node->textContent, $run))) === '') {
+            foreach ($run as $node) {
+                $parent->removeChild($node);
+            }
+
+            return;
+        }
+
+        $p = $parent->ownerDocument->createElement('p');
+        $parent->insertBefore($p, $run[0]);
+
+        foreach ($run as $node) {
+            $p->appendChild($node);
         }
     }
 
@@ -697,10 +701,19 @@ final class WordPressHtml
      */
     private function elements(DOMElement $root, string $tag): array
     {
-        return array_values(array_filter(
-            iterator_to_array($root->getElementsByTagName($tag)),
-            fn (mixed $node): bool => $node instanceof DOMElement,
-        ));
+        return array_values(iterator_to_array($root->getElementsByTagName($tag)));
+    }
+
+    /**
+     * The nodes an XPath query finds, as a list.
+     *
+     * @return list<DOMNode>
+     */
+    private function nodes(DOMXPath $xpath, string $query, ?DOMNode $context = null): array
+    {
+        $found = $xpath->query($query, $context);
+
+        return $found === false ? [] : array_values(array_filter(iterator_to_array($found), fn (mixed $node): bool => $node instanceof DOMNode));
     }
 
     private function unwrap(DOMElement $element): void
