@@ -115,7 +115,7 @@
         <div class="work-stack__cards">
             @foreach ($products as $item)
                 @php($product = $item['product'])
-                <article id="{{ $product->value }}" class="work-stack__card work-stack__card--{{ $loop->iteration }}" style="--i: {{ $loop->index }}" aria-labelledby="{{ $product->value }}-title" data-product-card data-scroll-target>
+                <article id="{{ $product->value }}" class="work-stack__card work-stack__card--{{ $loop->iteration }} work-stack__card--tone-{{ $loop->index % 4 + 1 }}" style="--i: {{ $loop->index }}" aria-labelledby="{{ $product->value }}-title" data-product-card data-scroll-target>
                     {{-- The entry moves this frame; being covered moves the panel. --}}
                     <div class="work-stack__frame" data-product-entry>
                         <div class="work-stack__panel saas-stack__panel" data-product-panel>

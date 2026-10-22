@@ -76,18 +76,22 @@
         --accent: #fff;
     }
 
-    /* The colours, by place, round every four. The purple, the lightest:
-       its text at full white, for the contrast. */
-    .work-stack__card:nth-child(4n + 1) .work-stack__panel {
+    /*
+      The colours, by place, round every four: a class the template sets
+      (work-stack__card--tone-1…4), not :nth-child — from 1024px the script
+      wraps each pinned card in a spacer of its own. The purple, the
+      lightest: its text at full white, for the contrast.
+    */
+    .work-stack__card--tone-1 .work-stack__panel {
         background: var(--purple-500);
         --muted: #fff;
     }
 
-    .work-stack__card:nth-child(4n + 2) .work-stack__panel {
+    .work-stack__card--tone-2 .work-stack__panel {
         background: var(--violet-500);
     }
 
-    .work-stack__card:nth-child(4n + 3) .work-stack__panel {
+    .work-stack__card--tone-3 .work-stack__panel {
         background: linear-gradient(
             135deg,
             var(--purple-500),
@@ -96,7 +100,7 @@
         );
     }
 
-    .work-stack__card:nth-child(4n + 4) .work-stack__panel {
+    .work-stack__card--tone-4 .work-stack__panel {
         background: #5b3fe0;
     }
 

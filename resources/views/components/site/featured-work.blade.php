@@ -24,7 +24,7 @@
 
     <div class="work-stack__cards">
         @foreach ($items as $item)
-            <article class="work-stack__card work-stack__card--{{ $loop->iteration }}" style="--i: {{ $loop->index }}" aria-labelledby="featured-work-{{ $loop->iteration }}" data-product-card>
+            <article class="work-stack__card work-stack__card--{{ $loop->iteration }} work-stack__card--tone-{{ $loop->index % 4 + 1 }}" style="--i: {{ $loop->index }}" aria-labelledby="featured-work-{{ $loop->iteration }}" data-product-card>
                 {{-- The entry moves this frame; being covered moves the panel. --}}
                 <div class="work-stack__frame" data-product-entry>
                     <div class="work-stack__panel" data-product-panel>
