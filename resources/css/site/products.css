@@ -8,6 +8,17 @@
 @layer components {
     /* ---- The products: /portofoliu's stacking cards (css/site/work-stack.css) ---- */
 
+    /* On the hero's backdrop, straight after it: no lavender, no grain, the
+       first card right under the hero's text. */
+    .work-stack.saas-stack {
+        @apply pt-0 md:pt-0 lg:pt-0;
+        background: transparent;
+
+        &::before {
+            @apply hidden;
+        }
+    }
+
     /*
       Every card in a colour of the hero's, white on it: the purple, the
       violet, the purple into the violet (as /portofoliu's third), the deep
@@ -78,6 +89,17 @@
         @apply aspect-[4/5] w-full max-w-sm rounded-2xl lg:col-span-5 lg:col-start-8 lg:aspect-auto lg:h-full lg:max-w-none;
         background: rgb(255 255 255 / 0.12);
         border: 1px solid rgb(255 255 255 / 0.18);
+    }
+
+    /* ---- The light panel: rising over the backdrop after the cards ------------ */
+
+    /* As on /software-la-comanda/ (css/site/software.css). */
+    .chapter.saas-why {
+        @apply -mt-8 rounded-t-[2.5rem] pt-24 md:rounded-t-[5rem] lg:pt-32;
+
+        &::before {
+            border-radius: inherit;
+        }
     }
 
     /* ---- How to start, product or made to order --------------------------------- */

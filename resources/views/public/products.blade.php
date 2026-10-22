@@ -4,11 +4,12 @@
     /contact) and /software-la-comanda/'s order; its own pieces in
     css/site/products.css.
 
-    - /web's hero, with the planes;
-    - rising over it, the products as /portofoliu's stacking cards: who it
-      is for, what it
+    - /web's hero, with the planes, flush;
+    - straight after it, on the same backdrop, the products as
+      /portofoliu's stacking cards: who it is for, what it
       does, the clients using it (components/site/used-by), the way to ask
       for a demo;
+    Then the light panel, rising over the backdrop:
     - why a ready product: the home page's cells between hairlines;
     - how to start, and product or made to order: two short paragraphs;
     - questions, as /web's rows that open, and as FAQPage JSON-LD from the
@@ -94,6 +95,7 @@
         label="Produse SaaS · Webis"
         :title="['Produse SaaS.']"
         intro="Aplicații gata de folosit, pe abonament lunar."
+        :flush="true"
         class="page-hero--tall"
         data-reveal-pace="fast"
     />
@@ -104,14 +106,10 @@
          scroll from 1024px (js/public/product-stack.ts), each in a colour
          of the hero's. On the left the name at the top, what it does and
          the way to a demo at the foot; on the right a plain placeholder
-         until there are screenshots. The sheet rises over the hero, as
-         after every internal page's (css/site/page-hero.css). --}}
-    <section id="produsele" class="work-stack saas-stack" aria-labelledby="saas-products-title" data-product-stack data-reveal-pace="fast">
-        <header class="work-stack__head" data-reveal="head">
-            <div class="chapter__head-main md:col-span-7">
-                <h2 id="saas-products-title" class="chapter__title">Produsele noastre.</h2>
-            </div>
-        </header>
+         until there are screenshots. On the hero's backdrop, carrying on
+         from it: no head of their own, the hero's title says it. --}}
+    <section id="produsele" class="work-stack saas-stack" aria-labelledby="saas-products-title" data-product-stack data-backdrop-area data-nav-tone="dark" data-reveal-pace="fast">
+        <h2 id="saas-products-title" class="sr-only">Produsele noastre</h2>
 
         <div class="work-stack__cards">
             @foreach ($products as $item)
@@ -152,7 +150,7 @@
 
     {{-- ================================================== Why a ready product --}}
     {{-- As /software-la-comanda/'s "De ce software la comandă". --}}
-    <section class="chapter chapter--light" aria-labelledby="saas-why-title" data-reveal-pace="fast">
+    <section class="chapter chapter--light saas-why" aria-labelledby="saas-why-title" data-reveal-pace="fast">
         <div class="chapter__inner">
             <header class="chapter__head" data-reveal="head">
                 <div class="chapter__head-main">
