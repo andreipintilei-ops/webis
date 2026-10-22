@@ -25,9 +25,9 @@
     }
 
     /*
-      Every card in a colour of the hero's, white on it: the indigo, the
-      violet, the purple into the violet (as /portofoliu's third), the
-      deeper indigo.
+      Every card in a colour of the hero's, white on it: the purple, the
+      violet, the purple into the violet (as /portofoliu's third), the deep
+      violet that gradient ends in.
     */
     .saas-stack .work-stack__panel {
         @apply text-white;
@@ -36,8 +36,10 @@
         --accent: #fff;
     }
 
+    /* The lightest: its text at full white, for the contrast. */
     .saas-stack .work-stack__card--1 .work-stack__panel {
-        background: #1f2868;
+        background: var(--purple-500);
+        --muted: #fff;
     }
 
     .saas-stack .work-stack__card--2 .work-stack__panel {
@@ -45,7 +47,7 @@
     }
 
     .saas-stack .work-stack__card--4 .work-stack__panel {
-        background: var(--indigo-800);
+        background: #5b3fe0;
     }
 
     /* The white button on every card, as on /portofoliu's violet one. */
@@ -56,15 +58,15 @@
 
     /*
       The name at the top of the left column, what it does at its foot
-      (1–5); the placeholder on the right (7–12). From 1024px the card's
-      full height, inset top and bottom.
+      (1–6); the placeholder on the right (8–12), upright. From 1024px the
+      card's full height, inset top and bottom.
     */
     .saas-stack__panel {
         @apply lg:items-stretch lg:py-16;
     }
 
     .saas-stack__main {
-        @apply relative z-[1] flex flex-col justify-between gap-10 lg:col-span-5;
+        @apply relative z-[1] flex flex-col justify-between gap-10 lg:col-span-6;
     }
 
     .saas-stack__foot {
@@ -84,10 +86,12 @@
         }
     }
 
-    /* Where the screenshot will go: a plain tint of white, for now. */
+    /*
+      Where the screenshot will go: a plain tint of white, for now. Upright:
+      4:5 on phones, from 1024px the card's height and five columns wide.
+    */
     .saas-stack__visual {
-        @apply rounded-2xl lg:col-span-7 lg:self-center;
-        aspect-ratio: 3 / 2;
+        @apply aspect-[4/5] w-full max-w-sm rounded-2xl lg:col-span-5 lg:col-start-8 lg:aspect-auto lg:h-full lg:max-w-none;
         background: rgb(255 255 255 / 0.12);
         border: 1px solid rgb(255 255 255 / 0.18);
     }
