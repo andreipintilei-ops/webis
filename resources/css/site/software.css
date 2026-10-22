@@ -74,20 +74,31 @@
 
     /*
       The marquee's items, as cards packed close together where the home
-      page spaces its logos wide: one band of outlined cards, no fill, the
-      icon at the top and the module's name at the foot. Every card is the
-      same size, so the band keeps an even rhythm as it slides.
+      page spaces its logos wide: one band of cards, the icon at the top and
+      the module's name at the foot. Every card is the same size, so the
+      band keeps an even rhythm as it slides.
+
+      On the contact form's glass (css/site/contact-page.css): a thin sheen
+      at the top left, almost clear by the bottom right, and a fine
+      highlight along the top edge. Not its blur: inside the marquee's mask
+      it would have nothing behind it to blur, and the band is a few dozen
+      cards always moving.
     */
     .sw-marquee .sw-strip__item {
-        padding-inline: 0.25rem;
+        padding-inline: 0.3rem;
     }
 
     .sw-module {
-        @apply flex flex-col justify-between rounded-[1.25rem] border p-5 text-white;
-        width: clamp(9.5rem, 13vw, 13rem);
-        height: clamp(6.5rem, 8.5vw, 8.5rem);
-        border-color: rgb(255 255 255 / 0.2);
-        background: transparent;
+        @apply flex flex-col justify-between rounded-[1.5rem] border p-6 text-white;
+        width: clamp(11rem, 15vw, 15rem);
+        height: clamp(7.5rem, 9.75vw, 9.75rem);
+        border-color: rgb(255 255 255 / 0.14);
+        background: linear-gradient(
+            135deg,
+            rgb(255 255 255 / 0.07),
+            rgb(255 255 255 / 0.015) 60%
+        );
+        box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.18);
         transition: border-color var(--fast) var(--ease);
 
         & .sw-icon {
@@ -97,7 +108,7 @@
     }
 
     .sw-strip__item:hover .sw-module {
-        border-color: rgb(255 255 255 / 0.4);
+        border-color: rgb(255 255 255 / 0.35);
     }
 
     .sw-module__label {
