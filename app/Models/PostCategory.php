@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Concerns\RecordsSlugHistory;
+use App\Enums\PageType;
 use App\Support\Seo\SeoData;
 use Carbon\CarbonImmutable;
 use Database\Factories\PostCategoryFactory;
@@ -24,6 +25,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property CarbonImmutable|null $created_at
  * @property CarbonImmutable|null $updated_at
  * @property-read Collection<int, Post> $posts
+ * @property-read Collection<int, Page> $pages
  */
 #[Fillable(['name', 'slug', 'description', 'sort_order', 'seo'])]
 class PostCategory extends Model
@@ -50,5 +52,17 @@ class PostCategory extends Model
     public function posts(): HasMany
     {
         return $this->hasMany(Post::class);
+    }
+
+    /**
+     * The category's articles: pages of type Article, at their root
+     * addresses. What /blog/categorie/{slug} lists — not posts(), which
+     * nothing fills.
+     *
+     * @return HasMany<Page, $this>
+     */
+    public function pages(): HasMany
+    {
+        return $this->hasMany(Page::class)->ofType(PageType::Article);
     }
 }

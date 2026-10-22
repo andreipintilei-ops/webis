@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Public\ArticleController;
 use App\Http\Controllers\Public\ClientsController;
 use App\Http\Controllers\Public\ContactController;
 use App\Http\Controllers\Public\HomeController;
@@ -19,12 +20,19 @@ Route::view('solutii', 'public.services.index')->name('services.index');
 // at /portofoliu (the menu calls it Clienți), each project at /proiect/{slug}.
 Route::get('portofoliu', ClientsController::class)->name('projects.index');
 Route::permanentRedirect('clienti', '/portofoliu');
+// The old site's archive of its projects.
+Route::permanentRedirect('proiect', '/portofoliu');
 Route::get('proiect/{slug}', [ProjectController::class, 'show'])
     ->where('slug', '[a-z0-9]+(?:-[a-z0-9]+)*')
     ->name('projects.show');
 // A design trial kept for later: the services as one pinned story (HomeController).
 Route::get('poveste', [HomeController::class, 'poveste'])->name('trials.story');
-Route::view('blog', 'public.blog.index')->name('posts.index');
+// The blog: its articles are CMS pages (PageType::Article) at their own root
+// addresses, as on the old site; these list them, all or one category's.
+Route::get('blog', [ArticleController::class, 'index'])->name('posts.index');
+Route::get('blog/categorie/{slug}', [ArticleController::class, 'category'])
+    ->where('slug', '[a-z0-9]+(?:-[a-z0-9]+)*')
+    ->name('posts.category');
 Route::view('web', 'public.web')->name('services.web');
 
 // The contact form (components/site/contact). At a reserved slug, so no CMS

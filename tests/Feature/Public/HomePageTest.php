@@ -6,7 +6,9 @@ use App\Models\Asset;
 use App\Models\Client;
 use App\Models\Page;
 use App\Models\Post;
+use App\Models\PostCategory;
 use App\Settings\CompanySettings;
+use Carbon\CarbonImmutable;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Storage;
 
@@ -48,7 +50,7 @@ it('opens the menu panel, behind its curtain, from the round header button and t
 });
 
 it('lists in the menu the pages (Contact last), the three services and how to reach us', function () {
-    app(\App\Settings\CompanySettings::class)->fill(['email' => 'contact@webis.ro', 'phone' => '0770 700 607'])->save();
+    app(CompanySettings::class)->fill(['email' => 'contact@webis.ro', 'phone' => '0770 700 607'])->save();
 
     $html = $this->get('/')->assertOk()->getContent();
     preg_match('#<div id="meniu".*?<svg class="theo-overlay"#s', $html, $menu);
@@ -134,7 +136,7 @@ it('shows the clients\' wall after the stage: each logo once, with its name, and
 
     expect($wall[0])
         ->toContain('data-logo-wall')
-        
+
         ->toContain('alt="Zyanya"')
         ->not->toContain('Ascuns')
         ->and(strpos($html, '<section id="clienti"'))->toBeGreaterThan(strpos($html, 'data-stage-finale'));
@@ -184,27 +186,47 @@ it('keeps the home page to its blocks, then the stage, the clients\' wall and th
         ->not->toContain('data-explorer>');
 });
 
-it('shows the latest articles after the reviews, examples until posts are published', function () {
-    $html = $this->get('/')->assertOk()->getContent();
+it('shows the three latest articles after the clients\' wall, each at its root address', function () {
+    $this->travelTo(CarbonImmutable::parse('2026-10-22 12:00'));
 
-    expect(strpos($html, '<section id="blog" class="site-blog'))->toBeGreaterThan(strpos($html, 'id="recenzii"'))
-        ->and(substr_count($html, 'class="post-card"'))->toBe(3)
-        ->and($html)->toContain('<!-- DUMMY DATA: example articles')
-        ->toContain('<time datetime="2026-09-22">22 septembrie 2026</time>');
-
-    $post = Post::factory()->create([
+    $category = PostCategory::factory()->create(['name' => 'E-commerce']);
+    Page::factory()->ofType(PageType::Article)->create(['title' => 'Cel mai vechi', 'published_at' => now()->subDays(60)]);
+    Page::factory()->ofType(PageType::Article)->create(['title' => 'Al treilea', 'slug' => 'al-treilea', 'published_at' => now()->subDays(3)]);
+    Page::factory()->ofType(PageType::Article)->create([
         'title' => 'Primul articol',
         'slug' => 'primul-articol',
-        'status' => ContentStatus::Published,
-        'published_at' => now()->subDay(),
+        'post_category_id' => $category->id,
+        'published_at' => CarbonImmutable::parse('2026-09-22 10:00'),
     ]);
+    Page::factory()->ofType(PageType::Article)->create(['title' => 'Al doilea', 'slug' => 'al-doilea', 'published_at' => now()->subDays(2)]);
+    Page::factory()->ofType(PageType::Article)->draft()->create(['title' => 'Ciornă']);
+    // Neither a plain page nor the unused Post model is an article.
+    Page::factory()->create(['title' => 'Pagină obișnuită']);
+    Post::factory()->create(['title' => 'Postare', 'status' => ContentStatus::Published, 'published_at' => now()->subHour()]);
 
-    expect($this->get('/')->getContent())
-        ->toContain('<a href="'.url('/blog/primul-articol').'" class="post-card">')
-        ->toContain('Primul articol')
-        ->not->toContain('DUMMY DATA: example articles')
-        ->and(substr_count($this->get('/')->getContent(), 'class="post-card"'))->toBe(1)
-        ->and($post->isPublished())->toBeTrue();
+    $html = $this->get('/')->assertOk()->getContent();
+    preg_match('#<section id="blog" class="site-blog.*?</section>#s', $html, $section);
+    preg_match_all('#<a href="([^"]+)" class="post-card">#', $section[0], $links);
+
+    expect(strpos($html, '<section id="blog" class="site-blog'))->toBeGreaterThan(strpos($html, '<section id="clienti"'))
+        ->and($links[1])->toBe(['/al-doilea', '/al-treilea', '/primul-articol'])
+        ->and($section[0])->toContain('<span class="post-card__category">E-commerce</span>')
+        ->toContain('<time datetime="2026-09-22">22 septembrie 2026</time>')
+        ->toContain('href="'.route('posts.index').'"')
+        ->not->toContain('DUMMY DATA')
+        ->not->toContain('Cel mai vechi')
+        ->not->toContain('Ciornă')
+        ->not->toContain('Pagină obișnuită')
+        ->not->toContain('Postare');
+});
+
+it('leaves the latest articles out of the home page until one is published', function () {
+    Page::factory()->ofType(PageType::Article)->draft()->create();
+    Page::factory()->ofType(PageType::Article)->scheduled()->create();
+
+    expect($this->get('/')->assertOk()->getContent())
+        ->not->toContain('id="blog"')
+        ->not->toContain('class="post-card"');
 });
 
 it('closes every page with the footer on the violet gradient: the call, the links, the details', function () {

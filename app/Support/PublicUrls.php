@@ -18,7 +18,12 @@ final class PublicUrls
     public static function for(Page|Project|Post|ProjectCategory|PostCategory $model): string
     {
         return match (true) {
-            $model instanceof Page => $model->type === PageType::Home ? '/' : '/'.$model->slug,
+            $model instanceof Page => match ($model->type) {
+                PageType::Home => '/',
+                // An article keeps the old site's root address: no /blog/ prefix.
+                PageType::Article => '/'.$model->slug,
+                default => '/'.$model->slug,
+            },
             $model instanceof Project => '/proiect/'.$model->slug,
             $model instanceof Post => '/blog/'.$model->slug,
             $model instanceof ProjectCategory => '/portofoliu/categorie/'.$model->slug,

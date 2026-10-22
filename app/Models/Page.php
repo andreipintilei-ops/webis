@@ -25,6 +25,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  *
  * @property int $id
  * @property PageType $type
+ * @property int|null $post_category_id
  * @property string $title
  * @property string $slug
  * @property string|null $excerpt
@@ -38,11 +39,12 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property CarbonImmutable|null $updated_at
  * @property CarbonImmutable|null $deleted_at
  * @property-read Asset|null $hero
+ * @property-read PostCategory|null $category
  * @property-read Collection<int, Project> $projects
  */
 #[Fillable([
-    'type', 'title', 'slug', 'excerpt', 'icon', 'hero_asset_id', 'blocks',
-    'details', 'sort_order', 'status', 'published_at', 'seo',
+    'type', 'post_category_id', 'title', 'slug', 'excerpt', 'icon', 'hero_asset_id',
+    'blocks', 'details', 'sort_order', 'status', 'published_at', 'seo',
 ])]
 class Page extends Model
 {
@@ -82,6 +84,16 @@ class Page extends Model
     public function hero(): BelongsTo
     {
         return $this->belongsTo(Asset::class, 'hero_asset_id');
+    }
+
+    /**
+     * An article's blog category (PageType::Article only).
+     *
+     * @return BelongsTo<PostCategory, $this>
+     */
+    public function category(): BelongsTo
+    {
+        return $this->belongsTo(PostCategory::class, 'post_category_id');
     }
 
     /**

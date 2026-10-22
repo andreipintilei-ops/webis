@@ -2,6 +2,8 @@
 
 use App\Enums\PageType;
 use App\Models\Page;
+use App\Models\PostCategory;
+use Illuminate\Database\Eloquent\Factories\Sequence;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 uses(RefreshDatabase::class);
@@ -55,17 +57,32 @@ it('never lets the catch-all shadow application routes', function () {
     $this->get('/pagina_veche.php')->assertNotFound();
 });
 
-it('lists the articles at /blog: a hero, the featured one, then nine cards to a page', function () {
+it('lists the articles at /blog: a hero, the latest one featured, then nine cards to a page', function () {
+    // Eleven articles: the latest leads, then nine, then one on page 2.
+    Page::factory()->ofType(PageType::Article)->count(10)
+        ->sequence(fn (Sequence $sequence) => ['published_at' => now()->subDays($sequence->index + 2)])
+        ->create();
+    Page::factory()->ofType(PageType::Article)->create([
+        'title' => 'Cum poți avea un magazin online de succes',
+        'slug' => 'cum-poti-avea-un-magazin-online-de-succes',
+        'excerpt' => 'Ce contează ca un magazin online să aibă succes.',
+        'published_at' => now()->subDay(),
+    ]);
+
     $html = $this->get('/blog')->assertOk()->getContent();
+    preg_match('#<a href="([^"]+)" class="blog-lead">.*?</a>#s', $html, $lead);
 
     expect($html)
         ->toContain('<title>Blog | Webis</title>')
         ->toContain('class="page-hero has-hero-planes page-hero--flush page-hero--led"')
         // The planes, inline so they can float.
         ->toContain('<g class="plane plane--green">')
-        ->toContain('DUMMY DATA')
-        ->toContain('Cum poți avea un magazin online de succes')
+        ->not->toContain('DUMMY DATA')
         ->and(substr_count($html, 'class="blog-lead"'))->toBe(1)
+        // The lead goes to the article's own root address.
+        ->and($lead[1])->toBe('/cum-poti-avea-un-magazin-online-de-succes')
+        ->and($lead[0])->toContain('Cum poți avea un magazin online de succes')
+        ->toContain('Ce contează ca un magazin online să aibă succes.')
         ->and(substr_count($html, 'class="post-card"'))->toBe(9)
         ->and($html)->toContain('aria-current="page">1</span>')
         ->toContain('href="'.route('posts.index').'?pagina=2"');
@@ -73,6 +90,10 @@ it('lists the articles at /blog: a hero, the featured one, then nine cards to a 
 
 it('pages through the rest of the articles, without the featured one', function () {
     // 45 cards after the featured one: five pages of nine.
+    Page::factory()->ofType(PageType::Article)->count(46)
+        ->sequence(fn (Sequence $sequence) => ['published_at' => now()->subDays($sequence->index + 1)])
+        ->create();
+
     $html = $this->get('/blog?pagina=5')->assertOk()->getContent();
 
     expect($html)
@@ -108,21 +129,30 @@ it('has no /despre: the page was dropped, and an old CMS page of that name does 
 });
 
 it('lists the blog\'s categories beside the articles, each filtering them at its own address', function () {
+    $seo = PostCategory::factory()->create(['name' => 'SEO', 'slug' => 'seo']);
+    $design = PostCategory::factory()->create(['name' => 'Design', 'slug' => 'design']);
+    Page::factory()->ofType(PageType::Article)->count(3)->create(['post_category_id' => $seo->id]);
+    Page::factory()->ofType(PageType::Article)->count(2)->create(['post_category_id' => $design->id]);
+
     $all = $this->get('/blog')->assertOk()->getContent();
     preg_match('#<aside class="blog-categories".*?</aside>#s', $all, $aside);
+    preg_match_all('#<span>([^<]+)</span><span class="blog-categories__count">(\d+)</span>#', $aside[0], $counts);
 
     expect($aside[0])
         ->toMatch('#href="[^"]*/blog\#articole" class="blog-categories__link"\s*aria-current="page"#')
-        ->toContain('/blog?categorie=seo#articole')
+        ->toContain('/blog/categorie/seo#articole')
+        ->not->toContain('?categorie=')
+        // Every article, then the categories, most first.
+        ->and(array_combine($counts[1], $counts[2]))->toBe(['Toate articolele' => '5', 'SEO' => '3', 'Design' => '2'])
         // The featured article leads the unfiltered list only.
         ->and($all)->toContain('class="blog-lead"');
 
-    $seo = $this->get('/blog?categorie=seo')->assertOk()->getContent();
-    preg_match_all('#<span class="post-card__category">([^<]+)</span>#', $seo, $categories);
+    $html = $this->get('/blog/categorie/seo')->assertOk()->getContent();
+    preg_match_all('#<span class="post-card__category">([^<]+)</span>#', $html, $categories);
 
-    expect(array_unique($categories[1]))->toBe(['SEO'])
-        ->and($seo)->not->toContain('class="blog-lead"')
-        ->toMatch('#categorie=seo\#articole" class="blog-categories__link"\s*aria-current="page"#');
+    expect($categories[1])->toBe(['SEO', 'SEO', 'SEO'])
+        ->and($html)->not->toContain('class="blog-lead"')
+        ->toMatch('#/blog/categorie/seo\#articole" class="blog-categories__link"\s*aria-current="page"#');
 });
 
 it('serves /web: its own title, one H1, the sections in order, the offers to their pages', function () {

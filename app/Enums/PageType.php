@@ -4,7 +4,9 @@ namespace App\Enums;
 
 /**
  * Every CMS page lives in the one `pages` table at a root slug; the type only
- * decides its template, JSON-LD and where it is listed.
+ * decides its template, JSON-LD and where it is listed. An article keeps its
+ * root address too, with a category and a publish date: /blog and its
+ * category pages list them (Public\ArticleController).
  */
 enum PageType: string
 {
@@ -14,6 +16,7 @@ enum PageType: string
     case Industry = 'industry';
     case Legal = 'legal';
     case Contact = 'contact';
+    case Article = 'article';
 
     public function label(): string
     {
@@ -24,6 +27,7 @@ enum PageType: string
             self::Industry => 'Industrie',
             self::Legal => 'Pagină legală',
             self::Contact => 'Contact',
+            self::Article => 'Articol',
         };
     }
 }
