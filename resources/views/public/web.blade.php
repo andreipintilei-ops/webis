@@ -114,6 +114,7 @@
         label="Web și e-commerce · Webis"
         :title="['Site-uri și', 'magazine online.']"
         intro="Site-uri de prezentare și magazine online cu design propriu, pe care le administrezi singur după lansare."
+        class="page-hero--tall"
         data-reveal-pace="fast"
     />
 
