@@ -1,28 +1,12 @@
 /*
   Produse SaaS (public/products.blade.php): what is particular to the page.
   Scoped to its own classes (.saas-*); the shared pieces it reuses (the
-  hero, the statement, /portofoliu's stacking cards, the section heads, the
+  hero, /portofoliu's stacking cards, the section heads, the
   cells, /web's questions) are only adjusted here where they sit on this
   page.
 */
 @layer components {
-    /* ---- The statement, on the hero's backdrop --------------------------------- */
-
-    /* Its links go down the page: the arrows turned to point there. */
-    #despre-produse .arrow-link__icon {
-        rotate: 90deg;
-    }
-
     /* ---- The products: /portofoliu's stacking cards (css/site/work-stack.css) ---- */
-
-    /* The sheet rises over the dark area, as on /software-la-comanda/. */
-    .work-stack.saas-stack {
-        @apply -mt-8 rounded-t-[2.5rem] md:rounded-t-[5rem];
-
-        &::before {
-            border-radius: inherit;
-        }
-    }
 
     /*
       Every card in a colour of the hero's, white on it: the purple, the

@@ -54,11 +54,11 @@
         }
     }
 
-    /* Taller (/web): from 1024px the whole first screen, however tall;
-       tablets as the other heroes. */
+    /* Taller (/web, /produse): from 1024px most of the first screen,
+       however tall; tablets as the other heroes. */
     @media (min-width: 1024px) {
         .page-hero--tall {
-            min-height: 100svh;
+            min-height: 88svh;
         }
     }
 

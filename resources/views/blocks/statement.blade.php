@@ -11,9 +11,6 @@
     fixed background, which then also shows through here. Otherwise dark on
     the page's white.
 
-    `links` (from code only, /produse): several links in a row, in place of
-    the one `link`.
-
     The statement keeps its typed line breaks from desktop width up; below
     that it wraps freely. Without the script it is at full strength.
 --}}
@@ -22,7 +19,6 @@
     $lines = preg_split('/\R/', trim((string) ($data['statement'] ?? ''))) ?: [];
     $link = $data['link'] ?? null;
     $hasLink = is_array($link) && ($link['label'] ?? '') !== '' && ($link['url'] ?? '') !== '';
-    $links = $data['links'] ?? [];
 @endphp
 
 @if ($lines !== [] && $lines !== [''])
@@ -73,14 +69,6 @@
                          Webis"), set in the admin. Change or remove those links. --}}
                     <div class="mt-10 md:mt-12">
                         <x-ui.arrow-link :href="$link['url']" :tone="$onBackdrop ? 'dark' : 'light'">{{ $link['label'] }}</x-ui.arrow-link>
-                    </div>
-                @endif
-
-                @if ($links !== [])
-                    <div class="mt-10 flex flex-wrap gap-x-10 gap-y-5 md:mt-12">
-                        @foreach ($links as $item)
-                            <x-ui.arrow-link :href="$item['url']" :tone="$onBackdrop ? 'dark' : 'light'">{{ $item['label'] }}</x-ui.arrow-link>
-                        @endforeach
                     </div>
                 @endif
             </div>

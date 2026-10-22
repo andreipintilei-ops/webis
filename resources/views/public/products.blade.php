@@ -4,13 +4,9 @@
     /contact) and /software-la-comanda/'s order; its own pieces in
     css/site/products.css.
 
-    One dark area first, as the home page's hero and "Despre noi":
-    - the internal pages' hero with the planes, flush, the whole first
-      screen;
-    - the home page's statement (blocks/statement), on the hero's backdrop,
-      the four products under it as links to their sections.
-    Then the light panel, rising over it:
-    - the products as /portofoliu's stacking cards: who it is for, what it
+    - /web's hero, with the planes;
+    - rising over it, the products as /portofoliu's stacking cards: who it
+      is for, what it
       does, the clients using it (components/site/used-by), the way to ask
       for a demo;
     - why a ready product: the home page's cells between hairlines;
@@ -94,34 +90,13 @@
     @endpush
 
     {{-- ================================================== Hero --}}
-    {{-- Flush, as /software-la-comanda/'s: the statement carries on, on the
-         same backdrop. --}}
     <x-site.page-hero
         label="Produse SaaS · Webis"
         :title="['Produse SaaS.']"
         intro="Aplicații gata de folosit, pe abonament lunar."
-        :parallax="false"
-        :flush="true"
         class="page-hero--tall"
         data-reveal-pace="fast"
     />
-
-    {{-- ================================================== About the products --}}
-    {{-- The home page's "Despre noi", on the hero's backdrop; the products
-         under it, each a link down to its section. --}}
-    @include('blocks.statement', [
-        'block' => ['id' => 'despre-produse'],
-        'onBackdrop' => true,
-        'data' => [
-            'eyebrow' => 'Despre produse',
-            'statement' => "Unele nevoi se repetă de la o organizație la alta.\nPentru ele am construit produse pe care le poți folosi imediat.",
-            'text' => 'Le folosești din browser, le plătești lunar și primești noutățile pe măsură ce apar. Instruirea e inclusă, iar dacă ai nevoie de ceva în plus, aceeași echipă îl poate construi la comandă.',
-            'links' => array_map(fn (array $item): array => [
-                'label' => $item['product']->label(),
-                'url' => '#'.$item['product']->value,
-            ], $products),
-        ],
-    ])
 
     {{-- ================================================== The products --}}
     {{-- /portofoliu's featured projects (components/site/featured-work,
@@ -129,7 +104,8 @@
          scroll from 1024px (js/public/product-stack.ts), each in a colour
          of the hero's. On the left the name at the top, what it does and
          the way to a demo at the foot; on the right a plain placeholder
-         until there are screenshots. The sheet rises over the dark area. --}}
+         until there are screenshots. The sheet rises over the hero, as
+         after every internal page's (css/site/page-hero.css). --}}
     <section id="produsele" class="work-stack saas-stack" aria-labelledby="saas-products-title" data-product-stack data-reveal-pace="fast">
         <header class="work-stack__head" data-reveal="head">
             <div class="chapter__head-main md:col-span-7">
