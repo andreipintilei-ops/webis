@@ -77,9 +77,17 @@ it('lazy-loads images that are not the first block', function () {
 it('skips block types that have no template yet', function () {
     homeWithHero(['layout' => 'split', 'heading' => 'Acasă']);
     $page = Page::sole();
-    $page->update(['blocks' => [...$page->blocks, ['id' => 'f', 'type' => 'faq', 'v' => 1, 'data' => ['items' => []]]]]);
+    $page->update(['blocks' => [...$page->blocks, ['id' => 't', 'type' => 'testimonials', 'v' => 1, 'data' => ['source' => 'manual']]]]);
 
     $this->get('/')->assertOk();
+});
+
+it('renders nothing for an FAQ without questions', function () {
+    homeWithHero(['layout' => 'split', 'heading' => 'Acasă']);
+    $page = Page::sole();
+    $page->update(['blocks' => [...$page->blocks, ['id' => 'f', 'type' => 'faq', 'v' => 1, 'data' => ['items' => []]]]]);
+
+    expect($this->get('/')->assertOk()->getContent())->not->toContain('block-faq');
 });
 
 it('keeps a centred hero centred and dark on white without an image', function () {
@@ -417,4 +425,286 @@ it('sets a statement on the hero background only straight after a dark hero', fu
     ]]);
 
     expect($section($this->get('/')->getContent(), 'a'))->not->toContain('statement--dark');
+});
+
+// ---- The page builder's content blocks -------------------------------------
+
+/**
+ * A page of the given blocks at /pagina-test, rendered; with `$id`, just
+ * that block's section.
+ *
+ * @param  list<array<string, mixed>>  $blocks
+ */
+function renderBlocks(array $blocks, ?string $id = null): string
+{
+    Page::factory()->create(['slug' => 'pagina-test', 'blocks' => $blocks]);
+
+    $html = test()->get('/pagina-test')->assertOk()->getContent();
+
+    if ($id === null) {
+        return $html;
+    }
+
+    preg_match('/<section id="'.preg_quote($id, '/').'".*?<\/section>/s', $html, $section);
+
+    return $section[0] ?? '';
+}
+
+/**
+ * @param  array<string, mixed>  $data
+ * @return array<string, mixed>
+ */
+function contentBlock(string $id, string $type, array $data): array
+{
+    return ['id' => $id, 'type' => $type, 'v' => 1, 'data' => $data];
+}
+
+/**
+ * @param  list<array<string, mixed>>  $content
+ * @return array<string, mixed>
+ */
+function tiptap(array $content): array
+{
+    return ['type' => 'doc', 'content' => $content];
+}
+
+/**
+ * @return array<string, mixed>
+ */
+function tiptapText(string $text): array
+{
+    return ['type' => 'paragraph', 'content' => [['type' => 'text', 'text' => $text]]];
+}
+
+it('renders a rich-text block from its saved HTML, its images filled in', function () {
+    $image = Asset::factory()->withImage(1600, 900)->create(['alt' => 'Echipa la lucru']);
+
+    $section = renderBlocks([contentBlock('rt', 'rich_text', ['content' => tiptap([
+        ['type' => 'heading', 'attrs' => ['level' => 2], 'content' => [['type' => 'text', 'text' => 'Cum lucrăm']]],
+        ['type' => 'paragraph', 'content' => [
+            ['type' => 'text', 'text' => 'Un site '],
+            ['type' => 'text', 'text' => 'rapid', 'marks' => [['type' => 'bold']]],
+            ['type' => 'text', 'text' => ' și <sigur>.'],
+        ]],
+        ['type' => 'assetImage', 'attrs' => ['assetId' => $image->id, 'caption' => 'Biroul din Iași']],
+    ])])], 'rt');
+
+    expect($section)
+        ->toContain('class="chapter chapter--light block-rich-text"')
+        ->toContain('class="rich-text block-rich-text__body"')
+        ->toMatch('/<h2 id="[^"]+">Cum lucrăm<\/h2>/')
+        ->toContain('<p>Un site <strong>rapid</strong> și &lt;sigur&gt;.</p>')
+        // The placeholder became the image, its caption kept.
+        ->toMatch('/<figure class="rt-image">\s*<img\s+src="[^"]+"[^>]*alt="Echipa la lucru"/')
+        ->toContain('width="1600" height="900"')
+        ->toContain('<figcaption>Biroul din Iași</figcaption>')
+        ->not->toContain('data-asset-id');
+});
+
+it('renders nothing for an empty rich-text block', function () {
+    expect(renderBlocks([contentBlock('rt', 'rich_text', ['content' => tiptap([])])]))
+        ->not->toContain('block-rich-text');
+});
+
+it('renders the FAQ as rows that open, under a numbered heading, answers escaped', function () {
+    $section = renderBlocks([contentBlock('faq', 'faq', [
+        'heading' => 'Întrebări frecvente',
+        'items' => [
+            ['question' => 'Cât durează un site?', 'answer' => 'Între 3 și 6 săptămâni.'],
+            ['question' => 'Pot scrie <b>HTML</b>?', 'answer' => "Nu: <script>alert(1)</script>\n\nRăspunsurile sunt text."],
+        ],
+    ])], 'faq');
+
+    expect($section)
+        ->toContain('aria-labelledby="faq-title"')
+        ->toMatch('/<p class="section-head__number" aria-hidden="true">01<\/p>/')
+        ->toMatch('/<h2 id="faq-title" class="section-head__title">Întrebări frecvente<\/h2>/')
+        ->and(substr_count($section, '<details class="block-faq__item" data-accordion-item'))->toBe(2)
+        ->and($section)
+        ->toContain('<span>Cât durează un site?</span>')
+        ->toContain('<p>Între 3 și 6 săptămâni.</p>')
+        ->toContain('Pot scrie &lt;b&gt;HTML&lt;/b&gt;?')
+        ->toContain('<p>Nu: &lt;script&gt;alert(1)&lt;/script&gt;</p>')
+        ->toContain('<p>Răspunsurile sunt text.</p>')
+        ->not->toContain('<script>alert(1)');
+});
+
+it('numbers the section headings down the page', function () {
+    $html = renderBlocks([
+        contentBlock('h', 'hero', ['layout' => 'split', 'heading' => 'Titlu']),
+        contentBlock('a', 'faq', ['heading' => 'Întrebări', 'items' => [['question' => 'Q?', 'answer' => 'A.']]]),
+        contentBlock('b', 'rich_text', ['content' => tiptap([tiptapText('Text')])]),
+        contentBlock('c', 'stats', ['heading' => 'În cifre', 'items' => [['value' => '250+', 'label' => 'site-uri']]]),
+    ]);
+
+    preg_match_all('/<p class="section-head__number" aria-hidden="true">(\d+)<\/p>/', $html, $numbers);
+
+    expect($numbers[1])->toBe(['01', '02']);
+});
+
+it('renders pricing tiers as cards, the highlighted one on the indigo, a tier with a button a link', function () {
+    $section = renderBlocks([contentBlock('p', 'pricing_tiers', [
+        'heading' => 'Pachete',
+        'intro' => 'Prețuri orientative.',
+        'tiers' => [
+            ['name' => 'Start', 'price' => 'de la 2.500 lei', 'period' => 'o singură dată', 'description' => 'Pentru început.', 'features' => ['5 pagini', 'SEO de bază'], 'highlighted' => true, 'cta' => ['label' => 'Alege Start', 'url' => '/contact']],
+            ['name' => 'Pro', 'price' => 'la cerere', 'features' => ['Magazin online']],
+        ],
+        'note' => 'Prețurile nu includ TVA.',
+    ])], 'p');
+
+    expect($section)
+        ->toContain('<p class="section-head__intro">Prețuri orientative.</p>')
+        ->toContain('block-pricing__list--2')
+        ->toMatch('/<a\s+href="\/contact"\s+class="post-card block-tier block-tier--featured">/')
+        ->toContain('<h3 class="block-tier__name">Start</h3>')
+        ->toContain('<span class="post-card__category">Recomandat</span>')
+        ->toContain('<span class="block-tier__amount">de la 2.500 lei</span>')
+        ->toContain('<span class="block-tier__period">o singură dată</span>')
+        ->toContain('<span>SEO de bază</span>')
+        ->toContain('<span class="post-card__foot">Alege Start</span>')
+        // Without a button: no link, no notch, no arrow.
+        ->toMatch('/<div\s+class="post-card block-tier block-tier--plain">/')
+        ->and(substr_count($section, 'post-card__button'))->toBe(1)
+        ->and($section)->toContain('<p class="block-pricing__note">Prețurile nu includ TVA.</p>');
+});
+
+it('renders stats on the indigo, the number with its label', function () {
+    $section = renderBlocks([contentBlock('s', 'stats', ['items' => [
+        ['value' => '250+', 'label' => 'site-uri livrate', 'note' => 'din 2016'],
+        ['value' => '98%', 'label' => 'clienți mulțumiți'],
+    ]])], 's');
+
+    expect($section)
+        ->toContain('class="chapter chapter--dark block-stats"')
+        ->toContain('data-nav-tone="dark"')
+        // No heading asked for: none drawn.
+        ->not->toContain('section-head')
+        ->toContain('<dt class="block-stats__label">site-uri livrate</dt>')
+        ->toContain('<dd class="block-stats__value">250+</dd>')
+        ->toContain('<dd class="block-stats__note">din 2016</dd>')
+        ->toContain('<dd class="block-stats__value">98%</dd>');
+});
+
+it('renders one image per gallery item, captions under them, missing assets left out', function () {
+    $images = Asset::factory()->withImage()->count(3)->create();
+    $gone = Asset::factory()->create();
+
+    $section = renderBlocks([contentBlock('g', 'gallery', [
+        'heading' => 'Galerie',
+        'columns' => 4,
+        'images' => [
+            ['asset_id' => $images[0]->id, 'caption' => 'Recepția'],
+            ['asset_id' => $images[1]->id],
+            ['asset_id' => $images[2]->id, 'caption' => 'Sala de ședințe'],
+            ['asset_id' => $gone->id, 'caption' => 'Fără fișier'],
+        ],
+    ])], 'g');
+
+    expect(substr_count($section, '<img'))->toBe(3)
+        ->and(substr_count($section, '<figure class="block-gallery__item">'))->toBe(3)
+        ->and($section)
+        ->toContain('block-gallery__grid--4')
+        ->toContain('<figcaption class="block-gallery__caption">Recepția</figcaption>')
+        ->toContain('Sala de ședințe')
+        ->toContain('loading="lazy"')
+        ->not->toContain('Fără fișier');
+});
+
+it('renders image and text: the image on the side asked for, the passage as rich text, the button an arrow link', function () {
+    $image = Asset::factory()->withImage()->create(['alt' => 'Un laptop']);
+
+    $section = renderBlocks([contentBlock('it', 'image_text', [
+        'heading' => 'Design propriu',
+        'content' => tiptap([tiptapText('Fiecare site are concept grafic făcut pentru el.')]),
+        'image_asset_id' => $image->id,
+        'image_position' => 'left',
+        'cta' => ['label' => 'Vezi proiectele', 'url' => '/portofoliu'],
+    ])], 'it');
+
+    expect($section)
+        ->toContain('block-image-text--left')
+        ->toContain('alt="Un laptop"')
+        ->toMatch('/<h2 id="it-title" class="block-image-text__title">Design propriu<\/h2>/')
+        ->toContain('<div class="rich-text block-image-text__body">')
+        ->toContain('<p>Fiecare site are concept grafic făcut pentru el.</p>')
+        ->toMatch('/<a href="\/portofoliu" class="arrow-link btn-light">.*?Vezi proiectele/s');
+});
+
+it('renders a CTA banner with the white pill and an arrow link, in the variant asked for', function () {
+    $section = renderBlocks([contentBlock('c', 'cta_banner', [
+        'heading' => 'Hai să discutăm',
+        'text' => 'Răspundem în aceeași zi.',
+        'primary_cta' => ['label' => 'Sună-ne', 'url' => 'tel:+40700000000'],
+        'secondary_cta' => ['label' => 'Vezi portofoliul', 'url' => '/portofoliu'],
+        'variant' => 'accent',
+    ])], 'c');
+
+    expect($section)
+        ->toContain('class="block-cta__panel block-cta__panel--accent"')
+        ->toMatch('/<h2 id="c-title" class="block-cta__title">Hai să discutăm<\/h2>/')
+        ->toContain('<p class="block-cta__line">Răspundem în aceeași zi.</p>')
+        ->toContain('<a href="tel:+40700000000" class="pill btn-dark">')
+        ->toMatch('/<a href="\/portofoliu" class="arrow-link btn-dark">.*?Vezi portofoliul/s');
+});
+
+it('renders the quote form as the site\'s contact form, posting to cerere-oferta', function () {
+    $html = renderBlocks([contentBlock('q', 'quote_form', [
+        'heading' => 'Cere o ofertă',
+        'intro' => 'Spune-ne ce ai nevoie.',
+        'show_contact_details' => false,
+    ])]);
+
+    preg_match('/<section id="contact".*?<\/section>/s', $html, $section);
+
+    expect(route('contact.store'))->toEndWith('/cerere-oferta')
+        ->and($section[0])
+        ->toContain('class="contact block-quote-form"')
+        ->toContain('data-block="q"')
+        ->toContain('<form method="POST" action="'.route('contact.store').'"')
+        ->toContain('data-contact-form')
+        ->toMatch('/<h2 id="contact-title" class="contact__title">Cere o ofertă<\/h2>/')
+        ->toContain('<p class="contact__intro">Spune-ne ce ai nevoie.</p>')
+        ->not->toContain('contact__details')
+        ->and(substr_count($html, 'data-contact-form'))->toBe(1);
+});
+
+it('keeps the contact details beside the quote form by default', function () {
+    $company = app(CompanySettings::class);
+    $company->email = 'office@webis.ro';
+    $company->save();
+
+    expect(renderBlocks([contentBlock('q', 'quote_form', ['show_contact_details' => true])]))
+        ->toContain('class="contact__details"')
+        ->toContain('mailto:office@webis.ro');
+});
+
+it('renders a video as a lite embed: a poster and a link, no player until it is played', function () {
+    $section = renderBlocks([contentBlock('v', 'video', [
+        'title' => 'Prezentare Webis',
+        'url' => 'https://youtu.be/dQw4w9WgXcQ',
+        'caption' => 'Două minute despre cum lucrăm.',
+    ])], 'v');
+
+    expect($section)
+        ->not->toContain('<iframe')
+        ->toContain('data-lite-video="dQw4w9WgXcQ"')
+        ->toContain('data-title="Prezentare Webis"')
+        ->toContain('src="https://i.ytimg.com/vi/dQw4w9WgXcQ/hqdefault.jpg"')
+        ->toContain('<a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ" class="block-video__play" data-lite-video-play aria-label="Redă videoclipul: Prezentare Webis">')
+        ->toContain('<span class="block-video__title">Prezentare Webis</span>')
+        ->toContain('Două minute despre cum lucrăm.');
+});
+
+it('uses the video\'s own poster when it has one', function () {
+    $poster = Asset::factory()->withImage(1920, 1080)->create();
+
+    expect(renderBlocks([contentBlock('v', 'video', [
+        'title' => 'Prezentare',
+        'url' => 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+        'poster_asset_id' => $poster->id,
+    ])], 'v'))
+        ->toContain('width="1920" height="1080"')
+        ->toContain('class="block-video__poster"')
+        ->not->toContain('i.ytimg.com');
 });

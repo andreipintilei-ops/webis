@@ -7,8 +7,12 @@
     js/public/contact-form.ts sends it in place instead and shows errors by
     their fields. `organizație` tells whether it is a university, a town hall
     or a company — and so who answers.
+
+    The quote-form block (blocks/quote-form) sets its own `title` and
+    `intro`, and may leave out the phone, email and address (`details`).
+    Other attributes go on the section.
 --}}
-@props(['page' => false])
+@props(['page' => false, 'title' => null, 'intro' => null, 'details' => true])
 
 @php
     $company = app(\App\Settings\CompanySettings::class);
@@ -24,7 +28,7 @@
     ];
 @endphp
 
-<section id="contact" @class(['contact', 'chapter contact-page' => $page]) aria-labelledby="contact-title" @if ($page) data-on-backdrop data-backdrop-area @endif data-nav-tone="dark">
+<section id="contact" {{ $attributes->class(['contact', 'chapter contact-page' => $page]) }} aria-labelledby="contact-title" @if ($page) data-on-backdrop data-backdrop-area @endif data-nav-tone="dark">
     <div class="contact__inner">
         <div class="contact__aside">
             @if ($page)
@@ -32,29 +36,34 @@
                 <h2 id="contact-title" class="chapter__title">Spune-ne ce<br>vrei să construim.</h2>
                 <p class="contact-page__intro">Ai o idee, un proces de simplificat sau un sistem care nu mai ține pasul? Povestește-ne despre el.</p>
             @else
-                <h2 id="contact-title" class="contact__title">Hai să discutăm</h2>
+                <h2 id="contact-title" class="contact__title">{{ $title ?? 'Hai să discutăm' }}</h2>
+                @if ($intro)
+                    <p class="contact__intro">{{ $intro }}</p>
+                @endif
             @endif
 
-            <ul class="contact__details">
-                @if ($phoneHref)
-                    <li>
-                        @if ($page)<span class="contact-page__detail-label">Sună-ne</span>@endif
-                        <a href="{{ $phoneHref }}" class="contact__detail">{{ $company->phone }}</a>
-                    </li>
-                @endif
-                @if ($company->email)
-                    <li>
-                        @if ($page)<span class="contact-page__detail-label">Scrie-ne</span>@endif
-                        <a href="mailto:{{ $company->email }}" class="contact__detail">{{ $company->email }}</a>
-                    </li>
-                @endif
-                @if ($address !== '')
-                    <li>
-                        @if ($page)<span class="contact-page__detail-label">Unde ne găsești</span>@endif
-                        <address class="contact__detail not-italic">{{ $address }}</address>
-                    </li>
-                @endif
-            </ul>
+            @if ($details)
+                <ul class="contact__details">
+                    @if ($phoneHref)
+                        <li>
+                            @if ($page)<span class="contact-page__detail-label">Sună-ne</span>@endif
+                            <a href="{{ $phoneHref }}" class="contact__detail">{{ $company->phone }}</a>
+                        </li>
+                    @endif
+                    @if ($company->email)
+                        <li>
+                            @if ($page)<span class="contact-page__detail-label">Scrie-ne</span>@endif
+                            <a href="mailto:{{ $company->email }}" class="contact__detail">{{ $company->email }}</a>
+                        </li>
+                    @endif
+                    @if ($address !== '')
+                        <li>
+                            @if ($page)<span class="contact-page__detail-label">Unde ne găsești</span>@endif
+                            <address class="contact__detail not-italic">{{ $address }}</address>
+                        </li>
+                    @endif
+                </ul>
+            @endif
 
             <p class="contact__promise">Răspundem în aceeași zi lucrătoare.</p>
         </div>

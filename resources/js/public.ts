@@ -6,6 +6,7 @@ import { initLogoWalls } from '@/public/logo-wall';
 import { initReviewsCarousels } from '@/public/reviews-carousel';
 import { initHero } from '@/public/hero-intro';
 import { initHeroPlanes } from '@/public/hero-planes';
+import { initLiteVideos } from '@/public/lite-video';
 import { initWorkLists } from '@/public/work-list';
 import { initPageTransitions } from '@/public/page-transition';
 import { initPanelMenu } from '@/public/panel-menu';
@@ -94,6 +95,7 @@ function boot(): void {
     initPanelMenu();
     initTheodoreMenu();
     initContactForm();
+    initLiteVideos();
     initExplorers();
     initReviewsCarousels();
     initServicesPlain();

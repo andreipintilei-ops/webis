@@ -1,0 +1,59 @@
+/*
+  The image-and-text block (blocks/image-text): on the 12-column grid from
+  1024px — the text in columns 1–5 and the image in 7–12, or, with the
+  image on the left, the image in 1–6 and the text in 8–12 — centred on
+  each other. Below that, the image first, then the text.
+  The heading as the site's section heading (css/site/system.css), its
+  title sized down for the narrower column.
+*/
+@layer components {
+    .block-image-text__grid {
+        @apply mx-auto grid max-w-[var(--content-max)] gap-10 md:gap-12 lg:grid-cols-12 lg:items-center lg:gap-x-10 lg:gap-y-0;
+    }
+
+    /* Image right (the default): text first on wide screens. */
+    .block-image-text__media {
+        @apply overflow-hidden rounded-[20px] lg:col-span-6 lg:col-start-7 lg:row-start-1;
+        background: var(--tint);
+
+        & img {
+            @apply block h-auto w-full;
+        }
+    }
+
+    .block-image-text__text {
+        @apply min-w-0 lg:col-span-5 lg:col-start-1 lg:row-start-1;
+    }
+
+    .block-image-text--left {
+        & .block-image-text__media {
+            @apply lg:col-span-6 lg:col-start-1;
+        }
+
+        & .block-image-text__text {
+            @apply lg:col-span-5 lg:col-start-8;
+        }
+    }
+
+    /* Without its image: the text alone, a reading column's width. */
+    .block-image-text--solo .block-image-text__text {
+        @apply max-w-[46rem] lg:col-span-8 lg:col-start-1;
+    }
+
+    .block-image-text__head {
+        @apply mb-8 grid gap-6 md:mb-10;
+    }
+
+    /* Anton has one weight: font-normal, or the browser fakes a bold.
+       1.08 leaves room for Romanian's Î and Ă over two or three lines. */
+    .block-image-text__title {
+        @apply font-display font-normal text-balance uppercase;
+        font-size: clamp(2.25rem, 3.6vw, 3.5rem);
+        line-height: 1.08;
+        color: var(--ink);
+    }
+
+    .block-image-text__cta {
+        @apply mt-10;
+    }
+}

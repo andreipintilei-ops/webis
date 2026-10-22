@@ -1,0 +1,176 @@
+/*
+  Rich text as the public site shows it (components/rich-text: the rich-text
+  block, the image-and-text block's passage). The HTML is the editor's —
+  RichText's allowlist: paragraphs, h2–h4, lists, quotes, code, tables,
+  callouts, rules and media-library images — so it is styled by element,
+  inside `.rich-text` only.
+
+  In the chapter's colours (css/site/service-chapters.css: --ink, --muted,
+  --line, --tint, --accent), so it reads on the lavender and on the indigo
+  alike. 18px body at 1.7, at most about 70 characters a line; headings in
+  the site's medium weight with its tight tracking (the display face is the
+  section headings' alone); the violet for links, list marks and rules.
+*/
+@layer components {
+    /* ---- The block: one reading column, left in the content column ------- */
+
+    .block-rich-text__body {
+        @apply w-full max-w-[46rem];
+    }
+
+    /* ---- Rich text ------------------------------------------------------- */
+
+    .rich-text {
+        @apply text-[17px] leading-[1.7] text-pretty md:text-lg;
+        color: var(--ink);
+
+        & > * + * {
+            @apply mt-5;
+        }
+
+        & > :first-child {
+            @apply mt-0;
+        }
+
+        & :is(h2, h3, h4) {
+            @apply font-medium text-balance;
+            letter-spacing: -0.02em;
+        }
+
+        & h2 {
+            @apply mt-14 text-[28px] leading-[1.15] md:mt-16 md:text-[36px];
+        }
+
+        & h3 {
+            @apply mt-10 text-[22px] leading-snug md:text-2xl;
+        }
+
+        & h4 {
+            @apply mt-8 text-lg leading-snug md:text-xl;
+        }
+
+        /* A heading's first paragraph sits closer to it. */
+        & :is(h2, h3, h4) + * {
+            @apply mt-4;
+        }
+
+        & a {
+            @apply underline decoration-1 underline-offset-[0.2em];
+            color: var(--accent);
+            text-decoration-color: color-mix(
+                in srgb,
+                currentColor 45%,
+                transparent
+            );
+            transition: text-decoration-color var(--fast) var(--ease);
+
+            &:hover {
+                text-decoration-color: currentColor;
+            }
+        }
+
+        & :is(strong, b) {
+            @apply font-semibold;
+        }
+
+        /* Lists: the violet's marks, the text hung clear of them. */
+        & :is(ul, ol) {
+            @apply grid gap-2.5 pl-6;
+        }
+
+        & ul {
+            @apply list-disc;
+        }
+
+        & ol {
+            @apply list-decimal;
+        }
+
+        & li::marker {
+            color: var(--accent);
+        }
+
+        & li > * + * {
+            @apply mt-2.5;
+        }
+
+        & li :is(ul, ol) {
+            @apply mt-2.5;
+        }
+
+        & blockquote {
+            @apply border-l-2 pl-6 text-xl leading-relaxed md:text-[22px];
+            border-color: var(--accent);
+        }
+
+        & code {
+            @apply rounded-md px-1.5 py-0.5 font-micro text-[0.85em];
+            background: var(--tint);
+        }
+
+        & pre {
+            @apply overflow-x-auto rounded-[20px] p-6 font-micro text-sm leading-relaxed;
+            background: var(--tint);
+
+            & code {
+                @apply bg-transparent p-0;
+            }
+        }
+
+        & hr {
+            @apply my-12 border-0 border-t;
+            border-color: var(--line);
+        }
+
+        /* Tables: hairline rows, as the site's lists (.rows); scrolled
+           sideways on a phone rather than squeezed. */
+        & table {
+            @apply block w-full border-collapse overflow-x-auto text-base md:table;
+        }
+
+        & :is(th, td) {
+            @apply border-b px-4 py-3 text-left align-top first:pl-0 last:pr-0;
+            border-color: var(--line);
+
+            & > p {
+                @apply m-0;
+            }
+        }
+
+        & th {
+            @apply font-micro text-xs font-normal tracking-[0.08em] uppercase;
+            color: var(--accent);
+        }
+
+        /* Callouts: a tinted panel inside a hairline, in the card's corner;
+           a warning's hairline in the brand's orange. */
+        & .callout {
+            @apply rounded-[20px] px-6 py-5 md:px-7;
+            background: var(--tint);
+            box-shadow: inset 0 0 0 1px var(--line);
+
+            & > * + * {
+                @apply mt-3;
+            }
+        }
+
+        & .callout-warning {
+            box-shadow: inset 0 0 0 1px var(--webis-orange);
+        }
+
+        /* Images from the media library (components/rich-text): the card's
+           20px corner, a mono caption under them. */
+        & .rt-image {
+            @apply my-10 md:my-12;
+
+            & img {
+                @apply h-auto w-full rounded-[20px];
+            }
+
+            & figcaption {
+                @apply mt-3 font-micro text-xs leading-relaxed tracking-[0.04em];
+                color: var(--muted);
+            }
+        }
+    }
+}

@@ -1,0 +1,123 @@
+/*
+  The pricing block (blocks/pricing-tiers): the packages as the site's
+  notched card (css/site/blog-posts.css), sized as /web's offers
+  (css/site/web.css, 01) — white, the highlighted one on the hero's indigo.
+  The name a mono label in the violet, the price in the display face, the
+  features with the violet's ticks between a hairline and the foot.
+*/
+@layer components {
+    .block-pricing__intro {
+        @apply max-w-[52ch] text-lg leading-relaxed text-pretty;
+        color: var(--muted);
+    }
+
+    /* One card stays a card's width; two or three share the row; four go
+       two by two until there is room for all of them. */
+    .block-pricing__list {
+        @apply grid grid-cols-1 gap-5;
+
+        & > li {
+            @apply min-w-0;
+        }
+    }
+
+    .block-pricing__list--1 {
+        @apply max-w-xl;
+    }
+
+    .block-pricing__list--2 {
+        @apply md:grid-cols-2;
+    }
+
+    .block-pricing__list--3 {
+        @apply md:grid-cols-2 lg:grid-cols-3;
+    }
+
+    .block-pricing__list--4 {
+        @apply md:grid-cols-2 xl:grid-cols-4;
+    }
+
+    .post-card.block-tier {
+        @apply min-h-0 gap-0 px-7 pt-7 pb-7 lg:min-h-0 lg:px-8 lg:pt-8;
+    }
+
+    /* The highlighted package on the hero's indigo. */
+    .post-card.block-tier--featured {
+        --card-bg: #1f2868;
+        --card-ink: #fff;
+        --card-muted: rgb(255 255 255 / 0.75);
+        --card-chip: rgb(255 255 255 / 0.12);
+        --card-accent: var(--lavender-300);
+    }
+
+    /* No button, so no notch to hold it, and nothing grows on hover. */
+    .block-tier--plain .post-card__bg {
+        mask: none;
+    }
+
+    .block-tier {
+        --card-accent: var(--violet-500);
+    }
+
+    .block-tier__head {
+        @apply flex min-h-7 items-center justify-between gap-3;
+    }
+
+    .block-tier__name {
+        @apply font-micro text-xs font-normal tracking-[0.08em] uppercase;
+        color: var(--card-accent);
+    }
+
+    .block-tier__price {
+        @apply mt-6 flex flex-wrap items-baseline gap-x-3 gap-y-1;
+    }
+
+    /* Anton has one weight: font-normal, or the browser fakes a bold. */
+    .block-tier__amount {
+        @apply font-display font-normal uppercase;
+        font-size: clamp(2.25rem, 3.2vw, 3rem);
+        line-height: 1.1;
+    }
+
+    .block-tier__period {
+        @apply text-base;
+        color: var(--card-muted);
+    }
+
+    .block-tier__description {
+        @apply mt-4 max-w-[40ch] text-base leading-relaxed text-pretty;
+        color: var(--card-muted);
+    }
+
+    .block-tier__features {
+        @apply mt-7 mb-8 flex flex-col gap-2.5 border-t pt-7;
+        border-color: color-mix(in srgb, var(--card-ink) 12%, transparent);
+
+        & li {
+            @apply flex items-start gap-3 text-base leading-snug;
+        }
+
+        & svg {
+            @apply mt-0.5 size-5 shrink-0;
+            fill: none;
+            stroke: var(--card-accent);
+            stroke-width: 2.25;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+    }
+
+    .block-tier .post-card__foot {
+        @apply mt-auto;
+    }
+
+    /* Nothing after the features: the card ends on its padding. */
+    .block-tier--plain .block-tier__features {
+        @apply mb-0;
+    }
+
+    .block-pricing__note {
+        @apply -mt-6 text-sm leading-relaxed lg:-mt-12;
+        color: var(--muted);
+    }
+}

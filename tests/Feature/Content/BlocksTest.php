@@ -220,3 +220,41 @@ it('rejects a half-filled link on a feature card', function () {
         ]]],
     ]))->toThrow(fn (ValidationException $e) => expect(array_keys($e->errors()))->toBe(['blocks.0.data.items.1.link.url']));
 });
+
+/*
+ * The guardrail: components/blocks.blade.php includes each block with
+ * @includeIf, so a type without a template saves, validates and renders
+ * nothing — silently. Every type the WordPress import writes must have one.
+ */
+it('has a template for every block type the import writes', function (string $type) {
+    $registry = app(BlockRegistry::class);
+
+    expect($registry->has($type))->toBeTrue()
+        ->and(resource_path('views/blocks/'.str_replace('_', '-', $type).'.blade.php'))->toBeFile()
+        ->and(view()->exists($registry->get($type)->view()))->toBeTrue();
+})->with([
+    'hero', 'rich_text', 'features', 'faq', 'pricing_tiers', 'stats', 'gallery',
+    'image_text', 'cta_banner', 'quote_form', 'video', 'statement',
+]);
+
+it('renders every block type the import writes from a valid sample without failing', function () {
+    $samples = validBlockSamples();
+    $types = ['rich_text', 'faq', 'pricing_tiers', 'stats', 'gallery', 'image_text', 'cta_banner', 'quote_form', 'video'];
+
+    $blocks = app(BlockRegistry::class)->validate(array_map(
+        fn (string $type): array => ['id' => "b-{$type}", 'type' => $type, 'data' => $samples[$type]],
+        $types,
+    ));
+
+    Page::factory()->create(['slug' => 'toate-blocurile', 'blocks' => $blocks]);
+
+    $html = $this->get('/toate-blocurile')->assertOk()->getContent();
+
+    // The sample asset has no file, so the gallery has nothing to show; the
+    // quote form is the site's contact section. Every other one is there.
+    foreach (array_diff($types, ['gallery', 'quote_form']) as $type) {
+        expect($html)->toContain('id="b-'.$type.'"');
+    }
+
+    expect($html)->toContain('data-contact-form');
+});

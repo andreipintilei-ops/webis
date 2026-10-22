@@ -1,0 +1,46 @@
+/*
+  The stats block (blocks/stats): figures on the hero's indigo, flat like
+  /web's steps (css/site/web.css, 03) — the chapters' dark glows left out.
+  Each on a hairline: the number in the display face (shown first; in the
+  markup the label is the term it describes), the label in the rows'
+  medium weight, the note in the muted white.
+*/
+@layer components {
+    .block-stats.chapter--dark {
+        background: #1f2868;
+    }
+
+    .block-stats__list {
+        @apply grid grid-cols-2 gap-x-5 gap-y-10 lg:grid-cols-3 lg:gap-x-8;
+    }
+
+    .block-stats__list--1 {
+        @apply grid-cols-1 lg:grid-cols-1;
+    }
+
+    .block-stats__list--4 {
+        @apply lg:grid-cols-4;
+    }
+
+    .block-stats__item {
+        @apply flex min-w-0 flex-col border-t pt-6 lg:pt-8;
+        border-color: var(--line);
+    }
+
+    /* Anton has one weight: font-normal, or the browser fakes a bold. */
+    .block-stats__value {
+        @apply order-first font-display font-normal uppercase;
+        font-size: clamp(3rem, 6.5vw, 6rem);
+        line-height: 1;
+        color: var(--ink);
+    }
+
+    .block-stats__label {
+        @apply mt-4 text-base leading-snug font-medium tracking-[-0.01em] text-balance md:text-xl;
+    }
+
+    .block-stats__note {
+        @apply mt-2 max-w-[34ch] text-sm leading-relaxed text-pretty md:text-base;
+        color: var(--muted);
+    }
+}

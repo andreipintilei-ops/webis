@@ -47,6 +47,16 @@
 @import './site/lower-tone.css';
 @import './site/variant-poveste.css';
 @import './site/variant-stage.css';
+/* The page-builder blocks' own (blocks/*.blade.php), on the system above. */
+@import './site/block-rich-text.css';
+@import './site/block-faq.css';
+@import './site/block-pricing-tiers.css';
+@import './site/block-stats.css';
+@import './site/block-gallery.css';
+@import './site/block-image-text.css';
+@import './site/block-cta-banner.css';
+@import './site/block-quote-form.css';
+@import './site/block-video.css';
 
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 @source '../../storage/framework/views/*.php';

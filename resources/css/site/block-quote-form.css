@@ -1,0 +1,14 @@
+/*
+  The quote-form block (blocks/quote-form): the site's contact section
+  (css/site/contact.css) on the hero's indigo instead of the home page's
+  navy, and the intro the block may add under its title.
+*/
+@layer components {
+    .contact.block-quote-form {
+        background: #1f2868;
+    }
+
+    .contact__intro {
+        @apply mt-6 max-w-[38ch] text-lg leading-relaxed text-pretty text-white/80 md:text-xl;
+    }
+}
