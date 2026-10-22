@@ -177,6 +177,36 @@
         @apply lg:grid-cols-4;
     }
 
+    /*
+      Flush: the cells in the first column start on the title's edge, not
+      inset by their padding (one column, two from 768px, three or four
+      from 1024px).
+    */
+    .chapter-cells--flush {
+        & .chapter-cell {
+            @apply pl-0;
+
+            @media (min-width: 768px) {
+                &:nth-child(even) {
+                    @apply pl-6;
+                }
+            }
+
+            @media (min-width: 1024px) {
+                &:nth-child(n) {
+                    @apply pl-8;
+                }
+            }
+        }
+
+        &.chapter-cells--3 .chapter-cell:nth-child(3n + 1),
+        &.chapter-cells--4 .chapter-cell:nth-child(4n + 1) {
+            @media (min-width: 1024px) {
+                @apply pl-0;
+            }
+        }
+    }
+
     .chapter-cell {
         @apply relative flex flex-col px-6 py-7 lg:px-8;
         box-shadow: 1px 1px 0 0 var(--line);

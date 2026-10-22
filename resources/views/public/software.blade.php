@@ -175,7 +175,7 @@
                 <p class="chapter__intro">O aplicație construită pe procesul tău nu e încă un program de învățat. Preia ce faceți deja, în ordinea în care o faceți, și se ocupă de pașii care se repetă.</p>
             </header>
 
-            <x-site.chapter.cells :cells="$benefits" :numbered="false" data-reveal />
+            <x-site.chapter.cells :cells="$benefits" :numbered="false" class="chapter-cells--flush" data-reveal />
 
             <p class="sw-why__foot" data-reveal>
                 Dacă nevoia ta e comună în domeniu, un produs gata de folosit poate fi mai rapid.

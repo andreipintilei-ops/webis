@@ -2,7 +2,8 @@
     A chapter's grid of cells between hairlines — no boxes (css/site/
     service-chapters.css). `cells`: [{name, text, example?, href?}]; a cell
     with `href` is one link (its name). `columns`: 3 or 4 from 1024px.
-    `numbered`: false for cells that are not a sequence.
+    `numbered`: false for cells that are not a sequence. Add the class
+    `chapter-cells--flush` to start the first column on the title's edge.
 --}}
 @props(['cells' => [], 'columns' => 3, 'numbered' => true])
 

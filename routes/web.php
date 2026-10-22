@@ -38,6 +38,9 @@ Route::view('web', 'public.web')->name('services.web');
 // Software la comandă: its canonical address ends in a slash
 // (/software-la-comanda/); its own copy, and its software projects.
 Route::get('software-la-comanda', SoftwareController::class)->name('services.software');
+// Produse SaaS (/produse/): Webis's own products, its own copy. It replaces
+// the CMS page of that name, which no longer shows.
+Route::view('produse', 'public.products')->name('services.products');
 
 // The contact form (components/site/contact). At a reserved slug, so no CMS
 // page can take it.

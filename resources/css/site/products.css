@@ -1,0 +1,92 @@
+/*
+  Produse SaaS (public/products.blade.php): what is particular to the page.
+  Scoped to its own classes (.saas-*); the shared pieces it reuses (the
+  hero, the statement, the section heads, the cells, /web's questions) are
+  only adjusted here where they sit on this page.
+*/
+@layer components {
+    /* ---- The statement, on the hero's backdrop --------------------------------- */
+
+    /* Its links go down the page: the arrows turned to point there. */
+    #despre-produse .arrow-link__icon {
+        rotate: 90deg;
+    }
+
+    /* ---- The light panel: rising over the dark area ----------------------------- */
+
+    /* As on /software-la-comanda/ (css/site/software.css). */
+    .chapter.saas-products {
+        @apply -mt-8 rounded-t-[2.5rem] pt-12 md:rounded-t-[5rem] md:pt-16 lg:pt-20;
+
+        &::before {
+            border-radius: inherit;
+        }
+    }
+
+    /* ---- The products: one after another between hairlines -------------------- */
+
+    .saas-products__list {
+        @apply border-b;
+        border-color: var(--line);
+    }
+
+    /* Its name and audience on the left (1–5), the rest on the right (7–12). */
+    .saas-product {
+        @apply grid gap-6 border-t py-10 md:py-14 lg:grid-cols-12 lg:gap-10;
+        border-color: var(--line);
+    }
+
+    .saas-product__head {
+        @apply lg:col-span-5;
+    }
+
+    .saas-product__for {
+        @apply font-micro text-xs tracking-[0.08em] uppercase;
+        color: var(--accent);
+    }
+
+    .saas-product__name {
+        @apply mt-4 font-medium text-balance;
+        font-size: clamp(1.75rem, 2.6vw, 2.5rem);
+        line-height: 1.1;
+        letter-spacing: -0.02em;
+        color: var(--ink);
+    }
+
+    .saas-product__body {
+        @apply flex flex-col gap-8 lg:col-span-6 lg:col-start-7;
+    }
+
+    .saas-product__text {
+        @apply max-w-[60ch] text-base leading-relaxed text-pretty md:text-lg;
+        color: var(--muted);
+    }
+
+    .saas-product__links {
+        @apply flex flex-wrap gap-x-10 gap-y-5;
+    }
+
+    /* ---- How to start, product or made to order --------------------------------- */
+
+    .saas-notes {
+        @apply grid gap-12 md:grid-cols-2 md:gap-10 lg:gap-16;
+    }
+
+    .saas-note {
+        @apply flex flex-col items-start gap-5 border-t pt-8;
+        border-color: var(--line);
+    }
+
+    .saas-note__title {
+        @apply font-medium text-balance;
+        font-size: clamp(1.75rem, 2.6vw, 2.5rem);
+        line-height: 1.1;
+        letter-spacing: -0.02em;
+        color: var(--ink);
+    }
+
+    .saas-note__text {
+        @apply max-w-[52ch] text-base leading-relaxed text-pretty md:text-lg;
+        color: var(--muted);
+    }
+}

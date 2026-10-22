@@ -8,6 +8,9 @@
     their fields. `organizație` tells whether it is a university, a town hall
     or a company — and so who answers.
 
+    On the contact page, ?produs={product} (Produse SaaS's "Cere o
+    prezentare") starts the message as a demo request for that product.
+
     The quote-form block (blocks/quote-form) sets its own `title` and
     `intro`, and may leave out the phone, email and address (`details`).
     Other attributes go on the section.
@@ -18,6 +21,8 @@
     $company = app(\App\Settings\CompanySettings::class);
     $phoneHref = \App\Support\PhoneLink::href($company->phone);
     $address = implode(', ', array_filter([$company->street_address, $company->locality]));
+    $product = $page ? \App\Enums\Product::tryFrom((string) request()->query('produs')) : null;
+    $message = $product ? 'Aș vrea o prezentare pentru '.$product->label().'.' : '';
     $sent = session('contact-sent', false);
 
     $fields = [
@@ -105,7 +110,7 @@
 
                     <div class="contact__field contact__field--wide">
                         <label for="contact-message" class="contact__label">{{ $page ? 'Ce ai în minte?' : 'De ce ai nevoie?' }}@if ($page) <span aria-hidden="true">*</span>@endif</label>
-                        <textarea id="contact-message" name="message" rows="4" maxlength="5000" @if ($page) placeholder="De exemplu: ce vrei să construiești sau să îmbunătățești și pentru cine." @endif class="contact__input contact__input--area" aria-describedby="contact-message-error" required @error('message') aria-invalid="true" @enderror>{{ old('message') }}</textarea>
+                        <textarea id="contact-message" name="message" rows="4" maxlength="5000" @if ($page) placeholder="De exemplu: ce vrei să construiești sau să îmbunătățești și pentru cine." @endif class="contact__input contact__input--area" aria-describedby="contact-message-error" required @error('message') aria-invalid="true" @enderror>{{ old('message', $message) }}</textarea>
                         <p id="contact-message-error" class="contact__error" data-error-for="message">@error('message'){{ $message }}@enderror</p>
                     </div>
 
