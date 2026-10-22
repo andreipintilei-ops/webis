@@ -1,7 +1,7 @@
 {{--
     /software-la-comanda/ — Software la comandă (Public\SoftwareController),
-    on the site's visual language (css/site/system.css), /web's spacing and
-    numbering; its own pieces in css/site/software.css.
+    on the site's visual language (css/site/system.css) and /web's spacing,
+    its sections unnumbered; its own pieces in css/site/software.css.
 
     One dark area first, as the home page's hero and "Despre noi":
     - the internal pages' hero with the planes, flush, so they fade into
@@ -9,14 +9,14 @@
     - the home page's statement (blocks/statement), on the hero's backdrop;
     - the modules as a strip of pills, where the home page has its logos.
     Then the light panel, rising over it:
-    - 01 when it makes sense, and when not: an honest recommendation, two
-      plain lists side by side;
-    - 02 what we build: the modules as tabs beside their mock-ups, an
+    - why made to order: what it changes, as the home page's cells between
+      hairlines;
+    - what we build: the modules as tabs beside their mock-ups, an
       accordion below 1024px (js/public/software-explorer.ts);
-    - 03 how we work, on the indigo: the delivery as a timeline lighting up
+    - how we work, on the indigo: the delivery as a timeline lighting up
       once (js/public/software-timeline.ts);
-    - 04 what every project gets, as a bento grid;
-    - 05 projects, only when there are software ones;
+    - what every project gets, as a bento grid;
+    - projects, only when there are software ones;
     - questions, as /web's rows that open, and as FAQPage JSON-LD from the
       same list;
     then the footer's closing call.
@@ -36,20 +36,13 @@
         ['SPV', 'landmark'],
     ];
 
-    // When it makes sense, and when it probably does not: each list
-    // continues its heading's sentence. One item links to /produse/.
-    $fit = [
-        'Are sens când:' => [
-            'procesul tău are reguli și excepții pe care programele standard nu le acoperă;',
-            'mai mulți oameni sau departamente lucrează pe aceleași documente și aprobări;',
-            'ai deja programe pe care vrei să le legi între ele;',
-            'volumul a crescut și Excelul nu mai ține pasul.',
-        ],
-        'Probabil nu are sens când:' => [
-            'un program existent face deja ce îți trebuie, cu mici compromisuri;',
-            'nevoia ta e comună în domeniu: atunci un <a href="/produse/" class="sw-link">produs gata de folosit</a> e mai rapid și mai ieftin;',
-            'procesul încă se schimbă des și nu e clar cum ar trebui să arate.',
-        ],
+    // What an application made to order changes: plain prose, no numbers.
+    $benefits = [
+        ['name' => 'Fiecare știe ce are de făcut.', 'text' => 'Cererile și documentele ajung singure la persoana potrivită, iar stadiul lor se vede oricând.'],
+        ['name' => 'Datele sunt într-un singur loc.', 'text' => 'Se introduc o dată și sunt aceleași pentru toată echipa, de la birou până la conducere.'],
+        ['name' => 'Rapoartele sunt gata când ai nevoie de ele.', 'text' => 'Se generează direct din datele reale, în formatul pe care îl folosești.'],
+        ['name' => 'Programele tale lucrează împreună.', 'text' => 'Aplicația se leagă de ce folosești deja, inclusiv de e-Factura și SPV.'],
+        ['name' => 'Crește odată cu organizația.', 'text' => 'Adăugăm module noi peste ce există, atunci când ai nevoie de ele.'],
     ];
 
     $modules = [
@@ -106,9 +99,6 @@
         'image' => $project->cover?->file()?->getUrl(),
         'line' => $project->summary,
     ])->all();
-
-    // The questions follow on in the numbering, with or without the projects.
-    $faqNumber = $cards === [] ? '05' : '06';
 
     $arrow = '<svg viewBox="0 0 11 10" fill="currentColor" aria-hidden="true"><path d="M0 5.656V4.304l8.419.014-3.359-3.358L5.99 0l5.002 4.973-4.987 4.987-.93-.96 3.358-3.358L0 5.656Z"/></svg>';
 @endphp
@@ -173,41 +163,28 @@
         ],
     ])
 
-    {{-- ================================================== 01 When it makes sense --}}
-    {{-- The light panel, rising over the dark area. An honest recommendation,
-         not a pitch: the intro beside the title, then two plain lists on
-         hairlines (stacked on phones), then the way to ask. --}}
-    <section class="chapter chapter--light sw-fit" aria-labelledby="sw-fit-title" data-reveal-pace="fast">
+    {{-- ================================================== What it changes --}}
+    {{-- The light panel, rising over the dark area. What it changes, as the
+         home page's cells between hairlines, then the honest alternative. --}}
+    <section class="chapter chapter--light sw-why" aria-labelledby="sw-why-title" data-reveal-pace="fast">
         <div class="chapter__inner">
             <header class="chapter__head" data-reveal="head">
                 <div class="chapter__head-main">
-                    <p class="chapter__label">01</p>
-                    <h2 id="sw-fit-title" class="chapter__title">Când are sens.</h2>
+                    <h2 id="sw-why-title" class="chapter__title">De ce software la comandă.</h2>
                 </div>
-                <p class="chapter__intro">Nu orice proces are nevoie de o aplicație construită de la zero. Uneori un program existent sau unul dintre produsele noastre e alegerea mai bună, și îți spunem asta de la prima discuție.</p>
+                <p class="chapter__intro">O aplicație construită pe procesul tău nu e încă un program de învățat. Preia ce faceți deja, în ordinea în care o faceți, și se ocupă de pașii care se repetă.</p>
             </header>
 
-            <div class="sw-fit__columns" data-reveal>
-                @foreach ($fit as $heading => $items)
-                    <div class="sw-fit__column" data-reveal-child>
-                        <h3 class="sw-fit__heading">{{ $heading }}</h3>
-                        <ul class="sw-fit__list">
-                            @foreach ($items as $item)
-                                <li>{!! $item !!}</li>
-                            @endforeach
-                        </ul>
-                    </div>
-                @endforeach
-            </div>
+            <x-site.chapter.cells :cells="$benefits" :numbered="false" data-reveal />
 
-            <div class="sw-fit__foot" data-reveal>
-                <p>Nu ești sigur? Povestește-ne cum lucrezi acum și îți spunem sincer ce variantă are sens.</p>
-                <x-ui.arrow-link href="/contact/">Hai să discutăm</x-ui.arrow-link>
-            </div>
+            <p class="sw-why__foot" data-reveal>
+                Dacă nevoia ta e comună în domeniu, un produs gata de folosit poate fi mai rapid.
+                <a href="/produse/" class="sw-link">Vezi produsele SaaS →</a>
+            </p>
         </div>
     </section>
 
-    {{-- ================================================== 02 What we build --}}
+    {{-- ================================================== What we build --}}
     {{-- Tabs: the modules on the left, the active one's mock-up on the
          right; an accordion below 1024px. Without the script: the first
          module, the others behind their tabs. --}}
@@ -215,7 +192,6 @@
         <div class="chapter__inner">
             <header class="chapter__head" data-reveal="head">
                 <div class="chapter__head-main">
-                    <p class="chapter__label">02</p>
                     <h2 id="sw-build-title" class="chapter__title">Ce construim.</h2>
                 </div>
             </header>
@@ -224,7 +200,6 @@
                 <div class="sw-explorer__tabs" role="tablist" aria-label="Module" aria-orientation="vertical" data-sw-tablist>
                     @foreach ($modules as [$key, $name, $text])
                         <button type="button" role="tab" id="modul-{{ $key }}-tab" class="sw-tab" aria-selected="{{ $loop->first ? 'true' : 'false' }}" aria-controls="modul-{{ $key }}" @unless ($loop->first) tabindex="-1" @endunless data-sw-tab>
-                            <span class="sw-tab__index" aria-hidden="true">{{ sprintf('%02d', $loop->iteration) }}</span>
                             <span class="sw-tab__name">{{ $name }}</span>
                             <span class="sw-tab__icon" aria-hidden="true"></span>
                         </button>
@@ -248,7 +223,7 @@
         </div>
     </section>
 
-    {{-- ================================================== 03 How we work --}}
+    {{-- ================================================== How we work --}}
     {{-- On the hero's indigo. The segments light up one after another, once
          (js/public/software-timeline.ts); drawn lit without the script and
          with reduced motion. The track is a picture of the stages listed
@@ -257,7 +232,6 @@
         <div class="chapter__inner">
             <header class="chapter__head" data-reveal="head">
                 <div class="chapter__head-main">
-                    <p class="chapter__label">03</p>
                     <h2 id="sw-steps-title" class="chapter__title">Cum lucrăm.</h2>
                 </div>
                 <p class="chapter__intro">Lucrând pe etape, primele module ajung la tine devreme, nu la finalul proiectului.</p>
@@ -323,12 +297,11 @@
         </div>
     </section>
 
-    {{-- ================================================== 04 What every project gets --}}
+    {{-- ================================================== What every project gets --}}
     <section class="chapter chapter--light sw-gets" aria-labelledby="sw-gets-title" data-reveal-pace="fast">
         <div class="chapter__inner">
             <header class="chapter__head" data-reveal="head">
                 <div class="chapter__head-main">
-                    <p class="chapter__label">04</p>
                     <h2 id="sw-gets-title" class="chapter__title">Ce primești în orice proiect.</h2>
                 </div>
             </header>
@@ -402,14 +375,13 @@
         </div>
     </section>
 
-    {{-- ================================================== 05 Projects --}}
+    {{-- ================================================== Projects --}}
     {{-- Only with published software projects: otherwise nothing at all. --}}
     @if ($cards !== [])
         <section class="chapter chapter--light web-projects sw-projects" aria-labelledby="sw-projects-title" data-reveal-pace="fast">
             <div class="chapter__inner">
                 <header class="chapter__head" data-reveal="head">
                     <div class="chapter__head-main">
-                        <p class="chapter__label">05</p>
                         <h2 id="sw-projects-title" class="chapter__title">Proiecte.</h2>
                     </div>
                 </header>
@@ -449,7 +421,6 @@
         <div class="chapter__inner">
             <header class="chapter__head" data-reveal="head">
                 <div class="chapter__head-main">
-                    <p class="chapter__label">{{ $faqNumber }}</p>
                     <h2 id="sw-faq-title" class="chapter__title">Întrebări frecvente.</h2>
                 </div>
             </header>

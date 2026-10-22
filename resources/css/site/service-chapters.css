@@ -192,7 +192,7 @@
     }
 
     .chapter-cell__name {
-        @apply mt-3 font-semibold;
+        @apply mt-3 font-semibold first:mt-0;
         font-size: 20px;
         line-height: 1.25;
         transition: color var(--base) var(--ease);

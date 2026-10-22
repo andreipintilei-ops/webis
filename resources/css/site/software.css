@@ -141,7 +141,7 @@
       but by the home page's 32px (css/site/service-cards.css): the statement
       above then ends as far below its link as the home page's does.
     */
-    .chapter.sw-fit {
+    .chapter.sw-why {
         @apply -mt-8 rounded-t-[2.5rem] pt-12 md:rounded-t-[5rem] md:pt-16 lg:pt-20;
 
         &::before {
@@ -149,7 +149,7 @@
         }
     }
 
-    /* ---- Links in the copy ("produs gata de folosit", "Vezi proiectele →") -------- */
+    /* ---- Links in the copy ("Vezi produsele SaaS →", "Vezi proiectele →") -------- */
 
     .sw-link {
         @apply inline-flex items-center font-medium whitespace-nowrap underline decoration-1 underline-offset-[0.3em];
@@ -171,41 +171,18 @@
         }
     }
 
-    /* ---- 01 When it makes sense, and when not ------------------------------------ */
+    /* ---- Section heads: no number above the titles on this page ----------------- */
 
-    /* Two plain lists, each under its heading, the items on hairlines. */
-    .sw-fit__columns {
-        @apply grid gap-12 md:grid-cols-2 md:gap-10 lg:gap-16;
+    :is(.sw-why, .sw-build, .sw-steps, .sw-gets, .sw-projects, .sw-faq)
+        .chapter__title {
+        @apply mt-0;
     }
 
-    .sw-fit__heading {
-        @apply text-xl font-medium tracking-[-0.01em] md:text-2xl;
-        color: var(--ink);
-    }
+    /* ---- Why made to order: the cells, then the alternative ------------------------ */
 
-    .sw-fit__list {
-        @apply mt-6 border-b;
-        border-color: var(--line);
-
-        & li {
-            @apply border-t py-4 text-base leading-relaxed text-pretty md:text-lg;
-            border-color: var(--line);
-            color: var(--muted);
-        }
-
-        /* Inline here: it may wrap with the sentence. */
-        & .sw-link {
-            @apply whitespace-normal;
-        }
-    }
-
-    .sw-fit__foot {
-        @apply mt-12 flex flex-col items-start gap-6 md:mt-16 lg:flex-row lg:items-center lg:justify-between lg:gap-10;
-
-        & p {
-            @apply max-w-[40rem] text-base leading-relaxed text-pretty md:text-lg;
-            color: var(--ink);
-        }
+    .sw-why__foot {
+        @apply mt-10 flex flex-wrap items-baseline gap-x-4 gap-y-2 text-base leading-relaxed text-pretty md:mt-12 md:text-lg;
+        color: var(--muted);
     }
 
     .sw-mock__tile {
@@ -253,7 +230,7 @@
 
     .sw-tab {
         @apply relative grid w-full cursor-pointer items-center gap-5 border-b py-5 pr-2 pl-5 text-left;
-        grid-template-columns: auto minmax(0, 1fr) auto;
+        grid-template-columns: minmax(0, 1fr) auto;
         border-color: var(--line);
         color: var(--muted);
 
@@ -270,10 +247,6 @@
             outline: 2px solid var(--accent);
             outline-offset: -2px;
         }
-    }
-
-    .sw-tab__index {
-        @apply font-micro text-xs;
     }
 
     .sw-tab__name {
