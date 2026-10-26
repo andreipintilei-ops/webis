@@ -39,6 +39,7 @@ type ClientRow = {
     type: string;
     products: string[];
     show_in_logos: boolean;
+    show_in_marquee: boolean;
     sort_order: number;
     projects_count: number;
     testimonials_count: number;
@@ -121,6 +122,7 @@ const form = useForm({
     type: 'company' as string | null,
     products: [] as string[],
     show_in_logos: true,
+    show_in_marquee: true,
     sort_order: 0 as number | null,
 });
 
@@ -133,6 +135,7 @@ function openNew(): void {
     form.type = 'company';
     form.products = [];
     form.show_in_logos = true;
+    form.show_in_marquee = true;
     form.sort_order = 0;
     form.clearErrors();
     open.value = true;
@@ -147,6 +150,7 @@ function openEdit(client: ClientRow): void {
     form.type = client.type;
     form.products = [...client.products];
     form.show_in_logos = client.show_in_logos;
+    form.show_in_marquee = client.show_in_marquee;
     form.sort_order = client.sort_order;
     form.clearErrors();
     open.value = true;
@@ -298,7 +302,12 @@ function undelete(client: ClientRow): void {
                                 <Badge
                                     v-if="!row.show_in_logos"
                                     variant="outline"
-                                    >Fără logo în bandă</Badge
+                                    >Fără logo</Badge
+                                >
+                                <Badge
+                                    v-else-if="!row.show_in_marquee"
+                                    variant="outline"
+                                    >Doar în grilă</Badge
                                 >
                             </div>
                             <div
@@ -464,7 +473,12 @@ function undelete(client: ClientRow): void {
                 </div>
                 <SwitchField
                     v-model="form.show_in_logos"
-                    label="Afișează în banda de logo-uri"
+                    label="Afișează în grila de logo-uri"
+                />
+                <SwitchField
+                    v-if="form.show_in_logos"
+                    v-model="form.show_in_marquee"
+                    label="Și în banda de logo-uri care se derulează"
                 />
                 <TextField
                     v-model="form.sort_order"

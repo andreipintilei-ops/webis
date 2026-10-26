@@ -67,17 +67,19 @@ it('maps a real industry page\'s fields onto the blocks of its old layout', func
     $fixture = podsFixture();
 
     $conversion = (new PodsToBlocks(legacyHtml($media), new BlockListValidator($registry), $registry))->convert($fixture['fields'], $fixture['title']);
-    [$hero, $opening, $benefits, $packages, $models, $gallery, $closing, $form] = $conversion->blocks;
+    [$hero, $benefits, $packages, $models, $gallery, $closing] = $conversion->blocks;
 
-    expect($conversion->blockTypes())->toBe(['hero', 'rich_text', 'features', 'features', 'rich_text', 'gallery', 'rich_text', 'quote_form'])
+    // No closing form: the footer's call to talk ends the page. Both texts
+    // under the old title are the hero's, no section of their own after it.
+    expect($conversion->blockTypes())->toBe(['hero', 'features', 'features', 'rich_text', 'gallery', 'rich_text'])
         ->and($hero['data'])->toMatchArray([
             'heading' => 'Creare site agentie turism Tour-operator',
-            'subheading' => 'Echipa noastra va vine in ajutor propunandu-va diferite pachete de realizare site agentie de turism, avand o calitate superioara si un pret de nerefuzat.',
             'image_asset_id' => $media->assets[14333],
             'layout' => 'split',
             'primary_cta' => ['label' => 'Cere o ofertă', 'url' => '/contact/'],
         ])
-        ->and($opening['data']['content_html'])->toStartWith('<p>Un pret site agentie de turism poate fi discutat')
+        ->and(explode("\n\n", $hero['data']['subheading']))->toHaveCount(2)
+        ->and($hero['data']['subheading'])->toStartWith("Echipa noastra va vine in ajutor propunandu-va diferite pachete de realizare site agentie de turism, avand o calitate superioara si un pret de nerefuzat.\n\nUn pret site agentie de turism poate fi discutat")
         ->and($benefits['data'])->toMatchArray(['heading' => 'Creare site agentie de turism', 'intro' => 'Un site pentru agentie de turism va permite'])
         ->and(array_column($benefits['data']['items'], 'title'))->toBe([
             'Vizualizarea pe harta a destinatiilor si a ofertelor de cazare',
@@ -96,9 +98,20 @@ it('maps a real industry page\'s fields onto the blocks of its old layout', func
         ->and($models['data']['content_html'])->toContain('<strong>site-uri pentru agentii de turism</strong>')
         ->and(array_column($gallery['data']['images'], 'asset_id'))->toBe([$media->assets[14331], $media->assets[14332], $media->assets[14333], $media->assets[14334], $media->assets[14335]])
         ->and($closing['data']['content_html'])->toStartWith('<p>Prin procesul de creare site web agentie de turism')
-        ->and($form['data']['show_contact_details'])->toBeTrue()
         ->and($conversion->report->unresolvedItems())->toBe(['image' => ['attachment #14336']])
         ->and($conversion->report->dropped())->toBe(['pods:galerie_h4' => 1, 'pods:imagine_background_prima_sectiune' => 1, 'pods:imagine_h3' => 1]);
+});
+
+it('keeps a description too long for the hero in a rich text after it', function () {
+    $registry = app(BlockRegistry::class);
+    $fields = podsFixture()['fields'];
+    $fields['descriere_h1'] = str_repeat('Un text foarte lung despre site. ', 30);
+
+    $conversion = (new PodsToBlocks(legacyHtml(podsMedia([])), new BlockListValidator($registry), $registry))->convert($fields, 'Turism');
+
+    expect($conversion->blocks[0]['data']['subheading'])->toBeNull()
+        ->and($conversion->blockTypes()[1])->toBe('rich_text')
+        ->and($conversion->blocks[1]['data']['content_html'])->toStartWith('<p>Un text foarte lung despre site.');
 });
 
 it('returns blocks that pass the registry\'s validation', function () {
@@ -118,8 +131,8 @@ it('keeps the packages as rich text when a list is too long for a card', functio
 
     $conversion = (new PodsToBlocks(legacyHtml(podsMedia([])), new BlockListValidator($registry), $registry))->convert($fields, 'Turism');
 
-    expect($conversion->blockTypes())->toBe(['hero', 'rich_text', 'features', 'rich_text', 'rich_text', 'rich_text', 'quote_form'])
-        ->and($conversion->blocks[3]['data']['content_html'])->toStartWith('<h2 id="site-agentie-turism">Site agentie turism</h2><h3 id="website-la-cheie">Website la cheie</h3><ul><li><p>Domeniu .ro gratuit</p></li>');
+    expect($conversion->blockTypes())->toBe(['hero', 'features', 'rich_text', 'rich_text', 'rich_text'])
+        ->and($conversion->blocks[2]['data']['content_html'])->toStartWith('<h2 id="site-agentie-turism">Site agentie turism</h2><h3 id="website-la-cheie">Website la cheie</h3><ul><li><p>Domeniu .ro gratuit</p></li>');
 });
 
 it('converts a classic project body to rich text, with no hero', function () {

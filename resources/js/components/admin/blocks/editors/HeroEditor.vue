@@ -54,8 +54,9 @@ const data = defineModel<HeroData>('data', { required: true });
         <TextField
             v-model="data.subheading"
             label="Subtitlu"
-            :max="400"
+            :max="800"
             multiline
+            hint="Un rând liber între paragrafe."
             :error="errors.subheading"
         />
         <div class="grid gap-1.5">

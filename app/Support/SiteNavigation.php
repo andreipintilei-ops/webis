@@ -19,7 +19,7 @@ use App\Enums\ProjectType;
  * `services()`: the three services, the Servicii dropdown and the numbered
  * rows of the full-screen menu, each with its line of description (`blurb`).
  * `groups()`: the footer's columns of grouped links.
- * `legal()`: the small links at the menu's and the footer's foot.
+ * `legal()`: the legal pages, under their own heading in the footer.
  *
  * The group and legal links point at the CMS pages they will be (root slugs);
  * until a page exists at that slug its link 404s.
@@ -98,6 +98,7 @@ final class SiteNavigation
     {
         return [
             ['label' => 'Confidențialitate', 'href' => '/politica-de-confidentialitate'],
+            ['label' => 'Politica de cookies', 'href' => '/politica-de-cookies'],
         ];
     }
 

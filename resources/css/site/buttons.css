@@ -30,7 +30,7 @@
       horizontal stretch.
     */
     .pill {
-        @apply relative inline-flex h-14 items-center justify-center overflow-hidden rounded-full px-7 text-base leading-none font-medium whitespace-nowrap;
+        @apply relative inline-flex h-14 cursor-pointer items-center justify-center overflow-hidden rounded-full px-7 text-base leading-none font-medium whitespace-nowrap;
         color: var(--btn-contrast);
         transform: translateZ(0);
         transition: transform var(--duration-fast) var(--motion-out);
@@ -177,6 +177,12 @@
         color: var(--btn-contrast);
         transform: translateX(-250%);
         transition: transform 0.35s var(--motion-in);
+    }
+
+    /* Further down the page: turned to point down. `rotate` applies after
+       the slide, so the arrow waits above the circle and drops in. */
+    .arrow-link--down .arrow-link__icon {
+        rotate: 90deg;
     }
 
     .arrow-link__label {

@@ -89,7 +89,7 @@ it('renders nothing for an FAQ without questions', function () {
     $page = Page::sole();
     $page->update(['blocks' => [...$page->blocks, ['id' => 'f', 'type' => 'faq', 'v' => 1, 'data' => ['items' => []]]]]);
 
-    expect($this->get('/')->assertOk()->getContent())->not->toContain('block-faq');
+    expect($this->get('/')->assertOk()->getContent())->not->toContain('web-faq__item');
 });
 
 it('keeps a centred hero centred and dark on white without an image', function () {
@@ -163,6 +163,7 @@ it('runs the client-logo marquee along the bottom of the hero', function () {
     $shown = Client::factory()->create(['name' => 'Universitatea X', 'show_in_logos' => true, 'logo_asset_id' => Asset::factory()->withImage(200, 80)->create()->id]);
     Client::factory()->create(['name' => 'Ascuns', 'show_in_logos' => false, 'logo_asset_id' => Asset::factory()->withImage()->create()->id]);
     Client::factory()->create(['name' => 'Fără logo', 'show_in_logos' => true, 'logo_asset_id' => null]);
+    Client::factory()->create(['name' => 'Doar în grilă', 'show_in_logos' => true, 'show_in_marquee' => false, 'logo_asset_id' => Asset::factory()->withImage()->create()->id]);
 
     homeWithHero(['layout' => 'centered', 'background' => 'gradient', 'logos' => true, 'heading' => 'Titlu']);
 
@@ -174,7 +175,8 @@ it('runs the client-logo marquee along the bottom of the hero', function () {
         ->and(substr_count($hero[0], 'alt="Universitatea X"'))->toBe(1)
         ->and(substr_count($hero[0], 'aria-hidden="true"'))->toBeGreaterThan(1)
         ->and($hero[0])->not->toContain('Ascuns')
-        ->not->toContain('Fără logo');
+        ->not->toContain('Fără logo')
+        ->not->toContain('Doar în grilă');
 });
 
 it('leaves the marquee out when the hero does not ask for it', function () {
@@ -185,16 +187,20 @@ it('leaves the marquee out when the hero does not ask for it', function () {
     expect($this->get('/')->assertOk()->getContent())->not->toContain('logo-marquee');
 });
 
-it('gives only an opening full-screen hero the scroll parallax', function () {
+it('gives no hero a scroll parallax; a dark opening one has the next section rising over it', function () {
     Page::factory()->create([
         'slug' => 'pagina-test',
         'blocks' => [
-            ['id' => 'a', 'type' => 'hero', 'v' => 1, 'data' => ['layout' => 'centered', 'heading' => 'Primul']],
+            ['id' => 'a', 'type' => 'hero', 'v' => 1, 'data' => ['layout' => 'split', 'background' => 'gradient-violet', 'heading' => 'Primul']],
             ['id' => 'b', 'type' => 'hero', 'v' => 1, 'data' => ['layout' => 'centered', 'heading' => 'Al doilea']],
         ],
     ]);
 
-    expect(preg_match_all('/data-hero-parallax\s+data-speed="clamp\(0\.5\)"/', $this->get('/pagina-test')->assertOk()->getContent()))->toBe(1);
+    $html = $this->get('/pagina-test')->assertOk()->getContent();
+
+    expect($html)->not->toContain('data-speed')
+        // Only the opening one, dark: css/site/hero-parallax.css rounds what follows.
+        ->and(substr_count($html, 'hero-sheet'))->toBe(1);
 });
 
 it('keeps the line breaks typed into the hero title, escaped', function () {
@@ -228,6 +234,21 @@ it('marks the opening dark hero for the intro, and only that one', function () {
     homeWithHero(['layout' => 'centered', 'heading' => 'Titlu']);
 
     expect($this->get('/')->getContent())->not->toMatch('/\sdata-intro\s*>/')->not->toContain('data-intro-backdrop');
+});
+
+it('keeps the intro to the home page: the same hero elsewhere is a plain one', function () {
+    Page::factory()->create(['slug' => 'mentenanta', 'blocks' => [
+        ['id' => 'h', 'type' => 'hero', 'v' => 1, 'data' => ['layout' => 'centered', 'background' => 'gradient-violet', 'heading' => 'Mentenanță']],
+    ]]);
+
+    $html = $this->get('/mentenanta')->assertOk()->getContent();
+    preg_match('/<section id="h".*?<\/section>/s', $html, $hero);
+
+    expect($html)->not->toContain('data-intro-backdrop')
+        ->and($hero[0])->not->toMatch('/\sdata-intro[\s>]/')
+        // Its gradient inside it, not fixed behind the page.
+        ->toContain('data-soffit')
+        ->toContain('hero-sheet');
 });
 
 it('shows the Google rating above the client logos, linked to the reviews, and nothing without one', function () {
@@ -369,7 +390,7 @@ it('renders the services as illustrated cards when the block asks for them, risi
         ->and(strpos($html, '>SmileSoft</h3>'))->toBeLessThan(strpos($html, 'product-card--2'));
 });
 
-it('keeps the columns, and the hero leaving as a card, without the cards layout', function () {
+it('keeps the columns without the cards layout, the hero leaving as everywhere', function () {
     Page::factory()->create([
         'slug' => 'avantaje',
         'blocks' => [['id' => 'f', 'type' => 'features', 'v' => 1, 'data' => ['columns' => 3, 'items' => [['title' => 'Card']]]]],
@@ -379,7 +400,8 @@ it('keeps the columns, and the hero leaving as a card, without the cards layout'
         ->toContain('md:grid-cols-3')
         ->not->toContain('svc-cards')
         ->not->toContain('project-accordion')
-        ->not->toContain('data-hero-leave');
+        // The next section slides over the hero's backdrop on every page.
+        ->toContain('data-hero-leave="overlap"');
 });
 
 it('renders a statement: label left, words split for the reveal, paragraph and link', function () {
@@ -588,7 +610,18 @@ it('renders nothing for an empty rich-text block', function () {
         ->not->toContain('block-rich-text');
 });
 
-it('renders the FAQ as rows that open, under a numbered heading, answers escaped', function () {
+it('gives the FAQ\'s own intro, when it has one, as the line under its title', function () {
+    $section = renderBlocks([contentBlock('faq', 'faq', [
+        'intro' => 'Cele mai frecvente intrebari legate de SEO',
+        'items' => [['question' => 'Ce este SEO?', 'answer' => 'Optimizare.']],
+    ])], 'faq');
+
+    expect($section)
+        ->toContain('<p class="web-split__line">Cele mai frecvente intrebari legate de SEO</p>')
+        ->not->toContain('Nu găsești răspunsul?');
+});
+
+it('renders the FAQ as /web does: the title held on the left, rows that open on the right, answers escaped', function () {
     $section = renderBlocks([contentBlock('faq', 'faq', [
         'heading' => 'Întrebări frecvente',
         'items' => [
@@ -599,9 +632,13 @@ it('renders the FAQ as rows that open, under a numbered heading, answers escaped
 
     expect($section)
         ->toContain('aria-labelledby="faq-title"')
-        ->toMatch('/<p class="section-head__number" aria-hidden="true">01<\/p>/')
-        ->toMatch('/<h2 id="faq-title" class="section-head__title">Întrebări frecvente<\/h2>/')
-        ->and(substr_count($section, '<details class="block-faq__item" data-accordion-item'))->toBe(2)
+        ->toContain('<div class="web-split" data-split>')
+        ->toMatch('/<h2 id="faq-title" class="chapter__title">Întrebări frecvente<\/h2>/')
+        // No intro: the new pages' own line, and the way to write to us.
+        ->toContain('<p class="web-split__line">Nu găsești răspunsul? Scrie-ne și îți răspundem în aceeași zi lucrătoare.</p>')
+        ->toContain('href="/contact/"')
+        ->toContain('class="web-faq__list web-split__body" data-split-body')
+        ->and(substr_count($section, '<details class="web-faq__item" data-accordion-item'))->toBe(2)
         ->and($section)
         ->toContain('<span>Cât durează un site?</span>')
         ->toContain('<p>Între 3 și 6 săptămâni.</p>')
@@ -611,17 +648,37 @@ it('renders the FAQ as rows that open, under a numbered heading, answers escaped
         ->not->toContain('<script>alert(1)');
 });
 
-it('numbers the section headings down the page', function () {
+it('heads the blocks in the text face, centred, the display face kept to the hero', function () {
     $html = renderBlocks([
         contentBlock('h', 'hero', ['layout' => 'split', 'heading' => 'Titlu']),
         contentBlock('a', 'faq', ['heading' => 'Întrebări', 'items' => [['question' => 'Q?', 'answer' => 'A.']]]),
-        contentBlock('b', 'rich_text', ['content' => tiptap([tiptapText('Text')])]),
+        contentBlock('f', 'features', ['heading' => 'Ce primești', 'intro' => 'Pe scurt.', 'items' => [['title' => 'Viteză']]]),
         contentBlock('c', 'stats', ['heading' => 'În cifre', 'items' => [['value' => '250+', 'label' => 'site-uri']]]),
     ]);
 
-    preg_match_all('/<p class="section-head__number" aria-hidden="true">(\d+)<\/p>/', $html, $numbers);
+    preg_match_all('/<h2 id="[^"]+" class="chead__title">([^<]+)<\/h2>/', $html, $titles);
 
-    expect($numbers[1])->toBe(['01', '02']);
+    // The FAQ heads its own split section (the title on the left), as /web.
+    expect($titles[1])->toBe(['Ce primești', 'În cifre'])
+        ->and($html)->toContain('<h2 id="a-title" class="chapter__title">Întrebări</h2>')
+        ->and($html)->toContain('<p class="chead__intro">Pe scurt.</p>')
+        // No numbers over the headings any more.
+        ->not->toMatch('/class="section-head__number" aria-hidden="true">\d+</');
+});
+
+it('sizes the hero title to its length: smaller beside the image, a step down when long', function () {
+    $sizeOf = function (string $layout, string $heading): string {
+        Page::query()->forceDelete();
+        preg_match('/<h1 class="[^"]*(text-\[clamp\([^\]]+\)\])/', renderBlocks([contentBlock('h', 'hero', ['layout' => $layout, 'heading' => $heading])]), $match);
+
+        return $match[1] ?? '';
+    };
+
+    expect($sizeOf('split', 'Creare site mobila'))->toBe('text-[clamp(2.5rem,4.6vw,4.5rem)]')
+        ->and($sizeOf('split', 'Creare site hotel / pensiune'))->toBe('text-[clamp(2.25rem,3.8vw,3.75rem)]')
+        ->and($sizeOf('split', 'Creare site primarie, consiliu local, institutii publice'))->toBe('text-[clamp(2rem,3.2vw,3.25rem)]')
+        ->and($sizeOf('centered', "Web design, software\nși mai puțin haos."))->toBe('text-[clamp(2.75rem,7vw,6.5rem)]')
+        ->and($sizeOf('centered', 'Oferim servicii de mentenanta a site-ului WordPress'))->toBe('text-[clamp(2.5rem,5vw,4.75rem)]');
 });
 
 it('renders pricing tiers as cards, the highlighted one on the indigo, a tier with a button a link', function () {
@@ -636,7 +693,7 @@ it('renders pricing tiers as cards, the highlighted one on the indigo, a tier wi
     ])], 'p');
 
     expect($section)
-        ->toContain('<p class="section-head__intro">Prețuri orientative.</p>')
+        ->toContain('<p class="chead__intro">Prețuri orientative.</p>')
         ->toContain('block-pricing__list--2')
         ->toMatch('/<a\s+href="\/contact\/"\s+class="post-card block-tier block-tier--featured">/')
         ->toContain('<h3 class="block-tier__name">Start</h3>')
@@ -663,9 +720,9 @@ it('renders stats on the indigo, the number with its label', function () {
         // No heading asked for: none drawn.
         ->not->toContain('section-head')
         ->toContain('<dt class="block-stats__label">site-uri livrate</dt>')
-        ->toContain('<dd class="block-stats__value">250+</dd>')
+        ->toContain('<dd class="block-stats__value" data-count-up>250+</dd>')
         ->toContain('<dd class="block-stats__note">din 2016</dd>')
-        ->toContain('<dd class="block-stats__value">98%</dd>');
+        ->toContain('<dd class="block-stats__value" data-count-up>98%</dd>');
 });
 
 it('fills a share\'s hairline that far, and only a share\'s', function () {
@@ -679,6 +736,35 @@ it('fills a share\'s hairline that far, and only a share\'s', function () {
         ->toMatch('/class="block-stats__item block-stats__item--share"\s+style="--share: 78%"/')
         ->toMatch('/class="block-stats__item block-stats__item--share"\s+style="--share: 2.5%"/')
         ->and(substr_count($section, '--share:'))->toBe(2);
+});
+
+it('renders a stats block\'s passage under the figures, in the same section', function () {
+    $section = renderBlocks([contentBlock('s', 'stats', [
+        'items' => [['value' => '78%', 'label' => 'WordPress']],
+        'body' => tiptap([tiptapText('Cele mai multe site-uri infectate folosesc WordPress.')]),
+    ])], 's');
+
+    expect($section)
+        ->toMatch('/<\/dl>\s*<div class="rich-text block-stats__body"/')
+        ->toContain('<p>Cele mai multe site-uri infectate folosesc WordPress.</p>');
+});
+
+it('renders a stats block without a passage as the figures alone', function () {
+    expect(renderBlocks([contentBlock('s', 'stats', ['items' => [['value' => '250+', 'label' => 'site-uri']]])], 's'))
+        ->not->toContain('block-stats__body');
+});
+
+it('sets a light stats block on the lavender, without the dark nav tone', function () {
+    $section = renderBlocks([contentBlock('s', 'stats', [
+        'heading' => 'În cifre',
+        'items' => [['value' => '78%', 'label' => 'WordPress']],
+        'tone' => 'light',
+    ])], 's');
+
+    expect($section)
+        ->toContain('class="chapter chapter--light block-stats"')
+        ->not->toContain('data-nav-tone="dark"')
+        ->not->toContain('section-head--dark');
 });
 
 it('renders one image per gallery item, captions under them, missing assets left out', function () {

@@ -11,15 +11,12 @@
     under the section that rises over the hero. Hidden below 768px.
 
     `variant`: only 'default' for now.
-    `speed`: ScrollSmoother's data-speed, to move with a hero's text where
-    it sinks back slower than the page.
 --}}
 @php
     $variant = $variant ?? 'default';
-    $speed = $speed ?? null;
 @endphp
 
-<div class="hero-planes hero-planes--{{ $variant }}" aria-hidden="true" data-hero-planes @if ($speed) data-speed="{{ $speed }}" @endif>
+<div class="hero-planes hero-planes--{{ $variant }}" aria-hidden="true" data-hero-planes>
     <div class="hero-planes__frame">
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="-150 100 770 980" fill="none" class="webis-planes hero-planes__svg" aria-hidden="true" focusable="false">
 <g>

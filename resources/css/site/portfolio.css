@@ -188,7 +188,7 @@
     }
 
     .project-page__back {
-        @apply mt-12;
+        @apply mt-12 flex flex-wrap gap-x-10 gap-y-5;
     }
 
     /* ---- A product page's "Folosit de" ---------------------------------------- */

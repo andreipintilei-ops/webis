@@ -85,7 +85,7 @@ it('makes the first heading the hero, with its subheading, buttons and image', f
     $conversion = elementorConverter($media)->convert(elementorFixture('elementor-page-magazin-online'), 'Creare magazin online');
     $hero = $conversion->blocks[0];
 
-    expect($conversion->blockTypes())->toBe(['hero', 'features', 'stats', 'rich_text', 'faq', 'quote_form'])
+    expect($conversion->blockTypes())->toBe(['hero', 'features', 'stats', 'faq'])
         ->and($hero['data'])->toMatchArray([
             'heading' => 'Ai nevoie de un magazin online?',
             'subheading' => 'Oferim soluții personalizate și ușor de utilizat pentru a transforma visul tău de afacere online în realitate.',
@@ -101,14 +101,57 @@ it('gives every later heading to a block or the rich text, never another hero', 
 
     expect(blocksOfType($conversion, 'hero'))->toHaveCount(1)
         ->and(blocksOfType($conversion, 'features')[0]['data']['heading'])->toBe('Creare magazin online')
-        ->and(blocksOfType($conversion, 'rich_text')[0]['data']['content_html'])->toStartWith('<h2 id="intrebari-frecvente">Intrebari frecvente</h2>')
-        ->and(blocksOfType($conversion, 'quote_form')[0]['data'])->toMatchArray([
-            'heading' => 'Hai să lucrăm împreună',
-            'intro' => 'Ai nevoie de un site bine făcut? Completeaza formularul de alaturi si vei primi o oferta personalizata GRATUITA!',
-        ])
+        // The FAQ section's own heading and line, a rich text before the
+        // questions: folded into the faq, the line its intro.
+        ->and(blocksOfType($conversion, 'rich_text'))->toBe([])
+        ->and(blocksOfType($conversion, 'faq')[0]['data']['heading'])->toBe('Întrebări frecvente')
+        ->and(blocksOfType($conversion, 'faq')[0]['data']['intro'])->toStartWith('Oferim servicii SEO atat pentru clienti din Iasi')
+        ->and($conversion->report->droppedCount('rich text (the FAQ\'s heading and intro)'))->toBe(1)
+        // The form ending the page: the footer's call to talk takes its place.
+        ->and(blocksOfType($conversion, 'quote_form'))->toBe([])
+        ->and($conversion->report->droppedCount('form (the footer\'s call instead)'))->toBe(1)
         // "Serviciile noastre", "FAQs", "Contacteaza-ne": small upper-case headings over the real ones.
         ->and($conversion->report->droppedCount('heading (eyebrow)'))->toBe(3)
         ->and($conversion->report->droppedCount('form section: contact details'))->toBe(3);
+});
+
+it('moves a page\'s opening line, alone under the hero, into the hero', function () {
+    $elements = elementorFixture('elementor-page-magazin-online');
+    array_splice($elements, 1, 0, [['id' => 'intro', 'elType' => 'container', 'settings' => [], 'elements' => [
+        ['id' => 'intro-text', 'elType' => 'widget', 'widgetType' => 'text-editor', 'settings' => ['editor' => '<p>Reprezinta o metoda de imbunatatire a traficului.</p>']],
+    ]]]);
+
+    $conversion = elementorConverter()->convert($elements, 'Creare magazin online');
+
+    expect($conversion->blockTypes())->toBe(['hero', 'features', 'stats', 'faq'])
+        ->and($conversion->blocks[0]['data']['subheading'])->toEndWith("\n\nReprezinta o metoda de imbunatatire a traficului.")
+        ->and($conversion->report->droppedCount('rich text (into the hero)'))->toBe(1);
+});
+
+it('drops a picture standing alone right after the questions', function () {
+    $elements = elementorFixture('elementor-page-magazin-online');
+    // Before the form section (the last): an image on its own after the FAQ.
+    array_splice($elements, -1, 0, [['id' => 'faq-art', 'elType' => 'container', 'settings' => [], 'elements' => [
+        ['id' => 'faq-art-img', 'elType' => 'widget', 'widgetType' => 'image', 'settings' => ['image' => ['id' => 1867, 'url' => 'https://www.webis.ro/wp-content/uploads/faq.png']]],
+    ]]]);
+
+    $conversion = elementorConverter(elementorMedia([1867]))->convert($elements, 'Creare magazin online');
+
+    expect($conversion->blockTypes())->toBe(['hero', 'features', 'stats', 'faq'])
+        ->and($conversion->report->droppedCount('image (beside the FAQ)'))->toBeGreaterThanOrEqual(1);
+});
+
+it('drops a form further up the page too, the text after it kept', function () {
+    $elements = elementorFixture('elementor-page-magazin-online');
+    $elements[] = ['id' => 'after', 'elType' => 'container', 'settings' => [], 'elements' => [
+        ['id' => 'after-text', 'elType' => 'widget', 'widgetType' => 'text-editor', 'settings' => ['editor' => '<p>Un paragraf după formular.</p>']],
+    ]];
+
+    $conversion = elementorConverter()->convert($elements, 'Creare magazin online');
+
+    expect($conversion->blockTypes())->not->toContain('quote_form')
+        ->and($conversion->blocks[array_key_last($conversion->blocks)]['data']['content_html'])->toContain('Un paragraf după formular.')
+        ->and($conversion->report->droppedCount('form (the footer\'s call instead)'))->toBe(1);
 });
 
 it('takes an article\'s hero from its title, which the theme printed as the h1', function () {

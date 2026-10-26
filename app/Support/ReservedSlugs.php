@@ -13,7 +13,7 @@ final class ReservedSlugs
         // Content sections
         // 'despre' stays reserved: its page was dropped, and the old CMS page
         // of that name should not come back at it by itself.
-        'blog', 'clienti', 'despre', 'portofoliu', 'proiect', 'poveste', 'acasa-3d-dreapta', 'servicii', 'solutii', 'web', 'software-la-comanda', 'produse', 'cerere-oferta', 'multumim',
+        'blog', 'clienti', 'despre', 'portofoliu', 'proiect', 'poveste', 'acasa-3d-dreapta', 'servicii', 'solutii', 'web', 'software-la-comanda', 'produse', 'creare-magazin-online', 'creare-site-de-prezentare', 'politica-de-cookies', 'cerere-oferta', 'multumim',
         // Admin and account
         'admin', 'settings', 'login', 'logout', 'register', 'forgot-password',
         'reset-password', 'two-factor-challenge', 'user', 'email', 'passkeys',

@@ -14,8 +14,7 @@
     Then the light panel, rising over the backdrop:
     - product or made to order: a centred head over the two side by side,
       then how to start in three steps;
-    - questions, the title beside them as on /web, and as FAQPage JSON-LD
-      from the same list;
+    - questions, the title beside them as on /web (no FAQPage JSON-LD);
     then the footer's closing call.
 
     TODO(de confirmat, before going live): SmileSoft's features, how the
@@ -79,46 +78,46 @@
         'Instruim echipa și rămânem aproape pentru întrebări.',
     ];
 
-    // The questions: the accordion and the FAQPage JSON-LD both read this list.
+    // The questions, for the accordion. No FAQPage JSON-LD: Google no longer
+    // shows FAQ results for business sites.
     $questions = [
         ['Cât costă?', 'Depinde de produs și de numărul de utilizatori. Spune-ne ce produs te interesează și îți trimitem oferta.'],
         ['Pot vedea produsul înainte?', 'Da. Îți facem o prezentare, ca să vezi dacă se potrivește.'],
         ['Pot renunța oricând?', 'Da. Nu există contract pe termen lung.'],
-        ['Se poate adapta la organizația mea?', 'Fiecare produs se configurează pentru organizația ta, iar funcțiile în plus le putem construi la comandă.'],
-    ];
-
-    $faq = [
-        '@context' => 'https://schema.org',
-        '@type' => 'FAQPage',
-        'mainEntity' => array_map(fn (array $item): array => [
-            '@type' => 'Question',
-            'name' => $item[0],
-            'acceptedAnswer' => ['@type' => 'Answer', 'text' => $item[1]],
-        ], $questions),
+        ['Se poate adapta la felul în care lucrăm?', 'Fiecare produs se configurează pentru echipa ta, iar funcțiile în plus le putem construi la comandă.'],
     ];
 @endphp
 
+{{-- The title and description held to 60 and 155 characters. --}}
 <x-layouts.public
-    title="Produse SaaS – SmileSoft, RIMS, Bugetare participativă, Confirmo"
-    description="Aplicații gata de folosit, pe abonament lunar: SmileSoft pentru clinici stomatologice, RIMS pentru universități, Bugetare participativă pentru primării și Confirmo pentru programări online."
+    title="Produse SaaS: SmileSoft, RIMS, Bugetare, Confirmo"
+    description="Aplicații gata de folosit, pe abonament lunar: SmileSoft pentru clinici stomatologice, RIMS pentru universități, Bugetare participativă și Confirmo."
+    crumb="Produse SaaS"
     :canonical="$canonical"
     header-theme="dark"
+    :footer-w="true"
 >
-    @push('head')
-        <script type="application/ld+json">{!! json_encode($faq, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_HEX_TAG | JSON_THROW_ON_ERROR) !!}</script>
-    @endpush
 
     {{-- ================================================== Hero --}}
-    {{-- The four products close the hero, on a hairline across its foot (as
-         /web's offers): each its name and who it is for, a way down to it. --}}
+    {{-- Under the intro, the home page hero's two ways on (blocks/partials/
+         ctas): a demo, and down to the first product. The four products
+         close the hero, on a hairline across its foot (as /web's offers):
+         each its name and who it is for, a way down to its card. --}}
     <x-site.page-hero
         label="Produse SaaS · Webis"
         :title="['Produse SaaS.']"
         intro="Aplicații gata de folosit, pe abonament lunar, fiecare făcută pentru un domeniu."
-        class="page-hero--led"
+        class="page-hero--led saas-hero"
         :flush="true"
         data-reveal-pace="fast"
     >
+        @include('blocks.partials.ctas', [
+            'primary' => ['label' => 'Cere o prezentare', 'url' => '/contact/'],
+            'secondary' => ['label' => 'Vezi produsele', 'url' => '#'.$products[0]['product']->value],
+            'tone' => 'dark',
+            'class' => 'saas-hero__actions',
+        ])
+
         <x-slot:after>
             <ul class="saas-hero-products">
                 @foreach ($products as $item)
@@ -127,6 +126,7 @@
                             <span class="saas-hero-product__no">{{ sprintf('%02d', $loop->iteration) }}</span>
                             <span class="saas-hero-product__name">{{ $item['product']->label() }}</span>
                             <span class="saas-hero-product__for">{{ $item['for'] }}</span>
+                            <svg class="saas-hero-product__arrow" viewBox="0 0 11 10" fill="currentColor" aria-hidden="true"><path d="M0 5.656V4.304l8.419.014-3.359-3.358L5.99 0l5.002 4.973-4.987 4.987-.93-.96 3.358-3.358L0 5.656Z" /></svg>
                         </a>
                     </li>
                 @endforeach
@@ -224,7 +224,6 @@
             </div>
 
             <div class="saas-start" data-reveal>
-                <p class="saas-start__label" data-reveal-child>Cum începi</p>
                 <ol class="saas-start__steps">
                     @foreach ($start as $step)
                         <li data-reveal-child><span>{{ sprintf('%02d', $loop->iteration) }}</span>{{ $step }}</li>

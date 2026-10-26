@@ -18,7 +18,7 @@
     - what every project gets: a centred head over one white panel of
       cells (components/section/feature-panel);
     - projects, only when there are software ones;
-    - questions, the title beside them as on /web, and as FAQPage JSON-LD
+    - questions, the title beside them as on /web (no FAQPage JSON-LD)
       from the same list;
     then the footer's closing call.
 --}}
@@ -81,23 +81,14 @@
     // so maintenance follows the last of them.
     $at = ['plan' => null, 'build' => 2, 'care' => 5];
 
-    // The questions: the accordion and the FAQPage JSON-LD both read this list.
+    // The questions, for the accordion. No FAQPage JSON-LD: Google no longer
+    // shows FAQ results for business sites.
     $questions = [
         ['Cât costă o aplicație la comandă?', 'Depinde de câte module are și de cât de complexe sunt fluxurile. După analiză primești o ofertă pe etape, așa că poți începe cu partea cea mai importantă.'],
         ['Cât durează?', 'Depinde de amploare. Pentru că lucrăm pe etape, primele module funcționale ajung la tine devreme, iar restul se adaugă pe parcurs.'],
         ['Putem porni de la datele pe care le avem deja?', 'Da. Importăm datele din Excel sau din sistemul pe care îl folosești acum.'],
         ['Se poate lega de e-Factura, SPV sau alte programe?', 'Da. Integrăm aplicația cu platformele de stat și cu programele pe care le folosești deja, acolo unde acestea permit.'],
         ['Ce se întâmplă după lansare?', 'Rămânem alături de tine pentru suport, actualizări și funcții noi, pe măsură ce nevoile se schimbă.'],
-    ];
-
-    $faq = [
-        '@context' => 'https://schema.org',
-        '@type' => 'FAQPage',
-        'mainEntity' => array_map(fn (array $item): array => [
-            '@type' => 'Question',
-            'name' => $item[0],
-            'acceptedAnswer' => ['@type' => 'Answer', 'text' => $item[1]],
-        ], $questions),
     ];
 
     // The projects as /web's cards take them; at their addresses' slash form.
@@ -113,15 +104,13 @@
 @endphp
 
 <x-layouts.public
-    title="Software la comandă – aplicații pentru organizații"
+    title="Software la comandă – aplicații pe procesele tale"
     description="Aplicații construite pe procesele tale: ERP, CRM, registratură, fluxuri de aprobare, rapoarte și integrări cu e-Factura și SPV."
+    crumb="Software la comandă"
     :canonical="$canonical"
     header-theme="dark"
     :footer-w="true"
 >
-    @push('head')
-        <script type="application/ld+json">{!! json_encode($faq, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_HEX_TAG | JSON_THROW_ON_ERROR) !!}</script>
-    @endpush
 
     {{-- ================================================== Hero --}}
     {{-- Flush: nothing rises over it here — the statement carries on, on
@@ -133,8 +122,7 @@
     <x-site.page-hero
         label="Software la comandă · Webis"
         :title="['Software la', 'comandă.']"
-        intro="Aplicații construite pe felul în care lucrează organizația ta."
-        :parallax="false"
+        intro="Aplicații construite pe felul în care lucrează echipa ta."
         :flush="true"
         class="sw-hero"
         data-reveal-pace="fast"
@@ -169,7 +157,7 @@
             'eyebrow' => 'De ce la comandă',
             'statement' => "Aplicația se adaptează\nla felul în care lucrezi,\nnu invers.",
             'text' => 'Pornim de la procesul tău așa cum e acum, cu documentele, aprobările și excepțiile lui, și îl transformăm într-o aplicație pe care echipa o folosește fără soluții ocolitoare. O livrăm pe etape, o legăm de programele pe care le ai deja și ne ocupăm de ea și după lansare.',
-            'link' => ['label' => 'Cum lucrăm ↓', 'url' => '#cum-lucram'],
+            'link' => ['label' => 'Cum lucrăm', 'url' => '#cum-lucram'],
         ],
     ])
 
@@ -348,7 +336,7 @@
             <div class="web-split" data-split>
                 <header class="web-split__head" data-split-head data-reveal="head">
                     <h2 id="sw-faq-title" class="chapter__title">Întrebări frecvente.</h2>
-                    <p class="web-split__line">Fiecare organizație e altfel. Spune-ne cum lucrați și îți răspundem în aceeași zi lucrătoare.</p>
+                    <p class="web-split__line">Fiecare proiect e altfel. Spune-ne cum lucrați și îți răspundem cât mai repede.</p>
                     <x-ui.arrow-link href="/contact/">Scrie-ne</x-ui.arrow-link>
                 </header>
 

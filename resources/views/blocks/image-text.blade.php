@@ -7,9 +7,9 @@
     `image_position` asks for; below that the image comes first. Without
     its image (deleted since) the text stands alone.
 
-    The text column opens like the site's section heading (components/ui/
-    section-head): the number over a hairline, then the title in the
-    display face, sized down for half the width. The passage is rich text
+    The text column opens on its title in the text face, as the blocks'
+    section heading (components/ui/section-head) but to the left and sized
+    down for half the width. The passage is rich text
     (components/rich-text), the button an arrow link. The image keeps its
     own shape, in the card corner, through components/picture.
 --}}
@@ -39,7 +39,6 @@
             <div class="block-image-text__text">
                 @if ($heading !== '')
                     <header class="block-image-text__head" data-reveal="head">
-                        <p class="section-head__number" aria-hidden="true">{{ isset($sectionNumber) ? $sectionNumber() : '' }}</p>
                         <h2 id="{{ $block['id'] }}-title" class="block-image-text__title">{{ $heading }}</h2>
                     </header>
                 @endif

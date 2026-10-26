@@ -36,6 +36,7 @@
 @import './site/products.css';
 @import './site/title-pill.css';
 @import './site/footer.css';
+@import './site/cookie-consent.css';
 @import './site/project-list.css';
 @import './site/project-accordion.css';
 @import './site/project-steps.css';
@@ -53,7 +54,6 @@
 /* The page-builder blocks' own (blocks/*.blade.php), on the system above. */
 @import './site/block-rich-text.css';
 @import './site/block-features.css';
-@import './site/block-faq.css';
 @import './site/block-pricing-tiers.css';
 @import './site/block-stats.css';
 @import './site/block-gallery.css';

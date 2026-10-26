@@ -65,10 +65,10 @@
                     <p class="theo-menu__label">Contact</p>
                     <ul class="theo-menu__details">
                         @if ($company->email)
-                            <li><a href="mailto:{{ $company->email }}">{{ $company->email }}</a></li>
+                            <li><a href="mailto:{{ $company->email }}"><x-ui.roll :text="$company->email" /></a></li>
                         @endif
                         @if ($phoneHref)
-                            <li><a href="{{ $phoneHref }}">{{ $company->phone }}</a></li>
+                            <li><a href="{{ $phoneHref }}"><x-ui.roll :text="$company->phone" /></a></li>
                         @endif
                     </ul>
                 </div>
@@ -79,7 +79,7 @@
                     <p class="theo-menu__label">Social</p>
                     <ul class="theo-menu__details">
                         @foreach ($socials as $platform => $url)
-                            <li><a href="{{ $url }}" target="_blank" rel="noopener">{{ ucfirst($platform) }}</a></li>
+                            <li><a href="{{ $url }}" target="_blank" rel="noopener"><x-ui.roll :text="['linkedin' => 'LinkedIn', 'youtube' => 'YouTube', 'tiktok' => 'TikTok'][$platform] ?? ucfirst($platform)" /></a></li>
                         @endforeach
                     </ul>
                 </div>

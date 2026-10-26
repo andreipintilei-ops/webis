@@ -11,6 +11,7 @@ type FaqItem = {
 /** Mirrors App\Blocks\FaqBlock. */
 type FaqData = {
     heading: string | null;
+    intro: string | null;
     items: FaqItem[];
 };
 
@@ -31,6 +32,14 @@ const newItem = (): FaqItem => ({ question: '', answer: '' });
             label="Titlu"
             :max="160"
             :error="errors.heading"
+        />
+        <TextField
+            v-model="data.intro"
+            label="Introducere"
+            :max="300"
+            multiline
+            :rows="2"
+            :error="errors.intro"
         />
         <ItemList
             v-model="data.items"

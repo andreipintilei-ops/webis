@@ -1,0 +1,169 @@
+/*
+  The cookie banner (components/site/cookie-consent.blade.php): a white
+  card at the screen's bottom left, across the bottom on a phone. Under
+  the menu (z-29 and up, css/site/menu-theodore.css), over the page.
+  Its two answers are the site's pills, the same weight, a step smaller;
+  the category switches in the hero indigo when on.
+*/
+@layer components {
+    .cookie-consent {
+        @apply fixed inset-x-3 bottom-3 z-[28] max-h-[calc(100svh-1.5rem)] overflow-y-auto rounded-3xl bg-white p-6 text-[var(--site-dark)] sm:inset-x-auto sm:bottom-6 sm:left-6 sm:w-[27rem] sm:p-7;
+        box-shadow:
+            0 0 0 1px rgb(28 29 32 / 0.06),
+            0 24px 60px -16px rgb(31 40 104 / 0.35);
+        outline: none;
+
+        /* .pill sets its own display. */
+        & [hidden] {
+            display: none !important;
+        }
+
+        &.is-entering {
+            animation: cookie-consent-in 0.5s var(--motion-out, ease-out) both;
+        }
+    }
+
+    /* The title, and "Personalizează" at the row's other end. */
+    .cookie-consent__head {
+        @apply flex items-center justify-between gap-4;
+    }
+
+    .cookie-consent__title {
+        @apply text-lg leading-tight font-medium tracking-tight;
+    }
+
+    .cookie-consent__text {
+        @apply mt-2 text-[0.9375rem] leading-relaxed text-neutral-600 text-pretty;
+
+        & a {
+            @apply text-[var(--site-dark)] underline decoration-[var(--purple-500)] underline-offset-2;
+        }
+    }
+
+    .cookie-consent__choices {
+        @apply mt-5 divide-y divide-black/10 border-y border-black/10;
+    }
+
+    .cookie-consent__choice {
+        @apply flex items-center justify-between gap-5 py-3.5;
+
+        &:is(label) {
+            @apply cursor-pointer;
+        }
+    }
+
+    .cookie-consent__choice-text {
+        @apply flex min-w-0 flex-col gap-0.5;
+    }
+
+    .cookie-consent__choice-name {
+        @apply text-[0.9375rem] font-medium;
+    }
+
+    .cookie-consent__choice-note {
+        @apply text-sm leading-snug text-neutral-500;
+    }
+
+    .cookie-consent__always {
+        @apply shrink-0 text-sm text-neutral-500;
+    }
+
+    /* A switch drawn on the checkbox itself: its track, and the knob as ::before. */
+    .cookie-consent__switch {
+        @apply relative h-6 w-11 shrink-0 cursor-pointer appearance-none rounded-full bg-neutral-300 transition-colors duration-200;
+
+        &::before {
+            content: '';
+            @apply absolute top-0.5 left-0.5 size-5 rounded-full bg-white shadow-sm transition-transform duration-200;
+        }
+
+        &:checked {
+            background: var(--menu-ground);
+
+            &::before {
+                transform: translateX(1.25rem);
+            }
+        }
+
+        &:focus-visible {
+            outline: 2px solid var(--site-accent);
+            outline-offset: 2px;
+        }
+    }
+
+    .cookie-consent__actions {
+        @apply mt-5 flex flex-wrap items-center gap-x-3 gap-y-3;
+    }
+
+    /* Both answers share the row equally. */
+    .cookie-consent__button {
+        @apply h-11 flex-1 basis-[9rem] px-5 text-[0.9375rem];
+    }
+
+    /* A quiet chip: sliders icon and label, filled on hover. */
+    .cookie-consent__more {
+        @apply -my-1 inline-flex shrink-0 cursor-pointer items-center gap-1.5 rounded-full border border-black/10 py-1.5 pr-3 pl-2.5 text-sm text-neutral-600 transition-colors hover:border-transparent hover:bg-[var(--lavender-50)] hover:text-[var(--site-dark)];
+
+        & svg {
+            @apply size-4 fill-none stroke-current;
+            stroke-width: 1.5;
+            stroke-linecap: round;
+        }
+
+        &:focus-visible {
+            outline: 2px solid var(--site-accent);
+            outline-offset: 2px;
+        }
+    }
+
+    @keyframes cookie-consent-in {
+        from {
+            opacity: 0;
+            transform: translateY(1.5rem);
+        }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .cookie-consent.is-entering {
+            animation: none;
+        }
+    }
+
+    /* The cookie policy's tables (public/cookies): below 768px each cookie a
+       block of labelled lines rather than a row scrolled sideways. */
+    @media (width < 48rem) {
+        .rich-text .cookie-table {
+            & thead {
+                @apply sr-only;
+            }
+
+            & :is(tbody, tr, td) {
+                @apply block;
+            }
+
+            & tr {
+                @apply border-b py-4;
+                border-color: var(--line);
+            }
+
+            & td {
+                @apply grid grid-cols-[6.5rem_1fr] gap-3 border-0 p-0 py-1;
+
+                &::before {
+                    content: attr(data-label);
+                    @apply font-micro pt-1 text-xs tracking-[0.08em] uppercase;
+                    color: var(--accent);
+                }
+
+                & > code {
+                    @apply justify-self-start;
+                }
+            }
+        }
+    }
+
+    /* The footer's "Setări cookies": a button that reads as its links. */
+    .site-footer__link:is(button) {
+        @apply cursor-pointer text-left;
+    }
+}

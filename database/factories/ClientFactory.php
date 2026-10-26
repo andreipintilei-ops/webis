@@ -20,6 +20,7 @@ class ClientFactory extends Factory
             'type' => ClientType::Company,
             'products' => null,
             'show_in_logos' => true,
+            'show_in_marquee' => true,
             'sort_order' => 0,
         ];
     }

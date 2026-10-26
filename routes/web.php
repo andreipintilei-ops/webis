@@ -43,12 +43,20 @@ Route::get('blog/categorie/{slug}', [ArticleController::class, 'category'])
     ->where('slug', '[a-z0-9]+(?:-[a-z0-9]+)*')
     ->name('posts.category');
 Route::view('web', 'public.web')->name('services.web');
+// Creare magazin online: the old site's address, which ranks; its own copy
+// in code, in place of the CMS page of that name.
+Route::view('creare-magazin-online', 'public.shop')->name('services.shop');
+// Creare site de prezentare: likewise.
+Route::view('creare-site-de-prezentare', 'public.presentation')->name('services.presentation');
 // Software la comandă: its canonical address ends in a slash
 // (/software-la-comanda/); its own copy, and its software projects.
 Route::get('software-la-comanda', SoftwareController::class)->name('services.software');
 // Produse SaaS (/produse/): Webis's own products, its own copy. It replaces
 // the CMS page of that name, which no longer shows.
 Route::view('produse', 'public.products')->name('services.products');
+// The cookie policy: in code, its tables from what the site really sets
+// (SupportConsentCookieConsent).
+Route::view('politica-de-cookies', 'public.cookies')->name('legal.cookies');
 
 // The contact form (components/site/contact). At a reserved slug, so no CMS
 // page can take it.
@@ -63,7 +71,7 @@ require __DIR__.'/admin.php';
 require __DIR__.'/settings.php';
 
 /*
-| CMS pages at the site root (/contact, /creare-magazin-online…). Registered
+| CMS pages at the site root (/contact, /mentenanta-site-wordpress…). Registered
 | last, and limited to slug-shaped segments that aren't reserved, so it can
 | never shadow an application route.
 */

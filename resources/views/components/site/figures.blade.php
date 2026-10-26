@@ -11,7 +11,7 @@
         ['2016', 'Anul în care am început'],
         ['4', 'Produse SaaS proprii'],
         ['150+', 'Proiecte livrate'],
-        ['40+', 'Organizații care folosesc produsele noastre'],
+        ['40+', 'Clienți care folosesc produsele noastre'],
     ];
 @endphp
 

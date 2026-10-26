@@ -27,13 +27,12 @@
     $arrow = '<svg viewBox="0 0 11 10" fill="currentColor" aria-hidden="true"><path d="M0 5.656V4.304l8.419.014-3.359-3.358L5.99 0l5.002 4.973-4.987 4.987-.93-.96 3.358-3.358L0 5.656Z"/></svg>';
 @endphp
 
-<x-layouts.public :title="$page > 1 ? $title.', pagina '.$page : $title" :description="$description" :canonical="$canonical" :noindex="(bool) $category?->seo->noindex" header-theme="dark">
+<x-layouts.public :title="$page > 1 ? $title.', pagina '.$page : $title" :crumb="$category?->name ?? 'Blog'" :description="$description" :canonical="$canonical" :noindex="(bool) $category?->seo->noindex" header-theme="dark">
     <x-site.page-hero
         :label="$category ? 'Blog · '.$category->name : 'Blog · Webis'"
         :title="['Articole despre', 'software și web.']"
         :intro="$category?->description ?: 'Ghiduri și noutăți despre software la comandă, site-uri, magazine online și SEO.'"
         :class="$featured ? 'page-hero--led' : null"
-        :flush="true"
     >
         {{-- The featured article closes the hero, on a hairline across its
              foot, as the home page's rating and logos close its own. --}}

@@ -39,12 +39,14 @@
     }
 
     /* Set off: the top bar's item (a dropdown stays lit while the pointer is
-       in its panel), the side menu's link. Rolling in is quicker than
-       rolling back. */
+       in its panel), the side menu's links and its contact and social ones,
+       the footer's links. Rolling in is quicker than rolling back. */
     :is(
             .site-nav__links > li:is(:hover, :has(:focus-visible)),
             .theo-menu__link:is(:hover, :focus-visible),
-            .theo-menu__service:is(:hover, :focus-visible)
+            .theo-menu__service:is(:hover, :focus-visible),
+            .theo-menu__details a:is(:hover, :focus-visible),
+            .site-footer__link:is(:hover, :focus-visible)
         )
         .roll {
         & .roll__letter,

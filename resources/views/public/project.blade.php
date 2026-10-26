@@ -25,6 +25,8 @@
     :description="$project->seo->description ?: $project->summary"
     :canonical="$project->seo->canonical"
     :noindex="$project->seo->noindex"
+    :og-image="\App\Support\Seo\StructuredData::image(\App\Models\Asset::with('media')->find($project->seo->ogImageAssetId ?? $project->cover_asset_id))"
+    :crumb="$project->title"
     header-theme="dark"
     footer-cta-title="Ai un proiect asemănător?"
     footer-cta-intro="Spune-ne ce vrei să construiești și revenim cu o propunere."
@@ -77,7 +79,15 @@
                 </dl>
             @endif
 
-            <p class="project-page__back"><x-ui.arrow-link :href="route('projects.index')">Toate proiectele</x-ui.arrow-link></p>
+            <p class="project-page__back">
+                <x-ui.arrow-link :href="route('projects.index')">Toate proiectele</x-ui.arrow-link>
+                {{-- A shop or a presentation site leads on to the page that sells them. --}}
+                @if ($project->type === \App\Enums\ProjectType::Shop)
+                    <x-ui.arrow-link :href="route('services.shop')">Vezi cum realizăm un magazin online</x-ui.arrow-link>
+                @elseif ($project->type === \App\Enums\ProjectType::Presentation)
+                    <x-ui.arrow-link :href="route('services.presentation')">Vezi cum realizăm un site de prezentare</x-ui.arrow-link>
+                @endif
+            </p>
         </div>
     </section>
 

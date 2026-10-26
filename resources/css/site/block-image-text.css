@@ -44,12 +44,13 @@
         @apply mb-8 grid gap-6 md:mb-10;
     }
 
-    /* Anton has one weight: font-normal, or the browser fakes a bold.
-       1.08 leaves room for Romanian's Î and Ă over two or three lines. */
+    /* The blocks' heading face (css/site/sections.css, .chead__title),
+       sized for half the width. */
     .block-image-text__title {
-        @apply font-display font-normal text-balance uppercase;
-        font-size: clamp(2.25rem, 3.6vw, 3.5rem);
+        @apply font-medium text-balance;
+        font-size: clamp(1.875rem, 3vw, 3rem);
         line-height: 1.08;
+        letter-spacing: -0.035em;
         color: var(--ink);
     }
 

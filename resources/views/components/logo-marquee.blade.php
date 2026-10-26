@@ -1,6 +1,7 @@
 {{--
-    An endless strip of client logos — every client marked "show in logos",
-    in their admin order (css/site/marquee.css). Logos are drawn in one flat
+    An endless strip of client logos — every client marked "show in logos"
+    and, of those, "also in the strip", in their admin order
+    (css/site/marquee.css). Logos are drawn in one flat
     colour to suit the background: white for `tone` "dark", black for "light".
 
     The set is repeated until one half of the track is wider than a large
@@ -14,6 +15,7 @@
     $clients = \App\Models\Client::query()
         ->with('logo.media')
         ->where('show_in_logos', true)
+        ->where('show_in_marquee', true)
         ->whereNotNull('logo_asset_id')
         ->orderBy('sort_order')
         ->orderBy('name')

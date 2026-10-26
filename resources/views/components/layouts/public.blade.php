@@ -3,21 +3,31 @@
      `lowerTone`: "dark" or "light" — the home page's sections below the hero,
      and the page around them; other pages leave it out
      (config/site.php; css/site/lower-tone.css).
-     `heroLeave`: "overlap" — the next section slides over the hero's backdrop
-     with a rounded top instead of the backdrop shrinking into a card
-     (js/public/hero-intro.ts).
+     `heroLeave`: "overlap", on every page — the next section slides over
+     the hero's fixed backdrop with a rounded top, the backdrop holding still
+     (js/public/hero-intro.ts); "card", the backdrop shrinking into a card
+     instead, is kept for trials.
      `description`: the meta description (else the SEO settings' default).
      `fullTitle`: the whole <title>, as given — without the site suffix.
-     `footerCtaTitle`, `footerCtaIntro`: the footer's closing call, reworded.
-     `footerW`: the Webis W forming beside the footer's call (/portofoliu).
+     `footerCtaTitle`, `footerCtaIntro`, `footerCtaButton`: the footer's closing
+     call, reworded.
+     `footerW`: the Webis W forming beside the footer's call (/portofoliu,
+     /software-la-comanda, /web, /produse).
      `canonical`: the page's canonical URL, as <link rel="canonical">. Left
      out, the address asked for, on the canonical site, with its trailing
      slash and without its query string (PublicUrls::canonical); false for
      none (the error pages).
      `noindex`: true to keep the page out of search engines (its SEO data).
      `variant`: a design variant under test (e.g. "clienti"), as data-variant
-     on <html>, for styles scoped to it. --}}
-@props(['title' => null, 'fullTitle' => null, 'menu' => 'site', 'headerTheme' => 'light', 'lowerTone' => null, 'variant' => null, 'heroLeave' => null, 'footerCta' => true, 'footerOnBackdrop' => false, 'description' => null, 'footerCtaTitle' => null, 'footerCtaIntro' => null, 'footerW' => false, 'canonical' => null, 'noindex' => false])
+     on <html>, for styles scoped to it.
+     Sharing and structured data (Support\Seo\StructuredData):
+     `ogImage`: the share image ({url, width, height}), else the SEO
+     settings' default; `ogType`: "website" or "article".
+     `localBusiness`: the Organization is a LocalBusiness too (home, /contact/).
+     `crumb`: the page's name in its breadcrumbs (else `title`);
+     `crumbParent`: [name, path] in place of the path's section (an article
+     under Blog); `schema`: the page's own JSON-LD nodes (a BlogPosting). --}}
+@props(['title' => null, 'fullTitle' => null, 'menu' => 'site', 'headerTheme' => 'light', 'lowerTone' => null, 'variant' => null, 'heroLeave' => 'overlap', 'footerCta' => true, 'footerOnBackdrop' => false, 'description' => null, 'footerCtaTitle' => null, 'footerCtaIntro' => null, 'footerCtaButton' => null, 'footerW' => false, 'canonical' => null, 'noindex' => false, 'ogImage' => null, 'ogType' => 'website', 'localBusiness' => false, 'crumb' => null, 'crumbParent' => null, 'schema' => []])
 
 @php
     $siteName = app(\App\Settings\CompanySettings::class)->name;
@@ -26,6 +36,12 @@
     // The page's own, or the site's default (SEO settings).
     $metaDescription = $description ?: app(\App\Settings\SeoSettings::class)->default_description;
     $canonical = $canonical === false ? null : ($canonical ?: \App\Support\PublicUrls::canonical(request()->getPathInfo()));
+
+    $structured = app(\App\Support\Seo\StructuredData::class);
+    $ogImage ??= $structured->shareImage();
+    // An error page (no canonical) gets no breadcrumbs.
+    $breadcrumbs = $canonical === null ? null : \App\Support\Seo\StructuredData::breadcrumbs(request()->getPathInfo(), $crumb ?? $title ?? $siteName, $crumbParent);
+    $jsonLd = $structured->graph($localBusiness, $breadcrumbs, $schema);
 @endphp
 
 <!DOCTYPE html>
@@ -72,6 +88,9 @@
             } catch (e) {}
         </script>
 
+        {{-- Cookie consent: Google's signals denied until the visitor says otherwise. --}}
+        @include('partials.consent-head')
+
         <title>{{ $fullTitle }}</title>
         @if ($canonical)
             <link rel="canonical" href="{{ $canonical }}">
@@ -80,14 +99,46 @@
             <meta name="description" content="{{ $metaDescription }}">
         @endif
 
-        {{-- Nothing outside production may be indexed; nor may a page set to noindex. --}}
-        @unless (app()->isProduction())
+        {{-- Nothing outside production on the canonical host may be indexed
+             (Support\Seo\Indexing, also sent as X-Robots-Tag); nor may a
+             page set to noindex. --}}
+        @unless (\App\Support\Seo\Indexing::siteAllowed(request()))
             <meta name="robots" content="noindex, nofollow">
         @else
             @if ($noindex)
                 <meta name="robots" content="noindex, follow">
             @endif
         @endunless
+
+        {{-- Sharing: the title and description as above, the canonical URL. --}}
+        <meta property="og:type" content="{{ $ogType }}">
+        <meta property="og:site_name" content="{{ $siteName }}">
+        <meta property="og:locale" content="ro_RO">
+        <meta property="og:title" content="{{ $fullTitle }}">
+        @if ($metaDescription)
+            <meta property="og:description" content="{{ $metaDescription }}">
+        @endif
+        @if ($canonical)
+            <meta property="og:url" content="{{ $canonical }}">
+        @endif
+        @if ($ogImage)
+            <meta property="og:image" content="{{ $ogImage['url'] }}">
+            @if ($ogImage['width'] && $ogImage['height'])
+                <meta property="og:image:width" content="{{ $ogImage['width'] }}">
+                <meta property="og:image:height" content="{{ $ogImage['height'] }}">
+            @endif
+        @endif
+        @php($analytics = app(\App\Settings\AnalyticsSettings::class))
+        @if ($analytics->google_site_verification)
+            <meta name="google-site-verification" content="{{ $analytics->google_site_verification }}">
+        @endif
+        @if ($analytics->bing_site_verification)
+            <meta name="msvalidate.01" content="{{ $analytics->bing_site_verification }}">
+        @endif
+
+        <meta name="twitter:card" content="{{ $ogImage ? 'summary_large_image' : 'summary' }}">
+
+        <script type="application/ld+json">{!! json_encode($jsonLd, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_HEX_TAG | JSON_THROW_ON_ERROR) !!}</script>
 
         @include('partials.favicons')
 
@@ -163,9 +214,12 @@
                     {{ $slot }}
                 </main>
 
-                <x-site.footer :show-cta="$footerCta" :on-backdrop="$footerOnBackdrop" :cta-title="$footerCtaTitle" :cta-intro="$footerCtaIntro" :w="$footerW" />
+                <x-site.footer :show-cta="$footerCta" :on-backdrop="$footerOnBackdrop" :cta-title="$footerCtaTitle" :cta-intro="$footerCtaIntro" :cta-button="$footerCtaButton" :w="$footerW" />
             </div>
         </div>
+
+        {{-- Fixed at the bottom left until a choice is made; under the curtain. --}}
+        <x-site.cookie-consent />
 
         {{-- Page-transition curtain; paths use a 0–100 box stretched to the screen. --}}
         <div class="page-curtain-cover" aria-hidden="true"></div>

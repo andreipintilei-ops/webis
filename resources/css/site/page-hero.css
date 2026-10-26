@@ -1,9 +1,9 @@
 /*
   The hero of an internal page (components/site/page-hero.blade.php): the
   violet gradient fixed behind it, the contact page's type
-  (css/site/contact-page.css), and the section after it sliding up over it
-  with a rounded top (2.5rem, 5rem from
-  tablet — as the home page's cards over its hero).
+  (css/site/contact-page.css), and the section after it rising 32px over
+  it on a 32px rounded top, as the home page's cards over its hero. No
+  parallax: it scrolls with the page.
 */
 @layer components {
     .page-hero {
@@ -45,9 +45,11 @@
         @apply flex min-h-[85svh] items-end;
     }
 
-    /* What follows rises over the hero's foot, on a rounded top. */
+    /* As the home page (css/site/service-cards.css, .svc-cards): what follows
+       rises 32px over the hero's foot on a 32px rounded top, and keeps those
+       32px clear at its own top. No parallax: the hero scrolls with the page. */
     .page-hero + * {
-        @apply relative z-[1] -mt-10 rounded-t-[2.5rem] pt-12 md:-mt-20 md:rounded-t-[5rem] md:pt-16 lg:pt-20;
+        @apply relative z-[1] -mt-8 rounded-t-[32px] pt-8;
 
         &::before {
             border-radius: inherit;
@@ -62,10 +64,24 @@
         }
     }
 
-    /* Square: the section after it starts on its edge, no rounded sheet
-       rising over it (/blog); the hero's text still sinks back slower. */
+    /* A hero closed by an article or offers across its foot (/web, /blog)
+       keeps 32px more room there, so the section rising over it covers none
+       of them. */
+    .page-hero--sheet.page-hero--led {
+        @apply pb-[calc(2.5rem+32px)] md:pb-[calc(3.5rem+32px)];
+
+        /* From 1024px at least the whole first screen, the section after it
+           rising over the 32px below the fold: none of it shows until the
+           page is scrolled. */
+        @media (min-width: 1024px) {
+            min-height: calc(100svh + 32px);
+        }
+    }
+
+    /* Square: the section after it starts on its edge, carrying on over the
+       same gradient (/portofoliu, /produse, /software-la-comanda). */
     .page-hero--flush + * {
-        @apply mt-0 rounded-none md:mt-0 md:rounded-none;
+        @apply mt-0 rounded-none pt-0;
     }
 
     /*

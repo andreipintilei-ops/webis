@@ -6,6 +6,7 @@ use App\Http\Middleware\EnsureCanAccessAdmin;
 use App\Http\Middleware\HandleAppearance;
 use App\Http\Middleware\HandleInertiaRequests;
 use App\Http\Middleware\RedirectLegacyIds;
+use App\Http\Middleware\RobotsHeader;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -25,6 +26,9 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'can.access-admin' => EnsureCanAccessAdmin::class,
         ]);
+
+        // Every response: no indexing outside production, nor of the admin.
+        $middleware->append(RobotsHeader::class);
 
         $middleware->web(prepend: [
             RedirectLegacyIds::class,

@@ -1,7 +1,11 @@
 <script setup lang="ts">
+import InputError from '@/components/InputError.vue';
 import ItemList from '@/components/admin/fields/ItemList.vue';
+import SelectField from '@/components/admin/fields/SelectField.vue';
 import TextField from '@/components/admin/fields/TextField.vue';
-import type { Choices } from '@/types/content';
+import RichTextEditor from '@/components/admin/rich-text/RichTextEditor.vue';
+import { Label } from '@/components/ui/label';
+import type { Choices, TiptapDoc } from '@/types/content';
 
 type StatItem = {
     value: string;
@@ -13,6 +17,8 @@ type StatItem = {
 type StatsData = {
     heading: string | null;
     items: StatItem[];
+    body: TiptapDoc;
+    tone: 'dark' | 'light';
 };
 
 defineProps<{
@@ -21,6 +27,10 @@ defineProps<{
 }>();
 
 const data = defineModel<StatsData>('data', { required: true });
+
+// Blocks saved before the passage and the tone existed have neither yet.
+data.value.body ??= { type: 'doc', content: [] };
+data.value.tone ??= 'dark';
 
 const newItem = (): StatItem => ({ value: '', label: '', note: null });
 </script>
@@ -67,5 +77,23 @@ const newItem = (): StatItem => ({ value: '', label: '', note: null });
                 </div>
             </template>
         </ItemList>
+        <div class="grid gap-1.5">
+            <Label>Text sub cifre</Label>
+            <RichTextEditor
+                v-model="data.body"
+                :pages="choices.pages"
+                compact
+            />
+            <InputError :message="errors.body" />
+        </div>
+        <SelectField
+            v-model="data.tone"
+            label="Fundal"
+            :options="[
+                { value: 'dark', label: 'Indigo' },
+                { value: 'light', label: 'Deschis' },
+            ]"
+            :error="errors.tone"
+        />
     </div>
 </template>

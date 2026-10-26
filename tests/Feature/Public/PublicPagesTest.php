@@ -110,7 +110,8 @@ it('lists the articles at /blog: a hero, the latest one featured, then nine card
 
     expect($html)
         ->toContain('<title>Blog | Webis</title>')
-        ->toContain('class="page-hero has-hero-planes page-hero--flush page-hero--led"')
+        // The section after it rises over its foot, as on the home page.
+        ->toContain('class="page-hero has-hero-planes page-hero--sheet page-hero--led"')
         // The planes, inline so they can float.
         ->toContain('<g class="plane plane--green">')
         ->not->toContain('DUMMY DATA')

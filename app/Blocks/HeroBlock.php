@@ -57,7 +57,8 @@ class HeroBlock extends Block
         return [
             "{$p}eyebrow" => $this->text(false, 80),
             "{$p}heading" => $this->text(true, 160),
-            "{$p}subheading" => $this->text(false, 400),
+            // One or two short paragraphs, a blank line between them.
+            "{$p}subheading" => $this->text(false, 800),
             "{$p}image_asset_id" => $this->asset(),
             "{$p}layout" => $this->oneOf(['split', 'centered']),
             "{$p}background" => ['nullable', Rule::in(self::BACKGROUNDS)],

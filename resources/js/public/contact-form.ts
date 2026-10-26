@@ -58,6 +58,9 @@ export function initContactForm(): void {
         })
             .then(async (response) => {
                 if (response.status === 201) {
+                    // A lead, for the tracking tools the visitor allowed
+                    // (views/partials/consent-head).
+                    window.webisConsent?.lead();
                     form.hidden = true;
                     form.classList.add('hidden');
                     sent.classList.remove('hidden');

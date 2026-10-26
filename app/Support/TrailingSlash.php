@@ -33,6 +33,8 @@ final class TrailingSlash
         'services.web',
         'services.software',
         'services.products',
+        'services.shop',
+        'services.presentation',
         'projects.index',
         'projects.show',
         'posts.index',
@@ -42,6 +44,8 @@ final class TrailingSlash
         'pages.show',
         // The industry pages at /servicii/{slug}, with the services rename.
         'pages.industry',
+        // The cookie policy, in code (public/cookies).
+        'legal.cookies',
     ];
 
     /**

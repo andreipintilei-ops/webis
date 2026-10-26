@@ -138,17 +138,74 @@
         @apply mt-5 grid gap-2.5;
     }
 
+    /* The social profiles: their logos in a row, bare. On hover each rolls
+       as the links' letters do (css/site/roll.css): in its mask the logo
+       drops away while its copy falls in from above, quicker in than back. */
+    .site-footer__group .site-footer__socials {
+        @apply flex flex-wrap gap-5;
+    }
+
+    .site-footer__group a.site-footer__social {
+        @apply block p-1;
+        color: rgb(255 255 255 / 0.88);
+        transition: color var(--base) var(--ease);
+
+        &:hover,
+        &:focus-visible {
+            color: #fff;
+        }
+    }
+
+    /* The mask grows on hover, the logo inside with it: the scale is the
+       mask's own, so nothing is clipped. */
+    .site-footer__social-roll {
+        @apply relative block size-[22px] overflow-clip;
+        transition: scale 0.35s cubic-bezier(0.34, 1.4, 0.64, 1);
+
+        & svg {
+            @apply absolute inset-0 size-full;
+            transition: transform 0.55s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* The copy, waiting above. */
+        & svg + svg {
+            transform: translateY(-150%);
+        }
+    }
+
+    .site-footer__social:is(:hover, :focus-visible) .site-footer__social-roll {
+        scale: 1.2;
+    }
+
+    .site-footer__social:is(:hover, :focus-visible) .site-footer__social-roll svg {
+        transition-duration: 0.35s;
+        transform: translateY(150%);
+
+        & + svg {
+            transform: translateY(0);
+        }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .site-footer__social-roll,
+        .site-footer__social-roll svg {
+            transition: none;
+        }
+    }
+
     .site-footer__group a,
     .site-footer__address span {
         @apply text-[15px];
         color: rgb(255 255 255 / 0.88);
     }
 
+    /* Its links roll on hover, as the menus' (css/site/roll.css), and
+       brighten to full white. */
     .site-footer__group a {
         @apply transition-colors duration-300;
 
         &:hover {
-            @apply text-white underline underline-offset-4;
+            @apply text-white;
         }
     }
 
@@ -160,10 +217,17 @@
         @apply mt-6 items-start text-left;
     }
 
+    /* A second heading further down a column (Informații legale, under the rating). */
+    .site-footer__group-label--follow {
+        @apply mt-10;
+    }
+
     /* ---- The foot -------------------------------------------------------------------- */
 
+    /* Up from the inner grid's gap (5rem/6rem, the call's room) to the
+       links' own 3rem above them, so they sit midway between the rules. */
     .site-footer__bottom {
-        @apply flex flex-wrap items-center gap-x-8 gap-y-4 border-t pt-8 text-sm;
+        @apply -mt-8 flex flex-wrap items-center gap-x-8 gap-y-4 border-t pt-8 text-sm md:-mt-12;
         border-color: rgb(255 255 255 / 0.18);
         color: rgb(255 255 255 / 0.7);
     }
@@ -176,11 +240,12 @@
         @apply mr-auto;
     }
 
-    .site-footer__legal-links {
-        @apply flex gap-6;
+    .site-footer__anpc {
+        @apply flex flex-wrap gap-3;
 
-        & a:hover {
-            @apply text-white underline underline-offset-4;
+        & img {
+            @apply block h-10 w-auto rounded-sm;
         }
     }
+
 }

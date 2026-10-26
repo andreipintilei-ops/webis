@@ -26,21 +26,39 @@
     // Line breaks typed in the title are kept. With them the editor has chosen
     // the lines, so the width cap that otherwise shapes the wrap is dropped.
     $headingLines = preg_split('/\R/', trim((string) ($data['heading'] ?? ''))) ?: [''];
+
+    // The subheading's paragraphs: a blank line between them.
+    $subheading = array_values(array_filter(array_map('trim', preg_split('/\R\s*\R/', trim((string) ($data['subheading'] ?? ''))) ?: []), fn ($p) => $p !== ''));
     $headingWidth = count($headingLines) > 1 ? 'max-w-none' : 'max-w-[28ch]';
 
-    // Anton, uppercase, up to 104px. Anton has one weight: it must stay
-    // font-normal, or the browser draws a fake bold. The line height leaves
-    // room for Romanian capitals, which carry marks on both sides of the
-    // line — Î and Ă above the cap height, the commas of Ș and Ț below the
-    // baseline — so over three lines the two very nearly meet.
-    $headingType = 'font-display text-[clamp(2.75rem,7vw,6.5rem)] leading-[1.26] font-normal uppercase text-pretty';
-
-    // The page's first, dark, full-screen hero: its backdrop is fixed behind
-    // the page (blocks after it may sit on it too), rests as a card that opens
-    // out on scroll, and plays the intro (js/public/hero-intro.ts). The
-    // data-intro-* hooks do nothing on their own.
+    // The home page's first, dark, full-screen hero: its backdrop is fixed
+    // behind the page (blocks after it may sit on it too) and it plays the
+    // intro (js/public/hero-intro.ts). The data-intro-* hooks do nothing on
+    // their own.
     $centered = ($data['layout'] ?? 'split') === 'centered';
-    $intro = $isFirst && $dark && $centered;
+
+    // Anton, uppercase. Anton has one weight: it must stay font-normal, or
+    // the browser draws a fake bold. The line height leaves room for
+    // Romanian capitals, which carry marks on both sides of the line — Î and
+    // Ă above the cap height, the commas of Ș and Ț below the baseline — so
+    // over three lines the two very nearly meet.
+    //
+    // Sized to the title: up to 104px across a centred hero, or where the
+    // editor broke the lines; a long title without breaks a step down. Beside
+    // the image (split), in half the width: up to 72px for a short title,
+    // 60px to 40 characters, 52px past that — about two lines each.
+    $length = mb_strlen(trim((string) ($data['heading'] ?? '')));
+    $headingSize = match (true) {
+        $centered && (count($headingLines) > 1 || $length <= 40) => 'text-[clamp(2.75rem,7vw,6.5rem)]',
+        $centered => 'text-[clamp(2.5rem,5vw,4.75rem)]',
+        $length <= 24 => 'text-[clamp(2.5rem,4.6vw,4.5rem)]',
+        $length <= 40 => 'text-[clamp(2.25rem,3.8vw,3.75rem)]',
+        default => 'text-[clamp(2rem,3.2vw,3.25rem)]',
+    };
+    $headingType = "font-display {$headingSize} leading-[1.26] font-normal uppercase text-pretty";
+    // The intro is the home page's alone (and its trial copies): elsewhere the
+    // same hero is a plain full-screen one, its gradient its own.
+    $intro = $isFirst && $dark && $centered && request()->routeIs('home', 'trials.*');
 @endphp
 
 @if ($intro)
@@ -52,6 +70,10 @@
 @if ($centered)
     <section id="{{ $block['id'] }}" @class([
         'relative isolate flex min-h-svh items-center overflow-hidden pt-32',
+        // Dark and first: what follows rises over its foot (css/site/hero-parallax.css),
+        // from 1024px below the fold — the whole first screen stays the hero's.
+        'hero-sheet' => $isFirst && $dark,
+        'lg:min-h-[calc(100svh+32px)]' => $isFirst && $dark && ! $intro,
         // Room for the logo strip along the bottom.
         'pb-44 md:pb-52' => $logos,
         'pb-32' => ! $logos,
@@ -61,12 +83,11 @@
         'justify-center px-6 text-center md:px-12' => ! $left,
         'text-white' => $dark,
         'text-black' => ! $dark,
-    ]) @if ($dark) data-nav-tone="dark" @endif @if ($isFirst) data-hero-parallax @if (! $intro) data-speed="clamp(0.5)" @endif @endif @if ($intro) data-intro data-backdrop-area @endif>
+    ]) @if ($dark) data-nav-tone="dark" @endif @if ($isFirst) data-hero-parallax @endif @if ($intro) data-intro data-backdrop-area @endif>
         {{--
-            The opening hero: the page after it slides up over it
-            (css/site/hero-parallax.css). With a fixed backdrop it scrolls at
-            normal speed — the background holding still is the depth; a light
-            hero lags at half speed instead (ScrollSmoother data-speed).
+            The opening hero: it scrolls with the page, no parallax, and the
+            page after it slides up over it — a dark one's on a rounded top
+            (css/site/hero-parallax.css).
         --}}
         @if (! $intro && $backdrop !== 'none')
             @include('blocks.partials.hero-backdrop', ['fixed' => false])
@@ -85,10 +106,10 @@
                 @endforeach
             </h1>
 
-            @if (! empty($data['subheading']))
+            @foreach ($subheading as $paragraph)
                 {{-- Left: about half the content column, as the text block in the design reference. --}}
-                <p @class(['mt-6 text-lg text-pretty', 'max-w-xl' => $left, 'mx-auto max-w-2xl' => ! $left, 'text-white/85' => $dark, 'text-neutral-600' => ! $dark]) data-intro-fade>{{ $data['subheading'] }}</p>
-            @endif
+                <p @class(['text-lg text-pretty', 'mt-6' => $loop->first, 'mt-4' => ! $loop->first, 'max-w-xl' => $left, 'mx-auto max-w-2xl' => ! $left, 'text-white/85' => $dark, 'text-neutral-600' => ! $dark]) data-intro-fade>{{ $paragraph }}</p>
+            @endforeach
 
             <div data-intro-fade>
                 @include('blocks.partials.ctas', [
@@ -120,6 +141,7 @@
     <section id="{{ $block['id'] }}" @class([
         'px-[var(--site-gap)] pt-36 pb-20 md:pt-44',
         'relative isolate overflow-hidden text-white md:pb-28' => $dark,
+        'hero-sheet' => $isFirst && $dark,
     ]) @if ($dark) data-nav-tone="dark" @endif>
         @if ($dark)
             @include('blocks.partials.hero-backdrop', ['fixed' => false])
@@ -135,9 +157,9 @@
                     @foreach ($headingLines as $line){{ $line }}@if (! $loop->last)<br>@endif @endforeach
                 </h1>
 
-                @if (! empty($data['subheading']))
-                    <p @class(['mt-6 max-w-2xl text-lg text-pretty', 'text-white/85' => $dark, 'text-neutral-600' => ! $dark])>{{ $data['subheading'] }}</p>
-                @endif
+                @foreach ($subheading as $paragraph)
+                    <p @class(['max-w-2xl text-lg text-pretty', 'mt-6' => $loop->first, 'mt-4' => ! $loop->first, 'text-white/85' => $dark, 'text-neutral-600' => ! $dark])>{{ $paragraph }}</p>
+                @endforeach
 
                 @include('blocks.partials.ctas', [
                     'primary' => $data['primary_cta'] ?? null,

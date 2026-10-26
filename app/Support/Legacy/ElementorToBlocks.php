@@ -60,7 +60,9 @@ use Illuminate\Support\Str;
  *   bullet list in the rich text, not `features`: in the articles they are
  *   running prose.
  * - **Toggle/accordion** → `faq` (answers as plain text; a group with an
- *   answer over 2,000 characters stays rich text instead). `price-table` →
+ *   answer over 2,000 characters stays rich text instead). The FAQ
+ *   section's own heading and line above the questions become the faq's
+ *   intro, its illustration dropped (foldFaqSections). `price-table` →
  *   `pricing_tiers`, `counter` and `progress` (the bar's share as the
  *   figure, "78%") → `stats`, `gallery`/`image-carousel` →
  *   `gallery`, a YouTube `video` → `video` (hosted MP4s are counted).
@@ -68,9 +70,10 @@ use Illuminate\Support\Str;
  *   section become a `cta_banner`, a second one its secondary button; a
  *   button after an image + text block becomes that block's link; any other
  *   is counted. A button opening the quote popup links to /contact/.
- * - **Forms.** A section holding a form becomes one `quote_form`: its first
- *   heading the form's heading, the next short text its intro; the rest of
- *   the section (contact details, hashtags) is counted.
+ * - **Forms.** A section holding a form is gathered as one `quote_form` (its
+ *   first heading the form's heading, the next short text its intro; the
+ *   rest of the section, contact details and hashtags, counted) — then
+ *   dropped and counted with it: the footer's call to talk ends every page.
  * - **Responsive copies.** An element hidden on desktop is the phone or
  *   tablet duplicate of one the desktop shows; it is dropped and counted.
  * - **Dropped and counted:** spacers, dividers, maps, social icons, hotspots,
@@ -149,6 +152,18 @@ final class ElementorToBlocks
         $this->levels = $this->headingLevels($items);
 
         $blocks = [$this->block('hero', $hero), ...$this->assemble($items, $title)];
+
+        // The old pages' forms, at the end or further up (the free SEO
+        // audit's): the footer's own call to talk ends every page instead.
+        $forms = array_filter($blocks, fn (array $block): bool => $block['type'] === 'quote_form');
+        $blocks = array_values(array_diff_key($blocks, $forms));
+        $this->report->drop('form (the footer\'s call instead)', count($forms));
+
+        $blocks = $this->foldFaqSections($blocks);
+
+        if (! $titleIsHeading) {
+            $blocks = $this->foldIntoHero($blocks);
+        }
 
         return new Conversion($this->validator->validate($blocks, $this->report), $this->report);
     }
@@ -1523,6 +1538,109 @@ final class ElementorToBlocks
         $block['data'] = [...$block['data'], ...$data];
 
         return $block;
+    }
+
+    /**
+     * A page's opening line or two, left by the old layout in a section of
+     * its own under the hero ("Reprezinta o metoda…" under "SEO = Search
+     * Engine Optimization"): moved into the hero's subheading, a paragraph
+     * each. Only a rich text of paragraphs alone — at most two, 400
+     * characters — right after the hero, and only while the subheading
+     * stays within its 800. Not on articles: their first rich text is the
+     * article.
+     *
+     * @param  list<array<string, mixed>>  $blocks
+     * @return list<array<string, mixed>>
+     */
+    private function foldIntoHero(array $blocks): array
+    {
+        $nodes = ($blocks[1]['type'] ?? null) === 'rich_text' ? ($blocks[1]['data']['content']['content'] ?? []) : [];
+        $text = function (array $node) use (&$text): string {
+            return ($node['text'] ?? '').implode('', array_map($text, $node['content'] ?? []));
+        };
+
+        // A link would be lost in the plain-text subheading: such a text stays.
+        if ($nodes === [] || count($nodes) > 2 || array_unique(array_column($nodes, 'type')) !== ['paragraph']
+            || str_contains((string) json_encode($nodes), '"type":"link"')) {
+            return $blocks;
+        }
+
+        $lines = array_values(array_filter(array_map(fn (array $node): string => trim($text($node)), $nodes)));
+        $subheading = implode("\n\n", array_filter([trim((string) ($blocks[0]['data']['subheading'] ?? '')), ...$lines]));
+
+        if ($lines === [] || mb_strlen(implode(' ', $lines)) > 400 || mb_strlen($subheading) > 800) {
+            return $blocks;
+        }
+
+        $blocks[0]['data']['subheading'] = $subheading;
+        array_splice($blocks, 1, 1);
+        $this->report->drop('rich text (into the hero)');
+
+        return $blocks;
+    }
+
+    /**
+     * The old FAQ sections come apart in three: a rich text with the
+     * section's heading ("Intrebari frecvente") and a line under it, the
+     * questions, and the section's illustration on its own. Folded back
+     * into the faq block: the line its intro; the heading (the faq has its
+     * own) and the illustration dropped and counted. Only a rich text that
+     * is that and no more — an FAQ-like heading, at most two short
+     * paragraphs, images — right before the questions; only images right
+     * after them.
+     *
+     * @param  list<array<string, mixed>>  $blocks
+     * @return list<array<string, mixed>>
+     */
+    private function foldFaqSections(array $blocks): array
+    {
+        $text = function (array $node) use (&$text): string {
+            return ($node['text'] ?? '').implode('', array_map($text, $node['content'] ?? []));
+        };
+        $nodes = fn (?array $block): array => ($block['type'] ?? null) === 'rich_text' ? ($block['data']['content']['content'] ?? []) : [];
+        $images = fn (array $list): int => count(array_filter($list, fn (array $node): bool => $node['type'] === 'assetImage'));
+
+        $out = [];
+
+        for ($i = 0; $i < count($blocks); $i++) {
+            $block = $blocks[$i];
+
+            if ($block['type'] !== 'faq') {
+                $out[] = $block;
+
+                continue;
+            }
+
+            $before = $nodes($out[array_key_last($out) ?? 0] ?? null);
+            $first = $before[0] ?? null;
+            $paragraphs = array_values(array_filter($before, fn (array $node): bool => $node['type'] === 'paragraph'));
+            $rest = array_filter(array_slice($before, 1), fn (array $node): bool => ! in_array($node['type'], ['paragraph', 'assetImage'], true));
+
+            if (
+                ($first['type'] ?? null) === 'heading'
+                && preg_match('/^\s*(([iî]ntreb[aă]ri)|faq|q\s*&\s*a)\b/iu', $text($first)) === 1
+                && $rest === []
+                && count($paragraphs) <= 2
+                && mb_strlen(implode(' ', array_map($text, $paragraphs))) <= 300
+            ) {
+                array_pop($out);
+                $intro = trim(implode(' ', array_map($text, $paragraphs)));
+                $block['data']['intro'] = ($block['data']['intro'] ?? null) ?: ($intro !== '' ? $intro : null);
+                $this->report->drop('rich text (the FAQ\'s heading and intro)');
+                $this->report->drop('image (beside the FAQ)', $images($before));
+            }
+
+            $out[] = $block;
+
+            $after = $nodes($blocks[$i + 1] ?? null);
+
+            if ($after !== [] && $images($after) === count($after)) {
+                $this->report->drop('image (beside the FAQ)', count($after));
+                $i++;
+            }
+        }
+
+        return $out;
     }
 
     // ---- Helpers ------------------------------------------------------------

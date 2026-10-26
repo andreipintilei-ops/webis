@@ -29,14 +29,14 @@
 
     $offers = [
         [
-            'time' => 'De obicei 1–2 săptămâni',
-            'title' => 'Site de prezentare',
+            'meta' => 'Pagini, blog, formulare',
+            'title' => 'Creare site de prezentare',
             'text' => 'Pentru firme care vor să fie găsite și să explice clar ce fac, cu un site pe care îl actualizează singure.',
             'href' => '/creare-site-de-prezentare/',
         ],
         [
-            'time' => 'De obicei 2–4 săptămâni',
-            'title' => 'Magazin online',
+            'meta' => 'Produse, plăți, livrare',
+            'title' => 'Creare magazin online',
             'text' => 'Pentru cine vinde produse și vrea comenzi online, cu plata, livrarea și facturarea legate între ele.',
             'href' => '/creare-magazin-online/',
         ],
@@ -70,7 +70,7 @@
 
     $questions = [
         ['Cât costă un site?', 'Depinde de numărul de pagini și de funcții. După o discuție scurtă primești o ofertă detaliată.'],
-        ['Cât durează?', 'Un site de prezentare, de obicei 1–2 săptămâni. Un magazin online, 2–4 săptămâni, în funcție de numărul de produse și de funcții.'],
+        ['Cât durează?', 'Depinde de numărul de pagini, de produse și de funcții. Termenul îl stabilim împreună și îl găsești în ofertă.'],
         ['Pot modifica singur conținutul?', 'Da. Primești acces la panoul de administrare și instruire la predare.'],
         ['Am deja un site. Îl puteți reface?', 'Da. Păstrăm adresele importante sau le redirecționăm, ca să nu pierzi pozițiile din Google.'],
         ['Pot adăuga mai târziu un magazin sau o limbă nouă?', 'Da, site-ul e construit să poată fi extins.'],
@@ -94,25 +94,28 @@
 
 <x-layouts.public
     title="Site-uri și magazine online"
+    crumb="Web și e-commerce"
     description="Site-uri și magazine online rapide, ușor de găsit în Google și făcute pe brandul tău."
     header-theme="dark"
+    hero-leave="overlap"
+    :footer-w="true"
 >
     <x-site.page-hero
         label="Web și e-commerce · Webis"
         :title="['Site-uri și', 'magazine online.']"
         intro="Site-uri și magazine online rapide, ușor de găsit în Google și făcute pe brandul tău."
         class="page-hero--led"
-        :flush="true"
         data-reveal-pace="fast"
     >
         {{-- The two offers close the hero, side by side on a hairline across
-             its foot, as /blog's featured article closes its own. --}}
+             its foot, as /blog's featured article closes its own. The section
+             after rises over the hero on a rounded top, as on the home page. --}}
         <x-slot:after>
             <ul class="web-hero-offers">
                 @foreach ($offers as $offer)
                     <li>
                         <a href="{{ $offer['href'] }}" class="web-hero-offer">
-                            <span class="web-hero-offer__meta">{{ $offer['time'] }}</span>
+                            <span class="web-hero-offer__meta">{{ $offer['meta'] }}</span>
                             <span class="web-hero-offer__title">{{ $offer['title'] }}</span>
                             <span class="web-hero-offer__side">
                                 <span class="web-hero-offer__text">{{ $offer['text'] }}</span>
@@ -164,7 +167,7 @@
         id="web-steps-title"
         title="Cum lucrăm."
         label="Cum lucrăm"
-        statement="De la prima discuție la lansare, în cinci pași. Un site de prezentare e gata, de obicei, în 1–2 săptămâni; un magazin online, în 2–4."
+        statement="De la prima discuție la lansare, în cinci pași."
         :items="$steps"
     />
 

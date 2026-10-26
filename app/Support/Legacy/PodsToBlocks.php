@@ -12,18 +12,18 @@ use App\Blocks\BlockRegistry;
  *
  * | Live template section                         | Fields                                      | Block                                                |
  * |-----------------------------------------------|---------------------------------------------|------------------------------------------------------|
- * | Opening: title, two texts, "Cere oferta", carousel | post title, `descriere_h1`, `descriere_mica_h1` | `hero` (subheading `descriere_h1` when ≤ 400 characters, the featured image, "Cere o ofertă" → /contact/), then `rich_text` with `descriere_mica_h1` (and `descriere_h1` when too long for the hero) |
+ * | Opening: title, two texts, "Cere oferta", carousel | post title, `descriere_h1`, `descriere_mica_h1` | `hero` (subheading both texts, a paragraph each, when together ≤ 800 characters, else `descriere_h1` alone when it fits; the featured image, "Cere o ofertă" → /contact/), then `rich_text` with whatever did not fit |
  * | "Beneficii": heading, subtitle, six cards     | `titlu_h2`, `subtitlu_h2`, `beneficii_h2-_b1…6` | `features` (heading, intro, one titled card each)    |
  * | "Beneficii": image, heading, six toggles      | `titlu_h3`, `beneficii_h3_-_titlu_N` / `_descriere_N` | `features` (each toggle's list as one line); as `rich_text` if a list is too long for a card |
  * | "Proiecte": heading, text, gallery            | `titlu_h4`, `descriere_h4`, `galerie_h1`    | `rich_text` (h2 + text), then `gallery`              |
- * | Contact: form and a closing text              | `descriere_personalizata`                   | `rich_text`, then `quote_form`                       |
+ * | Contact: form and a closing text              | `descriere_personalizata`                   | `rich_text` (the form left out: the footer's call to talk ends the page) |
  *
  * The live template's gallery and opening carousel both showed `galerie_h1`;
  * `galerie_h4` was never displayed, and the template's `imagine_h3` and
  * background image have no slot in the blocks — all three are counted as
- * dropped. The closing block is the form the template ended on, not a
- * `cta_banner`: no field holds a call to action. The fields carry no Q&A,
- * so there is no `faq`.
+ * dropped. The form the template ended on is not carried over: the site's
+ * footer closes every page with its own call to talk. The fields carry no
+ * Q&A, so there is no `faq`.
  */
 final class PodsToBlocks
 {
@@ -45,8 +45,17 @@ final class PodsToBlocks
     {
         $this->report = new ConversionReport;
 
+        // The two texts under the old title, both in the hero (a blank line
+        // between them) when they fit its subheading; else the first alone
+        // when it fits, the rest in a rich text after the hero.
         $intro = $this->text($fields, 'descriere_h1');
-        $heroIntro = $intro !== '' && mb_strlen($intro) <= 400 ? $intro : null;
+        $small = $this->text($fields, 'descriere_mica_h1');
+        $both = implode("\n\n", array_filter([$intro, $small], fn (string $text): bool => $text !== ''));
+        $heroIntro = match (true) {
+            $both !== '' && mb_strlen($both) <= 800 => $both,
+            $intro !== '' && mb_strlen($intro) <= 800 => $intro,
+            default => null,
+        };
         $imageId = (int) $this->field($fields, '_thumbnail_id') ?: ($this->attachments($fields, 'imagine_reprezentativa')[0] ?? 0);
         $heroImage = $imageId > 0 ? $this->html->resolveImage($imageId, '') : null;
 
@@ -64,7 +73,11 @@ final class PodsToBlocks
             'primary_cta' => self::QUOTE_CTA,
         ])];
 
-        $opening = ($heroIntro === null && $intro !== '' ? '<p>'.e($intro).'</p>' : '').$this->paragraphs($fields, 'descriere_mica_h1');
+        $opening = match ($heroIntro) {
+            $both => '',
+            $intro => $this->paragraphs($fields, 'descriere_mica_h1'),
+            default => ($intro !== '' ? '<p>'.e($intro).'</p>' : '').$this->paragraphs($fields, 'descriere_mica_h1'),
+        };
         array_push($blocks, ...$this->richText($opening));
 
         $benefits = [];
@@ -92,8 +105,6 @@ final class PodsToBlocks
         array_push($blocks, ...$this->richText($models));
         array_push($blocks, ...$this->gallery($this->attachments($fields, 'galerie_h1')));
         array_push($blocks, ...$this->richText($this->paragraphs($fields, 'descriere_personalizata')));
-
-        $blocks[] = $this->block('quote_form', []);
 
         foreach (['galerie_h4', 'imagine_h3', 'imagine_background_prima_sectiune'] as $unused) {
             if ($this->attachments($fields, $unused) !== []) {

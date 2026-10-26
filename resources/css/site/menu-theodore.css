@@ -189,12 +189,9 @@
         @apply flex flex-wrap gap-x-14 gap-y-6;
     }
 
+    /* Its links roll on hover, as the menu's own (css/site/roll.css). */
     .theo-menu__details {
         @apply mt-4 flex flex-wrap gap-x-6 gap-y-2;
-
-        & a {
-            @apply underline-offset-4 hover:underline focus-visible:underline;
-        }
     }
 
     /* The old variant's own ✕ (header-theodore): the round button's spot. */

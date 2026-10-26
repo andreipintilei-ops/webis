@@ -145,7 +145,7 @@ function legacyImportSchema(): void
         $post(21, 'proiect', 'zyanya-logo', 'Zyanya Logo', 'Logo-ul Zyanya reflectă eleganța bijuteriilor.', '2024-07-11 00:00:45'),
         $post(22, 'proiect', 'little-tokyo', 'Little Tokyo', 'Website pentru restaurantul Little Tokyo din Iași.', '2023-02-01 10:00:09'),
         $post(30, 'domenii', 'creare-site-florarie', 'Creare site florărie'),
-        $post(40, 'page', 'creare-magazin-online', 'Creare magazin online', '<p>Magazine online.</p>'),
+        $post(40, 'page', 'creare-site-web', 'Creare magazin online', '<p>Magazine online.</p>'),
     ]);
 
     $article = '<h2>De ce contează SEO</h2><p>'.str_repeat('Un site bine optimizat aduce clienți noi în fiecare lună. ', 20).'</p>'
@@ -483,7 +483,7 @@ describe('with a body converter', function () {
     it('resolves Yoast title variables and imports pages and industries by type', function () {
         expect(runLegacyImport($this, ['--only' => ['pages', 'industries'], '--publish' => true]))->toBe(0);
 
-        $page = Page::where('slug', 'creare-magazin-online')->sole();
+        $page = Page::where('slug', 'creare-site-web')->sole();
 
         expect($page->type)->toBe(PageType::Page)
             ->and($page->seo->title)->toBe('Creare magazin online - Webis Iași')
@@ -494,12 +494,12 @@ describe('with a body converter', function () {
     });
 
     it('leaves a slug another page holds alone, and reports it', function () {
-        $live = Page::factory()->create(['slug' => 'creare-magazin-online', 'type' => PageType::Service, 'title' => 'Pagina live']);
+        $live = Page::factory()->create(['slug' => 'creare-site-web', 'type' => PageType::Service, 'title' => 'Pagina live']);
 
         runLegacyImport($this, ['--only' => ['pages']]);
 
         expect($live->fresh()->title)->toBe('Pagina live')
-            ->and(legacyImportReport($this)['steps']['pages']['exists_kept'][0])->toMatchArray(['slug' => 'creare-magazin-online', 'type' => 'service']);
+            ->and(legacyImportReport($this)['steps']['pages']['exists_kept'][0])->toMatchArray(['slug' => 'creare-site-web', 'type' => 'service']);
     });
 
     it('never replaces non-empty blocks without --force', function () {

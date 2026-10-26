@@ -26,8 +26,8 @@
         [
             'art' => 'floors',
             'title' => 'Software la comandă',
-            'text' => 'Sisteme construite pentru o singură organizație, pornind de la procesele ei. Analiză, dezvoltare, implementare, mentenanță.',
-            'link' => ['label' => 'Află mai multe', 'url' => '/software-la-comanda'],
+            'text' => 'Sisteme construite pentru o singură firmă sau instituție, pornind de la procesele ei. Analiză, dezvoltare, implementare, mentenanță.',
+            'link' => ['label' => 'Despre software la comandă', 'url' => '/software-la-comanda'],
         ],
         [
             'art' => 'tiles',
@@ -39,7 +39,7 @@
             'art' => 'pages',
             'title' => 'Web și e-commerce',
             'text' => 'Site-uri de prezentare și magazine online. De aici am pornit în 2016 și le facem în continuare.',
-            'link' => ['label' => 'Află mai multe', 'url' => '/web'],
+            'link' => ['label' => 'Despre web design', 'url' => '/web'],
         ],
     ];
 

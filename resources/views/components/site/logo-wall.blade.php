@@ -17,8 +17,8 @@
 @props(['embedded' => false])
 
 @php
-    // As the logo strip (components/logo-marquee): every client marked
-    // "show in logos", in their admin order.
+    // Every client marked "show in logos", in their admin order: those the
+    // logo strip (components/logo-marquee) leaves out too.
     $clients = \App\Models\Client::query()
         ->with('logo.media')
         ->where('show_in_logos', true)

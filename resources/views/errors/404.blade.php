@@ -7,7 +7,6 @@
         title="Pagina nu mai e aici."
         intro="Poate a fost mutată sau adresa are o greșeală."
         class="page-hero--error"
-        :parallax="false"
         :planes="false"
     >
         <div class="page-hero__links">

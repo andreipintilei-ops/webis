@@ -21,10 +21,10 @@ import { EASE, loadGsap } from '@/public/gsap';
  * so the tail plays under someone who has already started scrolling.
  *
  * Leaving: once the last section on the backdrop ([data-backdrop-area])
- * starts to scroll off, the page after it slides up and the backdrop shrinks
- * into a rounded card just above it, while the gradient inside drifts up at
- * half the scroll's speed — the parallax. Scrubbed, so scrolling back up
- * plays it in reverse.
+ * starts to scroll off, the page after it slides up over it on a rounded
+ * top (the layout's "overlap", every page), the gradient holding still — no
+ * parallax. ("card": the backdrop shrinks into a rounded card above it.)
+ * Scrubbed, so scrolling back up plays it in reverse.
  *
  * Applies to the page's intro hero ([data-intro], blocks/hero.blade.php).
  * With reduced motion the backdrop simply stays full screen until covered.
@@ -56,8 +56,8 @@ const RADIUS = 42;
  * the first `settle` of the way and then held; the shortest the card gets
  * (a share of the screen's height) before it scrolls away upward with the
  * page instead of thinning into a strip; and how far the gradient inside has
- * drifted up when covered (a share of the screen's height — the page
- * covering it travels a whole height, so 0.5 is half speed).
+ * drifted up when covered (a share of the screen's height): 0 — no parallax
+ * anywhere on the site, the gradient holds still as the page covers it.
  */
 const LEAVE = {
     insetVw: 0.03,
@@ -65,7 +65,7 @@ const LEAVE = {
     radius: 20,
     settle: 0.15,
     minHeight: 0.5,
-    lag: 0.5,
+    lag: 0,
 };
 
 /**

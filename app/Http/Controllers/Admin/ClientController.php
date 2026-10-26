@@ -47,6 +47,7 @@ class ClientController extends Controller
                 'type' => $client->type->value,
                 'products' => $client->products?->map(fn (Product $product): string => $product->value)->values()->all() ?? [],
                 'show_in_logos' => $client->show_in_logos,
+                'show_in_marquee' => $client->show_in_marquee,
                 'sort_order' => $client->sort_order,
                 'projects_count' => $client->projects_count,
                 'testimonials_count' => $client->testimonials_count,
@@ -133,6 +134,7 @@ class ClientController extends Controller
             'products' => ['sometimes', 'nullable', 'array'],
             'products.*' => ['distinct', Rule::enum(Product::class)],
             'show_in_logos' => ['boolean'],
+            'show_in_marquee' => ['boolean'],
             'sort_order' => ['nullable', 'integer', 'min:0'],
         ]);
 
@@ -144,6 +146,8 @@ class ClientController extends Controller
         return [
             ...$data,
             'show_in_logos' => $request->boolean('show_in_logos'),
+            // Left out of the request (an older form): in the strip, as before it existed.
+            'show_in_marquee' => $request->boolean('show_in_marquee', true),
             'sort_order' => (int) ($data['sort_order'] ?? 0),
         ];
     }

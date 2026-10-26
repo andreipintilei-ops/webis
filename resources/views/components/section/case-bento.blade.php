@@ -1,9 +1,13 @@
 {{--
     One project at a time as a composite: a violet panel with its number,
     the client and a line, a large screenshot, and two tiles under it, its
-    facts (big values over small labels) and the way to it. The arrows on
-    the panel step through the projects (js/public/case-bento.ts); without
-    the script, the first only (css/site/sections.css).
+    facts (big values over small labels) and the way to it. A carousel: on
+    the panel, between the arrows, a bar per project with its client's
+    name, the shown one lit; it plays on its own, the lit bar filling until
+    the next project, pausing while pointed at, focused or out of view, and
+    stopping once someone steps through it themselves (arrows, a bar, a
+    swipe). js/public/case-bento.ts; without the script, the first only
+    (css/site/sections.css).
 
     `cases`: list of ['client', 'text', 'href', 'image' (URL or null),
     'facts' (list of [label, value])].
@@ -30,9 +34,21 @@
                 <div class="bento__panel-foot">
                     <p class="bento__text">{{ $case['text'] }}</p>
                     @if ($count > 1)
+                        @php($shown = $loop->index)
                         <div class="bento__nav">
                             <button type="button" class="bento__step bento__step--prev" aria-label="Proiectul anterior" data-bento-prev>{!! $arrow !!}</button>
-                            <span class="bento__count">{{ $loop->iteration }} / {{ $count }}</span>
+                            {{-- Every project as a bar with its client's name, this one lit
+                                 (and filling while the carousel plays on its own). --}}
+                            <ol class="bento__dots">
+                                @foreach ($cases as $other)
+                                    <li>
+                                        <button type="button" class="bento__dot" data-bento-go="{{ $loop->index }}" aria-label="Proiectul {{ $loop->iteration }}: {{ $other['client'] }}" @if ($loop->index === $shown) aria-current="true" @endif>
+                                            <span class="bento__bar"><i></i></span>
+                                            <span class="bento__dot-name">{{ $other['client'] }}</span>
+                                        </button>
+                                    </li>
+                                @endforeach
+                            </ol>
                             <button type="button" class="bento__step" aria-label="Proiectul următor" data-bento-next>{!! $arrow !!}</button>
                         </div>
                     @endif

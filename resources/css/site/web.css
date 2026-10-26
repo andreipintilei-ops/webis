@@ -155,9 +155,23 @@
         }
     }
 
+    /* Three of a kind side by side, each screenshot whole at 3:2
+       (/creare-magazin-online/, /creare-site-de-prezentare/). */
+    .web-projects__list--even {
+        @apply lg:grid-cols-3 lg:grid-rows-none;
+
+        & > li:first-child {
+            @apply lg:col-span-1 lg:row-span-1;
+        }
+
+        & > li {
+            @apply lg:col-span-1;
+        }
+    }
+
     /* The large one: its screenshot takes the height the two beside it make,
        the title keeping its own. */
-    .web-projects__list > li:first-child {
+    .web-projects__list:not(.web-projects__list--even) > li:first-child {
         & .web-project__media {
             @apply lg:aspect-auto lg:min-h-[22rem] lg:flex-1;
 

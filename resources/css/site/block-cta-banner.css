@@ -59,10 +59,13 @@
 
     /* Anton has one weight: font-normal. 1.16 like the hero: Romanian's
        Î and Ă need the room. */
+    /* The blocks' heading face (css/site/sections.css, .chead__title): the
+       display face is the hero's alone. */
     .block-cta__title {
-        @apply max-w-[22ch] font-display font-normal text-balance uppercase;
-        font-size: clamp(2.25rem, 4.4vw, 4.25rem);
-        line-height: 1.16;
+        @apply max-w-[22ch] font-medium text-balance;
+        font-size: clamp(2.125rem, 3.9vw, 3.75rem);
+        line-height: 1.05;
+        letter-spacing: -0.04em;
     }
 
     .block-cta__line {

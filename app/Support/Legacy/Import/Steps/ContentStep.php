@@ -42,7 +42,7 @@ final class ContentStep
     ];
 
     /** The new site's own pages, which no import may touch. */
-    public const array PROTECTED_SLUGS = ['acasa', 'contact', 'produse', 'portofoliu', 'despre', 'demo-blocuri-1', 'demo-blocuri-2'];
+    public const array PROTECTED_SLUGS = ['acasa', 'contact', 'produse', 'portofoliu', 'despre'];
 
     /** Below this, a converted body probably lost its content. */
     public const int MIN_WORDS = ConvertLegacyContent::MIN_WORDS;

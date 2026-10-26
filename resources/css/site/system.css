@@ -1,9 +1,10 @@
 /*
   The site's visual language, as reusable pieces (trial on /web):
 
-  - Type: section titles in the display face (Anton, uppercase), each
-    under its number on a hairline (components/ui/section-head); the
-    title chips the only accent in titles.
+  - Type: the display face (Anton, uppercase) for the hero's title alone;
+    section titles in the text face, centred (components/ui/section-head,
+    the reusable sections' .chead); the title chips the only accent in
+    titles.
   - Surfaces: the light chapters' lavender by default, the hero's indigo
     for emphasis (chapter--dark); the violet kept to buttons and at most
     one call to action a page. No plain white sections.
@@ -13,12 +14,11 @@
   - One shape: the W's plate, a rounded square on its corner (.plate).
 */
 @layer components {
-    /* ---- The section heading -------------------------------------------- */
+    /* ---- A label over a hairline ------------------------------------------ */
 
-    .section-head {
-        @apply grid gap-6;
-    }
-
+    /* The micro-face label with a hairline running on from it: the rich
+       text's "Cuprins". (The blocks' headings are the centred head,
+       css/site/sections.css.) */
     .section-head__number {
         @apply flex items-center gap-4 font-micro text-xs tracking-[0.08em];
         color: var(--accent);
@@ -28,22 +28,6 @@
             @apply h-px flex-1;
             background: var(--line);
         }
-    }
-
-    .section-head__row {
-        @apply grid gap-6 lg:grid-cols-12 lg:items-end lg:gap-10;
-    }
-
-    .section-head__title {
-        @apply font-display font-normal text-balance uppercase lg:col-span-7;
-        font-size: clamp(2.5rem, 5vw, 4.75rem);
-        line-height: 1.05;
-        color: var(--ink);
-    }
-
-    .section-head__intro {
-        @apply max-w-[42ch] text-lg leading-relaxed text-pretty lg:col-span-4 lg:col-start-9 lg:pb-2;
-        color: var(--muted);
     }
 
     /* ---- The plate: the W's rounded square on its corner ----------------- */

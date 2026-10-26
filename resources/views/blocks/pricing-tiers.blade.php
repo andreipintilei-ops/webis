@@ -28,8 +28,7 @@
     <section id="{{ $block['id'] }}" class="chapter chapter--light block-pricing" @if ($heading !== '') aria-labelledby="{{ $block['id'] }}-title" @endif data-reveal-pace="fast">
         <div class="chapter__inner">
             @if ($heading !== '')
-                @php $number = isset($sectionNumber) ? $sectionNumber() : ''; @endphp
-                <x-ui.section-head :number="$number" :title="$heading" :id="$block['id'].'-title'" :intro="$intro ?: null" />
+                <x-ui.section-head :title="$heading" :id="$block['id'].'-title'" :intro="$intro ?: null" />
             @elseif ($intro !== '')
                 <p class="block-pricing__intro">{{ $intro }}</p>
             @endif

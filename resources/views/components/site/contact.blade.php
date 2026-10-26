@@ -27,7 +27,7 @@
 
     $fields = [
         ['name' => 'name', 'label' => 'Nume', 'type' => 'text', 'autocomplete' => 'name', 'required' => true],
-        ['name' => 'organization', 'label' => 'Organizație', 'type' => 'text', 'autocomplete' => 'organization', 'required' => false],
+        ['name' => 'organization', 'label' => 'Firmă sau instituție', 'type' => 'text', 'autocomplete' => 'organization', 'required' => false],
         ['name' => 'email', 'label' => 'Email', 'type' => 'email', 'autocomplete' => 'email', 'required' => false],
         ['name' => 'phone', 'label' => 'Telefon', 'type' => 'tel', 'autocomplete' => 'tel', 'required' => false],
     ];

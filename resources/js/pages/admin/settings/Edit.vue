@@ -62,6 +62,12 @@ type SeoSettings = {
 type AnalyticsSettings = {
     ga4_measurement_id: string | null;
     google_ads_id: string | null;
+    google_ads_lead_label: string | null;
+    gtm_container_id: string | null;
+    meta_pixel_id: string | null;
+    linkedin_partner_id: string | null;
+    hotjar_site_id: string | null;
+    clarity_project_id: string | null;
     google_site_verification: string | null;
     bing_site_verification: string | null;
 };
@@ -598,22 +604,94 @@ function submitLeads(): void {
                     class="flex flex-col gap-4"
                     @submit.prevent="submitAnalytics"
                 >
+                    <p class="text-sm text-muted-foreground">
+                        Fiecare instrument se încarcă doar pe site-ul live și
+                        doar după ce vizitatorul acceptă categoria lui în
+                        bannerul de cookie-uri. Bannerul, linkul „Setări
+                        cookies” și tabelele din Politica de cookies apar și se
+                        actualizează singure după ce completezi un cod.
+                    </p>
+
                     <section
                         class="flex flex-col gap-4 rounded-xl border bg-card p-4"
                     >
-                        <TextField
-                            v-model="analyticsForm.ga4_measurement_id"
-                            label="Google Analytics 4 (ID de măsurare)"
-                            placeholder="G-XXXXXXXXXX"
-                            hint="Se încarcă doar după acordul vizitatorului pentru cookie-uri"
-                            :error="analyticsForm.errors.ga4_measurement_id"
-                        />
-                        <TextField
-                            v-model="analyticsForm.google_ads_id"
-                            label="Google Ads"
-                            placeholder="AW-…"
-                            :error="analyticsForm.errors.google_ads_id"
-                        />
+                        <h2 class="text-sm font-medium">Google</h2>
+                        <div class="grid gap-4 sm:grid-cols-2">
+                            <TextField
+                                v-model="analyticsForm.ga4_measurement_id"
+                                label="Google Analytics 4 (ID de măsurare)"
+                                placeholder="G-XXXXXXXXXX"
+                                hint="Categoria Analiză"
+                                :error="analyticsForm.errors.ga4_measurement_id"
+                            />
+                            <TextField
+                                v-model="analyticsForm.gtm_container_id"
+                                label="Google Tag Manager"
+                                placeholder="GTM-XXXXXXX"
+                                hint="Cu oricare categorie. Dacă GA4 e configurat în GTM, lasă câmpul GA4 gol"
+                                :error="analyticsForm.errors.gtm_container_id"
+                            />
+                            <TextField
+                                v-model="analyticsForm.google_ads_id"
+                                label="Google Ads (ID de conversie)"
+                                placeholder="AW-123456789"
+                                hint="Categoria Marketing"
+                                :error="analyticsForm.errors.google_ads_id"
+                            />
+                            <TextField
+                                v-model="analyticsForm.google_ads_lead_label"
+                                label="Google Ads: eticheta conversiei pentru cerere"
+                                placeholder="AbC-D_efG-h12_34-567"
+                                hint="Partea de după „/” din AW-123456789/eticheta; trimisă la fiecare cerere din formular"
+                                :error="
+                                    analyticsForm.errors.google_ads_lead_label
+                                "
+                            />
+                        </div>
+                    </section>
+
+                    <section
+                        class="flex flex-col gap-4 rounded-xl border bg-card p-4"
+                    >
+                        <h2 class="text-sm font-medium">Alte instrumente</h2>
+                        <div class="grid gap-4 sm:grid-cols-2">
+                            <TextField
+                                v-model="analyticsForm.meta_pixel_id"
+                                label="Meta Pixel (Facebook, Instagram)"
+                                placeholder="123456789012345"
+                                hint="Categoria Marketing; trimite și evenimentul Lead la o cerere"
+                                :error="analyticsForm.errors.meta_pixel_id"
+                            />
+                            <TextField
+                                v-model="analyticsForm.linkedin_partner_id"
+                                label="LinkedIn Insight Tag (Partner ID)"
+                                placeholder="1234567"
+                                hint="Categoria Marketing"
+                                :error="
+                                    analyticsForm.errors.linkedin_partner_id
+                                "
+                            />
+                            <TextField
+                                v-model="analyticsForm.hotjar_site_id"
+                                label="Hotjar (Site ID)"
+                                placeholder="1234567"
+                                hint="Categoria Analiză"
+                                :error="analyticsForm.errors.hotjar_site_id"
+                            />
+                            <TextField
+                                v-model="analyticsForm.clarity_project_id"
+                                label="Microsoft Clarity (ID proiect)"
+                                placeholder="abcd1234ef"
+                                hint="Categoria Analiză"
+                                :error="analyticsForm.errors.clarity_project_id"
+                            />
+                        </div>
+                    </section>
+
+                    <section
+                        class="flex flex-col gap-4 rounded-xl border bg-card p-4"
+                    >
+                        <h2 class="text-sm font-medium">Verificare</h2>
                         <TextField
                             v-model="analyticsForm.google_site_verification"
                             label="Verificare Google Search Console"

@@ -98,7 +98,7 @@
     :canonical="$canonical"
     header-theme="dark"
     footer-cta-title="Site, platformă sau aplicație?"
-    footer-cta-intro="Un site nou, un magazin online sau o platformă pentru toată organizația."
+    footer-cta-intro="Un site nou, un magazin online sau o platformă pentru toată echipa."
     :footer-w="true"
 >
     <x-site.page-hero

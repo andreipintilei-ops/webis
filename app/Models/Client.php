@@ -24,7 +24,8 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property string|null $url
  * @property ClientType $type
  * @property \Illuminate\Support\Collection<int, Product>|null $products the products it uses — a product page's "Folosit de" strip
- * @property bool $show_in_logos
+ * @property bool $show_in_logos on the logo wall (components/site/logo-wall)
+ * @property bool $show_in_marquee also in the hero's moving strip (components/logo-marquee), when in the logos
  * @property int $sort_order
  * @property CarbonImmutable|null $created_at
  * @property CarbonImmutable|null $updated_at
@@ -33,7 +34,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property-read Collection<int, Project> $projects
  * @property-read Collection<int, Testimonial> $testimonials
  */
-#[Fillable(['name', 'logo_asset_id', 'sector', 'url', 'type', 'products', 'show_in_logos', 'sort_order'])]
+#[Fillable(['name', 'logo_asset_id', 'sector', 'url', 'type', 'products', 'show_in_logos', 'show_in_marquee', 'sort_order'])]
 class Client extends Model
 {
     /** @use HasFactory<ClientFactory> */
@@ -45,6 +46,7 @@ class Client extends Model
             'type' => ClientType::class,
             'products' => AsEnumCollection::of(Product::class),
             'show_in_logos' => 'boolean',
+            'show_in_marquee' => 'boolean',
             'sort_order' => 'integer',
         ];
     }

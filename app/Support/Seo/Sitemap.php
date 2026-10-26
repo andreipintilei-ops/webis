@@ -39,8 +39,8 @@ final class Sitemap
 
     /** The section pages that are app routes rather than CMS pages. */
     private const array SECTION_ROUTES = [
-        'home', 'services.index', 'services.web', 'services.software', 'services.products',
-        'projects.index', 'posts.index',
+        'home', 'services.index', 'services.web', 'services.software', 'services.products', 'services.shop', 'services.presentation',
+        'projects.index', 'posts.index', 'legal.cookies',
     ];
 
     public function __construct(private readonly ResolveRedirect $resolveRedirect) {}

@@ -32,6 +32,12 @@
         color: var(--ink);
     }
 
+    /* A block's intro under its title (components/ui/section-head). */
+    .chead__intro {
+        @apply max-w-[42rem] text-lg leading-relaxed text-pretty;
+        color: var(--muted);
+    }
+
     /* The phrase the line turns on, never broken across lines. */
     .chead__turn {
         @apply whitespace-nowrap;
@@ -42,8 +48,11 @@
 
     /* Out to the screen's edges, so the drifting rows are cut there, not at
        the column. */
+    /* min-w-0: as wide as its column, never its rows' width (from 1024px a
+       row of cards is wider than the screen there, and would stretch the
+       chapter's grid and the page with it); the clip cuts them instead. */
     .brows {
-        @apply grid gap-5 lg:gap-6;
+        @apply grid min-w-0 gap-5 lg:gap-6;
         margin-inline: calc(var(--site-gap) * -1);
         padding-inline: var(--site-gap);
         overflow-x: clip;
@@ -260,9 +269,16 @@
 
     /* ---- Case bento ---------------------------------------------------------- */
 
+    /* Never wider than its column: the facts' one-line values must not
+       stretch the chapter's grid. */
+    .bento {
+        @apply min-w-0;
+    }
+
+    /* One project at a time; changing, only the tiles' content moves
+       (js/public/case-bento.ts), the tiles themselves stay. */
     .bento__case {
         @apply grid gap-3 lg:grid-cols-12;
-        animation: bento-in 0.6s var(--ease) both;
 
         &[hidden] {
             @apply hidden;
@@ -306,12 +322,12 @@
         @apply mt-8 flex items-center gap-3;
     }
 
+    /* Full white, the arrow in the violet; pointed at, a little larger. */
     .bento__step {
-        @apply grid size-11 cursor-pointer place-items-center rounded-full border;
-        border-color: rgb(255 255 255 / 0.4);
-        transition:
-            background-color var(--base) var(--ease),
-            color var(--base) var(--ease);
+        @apply grid size-11 shrink-0 cursor-pointer place-items-center rounded-full;
+        color: var(--violet-500);
+        background: #fff;
+        transition: scale var(--base) var(--ease);
 
         & svg {
             @apply size-3;
@@ -319,8 +335,7 @@
 
         &:hover,
         &:focus-visible {
-            color: var(--violet-500);
-            background: #fff;
+            scale: 1.08;
         }
 
         &:focus-visible {
@@ -333,23 +348,84 @@
         rotate: 180deg;
     }
 
-    .bento__count {
-        @apply font-micro text-xs tabular-nums;
-        color: rgb(255 255 255 / 0.75);
+    /* A bar per project, its client's name under it: the shown one lit.
+       Playing (js/public/case-bento.ts), the lit bar fills over the time
+       the project shows; paused, it holds where it is. */
+    .bento__dots {
+        @apply flex min-w-0 flex-1 gap-3;
+
+        & > li {
+            @apply min-w-0 flex-1;
+        }
     }
 
+    .bento__dot {
+        @apply grid w-full max-w-[9rem] cursor-pointer gap-2 py-2 text-left;
+
+        &:focus-visible {
+            outline: 2px solid #fff;
+            outline-offset: 4px;
+            border-radius: 4px;
+        }
+    }
+
+    .bento__bar {
+        @apply block h-[3px] overflow-hidden rounded-full;
+        background: rgb(255 255 255 / 0.3);
+
+        & i {
+            @apply block h-full;
+            background: #fff;
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform var(--base) var(--ease);
+        }
+    }
+
+    .bento__dot[aria-current] .bento__bar i,
+    .bento__dot:hover .bento__bar i {
+        transform: scaleX(1);
+    }
+
+    .bento__dot:not([aria-current]):hover .bento__bar i {
+        opacity: 0.5;
+    }
+
+    .bento.is-playing .bento__dot[aria-current] .bento__bar i {
+        transform: scaleX(0);
+        animation: bento-fill var(--bento-dwell, 7s) linear forwards;
+    }
+
+    .bento.is-paused .bento__dot[aria-current] .bento__bar i {
+        animation-play-state: paused;
+    }
+
+    .bento__dot-name {
+        @apply truncate font-micro text-[11px] tracking-[0.06em] uppercase;
+        color: rgb(255 255 255 / 0.6);
+        transition: color var(--base) var(--ease);
+    }
+
+    .bento__dot[aria-current] .bento__dot-name,
+    .bento__dot:hover .bento__dot-name {
+        color: #fff;
+    }
+
+    /* On the facts' indigo, not the pale tint: between screenshots (the
+       swap crossfades, js/public/case-bento.ts) nothing flashes light. */
     .bento__media {
         @apply overflow-hidden rounded-[1.75rem] lg:col-span-7;
         aspect-ratio: 16 / 10;
-        background: var(--tint);
+        background-color: #1f2868;
 
         & img {
             @apply size-full object-cover;
         }
     }
 
+    /* Narrower from 1280px, so the facts beside it get the room. */
     .bento__link {
-        @apply flex min-h-[9rem] flex-col justify-between gap-6 rounded-[1.75rem] bg-white p-6 lg:col-span-3;
+        @apply flex min-h-[9rem] flex-col justify-between gap-6 rounded-[1.75rem] bg-white p-6 lg:col-span-3 xl:col-span-2;
         color: var(--ink);
 
         & > span:first-child {
@@ -372,34 +448,50 @@
         translate: 4px 0;
     }
 
-    /* Its facts: big values over small labels. */
+    /* Its facts: small labels over values, held in the tile's middle. Where
+       the tile is narrow (phones; beside the link tile from 1024px) the type
+       and the year side by side, the site on a row of its own; full width
+       (640px to 1024px) three equal columns; from 1280px all three on one
+       line across the whole tile, a hairline before the year and the site
+       (cut short with an ellipsis only if it must). */
     .bento__facts {
-        @apply grid grid-cols-3 content-end gap-4 rounded-[1.75rem] p-6 text-white lg:col-span-4;
+        @apply grid grid-cols-2 content-center gap-x-7 gap-y-5 rounded-[1.75rem] p-6 text-white sm:grid-cols-3 lg:col-span-4 lg:grid-cols-2 lg:px-7 xl:col-span-5;
         background: #1f2868;
+
+        & > div {
+            @apply min-w-0;
+        }
+
+        & > div:last-child {
+            @apply col-span-2 sm:col-span-1 lg:col-span-2 xl:col-span-1;
+        }
 
         & dt {
             @apply font-micro text-[11px] tracking-[0.08em] uppercase;
-            color: rgb(255 255 255 / 0.6);
+            color: rgb(255 255 255 / 0.55);
         }
 
         & dd {
-            @apply mt-2 font-medium break-words;
-            font-size: clamp(0.95rem, 1.25vw, 1.2rem);
-            line-height: 1.2;
-            letter-spacing: -0.015em;
+            @apply mt-3 font-medium break-words xl:truncate;
+            font-size: clamp(0.95rem, 1.1vw, 1.0625rem);
+            line-height: 1.25;
+            letter-spacing: -0.01em;
         }
-    }
 
-    @media (prefers-reduced-motion: reduce) {
-        .bento__case {
-            animation: none;
+        @media (min-width: 1280px) {
+            grid-template-columns: auto auto minmax(0, auto);
+            justify-content: space-between;
+
+            & > div + div {
+                @apply border-l pl-7;
+                border-color: rgb(255 255 255 / 0.16);
+            }
         }
     }
 }
 
-@keyframes bento-in {
-    from {
-        opacity: 0;
-        transform: translateY(0.75rem);
+@keyframes bento-fill {
+    to {
+        transform: scaleX(1);
     }
 }

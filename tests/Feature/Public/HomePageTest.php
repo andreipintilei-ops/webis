@@ -138,6 +138,8 @@ it('shows the clients\' wall after the stage: each logo once, with its name, and
 
     Client::factory()->create(['name' => 'Zyanya', 'logo_asset_id' => $logo()->id]);
     Client::factory()->create(['name' => 'Ascuns', 'logo_asset_id' => $logo()->id, 'show_in_logos' => false]);
+    // Left out of the hero's strip only.
+    Client::factory()->create(['name' => 'Geprocon', 'logo_asset_id' => $logo()->id, 'show_in_marquee' => false]);
 
     $html = $this->get('/')->assertOk()->getContent();
     preg_match('#<section id="clienti" class="logo-wall.*?</section>#s', $html, $wall);
@@ -146,6 +148,7 @@ it('shows the clients\' wall after the stage: each logo once, with its name, and
         ->toContain('data-logo-wall')
 
         ->toContain('alt="Zyanya"')
+        ->toContain('alt="Geprocon"')
         ->not->toContain('Ascuns')
         ->and(strpos($html, '<section id="clienti"'))->toBeGreaterThan(strpos($html, 'data-stage-finale'));
 });
@@ -252,6 +255,9 @@ it('closes every page with the footer on the violet gradient: the call, the link
         ->toContain('href="/contact/"')
         ->toContain('href="tel:+40770700607"')
         ->toContain('href="mailto:contact@webis.ro"')
+        // The links' labels roll letter by letter (components/ui/roll): read
+        // as text, they are whole.
+        ->and(strip_tags($footer[0]))
         ->toContain('Software la comandă')
         ->toContain('Confidențialitate')
         ->toContain('© '.now()->year);

@@ -7,6 +7,13 @@
   first column start on the heading's edge.
 */
 @layer components {
+    /* Outside the chapters, on the page's white: the light chapter's ink
+       for its heading (components/ui/section-head). */
+    .block-features {
+        --ink: var(--navy-950);
+        --muted: var(--ink-muted);
+    }
+
     .feature-grid {
         @apply overflow-hidden;
         --line: var(--color-neutral-200);
@@ -14,6 +21,31 @@
         & > li {
             @apply py-10 md:py-12 md:pr-8 lg:pr-10;
             box-shadow: 1px 1px 0 0 var(--line);
+        }
+    }
+
+    /* The card's title after its check: the violet's tick on the lavender,
+       as the pricing cards' features (css/site/block-pricing-tiers.css). */
+    .feature-grid__title {
+        @apply flex items-start gap-3 text-lg leading-snug font-semibold tracking-[-0.01em] text-balance;
+    }
+
+    /* A title alone, a list of what is included: the size of a list's line. */
+    .feature-grid__item--plain .feature-grid__title {
+        @apply text-base font-medium md:text-[17px];
+    }
+
+    .feature-grid__check {
+        @apply grid size-6 shrink-0 place-items-center rounded-full;
+        background: rgb(119 90 252 / 0.12);
+
+        & svg {
+            @apply size-3.5;
+            fill: none;
+            stroke: var(--violet-500);
+            stroke-width: 2.5;
+            stroke-linecap: round;
+            stroke-linejoin: round;
         }
     }
 

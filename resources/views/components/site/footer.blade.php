@@ -3,24 +3,30 @@
     (js/public/soffit.ts, which pauses it while it is off screen): a closing
     call to talk with the ways to reach us, then the site's links in groups
     (App\Support\SiteNavigation) and the company's details
-    (CompanySettings), then the logo, the legal line and links.
+    (CompanySettings): the site's pages with the legal ones under them,
+    the address with the Google rating and the social profiles; then the
+    logo, the legal line and the ANPC SAL/SOL pictograms.
     css/site/footer.css.
 
     On a page that already carries the gradient fixed behind it, pass
     `on-backdrop` and the footer shows through to that one instead.
-    `cta-title`, `cta-intro`: a page's own wording for the closing call
+    `cta-title`, `cta-intro`, `cta-button`: a page's own wording for the closing call
     (/clienti), in place of the default. `w`: the call's words and ways in
     the left half, and the Webis W forming in the right half, over the
     gradient, as it scrolls in (js/public/finale-w.ts; /portofoliu,
-    /software-la-comanda).
+    /software-la-comanda, /web, /produse).
 --}}
-@props(['showCta' => true, 'onBackdrop' => false, 'ctaTitle' => null, 'ctaIntro' => null, 'w' => false])
+@props(['showCta' => true, 'onBackdrop' => false, 'ctaTitle' => null, 'ctaIntro' => null, 'ctaButton' => null, 'w' => false])
 
 @php
     $company = app(\App\Settings\CompanySettings::class);
     $logo = app(\App\Support\Brand::class)->logoNegative();
     $phoneHref = \App\Support\PhoneLink::href($company->phone);
     $address = implode(', ', array_filter([$company->street_address, $company->locality]));
+
+    // The profiles set in Setări (CompanySettings::$social), by their names.
+    $socials = array_filter($company->social);
+    $socialNames = ['facebook' => 'Facebook', 'instagram' => 'Instagram', 'linkedin' => 'LinkedIn', 'youtube' => 'YouTube', 'tiktok' => 'TikTok'];
 
     $pages = array_values(array_filter(
         \App\Support\SiteNavigation::links(withHome: false),
@@ -61,16 +67,16 @@
                 </div>
             @endif
             <div class="site-footer__reach">
-                <x-ui.pill href="/contact/" tone="dark">Hai să discutăm</x-ui.pill>
+                <x-ui.pill href="/contact/" tone="dark">{{ $ctaButton ?? 'Hai să discutăm' }}</x-ui.pill>
                 {{-- Beside the W, only the button: the phone and e-mail are in
                      the last column below. --}}
                 @unless ($w)
                 <div class="site-footer__direct">
                     @if ($phoneHref)
-                        <a href="{{ $phoneHref }}">{{ $company->phone }}</a>
+                        <a href="{{ $phoneHref }}" class="site-footer__link"><x-ui.roll :text="$company->phone" /></a>
                     @endif
                     @if ($company->email)
-                        <a href="mailto:{{ $company->email }}">{{ $company->email }}</a>
+                        <a href="mailto:{{ $company->email }}" class="site-footer__link"><x-ui.roll :text="$company->email" /></a>
                     @endif
                 </div>
                 @endunless
@@ -85,7 +91,7 @@
                     <h3 class="site-footer__group-label">{{ $group['label'] }}</h3>
                     <ul>
                         @foreach ($group['links'] as $link)
-                            <li><a href="{{ \App\Support\TrailingSlash::href($link['href']) }}">{{ $link['label'] }}</a></li>
+                            <li><a href="{{ \App\Support\TrailingSlash::href($link['href']) }}" class="site-footer__link"><x-ui.roll :text="$link['label']" /></a></li>
                         @endforeach
                     </ul>
                 </div>
@@ -95,8 +101,19 @@
                 <h3 class="site-footer__group-label">Webis</h3>
                 <ul>
                     @foreach ($pages as $page)
-                        <li><a href="{{ \App\Support\TrailingSlash::href($page['href']) }}">{{ $page['label'] }}</a></li>
+                        <li><a href="{{ \App\Support\TrailingSlash::href($page['href']) }}" class="site-footer__link"><x-ui.roll :text="$page['label']" /></a></li>
                     @endforeach
+                </ul>
+
+                <h3 class="site-footer__group-label site-footer__group-label--follow">Informații legale</h3>
+                <ul>
+                    @foreach (\App\Support\SiteNavigation::legal() as $link)
+                        <li><a href="{{ \App\Support\TrailingSlash::href($link['href']) }}" class="site-footer__link"><x-ui.roll :text="$link['label']" /></a></li>
+                    @endforeach
+                    {{-- Reopens the cookie banner (js/public/cookie-consent.ts), while there is something to choose. --}}
+                    @if (app(\App\Support\Consent\CookieConsent::class)->needed())
+                        <li><button type="button" class="site-footer__link" data-cookie-settings><x-ui.roll text="Setări cookies" /></button></li>
+                    @endif
                 </ul>
             </div>
 
@@ -107,17 +124,35 @@
                         <span>{{ $address }}</span>
                     @endif
                     @if ($phoneHref)
-                        <a href="{{ $phoneHref }}">{{ $company->phone }}</a>
+                        <a href="{{ $phoneHref }}" class="site-footer__link"><x-ui.roll :text="$company->phone" /></a>
                     @endif
                     @if ($company->email)
-                        <a href="mailto:{{ $company->email }}">{{ $company->email }}</a>
+                        <a href="mailto:{{ $company->email }}" class="site-footer__link"><x-ui.roll :text="$company->email" /></a>
                     @endif
                 </address>
                 <x-site.google-rating tone="dark" class="site-footer__rating" />
+
+                @if ($socials !== [])
+                    <h3 class="site-footer__group-label site-footer__group-label--follow">Social</h3>
+                    <ul class="site-footer__socials">
+                        @foreach ($socials as $platform => $url)
+                            <li>
+                                {{-- The logo and its copy above it: they roll on hover, as the
+                                     links' letters (css/site/footer.css). --}}
+                                <a href="{{ $url }}" class="site-footer__social" target="_blank" rel="noopener" aria-label="Webis pe {{ $socialNames[$platform] ?? ucfirst($platform) }}">
+                                    <span class="site-footer__social-roll">
+                                        <x-ui.social-icon :platform="$platform" />
+                                        <x-ui.social-icon :platform="$platform" />
+                                    </span>
+                                </a>
+                            </li>
+                        @endforeach
+                    </ul>
+                @endif
             </div>
         </nav>
 
-        {{-- The logo, the legal line and links. --}}
+        {{-- The logo, the legal line and the ANPC pictograms. --}}
         <div class="site-footer__bottom">
             <a href="/" class="site-footer__logo" aria-label="{{ $company->name }} — prima pagină">
                 @if ($logo)
@@ -135,10 +170,19 @@
                     · {{ $company->registration_number }}
                 @endif
             </p>
-            <ul class="site-footer__legal-links">
-                @foreach (\App\Support\SiteNavigation::legal() as $link)
-                    <li><a href="{{ \App\Support\TrailingSlash::href($link['href']) }}">{{ $link['label'] }}</a></li>
-                @endforeach
+            {{-- The ANPC pictograms for alternative and online dispute
+                 resolution (SAL, SOL), which Romanian law requires on the site. --}}
+            <ul class="site-footer__anpc">
+                <li>
+                    <a href="https://anpc.ro/ce-este-sal/" target="_blank" rel="nofollow noopener">
+                        <img src="/images/legal/anpc-sal.png" alt="ANPC — Soluționarea alternativă a litigiilor" width="195" height="50" loading="lazy">
+                    </a>
+                </li>
+                <li>
+                    <a href="https://ec.europa.eu/consumers/odr/main/index.cfm?event=main.home2.show&amp;lng=RO" target="_blank" rel="nofollow noopener">
+                        <img src="/images/legal/anpc-sol.png" alt="Soluționarea online a litigiilor" width="195" height="50" loading="lazy">
+                    </a>
+                </li>
             </ul>
         </div>
     </div>

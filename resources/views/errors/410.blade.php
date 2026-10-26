@@ -7,7 +7,6 @@
         title="Pagina a fost ștearsă definitiv."
         intro="Adresa aceasta nu mai există pe site. Restul îl găsești mai jos."
         class="page-hero--error"
-        :parallax="false"
         :planes="false"
     >
         <div class="page-hero__links">

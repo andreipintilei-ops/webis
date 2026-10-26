@@ -8,8 +8,8 @@ import { EASE, loadGsap, prefersReducedMotion } from '@/public/gsap';
  *
  * - A head (`data-reveal="head"`: a section's label, title, intro, links):
  *   what stands before the title fades up, then the title rises line by line
- *   from under masks (SplitText, by words, so the browser keeps its own line
- *   breaks; put back together once in),
+ *   from under masks (SplitText, by words, held to the lines the browser
+ *   gives the whole title; put back together once in),
  *   then what follows it fades up, and the title's chips open.
  * - A subsection (`.chapter-sub`): its label fades in and its hairline draws
  *   from the left (--rule), then its content rises.
@@ -28,6 +28,41 @@ const START = 'top 85%';
 /** How fast a part plays: 4× inside `data-reveal-pace="fast"`. */
 const pace = (part: HTMLElement): number =>
     part.closest('[data-reveal-pace="fast"]') ? 4 : 1;
+
+/**
+ * The line each of a (whole, unsplit) title's characters sits on, its
+ * whitespace left out: 0 for the first line, 1 for the next…
+ */
+function linesOf(title: HTMLElement): number[] {
+    const lines: number[] = [];
+    const tops: number[] = [];
+    const range = document.createRange();
+    const walker = document.createTreeWalker(title, NodeFilter.SHOW_TEXT);
+
+    for (let node = walker.nextNode(); node; node = walker.nextNode()) {
+        const text = node.textContent ?? '';
+
+        for (let i = 0; i < text.length; i++) {
+            if (/\s/.test(text[i])) {
+                continue;
+            }
+
+            range.setStart(node, i);
+            range.setEnd(node, i + 1);
+
+            const top = range.getBoundingClientRect().top;
+            let line = tops.findIndex((t) => Math.abs(t - top) < 8);
+
+            if (line === -1) {
+                line = tops.push(top) - 1;
+            }
+
+            lines.push(line);
+        }
+    }
+
+    return lines;
+}
 
 export async function initReveals(): Promise<void> {
     const parts = Array.from(
@@ -80,33 +115,49 @@ export async function initReveals(): Promise<void> {
         );
         const after = pieces.filter((el) => !before.includes(el));
 
-        // The title by lines, rising into place. Split into words, each in
-        // its own mask, so the browser still lays the title out (balanced
-        // lines, as when it is whole) — then the words are grouped by the
-        // line they sit on, and each line rises together, one after another.
-        // Re-split if the width changes before it has played; put back
-        // together once in.
+        // The title by lines, rising into place. Its lines are read off the
+        // whole title first, as the browser balances it; then it is split
+        // into words, each in its own mask, and the words are held to those
+        // lines (a break before each line's first word, no wrapping between),
+        // so putting it back together once in moves nothing. Left to wrap on
+        // their own, the masked words can break a near-even title one word
+        // differently from the whole one, and the line jumps as it reverts.
+        // Measured and split again if the width changes before it plays.
         let rise: gsap.core.Timeline | null = null;
+        let lineOf = linesOf(title);
+        let played = false;
 
-        SplitText.create(title, {
+        const split: SplitText.Vars = {
             type: 'words',
             mask: 'words',
             wordsClass: 'reveal-word',
-            autoSplit: true,
             onSplit: (self) => {
-                const lines = new Map<number, HTMLElement[]>();
+                const words = self.words as HTMLElement[];
+                const lines: HTMLElement[][] = [];
+                let at = 0;
+                let lastTop = -Infinity;
 
-                for (const word of self.words as HTMLElement[]) {
-                    const top = Math.round(
-                        (word.parentElement ?? word).getBoundingClientRect()
-                            .top,
-                    );
-                    const line =
-                        [...lines.keys()].find((t) => Math.abs(t - top) < 8) ??
-                        top;
+                title.style.whiteSpace = 'nowrap';
 
-                    lines.set(line, [...(lines.get(line) ?? []), word]);
-                }
+                words.forEach((word, index) => {
+                    const mask = word.parentElement ?? word;
+                    const line = lineOf[at] ?? Math.max(0, lines.length - 1);
+
+                    at += (word.textContent ?? '').replace(/\s/g, '').length;
+
+                    // A new line: break before it, unless a break typed in
+                    // the title already puts it there.
+                    if (
+                        index > 0 &&
+                        line >= lines.length &&
+                        mask.getBoundingClientRect().top <= lastTop + 4
+                    ) {
+                        mask.before(document.createElement('br'));
+                    }
+
+                    lastTop = mask.getBoundingClientRect().top;
+                    (lines[line] ??= []).push(word);
+                });
 
                 rise = gsap
                     .timeline({
@@ -115,13 +166,40 @@ export async function initReveals(): Promise<void> {
                     })
                     .timeScale(pace(part));
 
-                [...lines.values()].forEach((words, index) =>
-                    rise?.from(words, { yPercent: 110, ...RISE }, index * 0.09),
-                );
+                lines
+                    .filter(Boolean)
+                    .forEach((line, index) =>
+                        rise?.from(
+                            line,
+                            { yPercent: 110, ...RISE },
+                            index * 0.09,
+                        ),
+                    );
 
                 return rise;
             },
-        });
+            onRevert: () => {
+                title.style.whiteSpace = '';
+            },
+        };
+        const splitter = SplitText.create(title, split);
+
+        // The screen's width, not the head's: held to its lines, the split
+        // title sets its head's width itself where the head fits its content.
+        const screenWidth = (): number => document.documentElement.clientWidth;
+        let width = screenWidth();
+        const resized = (): void => {
+            if (played || !splitter.isSplit) {
+                window.removeEventListener('resize', resized);
+            } else if (screenWidth() !== width) {
+                width = screenWidth();
+                splitter.revert();
+                lineOf = linesOf(title);
+                splitter.split(split);
+            }
+        };
+
+        window.addEventListener('resize', resized);
 
         closeTitlePills(title);
 
@@ -131,7 +209,14 @@ export async function initReveals(): Promise<void> {
             tl.from(before, { y: 16, autoAlpha: 0, stagger: 0.06, ...RISE }, 0);
         }
 
-        tl.call(() => void rise?.play(), [], 0.08);
+        tl.call(
+            () => {
+                played = true;
+                void rise?.play();
+            },
+            [],
+            0.08,
+        );
 
         if (after.length > 0) {
             tl.from(

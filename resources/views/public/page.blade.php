@@ -1,12 +1,9 @@
 {{-- A CMS page at the site root, built from its blocks. --}}
 @php
-    // The illustrated service cards rise as a sheet over the hero's
-    // background, so that background stays full width as they come (as on
-    // /clienti) rather than drawing in to a card.
+    // The illustrated service cards: the projects follow them (below).
     $serviceCards = collect($page->blocks ?? [])->contains(
         fn ($block) => ($block['type'] ?? null) === 'features' && ($block['data']['layout'] ?? null) === 'cards',
     );
-    $heroLeave = $serviceCards ? 'overlap' : null;
 
     // An article opens on the internal pages' gradient hero (no planes), its
     // title in the text face rather than the display one: some run to a
@@ -26,14 +23,30 @@
             $page->published_at?->locale('ro')->translatedFormat('j F Y'),
         ])->filter()->implode(' · ');
     }
+
+    // Sharing: the page's own share image, else its hero's (an article's
+    // cover); else the layout's default.
+    $shareImage = \App\Support\Seo\StructuredData::image(
+        \App\Models\Asset::with('media')->find($page->seo->ogImageAssetId ?? $page->hero_asset_id),
+    );
+    $schema = $article
+        ? [app(\App\Support\Seo\StructuredData::class)->blogPosting($page, $heading ?: $page->title, \App\Support\PublicUrls::canonical($page), $shareImage['url'] ?? null)]
+        : [];
 @endphp
 <x-layouts.public
     :title="$page->seo->title ?: $page->title"
+    :description="$page->seo->description ?: $page->excerpt"
     :canonical="$page->seo->canonical"
     :noindex="$page->seo->noindex"
+    :og-image="$shareImage"
+    :og-type="$article ? 'article' : 'website'"
+    :local-business="$page->type === \App\Enums\PageType::Contact"
+    :crumb="$article ? ($heading ?: $page->title) : $page->title"
+    :crumb-parent="$article ? ['Blog', '/blog/'] : null"
+    :schema="$schema"
     :header-theme="$article ? 'dark' : \App\Blocks\HeroBlock::headerThemeFor($page->blocks)"
-    :hero-leave="$heroLeave"
     :footer-cta="! \App\Blocks\QuoteFormBlock::appearsIn($page->blocks)"
+    :footer-w="true"
 >
     @if ($article)
         <x-site.page-hero

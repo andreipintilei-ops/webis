@@ -13,7 +13,7 @@
 --}}
 @props([
     'title' => 'Site, platformă sau aplicație?',
-    'line' => 'Un site nou, un magazin online sau o platformă pentru toată organizația.',
+    'line' => 'Un site nou, un magazin online sau o platformă pentru toată echipa.',
     'href' => '/contact/',
     'label' => 'Discută un proiect',
     'standalone' => false,

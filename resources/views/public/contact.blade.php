@@ -1,5 +1,5 @@
 {{-- Contact pages keep their CMS title and SEO settings, with the site's shared enquiry form. --}}
-<x-layouts.public :title="$page->seo->title ?: $page->title" :canonical="$page->seo->canonical" :noindex="$page->seo->noindex" :description="$page->seo->description ?: 'Spune-ne ce vrei să construiești: software la comandă, produse SaaS, site-uri sau magazine online. Webis, Iași · 0770 700 607.'" header-theme="dark" hero-leave="overlap" :footer-cta="false" :footer-on-backdrop="true">
+<x-layouts.public :title="$page->seo->title ?: $page->title" :canonical="$page->seo->canonical" :noindex="$page->seo->noindex" :local-business="true" :description="$page->seo->description ?: 'Spune-ne ce vrei să construiești: software la comandă, produse SaaS, site-uri sau magazine online. Webis, Iași · 0770 700 607.'" header-theme="dark" hero-leave="overlap" :footer-cta="false" :footer-on-backdrop="true">
     @push('backdrop')
         @include('blocks.partials.hero-backdrop', [
             'backdrop' => 'gradient',

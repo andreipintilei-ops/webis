@@ -24,13 +24,13 @@
             'art' => 'software',
             'title' => 'Software la comandă',
             'text' => 'Aplicații construite pe felul în care lucrezi: gestiune, aprobări, rapoarte și integrări.',
-            'link' => ['label' => 'Află mai multe', 'url' => '/software-la-comanda'],
+            'link' => ['label' => 'Despre software la comandă', 'url' => '/software-la-comanda'],
         ],
         [
             'art' => 'web',
             'title' => 'Web și e-commerce',
             'text' => 'Web design, site-uri de prezentare și magazine online, cu SEO de la început.',
-            'link' => ['label' => 'Află mai multe', 'url' => '/web'],
+            'link' => ['label' => 'Despre web design', 'url' => '/web'],
         ],
         [
             'art' => 'saas',

@@ -76,7 +76,13 @@ it('adds, edits, orders and trashes clients', function () {
     ])->assertSessionHasNoErrors();
 
     $client = Client::sole();
-    expect($client->type)->toBe(ClientType::Institution)->and($logo->usages()->count())->toBe(1);
+    expect($client->type)->toBe(ClientType::Institution)->and($logo->usages()->count())->toBe(1)
+        // Not asked about the strip: in it, as before the switch existed.
+        ->and($client->show_in_marquee)->toBeTrue();
+
+    $this->put(route('admin.clients.update', $client), ['name' => 'Primăria Iași', 'show_in_logos' => true, 'show_in_marquee' => false])
+        ->assertSessionHasNoErrors();
+    expect($client->fresh()?->show_in_marquee)->toBeFalse();
 
     $this->put(route('admin.clients.update', $client), ['name' => 'Primăria Municipiului Iași', 'show_in_logos' => false])
         ->assertSessionHasNoErrors();
@@ -342,4 +348,26 @@ it('allows an empty title suffix', function () {
         ->assertSessionHasNoErrors();
 
     expect(app(SeoSettings::class)->title_suffix)->toBe('');
+});
+
+it('saves the tracking tools and rejects malformed ids', function () {
+    $this->actingAs(User::factory()->admin()->create());
+
+    $this->put(route('admin.settings.analytics'), ['gtm_container_id' => 'GTM_123', 'meta_pixel_id' => 'abc', 'clarity_project_id' => 'ABC!'])
+        ->assertSessionHasErrors(['gtm_container_id', 'meta_pixel_id', 'clarity_project_id']);
+
+    $this->put(route('admin.settings.analytics'), [
+        'gtm_container_id' => 'GTM-ABC1234',
+        'meta_pixel_id' => '123456789012345',
+        'linkedin_partner_id' => '1234567',
+        'hotjar_site_id' => '1064299',
+        'clarity_project_id' => 'abcd1234ef',
+        'google_ads_lead_label' => 'AbC_lead-1',
+    ])->assertSessionHasNoErrors();
+
+    $settings = app(AnalyticsSettings::class)->refresh();
+
+    expect($settings->gtm_container_id)->toBe('GTM-ABC1234')
+        ->and($settings->hotjar_site_id)->toBe('1064299')
+        ->and($settings->google_ads_lead_label)->toBe('AbC_lead-1');
 });

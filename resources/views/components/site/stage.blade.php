@@ -50,12 +50,12 @@
                 <header class="stage-chapter__head" data-reveal="head">
                     <p class="chapter__label">01 · Software la comandă</p>
                     <h2 id="chapter-1-title" class="chapter__title">Sisteme <x-ui.title-pill variant="software" /><br>construite de la zero.</h2>
-                    <p class="stage-chapter__intro">Transformăm procesele complexe în sisteme simple, adaptate exact modului în care lucrează organizația ta, pentru mai multă eficiență și control.</p>
+                    <p class="stage-chapter__intro">Transformăm procesele complexe în sisteme simple, adaptate exact modului în care lucrează echipa ta, pentru mai multă eficiență și control.</p>
                 </header>
 
                 <div class="chapter-cta stage-software__actions" data-reveal>
                     <x-ui.pill href="/contact/">Discută un proiect</x-ui.pill>
-                    <x-ui.arrow-link href="/software-la-comanda/">Află mai multe</x-ui.arrow-link>
+                    <x-ui.arrow-link href="/software-la-comanda/">Despre software la comandă</x-ui.arrow-link>
                 </div>
 
                 <ul class="stage-items stage-software__items" data-reveal>
@@ -141,16 +141,16 @@
             <div class="stage-chapter__body stage-web">
                 <header class="stage-chapter__head" data-reveal="head">
                     <p class="chapter__label">03 · Web și e-commerce</p>
-                    <h2 id="chapter-3-title" class="chapter__title">Site-uri <x-ui.title-pill variant="web" /> și magazine online.</h2>
-                    <p class="stage-chapter__intro">Construim site-uri rapide și ușor de administrat, pentru ca tu să te concentrezi pe afacerea ta.</p>
+                    <h2 id="chapter-3-title" class="chapter__title">Creare site-uri <x-ui.title-pill variant="web" /> și magazine online.</h2>
+                    <p class="stage-chapter__intro">Web design în Iași, pentru firme din toată țara: site-uri rapide, ușor de administrat și cu SEO de la început, ca tu să te concentrezi pe afacerea ta.</p>
                 </header>
 
                 {{-- Three columns, as 01's four: the icon over its name and a
                      single line, hairlines between. --}}
                 <ul class="stage-items stage-web__items" data-reveal>
                     @foreach ([
-                        ['monitor', 'Site de prezentare', 'Un site clar, ușor de actualizat.', '/creare-site-de-prezentare/'],
-                        ['shopping-bag', 'Magazin online', 'Catalog, plăți și livrare la un loc.', '/creare-magazin-online/'],
+                        ['monitor', 'Creare site de prezentare', 'Un site clar, ușor de actualizat.', '/creare-site-de-prezentare/'],
+                        ['shopping-bag', 'Creare magazin online', 'Catalog, plăți și livrare la un loc.', '/creare-magazin-online/'],
                         ['shield-check', 'Mentenanță și găzduire', 'Actualizări, backup și suport.', '/mentenanta-site-wordpress/'],
                     ] as [$glyph, $name, $text, $href])
                         <li data-reveal-child>

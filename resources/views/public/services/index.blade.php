@@ -48,7 +48,6 @@
         :title="['Ce construim', 'pentru tine.']"
         intro="Software la comandă, produse gata de folosit, site-uri și magazine online, de la aceeași echipă."
         class="page-hero--led"
-        :flush="true"
         data-reveal-pace="fast"
     >
         <x-slot:after>

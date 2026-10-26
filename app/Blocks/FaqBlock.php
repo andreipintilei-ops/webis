@@ -22,6 +22,7 @@ class FaqBlock extends Block
     {
         return [
             'heading' => 'Întrebări frecvente',
+            'intro' => null,
             'items' => [],
         ];
     }
@@ -30,6 +31,7 @@ class FaqBlock extends Block
     {
         return [
             "{$p}heading" => $this->text(false, 160),
+            "{$p}intro" => $this->text(false, 300),
             "{$p}items" => ['required', 'array', 'min:1', 'max:30'],
             "{$p}items.*" => ['array:question,answer'],
             "{$p}items.*.question" => $this->text(true, 200),

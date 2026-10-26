@@ -2,9 +2,11 @@
     The hero of an internal page (/blog, and pages like it): on the animated
     violet gradient, fixed behind the page (blocks/partials/hero-backdrop),
     a label, the title in the display face, an intro — and, in the slot,
-    whatever the page wants beside the intro (links, filters). As the page
-    scrolls, the hero's text sinks back slower than the page and the section
-    after it slides up over the gradient with a rounded top: the parallax.
+    whatever the page wants beside the intro (links, filters). It scrolls
+    with the page — no parallax anywhere — and, as on the home page, the
+    section after it rises a little over its foot on a slightly rounded top
+    (32px, as css/site/service-cards' sheet), the fixed gradient showing
+    down to it (the layout's hero-leave "overlap").
     The title comes in line by line (js/public/reveals.ts).
     css/site/page-hero.css.
 
@@ -12,15 +14,16 @@
 
     `label`, `intro`: text. `title`: a string, or an array of lines.
     `after` (slot): below the intro, across the hero (/clienti's logos).
-    `parallax`: false on a page with nothing to come over the hero (the
-    404) — its text would sink into the footer.
     `planes`: the decorative planes at the right (views/partials/hero-planes);
     false where nothing rises over the hero's foot to cover theirs (the 404).
     `flush`: the section after it starts on the hero's edge, square, rather
-    than rising over it (/blog); the planes then move with the page and fade
-    out at the hero's foot, while the text still sinks back slower.
+    than rising over it: where what follows carries on over the same
+    gradient (/portofoliu, /produse, /software-la-comanda); the planes fade
+    out at the hero's foot.
 --}}
-@props(['label' => null, 'title', 'intro' => null, 'id' => 'page-hero-title', 'parallax' => true, 'planes' => true, 'flush' => false])
+@props(['label' => null, 'title', 'intro' => null, 'id' => 'page-hero-title', 'planes' => true, 'flush' => false])
+
+@php($sheet = ! $flush)
 
 {{-- The gradient fixed behind the page (as on the contact page), hidden
      once the page has covered it (js/public/hero-intro.ts). --}}
@@ -34,17 +37,12 @@
     ])
 @endpush
 
-<section {{ $attributes->class(['page-hero', 'has-hero-planes' => $planes, 'page-hero--flush' => $flush]) }} aria-labelledby="{{ $id }}" data-nav-tone="dark" data-backdrop-area>
+<section {{ $attributes->class(['page-hero', 'has-hero-planes' => $planes, 'page-hero--flush' => $flush, 'page-hero--sheet' => $sheet]) }} aria-labelledby="{{ $id }}" data-nav-tone="dark" data-backdrop-area>
     @if ($planes)
-        {{-- At the text's speed, so they sink back with it — unless flush:
-             then with the page, their fade on the hero's foot. --}}
-        @include('partials.hero-planes', ['speed' => $parallax && ! $flush ? 'clamp(0.6)' : null])
+        @include('partials.hero-planes')
     @endif
 
-    {{-- Slower than the page (ScrollSmoother's data-speed, clamped so it
-         starts in its own place at the top of the page): it sinks back
-         as the next section comes up over it. --}}
-    <div class="page-hero__inner" data-reveal="head" @if ($parallax) data-speed="clamp(0.6)" @endif>
+    <div class="page-hero__inner" data-reveal="head">
         @if ($label)
             <p class="page-hero__label">{{ $label }}</p>
         @endif

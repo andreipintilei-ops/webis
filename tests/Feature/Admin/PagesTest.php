@@ -28,7 +28,7 @@ function pagePayload(array $overrides = []): array
     return array_replace_recursive([
         'type' => 'service',
         'title' => 'Creare magazin online',
-        'slug' => 'creare-magazin-online',
+        'slug' => 'creare-site-web',
         'excerpt' => 'Magazine online care vând.',
         'icon' => 'shopping-cart',
         'hero_asset_id' => null,

@@ -141,11 +141,23 @@ class SettingsController extends Controller
         $settings->fill($request->validate([
             'ga4_measurement_id' => ['nullable', 'string', 'regex:/^G-[A-Z0-9]{4,}$/'],
             'google_ads_id' => ['nullable', 'string', 'regex:/^AW-\d{6,}$/'],
+            'google_ads_lead_label' => ['nullable', 'string', 'regex:/^[A-Za-z0-9_-]{4,40}$/'],
+            'gtm_container_id' => ['nullable', 'string', 'regex:/^GTM-[A-Z0-9]{4,10}$/'],
+            'meta_pixel_id' => ['nullable', 'string', 'regex:/^\d{10,20}$/'],
+            'linkedin_partner_id' => ['nullable', 'string', 'regex:/^\d{4,12}$/'],
+            'hotjar_site_id' => ['nullable', 'string', 'regex:/^\d{5,12}$/'],
+            'clarity_project_id' => ['nullable', 'string', 'regex:/^[a-z0-9]{6,16}$/'],
             'google_site_verification' => ['nullable', 'string', 'max:100', 'regex:/^[A-Za-z0-9_-]+$/'],
             'bing_site_verification' => ['nullable', 'string', 'max:100', 'regex:/^[A-Za-z0-9_-]+$/'],
         ], [
             'ga4_measurement_id.regex' => 'Format: G-XXXXXXXXXX.',
             'google_ads_id.regex' => 'Format: AW-123456789.',
+            'google_ads_lead_label.regex' => 'Doar eticheta, partea de după „/” din AW-123456789/eticheta.',
+            'gtm_container_id.regex' => 'Format: GTM-XXXXXXX.',
+            'meta_pixel_id.regex' => 'ID-ul pixelului: doar cifre.',
+            'linkedin_partner_id.regex' => 'Partner ID: doar cifre.',
+            'hotjar_site_id.regex' => 'Site ID: doar cifre.',
+            'clarity_project_id.regex' => 'ID-ul proiectului: litere mici și cifre.',
             'google_site_verification.regex' => 'Doar codul din atributul content al etichetei meta.',
             'bing_site_verification.regex' => 'Doar codul din atributul content al etichetei meta.',
         ]))->save();

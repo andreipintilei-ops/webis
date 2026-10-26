@@ -2,6 +2,7 @@ import type { Component } from 'vue';
 import { initAnchorScroll } from '@/public/anchor-scroll';
 import { initCaseBentos } from '@/public/case-bento';
 import { initContactForm } from '@/public/contact-form';
+import { initCookieConsent } from '@/public/cookie-consent';
 import { initExplorers } from '@/public/explorer';
 import { initReveals } from '@/public/reveals';
 import { initLogoWalls } from '@/public/logo-wall';
@@ -99,6 +100,7 @@ function boot(): void {
     initSiteNav();
     initPanelMenu();
     initTheodoreMenu();
+    initCookieConsent();
     initContactForm();
     initLiteVideos();
     initExplorers();
@@ -133,6 +135,13 @@ function boot(): void {
         if (document.querySelector('[data-brows], [data-bcols]')) {
             void import('@/public/benefit-rows').then(({ initBenefitRows }) =>
                 initBenefitRows(),
+            );
+        }
+
+        // The stats block's figures counting up (blocks/stats).
+        if (document.querySelector('[data-count-up]')) {
+            void import('@/public/stat-counters').then(({ initStatCounters }) =>
+                initStatCounters(),
             );
         }
 

@@ -96,8 +96,9 @@ it('keeps a page set to noindex out of search engines in production', function (
     Page::factory()->create(['slug' => 'vizibila']);
     app()->detectEnvironment(fn () => 'production');
 
-    expect($this->asWritten()->get('/ascunsa/')->getContent())->toContain('<meta name="robots" content="noindex, follow">')
-        ->and($this->asWritten()->get('/vizibila/')->getContent())->not->toContain('name="robots"');
+    // Production is indexable on the canonical host only (Support\Seo\Indexing).
+    expect($this->asWritten()->get('https://www.webis.ro/ascunsa/')->getContent())->toContain('<meta name="robots" content="noindex, follow">')
+        ->and($this->asWritten()->get('https://www.webis.ro/vizibila/')->getContent())->not->toContain('name="robots"');
 });
 
 describe('sitemap.xml', function () {

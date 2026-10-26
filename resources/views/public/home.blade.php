@@ -11,6 +11,8 @@
 --}}
 <x-layouts.public
     :title="$page?->seo->title ?: $page?->title"
+    :description="$page?->seo->description"
+    :local-business="true"
     :header-theme="\App\Blocks\HeroBlock::headerThemeFor($page?->blocks)"
     :lower-tone="config('site.lower_tone')"
     variant="stage"

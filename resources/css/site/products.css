@@ -8,13 +8,25 @@
 @layer components {
     /* ---- The hero's foot: the four products, on a hairline -------------------- */
 
+    /* The two ways on under the intro, not beside it, as in the home page
+       hero: the intro, then the button and the link 2.5rem below. */
+    .saas-hero .page-hero__foot {
+        @apply gap-10 md:flex-col md:items-start md:justify-start;
+    }
+
     .saas-hero-products {
         @apply grid border-t sm:grid-cols-2 md:mt-auto lg:grid-cols-4;
         border-color: rgb(255 255 255 / 0.25);
     }
 
+    /* Each column the row's full height, so the hairlines between them run
+       the same length, down to the same foot. */
+    .saas-hero-products > li {
+        @apply flex;
+    }
+
     .saas-hero-product {
-        @apply grid gap-y-2 py-6 text-white md:py-8 lg:pr-8;
+        @apply relative grid flex-1 content-start gap-y-2 py-6 text-white md:py-8 lg:pr-8;
         transition: opacity var(--base) var(--ease);
     }
 
@@ -29,9 +41,11 @@
         color: rgb(255 255 255 / 0.6);
     }
 
+    /* One size for the four, small enough that the longest ("Bugetare
+       participativă") holds one line in its column at 1440px. */
     .saas-hero-product__name {
         @apply font-medium;
-        font-size: clamp(1.375rem, 2vw, 1.875rem);
+        font-size: clamp(1.25rem, 1.6vw, 1.625rem);
         line-height: 1.1;
         letter-spacing: -0.03em;
     }
@@ -41,9 +55,25 @@
         color: rgb(255 255 255 / 0.75);
     }
 
+    /* A small arrow on the number's line, at the column's right, sliding in
+       as the column is pointed at or reached with the keyboard. */
+    .saas-hero-product__arrow {
+        @apply absolute top-6 right-0 size-3 md:top-8 lg:right-8;
+        opacity: 0;
+        transform: translateX(-6px);
+        transition:
+            opacity var(--base) var(--ease),
+            transform var(--base) var(--ease);
+    }
+
+    .saas-hero-product:is(:hover, :focus-visible) .saas-hero-product__arrow {
+        opacity: 1;
+        transform: none;
+    }
+
     /* The others step back as one is pointed at. */
     @media (hover: hover) {
-        .saas-hero-products:has(.saas-hero-product:hover)
+        .saas-hero-products:has(a.saas-hero-product:hover)
             .saas-hero-product:not(:hover) {
             opacity: 0.55;
         }
@@ -62,29 +92,72 @@
     }
 
     /*
-      Each product in its own colour, deep enough for white text at AA:
-      SmileSoft in a blue near its own, RIMS in a teal, the participatory
-      budget in the violet, Confirmo in an orange.
+      Each product in one of the home page's product gradients
+      (css/site/product-stack.css), the deep indigo one left out: purple,
+      violet and lilac, a soft glow in one corner. The lilac, too light for
+      white text, kept to the right, under the screen; the words on the
+      deeper side.
     */
     .saas-stack__card--smilesoft .work-stack__panel {
-        background: #2a3a9c;
+        background:
+            radial-gradient(
+                ellipse 60% 70% at 100% 0%,
+                rgb(239 220 255 / 0.35),
+                transparent 60%
+            ),
+            linear-gradient(
+                135deg,
+                var(--purple-500),
+                var(--violet-500) 60%,
+                #5b3fe0
+            );
     }
 
     .saas-stack__card--rims .work-stack__panel {
-        background: #17695a;
+        background:
+            radial-gradient(
+                ellipse 60% 70% at 100% 100%,
+                rgb(239 220 255 / 0.4),
+                transparent 60%
+            ),
+            linear-gradient(
+                315deg,
+                #c98bf5,
+                var(--purple-500) 35%,
+                var(--violet-500) 75%
+            );
     }
 
     .saas-stack__card--bugetare .work-stack__panel {
-        background: #5b3fe0;
+        background:
+            radial-gradient(
+                ellipse 60% 70% at 0% 100%,
+                rgb(164 76 238 / 0.55),
+                transparent 60%
+            ),
+            linear-gradient(200deg, var(--violet-500), #5b3fe0);
     }
 
     .saas-stack__card--confirmo .work-stack__panel {
-        background: #b4530f;
+        background:
+            radial-gradient(
+                ellipse 60% 70% at 100% 0%,
+                rgb(239 220 255 / 0.35),
+                transparent 60%
+            ),
+            linear-gradient(
+                135deg,
+                var(--violet-500),
+                var(--purple-500) 55%,
+                #c98bf5
+            );
     }
 
+    /* The text at full white on the purples, for the contrast (as
+       /portofoliu's purple card, css/site/work-stack.css). */
     .saas-stack__panel {
         @apply lg:items-stretch lg:py-14;
-        --muted: rgb(255 255 255 / 0.82);
+        --muted: #fff;
     }
 
     /* The words in the left half, the name at the top and the rest at the
@@ -198,13 +271,8 @@
         @apply grid gap-6 lg:grid-cols-12 lg:items-start lg:gap-x-10;
     }
 
-    .saas-start__label {
-        @apply font-micro text-xs tracking-[0.08em] uppercase lg:col-span-2 lg:pt-1;
-        color: var(--accent);
-    }
-
     .saas-start__steps {
-        @apply grid gap-5 md:grid-cols-3 lg:col-span-10;
+        @apply grid gap-5 md:grid-cols-3 lg:col-span-12;
 
         & li {
             @apply grid gap-2 border-t pt-4 text-base leading-relaxed text-pretty;
@@ -219,7 +287,7 @@
     }
 
     .saas-start__links {
-        @apply flex flex-wrap items-center gap-x-8 gap-y-4 lg:col-span-10 lg:col-start-3;
+        @apply flex flex-wrap items-center gap-x-8 gap-y-4 lg:col-span-12;
     }
 
     /* ---- The products' screens: what is inside each window -------------------- */

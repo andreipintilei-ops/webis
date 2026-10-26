@@ -81,7 +81,7 @@ it('previews one post\'s blocks and report', function () {
     $this->artisan('legacy:convert', ['wp_id' => 13, '--source' => $this->source])
         ->expectsOutputToContain('#13 page /creare-magazin-online/ — via elementor')
         ->expectsOutputToContain('hero')
-        ->expectsOutputToContain('quote_form')
+        ->expectsOutputToContain("dropped form (the footer's call instead): 1")
         ->expectsOutputToContain('dropped heading (eyebrow): 3')
         ->assertSuccessful();
 });
@@ -101,7 +101,7 @@ it('writes a report of every live post without writing to any database', functio
         ->and($posts['creare-magazin-online'])->toMatchArray([
             'type' => 'page',
             'converter' => 'elementor',
-            'blocks' => ['hero', 'features', 'stats', 'rich_text', 'faq', 'quote_form'],
+            'blocks' => ['hero', 'features', 'stats', 'faq'],
         ])
         ->and($posts['creare-site-agentie-turism-tour-operator']['converter'])->toBe('pods')
         ->and($posts['creare-site-agentie-turism-tour-operator']['unresolved_count'])->toBe(5)

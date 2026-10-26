@@ -17,10 +17,6 @@
     `featuresLayout`: a page template's choice of layout for the features
     block (home: "services", /clienti: "services-plain"); left null, the
     block's own `layout` setting applies.
-
-    `$sectionNumber`: a block that opens with the site's section heading
-    (components/ui/section-head) calls it for its number — "01", "02"… in
-    the order those headings come down the page, as on /web.
 --}}
 @props(['blocks' => [], 'featuresLayout' => null])
 
@@ -37,11 +33,6 @@
     $first = $blocks[0] ?? null;
     $stage = is_array($first) && ($first['type'] ?? null) === \App\Blocks\HeroBlock::type()
         && \App\Blocks\HeroBlock::isDark((array) ($first['data'] ?? []));
-
-    $headings = 0;
-    $sectionNumber = function () use (&$headings): string {
-        return sprintf('%02d', ++$headings);
-    };
 @endphp
 
 @foreach ($blocks as $block)
@@ -61,6 +52,5 @@
         'isFirst' => $loop->first,
         'onBackdrop' => $onBackdrop,
         'featuresLayout' => $featuresLayout,
-        'sectionNumber' => $sectionNumber,
     ])
 @endforeach
