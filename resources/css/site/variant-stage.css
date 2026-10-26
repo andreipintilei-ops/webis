@@ -81,6 +81,65 @@
         }
     }
 
+    /*
+      The panel is laid out to the screen's edges, and `--finale-rise`
+      taller above and below, and clipped back to the card; as the W forms,
+      the clip opens out to them and the corners go square
+      (js/public/stage-finale-grow.ts), so it grows in height a little as
+      well as out to the sides. The rise is padding (the content stays in
+      the card) and a negative margin (the card stands where it did). The
+      W's slot keeps the card's width, so only the ground grows. Without the
+      script: the card, as elsewhere.
+    */
+    :root[data-variant='stage'] .stage {
+        overflow-x: clip;
+
+        & .stage-finale {
+            --finale-rise: clamp(1.5rem, 5vh, 3.5rem);
+            @apply max-w-none rounded-none;
+            width: 100vw;
+            min-height: calc(74vh + 2 * var(--finale-rise));
+            margin-inline: calc(50% - 50vw);
+            margin-block: calc(3rem - var(--finale-rise))
+                calc(-1 * var(--finale-rise));
+            padding-block: var(--finale-rise);
+            clip-path: inset(
+                var(--finale-rise) max(var(--site-gap), (100vw - 92rem) / 2)
+                    round 1.5rem
+            );
+
+            @media (min-width: 1024px) {
+                min-height: calc(min(88vh, 860px) + 2 * var(--finale-rise));
+                margin-top: calc(-1 * var(--finale-rise));
+                clip-path: inset(
+                    var(--finale-rise)
+                        max(var(--site-gap), (100vw - 92rem) / 2) round 40px
+                );
+            }
+        }
+
+        & .stage-finale__slot {
+            @apply justify-self-center;
+            width: min(92rem, 100vw - 2 * var(--site-gap));
+        }
+    }
+
+    /* The object on one side throughout (/acasa-3d-dreapta): it does not
+       cross the screen between chapters, so they sit closer. */
+    @media (min-width: 1024px) {
+        :root[data-variant='stage'] .stage--one-side .stage-chapter {
+            min-height: 85vh;
+
+            &:not(:first-child) {
+                padding-top: 14vh;
+            }
+
+            &:not(:last-child) {
+                padding-bottom: 14vh;
+            }
+        }
+    }
+
     :root[data-variant='stage'] .stage-chapter__slot {
         @apply relative aspect-[5/4] w-full;
 
@@ -91,6 +150,22 @@
 
         @media (min-width: 1024px) {
             @apply row-start-1 aspect-auto self-stretch;
+        }
+    }
+
+    /* Drawn live (js/public/shapeshifter.ts): below 1024px the object sits
+       behind the text, so the chapters' boxes go; they stay for the still
+       image without WebGL. */
+    @media (max-width: 1023px) {
+        :root[data-variant='stage'] .stage--live .stage-chapter__slot {
+            @apply hidden;
+        }
+
+        /* The stage opens on the object alone: the first chapter's text
+           starts below it (a quarter of the screen down, plus half its
+           height, as shapeshifter.ts places it) and then comes up over it. */
+        :root[data-variant='stage'] .stage--live .stage-chapter:first-child {
+            padding-top: calc(25vh + min(42.5vw, 22.5vh) + 3rem);
         }
     }
 
@@ -470,30 +545,20 @@
     }
 
     /*
-      A plain CSS gradient, no WebGL: the hero's indigo lit by purple and
-      violet glows, as the other dark sections are (css/site/project-steps).
-      It has to stay deep — the W standing on it runs from a near-navy plate
-      to a white one, and a bright ground would swallow both ends.
+      A plain CSS gradient, no WebGL: the hero's indigo with one soft violet
+      glow behind the W, and nothing else. It has to stay deep — the W
+      standing on it runs from a near-navy plate to a white one, and a bright
+      ground would swallow both ends.
     */
     .stage-finale__ground {
         @apply absolute inset-0 z-0;
         background:
             radial-gradient(
-                ellipse 65% 45% at 50% 22%,
-                rgb(164 76 238 / 0.5),
-                transparent 70%
+                ellipse 60% 50% at 50% 32%,
+                rgb(119 90 252 / 0.32),
+                transparent 72%
             ),
-            radial-gradient(
-                ellipse 60% 40% at 8% 88%,
-                rgb(119 90 252 / 0.45),
-                transparent 70%
-            ),
-            radial-gradient(
-                ellipse 55% 40% at 95% 72%,
-                rgb(164 76 238 / 0.4),
-                transparent 70%
-            ),
-            linear-gradient(180deg, #1f2868, #2d2b78 48%, #1f2868);
+            #1f2868;
 
         /* The same film grain the dark sections use, so it is not flat. */
         &::after {

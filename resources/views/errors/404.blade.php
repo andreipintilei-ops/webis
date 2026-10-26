@@ -1,7 +1,7 @@
 {{-- Not found: the internal pages' hero (components/site/page-hero), with the
      way back home and to the articles. One gradient from top to bottom: the
      footer shows through to the hero's. --}}
-<x-layouts.public title="Pagina nu a fost găsită" header-theme="dark" :footer-cta="false" :footer-on-backdrop="true">
+<x-layouts.public title="Pagina nu a fost găsită" :canonical="false" header-theme="dark" :footer-cta="false" :footer-on-backdrop="true">
     <x-site.page-hero
         label="Eroare 404"
         title="Pagina nu mai e aici."

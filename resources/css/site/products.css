@@ -1,25 +1,57 @@
 /*
   Produse SaaS (public/products.blade.php): what is particular to the page.
-  Scoped to its own classes (.saas-*); the shared pieces it reuses (the
-  hero, /portofoliu's stacking cards, the section heads, the
-  cells, /web's questions) are only adjusted here where they sit on this
-  page.
+  Scoped to its own classes (.saas-*): the hero's foot, the products as
+  /portofoliu's stacking cards, the comparison and how to start, and the inside of each
+  product's drawn screen (components/saas/mockup, in the software page's
+  mock-up card: css/site/software.css, .sw-mock).
 */
 @layer components {
-    /* ---- Hero: as tall as its text, the first card coming up under it ---------- */
+    /* ---- The hero's foot: the four products, on a hairline -------------------- */
 
-    .page-hero.saas-hero {
-        @apply pb-10 md:pb-14;
+    .saas-hero-products {
+        @apply grid border-t sm:grid-cols-2 md:mt-auto lg:grid-cols-4;
+        border-color: rgb(255 255 255 / 0.25);
+    }
 
-        @media (min-width: 768px) {
-            min-height: 0;
+    .saas-hero-product {
+        @apply grid gap-y-2 py-6 text-white md:py-8 lg:pr-8;
+        transition: opacity var(--base) var(--ease);
+    }
+
+    /* A hairline between them from 1024px, under each other below. */
+    .saas-hero-products > li + li .saas-hero-product {
+        @apply border-t lg:border-t-0 lg:border-l lg:pl-8;
+        border-color: rgb(255 255 255 / 0.25);
+    }
+
+    .saas-hero-product__no {
+        @apply font-micro text-[11px] tracking-[0.08em];
+        color: rgb(255 255 255 / 0.6);
+    }
+
+    .saas-hero-product__name {
+        @apply font-medium;
+        font-size: clamp(1.375rem, 2vw, 1.875rem);
+        line-height: 1.1;
+        letter-spacing: -0.03em;
+    }
+
+    .saas-hero-product__for {
+        @apply text-[15px];
+        color: rgb(255 255 255 / 0.75);
+    }
+
+    /* The others step back as one is pointed at. */
+    @media (hover: hover) {
+        .saas-hero-products:has(.saas-hero-product:hover)
+            .saas-hero-product:not(:hover) {
+            opacity: 0.55;
         }
     }
 
     /* ---- The products: /portofoliu's stacking cards (css/site/work-stack.css) ---- */
 
-    /* On the hero's backdrop, straight after it: no lavender, no grain, the
-       first card right under the hero's text. */
+    /* On the hero's backdrop, straight after it: no lavender, no grain. */
     .work-stack.saas-stack {
         @apply pt-0 md:pt-0 lg:pt-0;
         background: transparent;
@@ -30,25 +62,56 @@
     }
 
     /*
-      The name at the top of the left column, what it does at its foot
-      (1–6); the placeholder on the right (8–12), upright. From 1024px the
-      card's full height, inset top and bottom.
+      Each product in its own colour, deep enough for white text at AA:
+      SmileSoft in a blue near its own, RIMS in a teal, the participatory
+      budget in the violet, Confirmo in an orange.
     */
-    .saas-stack__panel {
-        @apply lg:items-stretch lg:py-16;
+    .saas-stack__card--smilesoft .work-stack__panel {
+        background: #2a3a9c;
     }
 
+    .saas-stack__card--rims .work-stack__panel {
+        background: #17695a;
+    }
+
+    .saas-stack__card--bugetare .work-stack__panel {
+        background: #5b3fe0;
+    }
+
+    .saas-stack__card--confirmo .work-stack__panel {
+        background: #b4530f;
+    }
+
+    .saas-stack__panel {
+        @apply lg:items-stretch lg:py-14;
+        --muted: rgb(255 255 255 / 0.82);
+    }
+
+    /* The words in the left half, the name at the top and the rest at the
+       foot; the screen in the right half. */
     .saas-stack__main {
         @apply relative z-[1] flex flex-col justify-between gap-10 lg:col-span-6;
     }
 
     .saas-stack__foot {
-        @apply flex flex-col items-start gap-8;
+        @apply flex flex-col items-start gap-6;
     }
 
     .saas-stack__text {
         @apply max-w-[44ch] text-[17px] leading-relaxed text-pretty md:text-lg;
         color: var(--muted);
+    }
+
+    /* What it holds: one line, the parts set apart by a dot. */
+    .saas-stack__points {
+        @apply flex flex-wrap gap-x-3 gap-y-1 border-t pt-4 text-[15px] text-white;
+        border-color: rgb(255 255 255 / 0.25);
+
+        & span + span::before {
+            content: '·';
+            @apply mr-3;
+            color: rgb(255 255 255 / 0.6);
+        }
     }
 
     .saas-stack__links {
@@ -59,20 +122,19 @@
         }
     }
 
-    /*
-      Where the screenshot will go: a plain tint of white, for now. Upright:
-      4:5 on phones, from 1024px the card's height and five columns wide.
-    */
+    /* The screen: the mock-up card, filling the card's right half. */
     .saas-stack__visual {
-        @apply aspect-[4/5] w-full max-w-sm rounded-2xl lg:col-span-5 lg:col-start-8 lg:aspect-auto lg:h-full lg:max-w-none;
-        background: rgb(255 255 255 / 0.12);
-        border: 1px solid rgb(255 255 255 / 0.18);
+        @apply w-full lg:col-span-6 lg:col-start-7 lg:h-full lg:min-h-0;
+
+        & .sw-mock {
+            @apply lg:h-full;
+        }
     }
 
     /* ---- The light panel: rising over the backdrop after the cards ------------ */
 
     /* As on /software-la-comanda/ (css/site/software.css). */
-    .chapter.saas-why {
+    .chapter.saas-compare {
         @apply -mt-8 rounded-t-[2.5rem] pt-24 md:rounded-t-[5rem] lg:pt-32;
 
         &::before {
@@ -80,27 +142,295 @@
         }
     }
 
-    /* ---- How to start, product or made to order --------------------------------- */
+    /* ---- Product or made to order ----------------------------------------------- */
 
-    .saas-notes {
-        @apply grid gap-12 md:grid-cols-2 md:gap-10 lg:gap-16;
+    .saas-compare .chapter__inner {
+        @apply gap-12 lg:gap-16;
     }
 
-    .saas-note {
-        @apply flex flex-col items-start gap-5 border-t pt-8;
-        border-color: var(--line);
+    /* Side by side in one white panel, the product's column lit. */
+    .saas-table {
+        @apply overflow-x-auto rounded-[1.75rem] bg-white lg:rounded-[2rem];
+        box-shadow: 0 30px 70px -50px rgb(31 40 104 / 0.35);
+
+        & table {
+            @apply w-full min-w-[36rem] border-collapse text-left;
+        }
+
+        & thead th {
+            @apply px-6 pt-8 pb-5 align-bottom font-medium lg:px-10 lg:pt-10;
+            font-size: clamp(1.25rem, 1.8vw, 1.625rem);
+            letter-spacing: -0.02em;
+            color: var(--ink);
+        }
+
+        & tbody th {
+            @apply w-[22%] px-6 py-5 align-top font-micro text-xs font-normal tracking-[0.08em] uppercase lg:px-10;
+            color: var(--muted);
+        }
+
+        & tbody td {
+            @apply px-6 py-5 align-top text-base leading-relaxed lg:px-10;
+            color: var(--muted);
+        }
+
+        & tbody tr {
+            @apply border-t;
+            border-color: #ebe7fb;
+        }
+
+        & tbody tr:last-child > * {
+            @apply pb-8 lg:pb-10;
+        }
     }
 
-    .saas-note__title {
-        @apply font-medium text-balance;
-        font-size: clamp(1.75rem, 2.6vw, 2.5rem);
-        line-height: 1.1;
-        letter-spacing: -0.02em;
+    .saas-table .saas-table__ours {
         color: var(--ink);
+        background: #f6f4ff;
     }
 
-    .saas-note__text {
-        @apply max-w-[52ch] text-base leading-relaxed text-pretty md:text-lg;
-        color: var(--muted);
+    .saas-table td.saas-table__ours {
+        @apply font-medium;
+    }
+
+    /* How to start: three steps on a line, then the ways on. */
+    .saas-start {
+        @apply grid gap-6 lg:grid-cols-12 lg:items-start lg:gap-x-10;
+    }
+
+    .saas-start__label {
+        @apply font-micro text-xs tracking-[0.08em] uppercase lg:col-span-2 lg:pt-1;
+        color: var(--accent);
+    }
+
+    .saas-start__steps {
+        @apply grid gap-5 md:grid-cols-3 lg:col-span-10;
+
+        & li {
+            @apply grid gap-2 border-t pt-4 text-base leading-relaxed text-pretty;
+            border-color: var(--line);
+            color: var(--ink);
+        }
+
+        & span {
+            @apply font-micro text-xs tabular-nums;
+            color: var(--muted);
+        }
+    }
+
+    .saas-start__links {
+        @apply flex flex-wrap items-center gap-x-8 gap-y-4 lg:col-span-10 lg:col-start-3;
+    }
+
+    /* ---- The products' screens: what is inside each window -------------------- */
+
+    /* SmileSoft: a clinic's day, a column per doctor. */
+    .saas-day {
+        @apply grid gap-[0.5em];
+        grid-template-columns: 4em 1fr 1fr;
+        grid-template-rows: auto repeat(4, 4.4em);
+
+        & > b {
+            @apply font-semibold;
+            padding-bottom: 0.4em;
+        }
+
+        & > small {
+            @apply font-micro tabular-nums;
+            grid-column: 1;
+            font-size: 0.8em;
+            color: var(--ink-muted);
+        }
+    }
+
+    .saas-visit {
+        @apply flex flex-col rounded-[0.7em];
+        padding: 0.6em 0.8em;
+        font-size: 0.9em;
+        color: var(--ink-muted);
+        border-left: 0.25em solid currentColor;
+
+        & b {
+            @apply font-semibold;
+            color: var(--navy-950);
+        }
+    }
+
+    .saas-visit--a {
+        color: #5b45e6;
+        background: #efebff;
+    }
+
+    .saas-visit--b {
+        color: #1e8a4d;
+        background: #e3f5ea;
+    }
+
+    .saas-visit--c {
+        color: #b56d00;
+        background: #fdf0d5;
+    }
+
+    /* RIMS: research projects and how far along each is. */
+    .saas-projects {
+        @apply w-full border-collapse text-left;
+
+        & th {
+            @apply font-micro font-normal tracking-[0.06em] uppercase;
+            font-size: 0.8em;
+            padding: 0 0.6em 0.7em;
+            color: var(--ink-muted);
+        }
+
+        & td {
+            @apply border-t whitespace-nowrap;
+            padding: 0.85em 0.6em;
+            border-color: rgb(38 42 111 / 0.08);
+            color: var(--ink-muted);
+        }
+
+        & td:first-child {
+            color: var(--navy-950);
+        }
+
+        & td:last-child {
+            @apply flex items-center gap-[0.6em] tabular-nums;
+        }
+    }
+
+    .saas-progress {
+        @apply block overflow-hidden rounded-full;
+        width: 5em;
+        height: 0.45em;
+        background: #ece9fb;
+
+        & i {
+            @apply block h-full rounded-full;
+            width: var(--p);
+            background: var(--violet-500);
+        }
+    }
+
+    /* Bugetare participativă: the proposals and their votes. */
+    .saas-ideas {
+        @apply grid gap-[0.4em];
+
+        & li {
+            @apply grid items-center gap-x-[1em] gap-y-[0.4em] rounded-[0.7em] border;
+            grid-template-columns: 1fr auto;
+            padding: 0.8em 1em;
+            border-color: rgb(38 42 111 / 0.08);
+        }
+
+        & p {
+            @apply flex flex-col;
+            grid-column: 1 / -1;
+        }
+
+        & b {
+            @apply font-semibold;
+        }
+
+        & small {
+            font-size: 0.85em;
+            color: var(--ink-muted);
+        }
+    }
+
+    .saas-votes {
+        @apply block overflow-hidden rounded-full;
+        height: 0.5em;
+        background: #ece9fb;
+
+        & i {
+            @apply block h-full rounded-full;
+            width: var(--v);
+            background: linear-gradient(90deg, var(--violet-500), #a44cee);
+        }
+    }
+
+    .saas-ideas__count {
+        @apply font-micro tabular-nums;
+        font-size: 0.8em;
+        color: var(--ink-muted);
+    }
+
+    /* Confirmo: a day, its free times, the SMS that confirms it. */
+    .saas-book {
+        @apply grid gap-[1.1em];
+    }
+
+    .saas-book__days {
+        @apply grid grid-cols-5 gap-[0.5em];
+
+        & span {
+            @apply flex flex-col items-center rounded-[0.7em] border;
+            padding: 0.6em 0;
+            border-color: rgb(38 42 111 / 0.1);
+        }
+
+        & small {
+            font-size: 0.8em;
+            color: var(--ink-muted);
+        }
+
+        & b {
+            @apply font-semibold;
+            font-size: 1.2em;
+        }
+
+        & .is-on {
+            @apply text-white;
+            border-color: transparent;
+            background: var(--violet-cta);
+
+            & small {
+                color: rgb(255 255 255 / 0.8);
+            }
+        }
+    }
+
+    .saas-book__slots {
+        @apply grid grid-cols-3 gap-[0.5em];
+
+        & span {
+            @apply rounded-full border text-center font-medium tabular-nums;
+            padding: 0.55em 0;
+            border-color: rgb(38 42 111 / 0.12);
+        }
+
+        & .is-on {
+            border-color: var(--violet-cta);
+            color: var(--violet-cta);
+            background: #efebff;
+        }
+
+        & .is-taken {
+            @apply line-through;
+            color: var(--ink-muted);
+            opacity: 0.5;
+        }
+    }
+
+    .saas-book__sms {
+        @apply flex items-start gap-[0.75em] rounded-[0.9em];
+        padding: 0.9em 1em;
+        background: #e3f5ea;
+
+        & .sw-icon {
+            @apply shrink-0;
+            margin-top: 0.15em;
+            color: #1e8a4d;
+        }
+
+        & span {
+            @apply flex flex-col;
+        }
+
+        & b {
+            @apply font-semibold;
+            font-size: 0.85em;
+            color: #1e8a4d;
+        }
     }
 }

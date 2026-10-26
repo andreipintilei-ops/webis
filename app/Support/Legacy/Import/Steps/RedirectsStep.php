@@ -26,6 +26,11 @@ use App\Support\TrailingSlash;
  * and each old upload URL — original and resized copies — to its asset's file,
  * or 410 when it has none.
  *
+ * A row whose notes open with "Prefix row" covers everything under it (the
+ * /page/2/ pagination, the 410 for a whole date path of injected spam); one
+ * whose notes open with "Dated rule" gets no row at all: HandleNotFound's
+ * dated-address rule answers it, and the row is there for legacy:verify.
+ *
  * Left out, and reported: a source SlugHistory already answers (it wins over
  * the table, so the row would be dead), a source that is a live address, a
  * duplicate, and — since the admin import checks neither — any loop or chain.
@@ -76,9 +81,17 @@ final class RedirectsStep
 
         foreach ($context->map->rows() as $row) {
             $source = $row['old_path'];
+            // The shapes with a tail (/page/2/, /author/x/) cover it whole.
+            $type = str_starts_with($row['notes'] ?? '', 'Prefix row') ? 'prefix' : 'exact';
+
+            if (str_starts_with($row['notes'] ?? '', 'Dated rule')) {
+                $context->report->add(self::NAME, 'left_to_dated_rule', $source);
+
+                continue;
+            }
 
             if ($row['decision'] === 'gone') {
-                $rows[] = ['source' => $source, 'target' => null, 'code' => 410, 'type' => 'exact', 'kind' => 'gone'];
+                $rows[] = ['source' => $source, 'target' => null, 'code' => 410, 'type' => $type, 'kind' => 'gone'];
             } elseif ($row['decision'] === 'redirect') {
                 if ($row['target_path'] === '') {
                     $context->report->add(self::NAME, 'no_target', $source);
@@ -90,8 +103,7 @@ final class RedirectsStep
                     'source' => $source,
                     'target' => TrailingSlash::append($row['target_path']),
                     'code' => 301,
-                    // The shapes with a tail (/page/2/, /author/x/) cover it whole.
-                    'type' => str_starts_with($row['notes'] ?? '', 'Prefix row') ? 'prefix' : 'exact',
+                    'type' => $type,
                     'kind' => 'redirect',
                 ];
             } elseif (in_array($row['decision'], ReviewedMap::CONTENT_DECISIONS, true) && ReviewedMap::targetDiffers($row)) {

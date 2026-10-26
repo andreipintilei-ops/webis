@@ -16,8 +16,9 @@ import {
 import type { Vec } from '@/public/plates';
 
 /**
- * The closing panel's own W, where there is no stage for the plates to come
- * from (components/site/cta-panel, `standalone`; /portofoliu): the five
+ * A closing call's own W, where there is no stage for the plates to come
+ * from (components/site/cta-panel, `standalone`; the footer's call with
+ * `w`, on /portofoliu): the five
  * plates as the home page's finale leaves them — rounded squares in the
  * logo's colours, matte, lit softly (js/public/shapeshifter.ts, its last
  * form) — drawn in the panel's slot.
@@ -172,7 +173,11 @@ async function setUp(panel: HTMLElement): Promise<void> {
 
     scene.add(object);
 
-    // ---- Size: the W across about 60% of the slot, never taller than it --
+    // ---- Size: the W across about 60% of the slot (or the panel's
+    // data-w-fill), never taller than it ----------------------------------
+
+    /** How much of the slot's width the W takes: the panel's own, or 60%. */
+    const fill = Number(panel.dataset.wFill) || 0.6;
 
     /** The W's width and height in world units (its plates on their corners). */
     const W_WIDTH = 5.75;
@@ -196,8 +201,8 @@ async function setUp(panel: HTMLElement): Promise<void> {
             camera.position.z;
         const pxPerUnit = height / worldH;
         const target = Math.min(
-            width * 0.6,
-            640,
+            width * fill,
+            fill > 0.6 ? 960 : 640,
             (height * 0.78 * W_WIDTH) / W_HEIGHT,
         );
 

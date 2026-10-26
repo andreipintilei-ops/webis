@@ -154,7 +154,11 @@
     .sw-link {
         @apply inline-flex items-center font-medium whitespace-nowrap underline decoration-1 underline-offset-[0.3em];
         color: var(--ink);
-        text-decoration-color: color-mix(in srgb, currentColor 35%, transparent);
+        text-decoration-color: color-mix(
+            in srgb,
+            currentColor 35%,
+            transparent
+        );
         transition:
             color var(--fast) var(--ease),
             text-decoration-color var(--fast) var(--ease);
@@ -173,17 +177,16 @@
 
     /* ---- Why made to order: the cells, then the alternative ------------------------ */
 
-    .sw-why__foot {
-        @apply mt-10 flex flex-wrap items-baseline gap-x-4 gap-y-2 text-base leading-relaxed text-pretty md:mt-12 md:text-lg;
-        color: var(--muted);
-    }
-
     .sw-mock__tile {
         @apply grid shrink-0 place-items-center text-white;
         width: 2em;
         height: 2em;
         border-radius: 0.55em;
-        background: linear-gradient(135deg, var(--purple-500), var(--violet-500));
+        background: linear-gradient(
+            135deg,
+            var(--purple-500),
+            var(--violet-500)
+        );
         box-shadow: 0 0.4em 0.8em -0.4em rgb(119 90 252 / 0.8);
 
         & .sw-icon {
@@ -214,192 +217,228 @@
         background: #fdf0d5;
     }
 
-    /* ---- 02 What we build: the explorer --------------------------------------------- */
+    /* ---- 02 What we build: the modules as a reel ------------------------------ */
 
-    .sw-explorer__tabs {
-        @apply border-t;
-        border-color: var(--line);
+    /* The neighbours run off the screen's edges, clipped there. */
+    .chapter.sw-build {
+        overflow-x: clip;
     }
 
-    .sw-tab {
-        @apply relative grid w-full cursor-pointer items-center gap-5 border-b py-5 pr-2 pl-5 text-left;
-        grid-template-columns: minmax(0, 1fr) auto;
-        border-color: var(--line);
+    .sw-build .chapter__inner {
+        @apply gap-10 lg:gap-14;
+    }
+
+    /* Beside the title: its line, and where the reel is. */
+    .sw-reel__aside {
+        @apply grid gap-4 lg:col-span-5 lg:col-start-8 lg:pb-2;
+
+        & .chapter__intro {
+            @apply lg:col-auto lg:col-start-auto lg:pb-0;
+        }
+    }
+
+    .sw-reel__count {
+        @apply font-micro text-xs tracking-[0.08em] tabular-nums;
         color: var(--muted);
 
-        /* The active row's bar, growing from the top. */
-        &::before {
-            content: '';
-            @apply absolute top-0 bottom-0 left-0 w-0.5 origin-top;
-            background: var(--violet-500);
-            transform: scaleY(0);
-            transition: transform var(--slow) var(--ease);
-        }
-
-        &:focus-visible {
-            outline: 2px solid var(--accent);
-            outline-offset: -2px;
+        & span {
+            color: var(--accent);
         }
     }
 
-    .sw-tab__name {
-        @apply font-medium text-balance;
-        font-size: clamp(1.25rem, 1.9vw, 1.625rem);
-        line-height: 1.2;
-        letter-spacing: -0.015em;
-        transition: color var(--base) var(--ease);
+    /*
+      The track: out to the screen's edges, its first panel on the
+      column's edge. A row that scrolls sideways by itself, snapping to each
+      panel; held and moved by the script instead once pinned.
+    */
+    .sw-reel__viewport {
+        @apply overflow-x-auto;
+        width: 100vw;
+        margin-inline: calc(50% - 50vw);
+        scroll-snap-type: x mandatory;
+        scrollbar-width: none;
+
+        &::-webkit-scrollbar {
+            @apply hidden;
+        }
     }
 
-    /* Tabs: a small arrow on the active row. Accordion: the +/×. */
-    .sw-tab__icon {
-        @apply relative grid size-10 shrink-0 place-items-center rounded-full;
-        border: 1px solid var(--line);
+    /*
+      The carousel (js/public/software-reel.ts): the panels on top of each
+      other in the middle, the script placing each by how far it is from
+      the current one; gliding there, except while dragged.
+    */
+    .sw-reel.is-carousel {
+        & .sw-reel__viewport {
+            @apply relative cursor-grab overflow-visible outline-none;
+            scroll-snap-type: none;
+            touch-action: pan-y;
+        }
+
+        & .sw-reel__track {
+            @apply block w-auto p-0;
+        }
+
+        & .sw-reel__item {
+            @apply absolute top-0 left-1/2 select-none;
+            translate: -50% 0;
+            transition:
+                transform 0.75s var(--ease),
+                opacity 0.75s var(--ease);
+            will-change: transform;
+        }
+
+        /* The neighbours, a little behind: a click brings them forward. */
+        & .sw-reel__item:not(.is-current) {
+            @apply cursor-pointer;
+        }
+
+        & .sw-modcard {
+            box-shadow: 0 40px 80px -50px rgb(31 40 104 / 0.45);
+        }
+    }
+
+    .sw-reel.is-carousel.is-dragging {
+        & .sw-reel__viewport {
+            @apply cursor-grabbing;
+        }
+
+        & .sw-reel__item {
+            transition: none;
+        }
+    }
+
+    .sw-reel.is-still .sw-reel__item {
+        transition: none;
+    }
+
+    .sw-reel__viewport:focus-visible .sw-modcard {
+        outline: 3px solid var(--violet-500);
+        outline-offset: 4px;
+    }
+
+    /* Under it: the arrows either side of a dot per panel. */
+    .sw-reel__controls {
+        @apply hidden;
+    }
+
+    .sw-reel.is-carousel .sw-reel__controls {
+        @apply flex items-center justify-center gap-6;
+    }
+
+    .sw-reel__step {
+        @apply grid size-12 cursor-pointer place-items-center rounded-full border;
+        border-color: var(--line);
+        color: var(--ink);
         transition:
-            transform var(--slow) var(--ease),
-            background-color var(--slow) var(--ease),
-            border-color var(--slow) var(--ease),
-            opacity var(--base) var(--ease);
+            background-color var(--base) var(--ease),
+            color var(--base) var(--ease),
+            border-color var(--base) var(--ease);
 
-        &::before,
-        &::after {
-            content: '';
-            @apply absolute top-1/2 left-1/2 h-px w-3.5 -translate-x-1/2 -translate-y-1/2;
-            background: currentColor;
+        & svg {
+            @apply w-3.5;
         }
 
-        &::after {
-            @apply rotate-90;
+        &:hover,
+        &:focus-visible {
+            @apply text-white;
+            border-color: #1f2868;
+            background: #1f2868;
         }
     }
 
-    .sw-tab[aria-selected='true'],
-    .sw-tab[aria-expanded='true'],
-    .sw-tab.is-preview {
+    .sw-reel__step--prev svg {
+        rotate: 180deg;
+    }
+
+    .sw-reel__dots {
+        @apply flex items-center gap-2;
+    }
+
+    .sw-reel__dot {
+        @apply h-2 w-2 cursor-pointer rounded-full;
+        background: rgb(31 40 104 / 0.2);
+        transition:
+            width var(--slow) var(--ease),
+            background-color var(--slow) var(--ease);
+
+        &[aria-current='true'] {
+            @apply w-6;
+            background: #1f2868;
+        }
+    }
+
+    .sw-reel__track {
+        @apply flex w-max gap-5 lg:gap-6;
+        padding-inline: max(var(--site-gap), (100vw - var(--content-max)) / 2);
+    }
+
+    .sw-reel__item {
+        @apply flex;
+        scroll-snap-align: center;
+    }
+
+    /* A panel: its number, name and line, its interface beside them. */
+    .sw-modcard {
+        @apply grid gap-8 overflow-hidden rounded-[1.75rem] bg-white p-7 lg:grid-cols-[minmax(0,0.72fr)_minmax(0,1.28fr)] lg:gap-10 lg:rounded-[2rem] lg:p-10;
+        width: min(86vw, 54rem);
+
+        @media (min-width: 1024px) {
+            height: clamp(24rem, 58vh, 34rem);
+        }
+    }
+
+    .sw-modcard__copy {
+        @apply flex flex-col gap-4 lg:justify-between;
+    }
+
+    .sw-modcard__no {
+        @apply font-light tabular-nums;
+        font-size: clamp(2.75rem, 4.6vw, 4.5rem);
+        line-height: 0.9;
+        letter-spacing: -0.05em;
+        color: var(--violet-500);
+    }
+
+    .sw-modcard__name {
+        @apply font-medium text-balance;
+        font-size: clamp(1.625rem, 2.3vw, 2.25rem);
+        line-height: 1.08;
+        letter-spacing: -0.03em;
         color: var(--ink);
     }
 
-    .sw-tab[aria-selected='true']::before,
-    .sw-tab[aria-expanded='true']::before {
-        transform: scaleY(1);
-    }
-
-    /* The panel: its title and text over the mock-up. */
-    .sw-panel {
-        @apply outline-none;
-
-        &:focus-visible {
-            outline: 2px solid var(--accent);
-            outline-offset: 6px;
-            border-radius: 1.75rem;
-        }
-    }
-
-    .sw-panel__copy {
-        @apply mb-6 grid gap-2;
-    }
-
-    .sw-panel__title {
-        @apply text-xl leading-snug font-medium tracking-[-0.02em] md:text-[22px];
-    }
-
-    .sw-panel__text {
-        @apply max-w-[48ch] text-base leading-relaxed text-pretty md:text-lg;
+    .sw-modcard__text {
+        @apply mt-3 max-w-[32ch] text-[17px] leading-relaxed text-pretty;
         color: var(--muted);
     }
 
-    /* Tabs, from 1024px: the list (4 of 10) beside the stage (6 of 10). */
-    .sw-explorer.is-tabs {
-        @apply grid items-start gap-12 xl:gap-16;
-        grid-template-columns: minmax(0, 4fr) minmax(0, 6fr);
+    /* The interface: the mock-up's card, filling its half. */
+    /*
+      A drawn screen held in a card (the carousel's panels here, Produse
+      SaaS's stacking cards): the whole window, centred in its frame, rather
+      than running off the frame's foot.
+    */
+    :is(.sw-modcard__screen, .saas-stack__visual) .sw-mock {
+        @apply flex items-center;
+        padding: 6%;
 
-        & .sw-tab__icon {
-            @apply opacity-0;
-            border-color: transparent;
-
-            /* An arrow: the cross's bar and a chevron. */
-            &::before {
-                @apply w-3.5;
-            }
-
-            &::after {
-                @apply h-2 w-2 rotate-45 border-t border-r;
-                left: calc(50% + 0.15rem);
-                background: transparent;
-                border-color: currentColor;
-            }
-        }
-
-        & .sw-tab[aria-selected='true'] .sw-tab__icon {
-            @apply opacity-100 text-white;
-            background: var(--violet-500);
-        }
-
-        /* The panels in one cell, so the stage is as tall as the tallest
-           and never jumps; the shown one cross-fades in over 200ms. */
-        & .sw-explorer__stage {
-            @apply grid;
-        }
-
-        & .sw-panel {
-            grid-area: 1 / 1;
-            visibility: hidden;
-            opacity: 0;
-            transition:
-                opacity 200ms linear,
-                visibility 0s linear 200ms;
-        }
-
-        & .sw-panel.is-shown {
-            visibility: visible;
-            opacity: 1;
-            transition:
-                opacity 200ms linear,
-                visibility 0s;
+        & .sw-mock__window {
+            @apply w-full rounded-[0.9em] border-b;
+            min-height: 0;
         }
     }
 
-    /* Accordion, below 1024px: each row opens its panel under it; the
-       panel's own title is the row's, so it is left to screen readers. */
-    .sw-explorer.is-accordion {
-        & .sw-tab {
-            @apply py-6;
+    .sw-modcard__screen {
+        @apply min-h-0;
+        aspect-ratio: 4 / 3;
+
+        @media (min-width: 1024px) {
+            aspect-ratio: auto;
         }
 
-        & .sw-tab__icon {
-            @apply size-10;
-        }
-
-        & .sw-tab[aria-expanded='true'] .sw-tab__icon {
-            transform: rotate(45deg);
-            border-color: var(--violet-500);
-            background: var(--violet-500);
-            color: #fff;
-        }
-
-        & .sw-panel {
-            @apply overflow-hidden border-b;
-            border-color: var(--line);
-        }
-
-        & .sw-panel__body {
-            @apply pt-1 pb-8;
-        }
-
-        & .sw-panel__title {
-            @apply sr-only;
-        }
-
-        & .sw-panel__copy {
-            @apply mb-5;
-        }
-    }
-
-    @media (prefers-reduced-motion: reduce) {
-        .sw-explorer .sw-panel,
-        .sw-explorer .sw-panel.is-shown,
-        .sw-tab::before,
-        .sw-tab__icon {
-            transition: none;
+        & .sw-mock {
+            @apply h-full;
         }
     }
 
@@ -433,7 +472,11 @@
             @apply pointer-events-none absolute inset-0;
             background-image:
                 linear-gradient(rgb(38 42 111 / 0.07) 1px, transparent 1px),
-                linear-gradient(90deg, rgb(38 42 111 / 0.07) 1px, transparent 1px);
+                linear-gradient(
+                    90deg,
+                    rgb(38 42 111 / 0.07) 1px,
+                    transparent 1px
+                );
             background-size: 2.5rem 2.5rem;
             mask-image: radial-gradient(
                 ellipse 70% 70% at 50% 40%,
@@ -607,7 +650,11 @@
             width: 2em;
             height: 2em;
             font-size: 0.75em;
-            background: linear-gradient(135deg, var(--purple-500), var(--violet-500));
+            background: linear-gradient(
+                135deg,
+                var(--purple-500),
+                var(--violet-500)
+            );
         }
     }
 
@@ -950,7 +997,7 @@
     }
 
     .sw-seg {
-        @apply relative flex flex-col;
+        @apply relative flex flex-col gap-3;
     }
 
     .sw-seg__label {
@@ -972,12 +1019,18 @@
         transition-delay: calc(var(--i) * var(--step));
     }
 
-    .sw-seg--module .sw-seg__fill {
+    /* Development: three short bars, the modules delivered one after
+       another, in the accent. */
+    .sw-seg__bars {
+        @apply grid grid-cols-3 gap-1.5;
+    }
+
+    .sw-seg--build .sw-seg__fill {
         background: linear-gradient(90deg, var(--lavender-300), #b98bff);
         box-shadow: 0 0 1rem rgb(161 142 255 / 0.6);
     }
 
-    .sw-seg--module .sw-seg__label {
+    .sw-seg--build .sw-seg__label {
         @apply text-white;
     }
 
@@ -987,7 +1040,11 @@
     }
 
     .sw-seg--care .sw-seg__fill {
-        background: linear-gradient(90deg, rgb(255 255 255 / 0.55), rgb(161 142 255 / 0.6));
+        background: linear-gradient(
+            90deg,
+            rgb(255 255 255 / 0.55),
+            rgb(161 142 255 / 0.6)
+        );
     }
 
     .sw-seg__tag {
@@ -1011,9 +1068,11 @@
         color: var(--muted);
     }
 
+    /* A step's text lights with its segment. */
     .sw-stage__text {
+        @apply mt-8 pr-4 md:mt-12 lg:mt-14;
         transition: opacity var(--slow) var(--ease);
-        transition-delay: calc(var(--at) * var(--step));
+        transition-delay: calc(var(--i) * var(--step));
     }
 
     /* Before it plays (set by the script, never without it): unlit. */
@@ -1029,7 +1088,7 @@
             transition: none;
         }
 
-        & .sw-seg--module .sw-seg__label {
+        & .sw-seg--build .sw-seg__label {
             color: rgb(255 255 255 / 0.7);
             transition: none;
         }
@@ -1040,108 +1099,19 @@
         }
     }
 
-    /* Wide: one horizontal track — six segments in a row, the five stages
-       described under it (one grid of 30 columns: a segment takes 5, a
-       stage 6; two to a row below 1024px). */
-    @media (min-width: 768px) {
-        .sw-timeline {
-            @apply grid gap-y-12;
-            grid-template-columns: repeat(30, minmax(0, 1fr));
-        }
-
-        .sw-stage,
-        .sw-stage__track {
-            display: contents;
-        }
-
-        .sw-seg {
-            @apply gap-3 pr-2;
-            grid-row: 1;
-            grid-column: span 5;
-        }
-
-        .sw-seg--care {
-            @apply pr-0;
-        }
-
-        .sw-stage__text {
-            @apply pr-8;
-            grid-column: span 15;
-        }
-
-        .sw-stage__chips {
-            @apply hidden;
-        }
+    /* The steps' grid: one under another on phones (label, segment, tag,
+       title, text); two to a row on tablets, all four in a row from
+       1024px, the segments' gap the columns' — so each text starts at its
+       segment's left edge, and a row of segments reads as one track. */
+    .sw-timeline {
+        @apply grid grid-cols-1 gap-y-10 md:grid-cols-2 md:gap-y-14 lg:grid-cols-4;
+        column-gap: 0.5rem;
     }
 
-    @media (min-width: 1024px) {
-        .sw-timeline {
-            @apply gap-y-14;
-        }
-
-        .sw-stage__text {
-            grid-column: span 6;
-        }
-    }
-
-    /* Phones: the track runs down the left, each stage beside its
-       segments; the modules' tags in a row over their two stages. */
-    @media (max-width: 767px) {
-        .sw-stage {
-            @apply relative grid gap-y-6 pb-10 pl-8;
-
-            &:last-child {
-                @apply pb-0;
-            }
-        }
-
-        .sw-stage__track {
-            @apply absolute top-1 bottom-0 left-0 flex w-2 flex-col gap-1.5;
-        }
-
-        .sw-stage:not(:last-child) .sw-stage__track {
-            bottom: 0.375rem;
-        }
-
-        .sw-seg {
-            @apply flex-1;
-        }
-
-        .sw-seg__label {
-            @apply sr-only;
-        }
-
-        .sw-seg__tag {
-            @apply hidden;
-        }
-
-        .sw-seg__bar {
-            @apply h-full w-2;
-        }
-
-        .sw-seg__fill {
-            @apply origin-top;
-        }
-
-        .sw-seg--care .sw-seg__bar {
-            mask-image: linear-gradient(180deg, #000 20%, transparent);
-        }
-
-        .sw-timeline[data-state='waiting'] .sw-seg__fill {
-            transform: scaleY(0);
-        }
-
-        .sw-stage__chips {
-            @apply flex flex-wrap gap-2;
-
-            & span {
-                @apply rounded-full border font-micro text-[11px] tracking-[0.04em] whitespace-nowrap;
-                padding: 0.3rem 0.65rem;
-                color: var(--lavender-300);
-                border-color: rgb(161 142 255 / 0.45);
-                background: rgb(161 142 255 / 0.12);
-            }
-        }
+    /* Only development has a tag: none on phones for the others; its place
+       kept from tablets up, so every title in a row starts level. */
+    .sw-seg__tag--none {
+        @apply hidden md:invisible md:block;
     }
 
     @media (prefers-reduced-motion: reduce) {
@@ -1149,248 +1119,6 @@
         .sw-timeline *::before,
         .sw-timeline *::after {
             transition: none !important;
-        }
-    }
-
-    /* ---- 04 What every project gets: the bento --------------------------------------- */
-
-    .sw-bento {
-        @apply grid gap-4 md:grid-cols-2 lg:grid-cols-3 lg:gap-5;
-    }
-
-    .sw-card {
-        @apply relative flex min-h-56 flex-col justify-between gap-8 overflow-hidden rounded-[1.75rem] bg-white p-7 md:p-8;
-        color: var(--ink);
-    }
-
-    .sw-card__copy {
-        @apply grid gap-2;
-    }
-
-    .sw-card__title {
-        @apply text-xl leading-snug font-medium tracking-[-0.02em] md:text-[22px];
-    }
-
-    .sw-card__text {
-        @apply max-w-[38ch] text-base leading-relaxed text-pretty;
-        color: var(--muted);
-    }
-
-    /* Text only: on a deeper lavender, so the grid keeps its rhythm. */
-    .sw-card--plain {
-        @apply min-h-0 justify-end md:min-h-56;
-        background: #e9e4ff;
-    }
-
-    @media (min-width: 768px) {
-        .sw-card--log {
-            @apply col-span-2;
-        }
-
-        .sw-bento > :last-child {
-            @apply col-span-2;
-        }
-    }
-
-    @media (min-width: 1024px) {
-        .sw-card--log {
-            @apply col-span-2 row-span-2;
-        }
-
-        .sw-bento > :last-child {
-            @apply col-span-1;
-        }
-    }
-
-    /* The large one: its history, as a log on the indigo. */
-    .sw-card--log {
-        @apply justify-start gap-10;
-    }
-
-    .sw-log {
-        @apply mt-auto rounded-[1.25rem] p-6 md:p-8;
-        background: #1f2868;
-        color: rgb(255 255 255 / 0.85);
-    }
-
-    .sw-log__head {
-        @apply mb-5 flex items-center justify-between border-b pb-4 font-micro text-xs tracking-[0.08em] uppercase;
-        border-color: rgb(255 255 255 / 0.14);
-        color: rgb(255 255 255 / 0.6);
-    }
-
-    .sw-log__lines {
-        @apply grid gap-3.5 font-micro text-[13px] leading-snug md:text-sm;
-
-        & li {
-            @apply grid gap-x-3;
-            grid-template-columns: auto auto minmax(0, 1fr);
-        }
-
-        & time {
-            color: var(--lavender-300);
-        }
-
-        & span:nth-child(2) {
-            color: rgb(255 255 255 / 0.35);
-        }
-
-        & li:first-child span:last-child {
-            @apply text-white;
-        }
-
-        & li:nth-child(n + 4) {
-            opacity: 0.6;
-        }
-    }
-
-    /* Roles: three badges, two open, one locked. */
-    .sw-roles {
-        @apply flex flex-wrap gap-2;
-    }
-
-    .sw-role {
-        @apply inline-flex items-center gap-2 rounded-full border py-2 pr-4 pl-3 text-sm font-medium;
-        border-color: var(--line);
-        color: var(--muted);
-        background: #f6f4ff;
-
-        & .sw-icon {
-            @apply size-4;
-        }
-    }
-
-    .sw-role--open {
-        color: var(--ink);
-
-        & .sw-icon {
-            color: var(--violet-500);
-        }
-    }
-
-    /* Devices: a laptop and a phone, the same screen in both. */
-    .sw-devices {
-        @apply relative h-32;
-    }
-
-    .sw-devices__laptop {
-        @apply absolute top-0 left-0 block;
-        width: 68%;
-    }
-
-    .sw-devices__laptop .sw-devices__screen {
-        @apply block rounded-t-lg border-[2.5px] border-b-0 p-2;
-        border-color: var(--navy-950);
-        height: 6.75rem;
-    }
-
-    .sw-devices__base {
-        @apply block h-2.5 rounded-b-md;
-        margin-inline: -8%;
-        background: var(--navy-950);
-    }
-
-    .sw-devices__phone {
-        @apply absolute bottom-0 block rounded-[0.7rem] border-[2.5px] bg-white p-1.5;
-        left: 60%;
-        width: 4.25rem;
-        height: 7.25rem;
-        border-color: var(--navy-950);
-
-        & .sw-devices__screen {
-            @apply block h-full;
-        }
-    }
-
-    .sw-mini {
-        @apply flex h-full flex-col gap-1.5;
-    }
-
-    .sw-mini__bar,
-    .sw-mini__row {
-        @apply flex items-center justify-between gap-2;
-
-        & i {
-            @apply block h-1.5 flex-1 rounded-full;
-            background: #e6e3f5;
-        }
-
-        & b {
-            @apply block h-2.5 w-6 shrink-0 rounded-full;
-        }
-    }
-
-    .sw-mini__bar {
-        @apply mb-1 border-b pb-1.5;
-        border-color: #eceaf6;
-
-        & i {
-            @apply max-w-12;
-            background: var(--navy-950);
-        }
-
-        & b {
-            @apply w-4;
-            background: linear-gradient(135deg, var(--purple-500), var(--violet-500));
-        }
-    }
-
-    .sw-mini b.is-ok {
-        background: #bfe9cd;
-    }
-
-    .sw-mini b.is-work {
-        background: #d6ccff;
-    }
-
-    .sw-mini b.is-wait {
-        background: #fadfa6;
-    }
-
-    .sw-devices__phone .sw-mini__row i {
-        @apply max-w-5;
-    }
-
-    .sw-devices__phone .sw-mini__row b {
-        @apply w-4;
-    }
-
-    /* Backup: one status line. */
-    .sw-backup {
-        @apply inline-flex w-fit items-center gap-3 rounded-full border py-2.5 pr-5 pl-4 font-micro text-[13px];
-        border-color: var(--line);
-        background: #f6f4ff;
-    }
-
-    .sw-backup__dot {
-        @apply relative size-2.5 rounded-full;
-        background: #22a15a;
-
-        &::after {
-            content: '';
-            @apply absolute inset-0 rounded-full;
-            background: #22a15a;
-            animation: sw-ping 2.4s var(--ease) infinite;
-        }
-    }
-
-    @keyframes sw-ping {
-        0% {
-            opacity: 0.6;
-            transform: scale(1);
-        }
-
-        80%,
-        100% {
-            opacity: 0;
-            transform: scale(2.6);
-        }
-    }
-
-    @media (prefers-reduced-motion: reduce) {
-        .sw-backup__dot::after {
-            animation: none;
-            opacity: 0;
         }
     }
 

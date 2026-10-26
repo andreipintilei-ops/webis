@@ -122,7 +122,7 @@ const VIEW_KEY = 'webis:work-view';
 /** The grid/list switch: shows it, restores the choice, swaps the panes. */
 function initViews(): void {
     const list = document.querySelector<HTMLElement>('[data-work-list]');
-    // The switch sits in the page's head, beside the title.
+    // The switch sits in the page's head, beside the filter.
     const bar = document.querySelector<HTMLElement>('[data-work-views]');
 
     if (!list || !bar) {

@@ -31,7 +31,7 @@ it('renders a published contact page with the shared form and company details', 
         ->assertDontSee('site-footer__cta', escape: false)
         ->assertDontSee('chapter--light', escape: false);
 
-    $this->get('/solutii')->assertOk()->assertSee('site-footer__cta', escape: false);
+    $this->get('/servicii')->assertOk()->assertSee('site-footer__cta', escape: false);
 });
 
 it('keeps the contact template and redirects when a contact page is renamed', function () {

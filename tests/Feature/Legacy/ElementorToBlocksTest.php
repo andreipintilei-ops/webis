@@ -163,16 +163,21 @@ it('turns image boxes into features and counters into stats', function () {
         ]);
 });
 
-it('turns price tables into pricing tiers and counts the progress bars', function () {
+it('turns price tables into pricing tiers and progress bars into shares', function () {
     $conversion = elementorConverter()->convert(elementorFixture('elementor-page-mentenanta'), 'Mentenanta site wordpress');
     $pricing = blocksOfType($conversion, 'pricing_tiers')[0]['data'];
+    $stats = blocksOfType($conversion, 'stats')[0]['data'];
 
-    expect($conversion->blockTypes())->toBe(['hero', 'pricing_tiers', 'rich_text'])
+    expect($conversion->blockTypes())->toBe(['hero', 'pricing_tiers', 'stats', 'rich_text'])
         ->and($pricing['heading'])->toBe('Pachete Mentenanta')
         ->and(array_column($pricing['tiers'], 'name'))->toBe(['Basic', 'Standard', 'Premium'])
         ->and($pricing['tiers'][0])->toMatchArray(['price' => '40 €', 'period' => 'Lunar'])
         ->and($pricing['tiers'][0]['features'])->toContain('Actualizare platforma')
-        ->and($conversion->report->droppedCount('widget:progress'))->toBe(5);
+        // The bars' heading heads the figures; each bar's share is its figure.
+        ->and($stats['heading'])->toBe('Cele mai infectate site-uri')
+        ->and(array_column($stats['items'], 'value'))->toBe(['78%', '12%', '5%', '3%', '1%'])
+        ->and(array_column($stats['items'], 'label'))->toBe(['Wordpress', 'Joomla', 'Alte platforme', 'Magento', 'Drupal'])
+        ->and($conversion->report->droppedCount('widget:progress'))->toBe(0);
 });
 
 it('reads an h1 hero, an animated headline, a popup button and a logo carousel', function () {

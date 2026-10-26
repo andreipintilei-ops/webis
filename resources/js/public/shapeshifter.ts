@@ -61,11 +61,13 @@ import { getSmoother } from '@/public/smooth-scroll';
  *
  * From 1024px it holds the middle of the screen in the chapter's half, coming
  * in with the stage's top, then settles into the panel and leaves with it.
- * Below, each chapter (and the panel) has a box: the object sits in it, and
- * as the next box comes up it flies there — in from the screen's top edge
- * (or from its own box, if that is still in view), swinging out to one side
- * and a little smaller on the way, behind the text — taking the next form as
- * it lands.
+ * Below, it sits behind the text: in the middle of the screen, dimmed so
+ * the chapters read over it, taking its forms with the same scroll as
+ * above; it comes up to full strength as it settles into the panel's W.
+ *
+ * The screen's height is the fixed layer's own (100vh, the largest
+ * viewport), never innerHeight: on phones the address bar coming and going
+ * changes the window's height, and the object would jump with it.
  *
  * Reduced motion: no scrub, no float — a 400 ms crossfade to the next form as
  * a chapter comes in. Without WebGL: a still of the pinwheel in chapter 01's
@@ -88,10 +90,6 @@ const smooth = (t: number): number => t * t * (3 - 2 * t);
 /** 1 at form `k`, 0 a form away. */
 const near = (q: number, k: number): number =>
     smooth(clamp01(1 - Math.abs(q - k)));
-
-/** 0 to 1 as an edge moves up the screen from `from` to `to` (px). */
-const ramp = (edge: number, from: number, to: number): number =>
-    clamp01((from - edge) / (from - to));
 
 // ---- The forms -------------------------------------------------------------
 
@@ -205,14 +203,16 @@ const PANEL_CAP = 1.3;
 /** On phones and tablets the panel fills more of its width: it is the only
  *  thing on the screen there. */
 const PANEL_FILL_NARROW = 0.78;
-const BOX_FILL = 0.8;
-const PHONE_FILL = 0.95;
 /**
- * Phones and tablets, between boxes: the flight runs while the next box's top
- * rises from `from` to `to` screens; on the way the object swings out to the
- * side by `swing` of the screen's width and shrinks by `shrink` at the most.
+ * Phones and tablets: behind the text, its form fills this much of the
+ * screen's width, capped against its height. It opens the stage alone, at
+ * full strength (the first chapter leaves it the room,
+ * css/site/variant-stage.css); as the text comes up over it, it eases to
+ * this opacity, until it settles into the panel.
  */
-const FLIGHT = { from: 1.35, to: 0.55, swing: 0.22, shrink: 0.25 };
+const BEHIND_FILL = 0.85;
+const BEHIND_CAP = 0.45;
+const BEHIND_DIM = 0.6;
 
 export async function initShapeshifter(): Promise<void> {
     const host = document.querySelector<HTMLElement>('[data-shapeshifter]');
@@ -230,6 +230,11 @@ export async function initShapeshifter(): Promise<void> {
     if (!host || !stage || !panel || !panelSlot || chapters.length !== 3) {
         return;
     }
+
+    /** The first chapter's text: on phones, what comes up over the object. */
+    const firstText =
+        chapters[0]!.el.querySelector<HTMLElement>('.stage-chapter__body') ??
+        chapters[0]!.el;
 
     /** The four homes it visits: a chapter's half each, then the panel's. */
     const slots = [...chapters.map(({ slot }) => slot), panelSlot];
@@ -252,6 +257,10 @@ export async function initShapeshifter(): Promise<void> {
     }
 
     const reduced = prefersReducedMotion();
+
+    // Drawn live: below 1024px the chapters' boxes are not needed any more
+    // (css/site/variant-stage.css), the object sits behind the text.
+    stage.classList.add('stage--live');
 
     const [THREE, { RoomEnvironment }, gsap, { ScrollTrigger }] =
         await Promise.all([
@@ -726,7 +735,6 @@ export async function initShapeshifter(): Promise<void> {
     // ---- The scroll --------------------------------------------------------
 
     const narrow = matchMedia('(max-width: 1023px)');
-    const phone = matchMedia('(max-width: 767px)');
 
     /**
      * Where it is on the path, scrubbed: `enter` as the stage comes in, then
@@ -763,60 +771,19 @@ export async function initShapeshifter(): Promise<void> {
         scrub('s4', panelSlot, 'top 88%', 'center 48%');
     }
 
-    /** Phones and tablets with reduced motion: the box that came in last. */
-    const inBoxes = (vh: number): { index: number; phase: number } => {
-        let index = 0;
-
-        slots.forEach((slot, i) => {
-            if (slot.getBoundingClientRect().top < vh) {
-                index = i;
-            }
-        });
-
-        const top = slots[index]!.getBoundingClientRect().top;
-
-        return { index, phase: index + ramp(top, vh, vh * 0.55) };
-    };
-
-    /**
-     * Phones and tablets, with motion: the box it is in or flying to, and
-     * how far along (0 in the box before, 1 landed). A flight runs while the
-     * next box's top rises from FLIGHT.from to FLIGHT.to screens; the first
-     * box has none, the object comes up with it.
-     */
-    const inFlight = (vh: number): { index: number; k: number } => {
-        let index = 0;
-
-        slots.forEach((slot, i) => {
-            if (i > 0 && slot.getBoundingClientRect().top < vh * FLIGHT.from) {
-                index = i;
-            }
-        });
-
-        const top = slots[index]!.getBoundingClientRect().top;
-
-        return index === 0
-            ? { index, k: ramp(top, vh, vh * FLIGHT.to) }
-            : { index, k: ramp(top, vh * FLIGHT.from, vh * FLIGHT.to) };
-    };
-
-    /** Its size in a box. A chapter's box is taller than it is wide, so its
-     *  height sets the size; the panel's slot is the other way about, and the
-     *  W is a broad form, so there the width does. */
-    const boxSize = (index: number, rect: DOMRect): number =>
-        index === slots.length - 1
-            ? Math.min(rect.width * PANEL_FILL_NARROW, rect.height * PANEL_CAP)
-            : rect.height * (phone.matches ? PHONE_FILL : BOX_FILL);
+    // `stage--live` changed the layout below 1024px (the boxes gone, the
+    // room the object opens in) after the page's other scroll triggers —
+    // the reveals, the panel's growth — were measured: measured again, or
+    // they fire hundreds of pixels late.
+    ScrollTrigger.refresh();
 
     /** Reduced motion: the form it shows, and its crossfade. */
     const still = { state: 1, fade: 1 };
     const stillTarget = (vh: number): number =>
-        narrow.matches
-            ? inBoxes(vh).index + 1
-            : 1 +
-              [chapters[1]!.el, chapters[2]!.el, panelSlot].filter(
-                  (el) => el.getBoundingClientRect().top < vh / 2,
-              ).length;
+        1 +
+        [chapters[1]!.el, chapters[2]!.el, panelSlot].filter(
+            (el) => el.getBoundingClientRect().top < vh / 2,
+        ).length;
 
     // ---- When to draw ------------------------------------------------------
 
@@ -861,13 +828,39 @@ export async function initShapeshifter(): Promise<void> {
         camera.updateProjectionMatrix();
     };
 
+    /**
+     * Standing on the panel, the layer rides the page instead of being held
+     * to the screen: where the browser scrolls on its own (phones, with no
+     * smoothing), the object redrawn after each scroll would trail the panel
+     * by a frame. Laid in the page where it stands at that moment, it moves
+     * with the panel, and the object stays put inside it. Back on the screen
+     * as soon as it leaves the panel again.
+     */
+    let anchored = false;
+    const anchor = (on: boolean): void => {
+        anchored = on;
+
+        if (!on) {
+            host.style.position = '';
+            host.style.top = '';
+
+            return;
+        }
+
+        const top = host.getBoundingClientRect().top;
+
+        host.style.position = 'absolute';
+        host.style.top = '0px';
+        host.style.top = `${top - host.getBoundingClientRect().top}px`;
+    };
+
     const frame = (time: number): void => {
         if (!inView || document.hidden) {
             return;
         }
 
         // Held to the screen inside the smooth-scrolled content.
-        if (getSmoother() && content) {
+        if (getSmoother() && content && !anchored) {
             const y = Number(gsap.getProperty(content, 'y')) || 0;
 
             host.style.transform = `translate3d(0, ${-y}px, 0)`;
@@ -890,10 +883,6 @@ export async function initShapeshifter(): Promise<void> {
 
             phase = still.state;
             opacity = still.fade;
-        } else if (narrow.matches) {
-            const { index, k } = inFlight(vh);
-
-            phase = index + k;
         } else {
             phase = path.s1 + path.s2 + path.s3 + path.s4;
             opacity = path.enter;
@@ -903,46 +892,34 @@ export async function initShapeshifter(): Promise<void> {
         let y: number;
         let size: number;
 
-        if (narrow.matches && reduced) {
-            const index = inBoxes(vh).index;
-            const rect = slots[index]!.getBoundingClientRect();
+        if (narrow.matches) {
+            // Alone at first, a quarter of the screen below the stage's top
+            // and then in the middle; behind the text once it comes up over
+            // it, a little dimmed, until the panel takes it: there it stands
+            // at full strength in the panel's slot and rides it off the
+            // screen.
+            const along = Math.min(Math.max(phase - 1, 0), 3);
+            const home = panelSlot.getBoundingClientRect();
+            const settled = smooth(clamp01(along - 2));
+            const hold = Math.max(vh / 2, box.top + vh / 4);
+            const behind = Math.min(width * BEHIND_FILL, vh * BEHIND_CAP);
+            const onPanel = Math.min(
+                home.width * PANEL_FILL_NARROW,
+                home.height * PANEL_CAP,
+            );
 
-            x = rect.left + rect.width / 2;
-            y = rect.top + rect.height / 2;
-            size = boxSize(index, rect);
-        } else if (narrow.matches) {
-            const { index, k } = inFlight(vh);
-            const b = slots[index]!.getBoundingClientRect();
-            const bx = b.left + b.width / 2;
-            const by = b.top + b.height / 2;
-            const bs = boxSize(index, b);
+            x = lerp(width / 2, home.left + home.width / 2, settled);
+            y = lerp(hold, home.top + home.height / 2, settled);
+            size = lerp(behind, onPanel, settled);
 
-            if (index === 0 || k === 0) {
-                // In its box — or, before a flight, still in the one before.
-                const a =
-                    slots[Math.max(index - 1, 0)]!.getBoundingClientRect();
-                const at = index === 0 ? b : a;
+            // From the text's top reaching the object's lower edge to its
+            // middle.
+            const textTop = firstText.getBoundingClientRect().top;
+            const under = smooth(
+                clamp01((hold + behind / 2 - textTop) / (behind / 2)),
+            );
 
-                x = at.left + at.width / 2;
-                y = at.top + at.height / 2;
-                size = index === 0 ? bs : boxSize(index - 1, a);
-            } else {
-                const a = slots[index - 1]!.getBoundingClientRect();
-                const as = boxSize(index - 1, a);
-                const e = smooth(k);
-                const arc = Math.sin(Math.PI * e);
-                // From its box, or from just above the screen's top if that
-                // has scrolled away.
-                const fromY = Math.max(a.top + a.height / 2, -as * 0.6);
-                // Out to one side and back, alternating flight to flight.
-                const side = index % 2 === 1 ? -1 : 1;
-
-                x =
-                    lerp(a.left + a.width / 2, bx, e) +
-                    side * arc * width * FLIGHT.swing;
-                y = lerp(fromY, by, e);
-                size = lerp(as, bs, e) * (1 - FLIGHT.shrink * arc);
-            }
+            opacity *= lerp(lerp(1, BEHIND_DIM, under), 1, settled);
         } else {
             // In the middle of the screen, in the half of the chapter it is
             // in (or crossing between two), until the panel takes it: there
@@ -970,6 +947,16 @@ export async function initShapeshifter(): Promise<void> {
             x = lerp(a.left + a.width / 2, b.left + b.width / 2, k);
             y = lerp(hold, home.top + home.height / 2, settled);
             size = lerp(inHalf, onPanel, settled);
+        }
+
+        // Standing on the panel from the moment the path ends (the scrub
+        // has caught up); drawn where it is on the layer, not the screen.
+        if (phase >= STATES.length - 1 !== anchored) {
+            anchor(!anchored);
+        }
+
+        if (anchored) {
+            y -= host.getBoundingClientRect().top;
         }
 
         const visible = opacity > 0.001 && y > -size && y < vh + size;

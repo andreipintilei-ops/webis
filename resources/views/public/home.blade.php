@@ -18,7 +18,8 @@
     :footer-cta="! \App\Blocks\QuoteFormBlock::appearsIn($page?->blocks)"
 >
     <x-blocks :blocks="$page->blocks ?? []" />
-    <x-site.stage />
+    {{-- `stageSide`: "right" on the trial at /acasa-3d-dreapta (HomeController). --}}
+    <x-site.stage :side="$stageSide ?? null" />
     <x-site.logo-wall />
     <x-site.blog-posts>
         <x-slot:title>Ultimele <span class="whitespace-nowrap">articole <x-ui.title-pill variant="blog" /></span></x-slot:title>

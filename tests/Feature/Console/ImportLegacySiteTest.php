@@ -608,6 +608,8 @@ describe('redirects', function () {
             ->and($rows['/uncategorized'])->toBe(['', '410', 'exact'])
             ->and($rows['/2025/11/13/lucky-casino'])->toBe(['', '410', 'exact'])
             ->and($rows['/page'])->toBe(['/blog/', '301', 'prefix'])
+            // A 410 for a whole date path of injected spam.
+            ->and($rows['/2026/03/28'])->toBe(['', '410', 'prefix'])
             ->and($rows['/proiect/zyanya-2'])->toBe(['/proiect/zyanya/', '301', 'exact'])
             // Content whose target is another address: the old root category,
             // and /12705-2 → its original slug.
@@ -620,7 +622,8 @@ describe('redirects', function () {
             ->and($rows['/wp-content/uploads/2024/07/lipsa.jpg'])->toBe(['', '410', 'exact'])
             ->and($rows['/wp-content/uploads/2024/07/video.mp4'])->toBe(['', '410', 'exact'])
             ->and($rows)->toHaveKey('/lant-2')
-            ->and($rows)->not->toHaveKeys(['/bucla-a', '/bucla-b', '/lant-1', '/proiect/zyanya-veche', '/ghid-seo', '/contact']);
+            // The dated-address rule answers its row: no table row.
+            ->and($rows)->not->toHaveKeys(['/bucla-a', '/bucla-b', '/lant-1', '/proiect/zyanya-veche', '/ghid-seo', '/contact', '/2026/04/14/ghid-seo']);
 
         foreach ($rows as [$target]) {
             if ($target !== '' && ! str_starts_with($target, '/storage/')) {

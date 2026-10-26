@@ -439,12 +439,36 @@ function mount(canvas: HTMLCanvasElement): void {
     // The stir point and its (smoothed, decaying) velocity.
     const swirl = { x: 0, y: 0, vx: 0, vy: 0, placed: false };
 
+    // The pointer's last place on the screen. Measured against the canvas
+    // again every frame (in the loop), not only when the pointer moves: a
+    // page scrolled under a still pointer moves the canvas, and a target
+    // left from when the canvas was screens away pulls the light far off
+    // (a pale wash over one side of the footer until the pointer moved).
+    const pointer = { x: 0, y: 0, known: false };
+
     const aim = (event: PointerEvent): void => {
+        pointer.x = event.clientX;
+        pointer.y = event.clientY;
+        pointer.known = true;
+        measure();
+    };
+
+    /** The target from the pointer's place, held to around the canvas. */
+    const measure = (): void => {
         const box = canvas.getBoundingClientRect();
         const aspect = box.width / Math.max(1, box.height);
 
-        const x = ((event.clientX - box.left) / box.width - 0.5) * aspect;
-        const y = 0.5 - (event.clientY - box.top) / box.height;
+        const x = Math.min(
+            Math.max(
+                ((pointer.x - box.left) / box.width - 0.5) * aspect,
+                -aspect,
+            ),
+            aspect,
+        );
+        const y = Math.min(
+            Math.max(0.5 - (pointer.y - box.top) / box.height, -1),
+            1,
+        );
 
         // The first position, or a jump (the cursor coming back in somewhere
         // else), moves the stir point there without stirring.
@@ -533,6 +557,8 @@ function mount(canvas: HTMLCanvasElement): void {
         if (!CONFIG.cursor) {
             mouse.tx = rest.x;
             mouse.ty = rest.y;
+        } else if (pointer.known) {
+            measure();
         }
 
         // Two poles: a quick lead feeding a slower body.

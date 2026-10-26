@@ -1,6 +1,7 @@
 <?php
 
 use App\Actions\Seo\HandleNotFound;
+use App\Enums\PageType;
 use App\Models\NotFoundLog;
 use App\Models\Page;
 use App\Models\Project;
@@ -62,11 +63,11 @@ it('matches a prefix row against everything under it', function () {
 });
 
 it('prefers the longest matching prefix', function () {
-    Redirect::factory()->prefix()->create(['source_path' => '/servicii-vechi', 'target' => '/solutii/']);
+    Redirect::factory()->prefix()->create(['source_path' => '/servicii-vechi', 'target' => '/servicii/']);
     Redirect::factory()->prefix()->create(['source_path' => '/servicii-vechi/web', 'target' => '/web/']);
 
     $this->get('/servicii-vechi/web/magazine')->assertRedirect('/web/');
-    $this->get('/servicii-vechi/seo')->assertRedirect('/solutii/');
+    $this->get('/servicii-vechi/seo')->assertRedirect('/servicii/');
 });
 
 it('prefers an exact row over a prefix that also matches', function () {
@@ -116,7 +117,7 @@ it('never fires a row whose source is a live page', function () {
     Redirect::factory()->create(['source_path' => '/contact', 'target' => '/altundeva']);
 
     $this->get('/contact')->assertOk();
-    $this->get('/solutii')->assertOk();
+    $this->get('/servicii')->assertOk();
 });
 
 it('lets slug history win over a conflicting row', function () {
@@ -175,8 +176,11 @@ describe('WordPress ids', function () {
             ->assertStatus(301)
             ->assertHeader('Location', absolute('/contact/?utm_source=newsletter'));
         $this->get('/?attachment_id=67')->assertStatus(301)->assertHeader('Location', absolute('/proiect/magazin/'));
-        // An id the map doesn't know is just the home page.
-        $this->get('/?p=999')->assertOk();
+        // An id the map doesn't know is a deleted post or spam (/?p=19525).
+        $this->get('/?p=999')->assertStatus(410)->assertViewIs('errors.410')->assertHeaderMissing('Location');
+        $this->get('/?page_id=19525')->assertStatus(410);
+        // Not an id at all: the home page.
+        $this->get('/?p=abc')->assertOk();
     });
 
     it('is a no-op without the map', function () {
@@ -225,4 +229,39 @@ it('leaves an uppercase address with no page behind it a 404', function () {
     $this->get('/Nu-Exista')->assertNotFound();
     $this->get('/Ciorna')->assertNotFound();
     $this->get('/Proiect/Nu-Exista')->assertNotFound();
+});
+
+describe('dated addresses', function () {
+    it('sends a dated address the table lacks to the article with that slug', function () {
+        Page::factory()->ofType(PageType::Article)->create(['slug' => 'ce-este-hosting']);
+
+        $this->get('/2026/04/14/ce-este-hosting/?utm_source=x')
+            ->assertStatus(301)
+            ->assertHeader('Location', absolute('/ce-este-hosting/?utm_source=x'));
+    });
+
+    it('leaves a dated address alone unless an article is published at its slug', function () {
+        Page::factory()->create(['slug' => 'contact-vechi']);
+        Page::factory()->ofType(PageType::Article)->draft()->create(['slug' => 'ciorna']);
+
+        $this->get('/2026/04/14/contact-vechi/')->assertNotFound();
+        $this->get('/2026/04/14/ciorna/')->assertNotFound();
+        $this->get('/2026/04/14/nu-exista/')->assertNotFound();
+    });
+
+    it('lets a row win over it: the 410 prefixes for injected spam', function () {
+        Page::factory()->ofType(PageType::Article)->create(['slug' => 'ce-este-hosting']);
+        Redirect::factory()->prefix()->gone()->create(['source_path' => '/2025/11']);
+        Redirect::factory()->prefix()->gone()->create(['source_path' => '/2026/03/28']);
+
+        $this->get('/2025/11/13/das-abenteuer-im-lucky-hunter-casino/')->assertStatus(410);
+        $this->get('/2026/03/28/ce-este-hosting/')->assertStatus(410);
+        $this->get('/2026/03/29/ce-este-hosting/')->assertStatus(301);
+    });
+});
+
+it('sends the old project archive and its pages to the portfolio, in one hop', function () {
+    $this->get('/proiect/page/5/')->assertStatus(301)->assertHeader('Location', absolute('/portofoliu/'));
+    $this->get('/PROIECT')->assertStatus(301)->assertHeader('Location', absolute('/portofoliu/'));
+    $this->get('/Clienti')->assertStatus(301)->assertHeader('Location', absolute('/portofoliu/'));
 });

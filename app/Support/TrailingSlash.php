@@ -2,6 +2,8 @@
 
 namespace App\Support;
 
+use Illuminate\Http\Request;
+use Illuminate\Routing\RedirectController;
 use Illuminate\Routing\Route;
 use Illuminate\Support\Str;
 
@@ -36,6 +38,7 @@ final class TrailingSlash
         'posts.index',
         'posts.category',
         'trials.story',
+        'trials.right',
         'pages.show',
         // The industry pages at /servicii/{slug}, with the services rename.
         'pages.industry',
@@ -54,8 +57,11 @@ final class TrailingSlash
     /**
      * A link written as a path (/portofoliu?tip=magazin), in the form the URL
      * generator gives it (/portofoliu/?tip=magazin), still root-relative. For
-     * links kept as plain paths, such as the menus' (SiteNavigation). Anything
-     * that isn't a root-relative path comes back as given.
+     * links kept as plain paths, such as the menus' (SiteNavigation) and the
+     * ones editors type into blocks (a hero's "/contact"). A path that is one
+     * of the app's own permanent redirects (/clienti) links straight to where
+     * it leads, so the click takes no hop. Anything that isn't a root-relative
+     * path comes back as given.
      */
     public static function href(string $href): string
     {
@@ -64,9 +70,35 @@ final class TrailingSlash
         }
 
         $root = rtrim(url('/'), '/');
-        $url = url($href);
+        $url = url(self::throughRedirect($href));
 
         return str_starts_with($url, $root) ? (substr($url, strlen($root)) ?: '/') : $url;
+    }
+
+    /**
+     * Where a root-relative path leads when it is one of the app's permanent
+     * Route::redirect()s (/clienti → /portofoliu), query string kept; the path
+     * itself otherwise. Only those routes are tried, one by one, so matching
+     * never binds the parameters of the route being rendered.
+     */
+    public static function throughRedirect(string $href): string
+    {
+        $end = strcspn($href, '?#');
+        $path = substr($href, 0, $end);
+        $request = Request::create($path, 'GET');
+
+        foreach (app('router')->getRoutes()->get('GET') as $route) {
+            $destination = $route->defaults['destination'] ?? null;
+
+            if (is_string($destination)
+                && in_array((int) ($route->defaults['status'] ?? 0), [301, 308], true)
+                && str_starts_with(ltrim($route->getActionName(), '\\'), RedirectController::class)
+                && $route->matches($request)) {
+                return $destination.substr($href, $end);
+            }
+        }
+
+        return $href;
     }
 
     /**

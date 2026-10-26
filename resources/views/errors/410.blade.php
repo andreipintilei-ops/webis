@@ -1,7 +1,7 @@
 {{-- Gone: an old address deliberately retired (a feed, an attachment page),
      rendered by App\Actions\Seo\HandleNotFound. The 404's hero
      (components/site/page-hero), with the way back home and to the articles. --}}
-<x-layouts.public title="Pagina a fost ștearsă" header-theme="dark" :footer-cta="false" :footer-on-backdrop="true">
+<x-layouts.public title="Pagina a fost ștearsă" :canonical="false" header-theme="dark" :footer-cta="false" :footer-on-backdrop="true">
     <x-site.page-hero
         label="Eroare 410"
         title="Pagina a fost ștearsă definitiv."

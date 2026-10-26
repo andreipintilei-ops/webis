@@ -63,7 +63,7 @@
     }
 
     .svc-cards__intro {
-        @apply mx-auto mt-5 max-w-[52ch] text-pretty;
+        @apply mx-auto mt-5 max-w-[60ch] text-pretty;
         font-size: 18px;
         line-height: 1.6;
         color: var(--ink-muted);

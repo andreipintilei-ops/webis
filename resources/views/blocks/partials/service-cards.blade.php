@@ -23,20 +23,20 @@
         [
             'art' => 'software',
             'title' => 'Software la comandă',
-            'text' => 'Sisteme construite pentru procesele organizației tale.',
+            'text' => 'Aplicații construite pe felul în care lucrezi: gestiune, aprobări, rapoarte și integrări.',
             'link' => ['label' => 'Află mai multe', 'url' => '/software-la-comanda'],
-        ],
-        [
-            'art' => 'saas',
-            'title' => 'Produse SaaS',
-            'text' => 'Produse proprii, gata de folosit, pe abonament lunar.',
-            'link' => ['label' => 'Vezi produsele', 'url' => '/produse'],
         ],
         [
             'art' => 'web',
             'title' => 'Web și e-commerce',
-            'text' => 'Site-uri de prezentare și magazine online.',
+            'text' => 'Web design, site-uri de prezentare și magazine online, cu SEO de la început.',
             'link' => ['label' => 'Află mai multe', 'url' => '/web'],
+        ],
+        [
+            'art' => 'saas',
+            'title' => 'Produse SaaS',
+            'text' => 'Aplicații gata de folosit, pe abonament lunar, pentru clinici, universități și primării.',
+            'link' => ['label' => 'Vezi produsele', 'url' => '/produse'],
         ],
     ];
 
@@ -45,11 +45,11 @@
 <section id="{{ $block['id'] }}" class="svc-cards" aria-labelledby="{{ $block['id'] }}-title">
     <div class="svc-cards__inner">
         <header class="svc-cards__head" data-reveal="head">
-            <h2 id="{{ $block['id'] }}-title" class="svc-cards__title">Tot de ce ai nevoie, <x-ui.title-pill variant="stack" class="max-md:hidden" /><br> de la site la sistemul de gestiune.</h2>
+            <h2 id="{{ $block['id'] }}-title" class="svc-cards__title">Serviciile noastre, <x-ui.title-pill variant="stack" class="max-md:hidden" /><br> de la site la sistemul de gestiune.</h2>
             {{-- Phones: the chip would wrap onto a line of its own between the
                  title's halves, so it comes under the whole title instead. --}}
             <x-ui.title-pill variant="stack" class="svc-cards__pill-below md:hidden" />
-            <p class="svc-cards__intro">Construit de la zero sau gata de folosit,<br> cu mentenanță și suport de la aceeași echipă.</p>
+            <p class="svc-cards__intro">Construit de la zero sau gata de folosit, cu mentenanță<br> și suport de la aceeași echipă.</p>
         </header>
 
         <ul class="svc-cards__list" data-service-cards>

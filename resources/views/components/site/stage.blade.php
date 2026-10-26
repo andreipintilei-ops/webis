@@ -5,11 +5,18 @@
     the other half kept for the object — five thin, matte plates that take a
     form per chapter, each form an abstract read of what that chapter says:
     01 on the left (the object right), 02 on the right (the object left), 03
-    on the left again. After the three, a purple panel the plates fly into
+    on the left again — or, with `side="right"`, the object on the right
+    in all three, the text always on the left. After the three, a purple panel the plates fly into
     and stand in as a W, under a closing title. On phones the object takes a
     box above each chapter's text instead (`data-stage-slot`). Pointing at an
 --}}
+@props(['side' => null])
+
 @php
+    // Which half each chapter gives the object: right, left, right — or one
+    // side throughout (the trial at /acasa-3d-dreapta).
+    $sides = $side === 'right' ? ['right', 'right', 'right'] : ['right', 'left', 'right'];
+
     // Lucide icons.
     $lucide = [
         'database' => '<ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5v14a9 3 0 0 0 18 0V5"/><path d="M3 12a9 3 0 0 0 18 0"/>',
@@ -32,11 +39,11 @@
     $arrow = '<svg viewBox="0 0 11 10" fill="currentColor" aria-hidden="true"><path d="M0 5.656V4.304l8.419.014-3.359-3.358L5.99 0l5.002 4.973-4.987 4.987-.93-.96 3.358-3.358L0 5.656Z"/></svg>';
 @endphp
 
-<section class="stage chapter chapter--light" aria-label="Ce facem" data-stage>
+<section @class(['stage chapter chapter--light', 'stage--one-side' => $side === 'right']) aria-label="Ce facem" data-stage>
     <div class="chapter__inner">
 
         {{-- ============================================================ 01 --}}
-        <article id="software-la-comanda" class="stage-chapter" data-stage-chapter data-side="right" aria-labelledby="chapter-1-title">
+        <article id="software-la-comanda" class="stage-chapter" data-stage-chapter data-side="{{ $sides[0] }}" aria-labelledby="chapter-1-title">
             <div class="stage-chapter__slot" data-stage-slot aria-hidden="true"></div>
 
             <div class="stage-chapter__body stage-software">
@@ -83,7 +90,7 @@
         </article>
 
         {{-- ============================================================ 02 --}}
-        <article id="produse-saas" class="stage-chapter" data-stage-chapter data-side="left" aria-labelledby="chapter-2-title">
+        <article id="produse-saas" class="stage-chapter" data-stage-chapter data-side="{{ $sides[1] }}" aria-labelledby="chapter-2-title">
             <div class="stage-chapter__slot" data-stage-slot aria-hidden="true"></div>
 
             <div class="stage-chapter__body">
@@ -128,7 +135,7 @@
         </article>
 
         {{-- ============================================================ 03 --}}
-        <article id="web-si-e-commerce" class="stage-chapter" data-stage-chapter data-side="right" aria-labelledby="chapter-3-title">
+        <article id="web-si-e-commerce" class="stage-chapter" data-stage-chapter data-side="{{ $sides[2] }}" aria-labelledby="chapter-3-title">
             <div class="stage-chapter__slot" data-stage-slot aria-hidden="true"></div>
 
             <div class="stage-chapter__body stage-web">
@@ -142,9 +149,9 @@
                      single line, hairlines between. --}}
                 <ul class="stage-items stage-web__items" data-reveal>
                     @foreach ([
-                        ['monitor', 'Site de prezentare', 'Un site clar, ușor de actualizat.', '/creare-site-iasi/'],
+                        ['monitor', 'Site de prezentare', 'Un site clar, ușor de actualizat.', '/creare-site-de-prezentare/'],
                         ['shopping-bag', 'Magazin online', 'Catalog, plăți și livrare la un loc.', '/creare-magazin-online/'],
-                        ['shield-check', 'Mentenanță și găzduire', 'Actualizări, backup și suport.', '/mentenanta/'],
+                        ['shield-check', 'Mentenanță și găzduire', 'Actualizări, backup și suport.', '/mentenanta-site-wordpress/'],
                     ] as [$glyph, $name, $text, $href])
                         <li data-reveal-child>
                             <a href="{{ $href }}" class="stage-item stage-item--link">

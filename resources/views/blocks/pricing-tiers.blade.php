@@ -42,7 +42,7 @@
                         $features = array_values(array_filter((array) ($tier['features'] ?? []), fn ($feature) => trim((string) $feature) !== ''));
                     @endphp
                     <li data-reveal-child>
-                        <{{ $tag }} @if ($link) href="{{ $link['url'] }}" @endif @class([
+                        <{{ $tag }} @if ($link) href="{{ \App\Support\TrailingSlash::href($link['url']) }}" @endif @class([
                             'post-card block-tier',
                             'block-tier--featured' => ! empty($tier['highlighted']),
                             'block-tier--plain' => ! $link,

@@ -4,17 +4,18 @@
     /contact) and /software-la-comanda/'s order; its own pieces in
     css/site/products.css.
 
-    - /web's hero, with the planes, flush, only as tall as its text so the
-      first card shows on the first screen;
+    - the internal pages' hero, the four products across its foot, each a
+      way down to its own;
     - straight after it, on the same backdrop, the products as
-      /portofoliu's stacking cards: who it is for, what it
-      does, the clients using it (components/site/used-by), the way to ask
-      for a demo;
+      /portofoliu's stacking cards, each in its own colour: who it is for,
+      what it does and holds, the way to a demo, the clients using it
+      (components/site/used-by), and its screen drawn
+      (components/saas/mockup);
     Then the light panel, rising over the backdrop:
-    - why a ready product: the home page's cells between hairlines;
-    - how to start, and product or made to order: two short paragraphs;
-    - questions, as /web's rows that open, and as FAQPage JSON-LD from the
-      same list;
+    - product or made to order: a centred head over the two side by side,
+      then how to start in three steps;
+    - questions, the title beside them as on /web, and as FAQPage JSON-LD
+      from the same list;
     then the footer's closing call.
 
     TODO(de confirmat, before going live): SmileSoft's features, how the
@@ -33,33 +34,49 @@
     $products = [
         [
             'product' => Product::SmileSoft,
+            'screen' => 'smilesoft',
             'for' => 'Pentru clinici stomatologice',
+            'points' => ['Programări', 'Fișe de pacient', 'Planuri de tratament', 'Încasări'],
             'text' => 'SmileSoft ține la un loc programările, fișele pacienților, planurile de tratament și încasările. Recepția și medicii lucrează pe aceleași informații, iar istoricul fiecărui pacient e la un click distanță.',
         ],
         [
             // For the university's staff, never presented as for students.
             'product' => Product::Rims,
+            'screen' => 'rims',
             'for' => 'Pentru universități',
+            'points' => ['Proiecte', 'Echipe', 'Finanțări și bugete', 'Raportări'],
             'text' => 'RIMS (Research Information Management System) ține evidența proiectelor de cercetare ale universității: echipele, finanțările, bugetele și raportările. Conducerea și echipele de proiect lucrează pe aceleași date, iar rapoartele pentru finanțatori se pregătesc din aplicație.',
         ],
         [
             'product' => Product::ParticipatoryBudgeting,
+            'screen' => 'bugetare',
             'for' => 'Pentru primării',
+            'points' => ['Propuneri', 'Vot online', 'Urmărirea proiectelor', 'Rezultate publice'],
             'text' => 'O platformă prin care cetățenii propun proiecte pentru comunitate, votează și urmăresc cum sunt puse în practică. Primăria gestionează tot procesul dintr-un singur loc, de la depunerea propunerilor până la proiectele câștigătoare.',
         ],
         [
             'product' => Product::Confirmo,
-            'for' => 'Pentru afaceri care lucrează cu programări',
+            'screen' => 'confirmo',
+            'for' => 'Pentru afaceri cu programări',
+            'points' => ['Rezervări online', 'Confirmare prin SMS', 'Reamintiri', 'Calendar pe angajat'],
             'text' => 'Programări și rezervări online. Clienții își aleg singuri ora, iar Confirmo trimite confirmarea și reamintirea prin SMS. Fiecare angajat are calendarul lui, iar programările se văd într-un singur loc.',
         ],
     ];
 
-    $benefits = [
-        ['name' => 'Pornești repede.', 'text' => 'Produsul există deja: îl configurăm pentru organizația ta și îl poți folosi fără să aștepți o dezvoltare.'],
-        ['name' => 'Plătești lunar.', 'text' => 'Un abonament în locul unei investiții mari la început, fără contract pe termen lung.'],
-        ['name' => 'Primești noutățile.', 'text' => 'Produsele se îmbunătățesc continuu, iar actualizările sunt incluse în abonament.'],
-        ['name' => 'Instruirea e inclusă.', 'text' => 'Echipa ta învață să folosească produsul de la început, iar noi rămânem aproape pentru întrebări.'],
-        ['name' => 'Se poate extinde.', 'text' => 'Dacă ai nevoie de ceva în plus, construim partea respectivă la comandă.'],
+    // A ready product set against a made-to-order application.
+    $compare = [
+        ['Când pornești', 'În câteva zile, după configurare', 'După analiză și dezvoltare, pe etape'],
+        ['Cum plătești', 'Abonament lunar, fără contract pe termen lung', 'O investiție pe etape; aplicația e a ta'],
+        ['Actualizări', 'Incluse: produsul se îmbunătățește continuu', 'La cerere, odată cu mentenanța'],
+        ['Potrivit când', 'Nevoile tale sunt comune în domeniu', 'Procesul tău are reguli proprii'],
+        ['Ce lipsește', 'Construim la comandă, peste produs', 'Nimic: totul e făcut pentru tine'],
+    ];
+
+    // How to start with a product.
+    $start = [
+        'Îți arătăm produsul pe un exemplu apropiat de ce faci.',
+        'Configurăm contul și importăm datele de care ai nevoie.',
+        'Instruim echipa și rămânem aproape pentru întrebări.',
     ];
 
     // The questions: the accordion and the FAQPage JSON-LD both read this list.
@@ -92,30 +109,46 @@
     @endpush
 
     {{-- ================================================== Hero --}}
+    {{-- The four products close the hero, on a hairline across its foot (as
+         /web's offers): each its name and who it is for, a way down to it. --}}
     <x-site.page-hero
         label="Produse SaaS · Webis"
         :title="['Produse SaaS.']"
-        intro="Aplicații gata de folosit, pe abonament lunar."
+        intro="Aplicații gata de folosit, pe abonament lunar, fiecare făcută pentru un domeniu."
+        class="page-hero--led"
         :flush="true"
-        class="saas-hero"
         data-reveal-pace="fast"
-    />
+    >
+        <x-slot:after>
+            <ul class="saas-hero-products">
+                @foreach ($products as $item)
+                    <li>
+                        <a href="#{{ $item['product']->value }}" class="saas-hero-product" data-no-transition>
+                            <span class="saas-hero-product__no">{{ sprintf('%02d', $loop->iteration) }}</span>
+                            <span class="saas-hero-product__name">{{ $item['product']->label() }}</span>
+                            <span class="saas-hero-product__for">{{ $item['for'] }}</span>
+                        </a>
+                    </li>
+                @endforeach
+            </ul>
+        </x-slot:after>
+    </x-site.page-hero>
 
     {{-- ================================================== The products --}}
-    {{-- /portofoliu's featured projects (components/site/featured-work,
-         css/site/work-stack.css): a screen-high card each, stacking on
-         scroll from 1024px (js/public/product-stack.ts), each in a colour
-         of the hero's. On the left the name at the top, what it does and
-         the way to a demo at the foot; on the right a plain placeholder
-         until there are screenshots. On the hero's backdrop, carrying on
-         from it: no head of their own, the hero's title says it. --}}
+    {{-- /portofoliu's featured projects (css/site/work-stack.css): a
+         screen-high card each, stacking on scroll from 1024px
+         (js/public/product-stack.ts), each in the product's own colour. On
+         the left the name at the top, what it does and holds and the way to
+         a demo at the foot; on the right its screen, drawn
+         (components/saas/mockup). On the hero's backdrop, carrying on from
+         it: no head of their own, the hero's title says it. --}}
     <section id="produsele" class="work-stack saas-stack" aria-labelledby="saas-products-title" data-product-stack data-backdrop-area data-nav-tone="dark" data-reveal-pace="fast">
         <h2 id="saas-products-title" class="sr-only">Produsele noastre</h2>
 
         <div class="work-stack__cards">
             @foreach ($products as $item)
                 @php($product = $item['product'])
-                <article id="{{ $product->value }}" class="work-stack__card work-stack__card--{{ $loop->iteration }} work-stack__card--tone-{{ $loop->index % 4 + 1 }}" style="--i: {{ $loop->index }}" aria-labelledby="{{ $product->value }}-title" data-product-card data-scroll-target>
+                <article id="{{ $product->value }}" class="work-stack__card work-stack__card--{{ $loop->iteration }} saas-stack__card--{{ $item['screen'] }}" style="--i: {{ $loop->index }}" aria-labelledby="{{ $product->value }}-title" data-product-card data-scroll-target>
                     {{-- The entry moves this frame; being covered moves the panel. --}}
                     <div class="work-stack__frame" data-product-entry>
                         <div class="work-stack__panel saas-stack__panel" data-product-panel>
@@ -127,6 +160,12 @@
 
                                 <div class="saas-stack__foot">
                                     <p class="saas-stack__text">{{ $item['text'] }}</p>
+
+                                    <p class="saas-stack__points">
+                                        @foreach ($item['points'] as $point)
+                                            <span>{{ $point }}</span>
+                                        @endforeach
+                                    </p>
 
                                     <div class="saas-stack__links">
                                         {{-- The white button, on the card's colour. --}}
@@ -140,8 +179,10 @@
                                 </div>
                             </div>
 
-                            {{-- TODO: the product's own screenshots. --}}
-                            <div class="saas-stack__visual" aria-hidden="true"></div>
+                            {{-- Its screen, drawn: the product at work. --}}
+                            <div class="saas-stack__visual">
+                                <x-saas.mockup :variant="$item['screen']" />
+                            </div>
                         </div>
                     </div>
                 </article>
@@ -149,35 +190,48 @@
         </div>
     </section>
 
-    {{-- ================================================== Why a ready product --}}
-    {{-- As /software-la-comanda/'s "De ce software la comandă". --}}
-    <section class="chapter chapter--light saas-why" aria-labelledby="saas-why-title" data-reveal-pace="fast">
+    {{-- ================================================== Product or made to order --}}
+    {{-- What a ready product means, set against a made-to-order application,
+         side by side; then how to start, in three steps. --}}
+    <section class="chapter chapter--light saas-compare" aria-labelledby="saas-compare-title" data-reveal-pace="fast">
         <div class="chapter__inner">
-            <header class="chapter__head" data-reveal="head">
-                <div class="chapter__head-main">
-                    <h2 id="saas-why-title" class="chapter__title">De ce un produs gata de folosit.</h2>
-                </div>
-                <p class="chapter__intro">Produsele noastre pornesc de la ce au în comun organizațiile dintr-un domeniu, așa că poți începe fără să construiești nimic de la zero.</p>
-            </header>
+            <x-section.center-head
+                id="saas-compare-title"
+                label="Produs sau la comandă"
+                title="Pornești din prima zi și plătești lunar."
+                highlight="din prima zi"
+            />
 
-            <x-site.chapter.cells :cells="$benefits" :numbered="false" class="chapter-cells--flush" data-reveal />
-        </div>
-    </section>
+            <div class="saas-table" data-reveal>
+                <table>
+                    <thead>
+                        <tr>
+                            <td></td>
+                            <th scope="col" class="saas-table__ours">Produs SaaS</th>
+                            <th scope="col">Software la comandă</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach ($compare as [$row, $ours, $made])
+                            <tr data-reveal-child>
+                                <th scope="row">{{ $row }}</th>
+                                <td class="saas-table__ours">{{ $ours }}</td>
+                                <td>{{ $made }}</td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
 
-    {{-- ================================================== How to start, product or made to order --}}
-    {{-- Two short paragraphs side by side, each on a hairline. --}}
-    <section class="chapter chapter--light" aria-label="Cum începi" data-reveal-pace="fast">
-        <div class="chapter__inner">
-            <div class="saas-notes" data-reveal>
-                <div class="saas-note" data-reveal-child>
-                    <h2 class="saas-note__title">Cum începi.</h2>
-                    <p class="saas-note__text">Totul începe cu o prezentare: îți arătăm produsul pe un exemplu apropiat de ce faci tu. Dacă se potrivește, configurăm contul, importăm datele de care ai nevoie și instruim echipa.</p>
-                    <x-ui.arrow-link href="/contact/">Cere o prezentare</x-ui.arrow-link>
-                </div>
-
-                <div class="saas-note" data-reveal-child>
-                    <h2 class="saas-note__title">Produs sau la comandă.</h2>
-                    <p class="saas-note__text">Produsele acoperă nevoile comune dintr-un domeniu. Când procesul tău are reguli proprii, o aplicație la comandă e varianta potrivită, iar cele două se pot combina.</p>
+            <div class="saas-start" data-reveal>
+                <p class="saas-start__label" data-reveal-child>Cum începi</p>
+                <ol class="saas-start__steps">
+                    @foreach ($start as $step)
+                        <li data-reveal-child><span>{{ sprintf('%02d', $loop->iteration) }}</span>{{ $step }}</li>
+                    @endforeach
+                </ol>
+                <div class="saas-start__links" data-reveal-child>
+                    <x-ui.pill href="/contact/">Cere o prezentare</x-ui.pill>
                     <x-ui.arrow-link href="/software-la-comanda/">Despre software la comandă</x-ui.arrow-link>
                 </div>
             </div>
@@ -185,27 +239,30 @@
     </section>
 
     {{-- ================================================== Questions --}}
-    {{-- /web's rows that open (js/public/project-accordion.ts). --}}
+    {{-- /web's rows that open (js/public/project-accordion.ts), the title
+         beside them, held while they scroll (js/public/split-heads.ts). --}}
     <section class="chapter chapter--light web-faq" aria-labelledby="saas-faq-title" data-reveal-pace="fast">
         <div class="chapter__inner">
-            <header class="chapter__head" data-reveal="head">
-                <div class="chapter__head-main">
+            <div class="web-split" data-split>
+                <header class="web-split__head" data-split-head data-reveal="head">
                     <h2 id="saas-faq-title" class="chapter__title">Întrebări frecvente.</h2>
-                </div>
-            </header>
+                    <p class="web-split__line">Nu găsești răspunsul? Spune-ne ce produs te interesează și îți răspundem în aceeași zi lucrătoare.</p>
+                    <x-ui.arrow-link href="/contact/">Scrie-ne</x-ui.arrow-link>
+                </header>
 
-            <div class="web-faq__list" data-reveal>
-                @foreach ($questions as [$question, $answer])
-                    <details class="web-faq__item" data-accordion-item data-reveal-child>
-                        <summary class="web-faq__question">
-                            <span>{{ $question }}</span>
-                            <span class="web-faq__icon" aria-hidden="true"></span>
-                        </summary>
-                        <div class="web-faq__answer" data-accordion-case>
-                            <p>{{ $answer }}</p>
-                        </div>
-                    </details>
-                @endforeach
+                <div class="web-faq__list web-split__body" data-split-body data-reveal>
+                    @foreach ($questions as [$question, $answer])
+                        <details class="web-faq__item" data-accordion-item data-reveal-child>
+                            <summary class="web-faq__question">
+                                <span>{{ $question }}</span>
+                                <span class="web-faq__icon" aria-hidden="true"></span>
+                            </summary>
+                            <div class="web-faq__answer" data-accordion-case>
+                                <p>{{ $answer }}</p>
+                            </div>
+                        </details>
+                    @endforeach
+                </div>
             </div>
         </div>
     </section>

@@ -9,9 +9,12 @@
     On a page that already carries the gradient fixed behind it, pass
     `on-backdrop` and the footer shows through to that one instead.
     `cta-title`, `cta-intro`: a page's own wording for the closing call
-    (/clienti), in place of the default.
+    (/clienti), in place of the default. `w`: the call's words and ways in
+    the left half, and the Webis W forming in the right half, over the
+    gradient, as it scrolls in (js/public/finale-w.ts; /portofoliu,
+    /software-la-comanda).
 --}}
-@props(['showCta' => true, 'onBackdrop' => false, 'ctaTitle' => null, 'ctaIntro' => null])
+@props(['showCta' => true, 'onBackdrop' => false, 'ctaTitle' => null, 'ctaIntro' => null, 'w' => false])
 
 @php
     $company = app(\App\Settings\CompanySettings::class);
@@ -40,14 +43,28 @@
     <div class="site-footer__inner">
         {{-- The closing call, and the ways to reach us. --}}
         @if ($showCta)
-        <div class="site-footer__cta" data-reveal="head">
+        <div @class(['site-footer__cta', 'site-footer__cta--w' => $w]) data-reveal="head">
             <div>
-                <p class="site-footer__label">Contact</p>
-                <h2 class="site-footer__title">@if ($ctaTitle){{ $ctaTitle }}@else Ai un proces care merită<br> un sistem mai bun?@endif</h2>
-                <p class="site-footer__intro">{{ $ctaIntro ?? 'Spune-ne cum lucrezi acum. Îți răspundem în aceeași zi lucrătoare.' }}</p>
+                @unless ($w)
+                    <p class="site-footer__label">Contact</p>
+                @endunless
+                <h2 class="site-footer__title">{{ $ctaTitle ?? 'Ai un proiect în minte?' }}</h2>
+                <p class="site-footer__intro">{{ $ctaIntro ?? 'Un site de prezentare, un magazin online sau software la comandă: spune-ne ce vrei să construiești și revenim cu pașii următori.' }}</p>
             </div>
+            @if ($w)
+                {{-- The W, forming as the footer comes up; drawn in CSS
+                     without WebGL (the script adds stage-finale--still). --}}
+                <div class="site-footer__w" data-finale-w data-w-fill="0.92" aria-hidden="true">
+                    <div class="site-footer__w-slot" data-stage-slot>
+                        <div class="stage-finale__still"><i></i><i></i><i></i><i></i><i></i></div>
+                    </div>
+                </div>
+            @endif
             <div class="site-footer__reach">
                 <x-ui.pill href="/contact/" tone="dark">Hai să discutăm</x-ui.pill>
+                {{-- Beside the W, only the button: the phone and e-mail are in
+                     the last column below. --}}
+                @unless ($w)
                 <div class="site-footer__direct">
                     @if ($phoneHref)
                         <a href="{{ $phoneHref }}">{{ $company->phone }}</a>
@@ -56,6 +73,7 @@
                         <a href="mailto:{{ $company->email }}">{{ $company->email }}</a>
                     @endif
                 </div>
+                @endunless
             </div>
         </div>
         @endif

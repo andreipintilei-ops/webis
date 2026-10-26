@@ -61,7 +61,8 @@ use Illuminate\Support\Str;
  *   running prose.
  * - **Toggle/accordion** → `faq` (answers as plain text; a group with an
  *   answer over 2,000 characters stays rich text instead). `price-table` →
- *   `pricing_tiers`, `counter` → `stats`, `gallery`/`image-carousel` →
+ *   `pricing_tiers`, `counter` and `progress` (the bar's share as the
+ *   figure, "78%") → `stats`, `gallery`/`image-carousel` →
  *   `gallery`, a YouTube `video` → `video` (hosted MP4s are counted).
  * - **Buttons** under a heading (and optionally a short text) in the same
  *   section become a `cta_banner`, a second one its secondary button; a
@@ -73,7 +74,7 @@ use Illuminate\Support\Str;
  * - **Responsive copies.** An element hidden on desktop is the phone or
  *   tablet duplicate of one the desktop shows; it is dropped and counted.
  * - **Dropped and counted:** spacers, dividers, maps, social icons, hotspots,
- *   progress bars, testimonial carousels, loop grids, post lists, share
+ *   testimonial carousels, loop grids, post lists, share
  *   buttons, theme widgets, shortcodes, hosted (non-YouTube) videos, and
  *   decorative images (an opacity, or an absolute position without a
  *   caption: the clouds and planets). Links to the stale staging domain
@@ -230,6 +231,7 @@ final class ElementorToBlocks
             'toggle', 'accordion' => $this->faq($settings),
             'price-table' => [$this->tier($settings)],
             'counter' => [$this->stat($settings)],
+            'progress' => $this->share($settings),
             'gallery', 'image-carousel' => $this->gallery($settings),
             'video' => $this->video($settings),
             'button' => $this->button($settings),
@@ -464,6 +466,26 @@ final class ElementorToBlocks
             'value' => trim(($settings['prefix'] ?? '').$number.($settings['suffix'] ?? '')),
             'label' => WordPressHtml::inlineText((string) ($settings['title'] ?? '')),
         ];
+    }
+
+    /**
+     * A progress bar: its share as the figure ("78%"), its title the label.
+     * The stats block draws a share's hairline filled to it. Without a share
+     * or a title it says nothing: dropped and counted.
+     *
+     * @param  array<mixed>  $settings
+     * @return list<Item>
+     */
+    private function share(array $settings): array
+    {
+        $percent = $settings['percent']['size'] ?? null;
+        $label = WordPressHtml::inlineText((string) ($settings['title'] ?? ''));
+
+        if (! is_numeric($percent) || $label === '') {
+            return $this->skip('progress', $settings);
+        }
+
+        return [['kind' => 'stat', 'value' => $percent.'%', 'label' => $label]];
     }
 
     /**

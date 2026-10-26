@@ -10,14 +10,21 @@
     /* The title with the grid/list switch beside it (under it on phones),
        the filter below both, on the title's edge. */
     .portfolio__head {
-        @apply grid grid-cols-1 items-center gap-y-6 sm:grid-cols-[minmax(0,1fr)_auto] sm:gap-x-10 md:gap-y-12;
+        @apply grid grid-cols-[minmax(0,1fr)_auto] items-center gap-x-6 gap-y-6 sm:gap-x-10 md:gap-y-12;
 
-        & .portfolio-filter {
-            @apply sm:col-span-2;
+        /* The grid/list switch at the end of the filter's row, level with
+           its first line of chips; on phones at the end of the title's, so
+           the chips keep the whole width. */
+        & .chapter__title {
+            @apply mt-0 sm:col-span-2;
         }
 
-        & .chapter__title {
-            @apply mt-0;
+        & .portfolio-filter {
+            @apply col-span-2 row-start-2 sm:col-span-1;
+        }
+
+        & .work-list__bar {
+            @apply col-start-2 row-start-1 sm:row-start-2 sm:self-start;
         }
     }
 
@@ -133,12 +140,6 @@
        on its section's ground. */
     .portfolio-clients {
         @apply mt-24 md:mt-32;
-    }
-
-    /* The closing call, the home page's panel (components/site/cta-panel),
-       on the content's width. */
-    .stage-finale.portfolio-cta {
-        @apply mt-16 max-w-[var(--content-max)] md:mt-24;
     }
 
     /* ---- A project's page ----------------------------------------------------- */

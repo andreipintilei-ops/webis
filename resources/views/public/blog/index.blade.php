@@ -16,6 +16,10 @@
 @php
     $page = $articles->currentPage();
 
+    // Each page of the listing names itself, as Google advises for a series
+    // of pages; the first without ?pagina (null: the layout's own default).
+    $canonical = $page > 1 ? \App\Support\PublicUrls::canonical(request()->getPathInfo()).'?pagina='.$page : null;
+
     $title = $category ? ($category->seo->title ?: $category->name.' · Blog') : 'Blog';
     $description = $category?->seo->description ?: $category?->description
         ?: 'Articole despre software la comandă, produse SaaS, site-uri și magazine online, scrise de echipa Webis din Iași.';
@@ -23,7 +27,7 @@
     $arrow = '<svg viewBox="0 0 11 10" fill="currentColor" aria-hidden="true"><path d="M0 5.656V4.304l8.419.014-3.359-3.358L5.99 0l5.002 4.973-4.987 4.987-.93-.96 3.358-3.358L0 5.656Z"/></svg>';
 @endphp
 
-<x-layouts.public :title="$page > 1 ? $title.', pagina '.$page : $title" :description="$description" header-theme="dark">
+<x-layouts.public :title="$page > 1 ? $title.', pagina '.$page : $title" :description="$description" :canonical="$canonical" :noindex="(bool) $category?->seo->noindex" header-theme="dark">
     <x-site.page-hero
         :label="$category ? 'Blog · '.$category->name : 'Blog · Webis'"
         :title="['Articole despre', 'software și web.']"

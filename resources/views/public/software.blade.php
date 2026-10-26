@@ -9,16 +9,17 @@
     - the home page's statement (blocks/statement), on the hero's backdrop;
     - the modules as a strip of pills, where the home page has its logos.
     Then the light panel, rising over it:
-    - why made to order: what it changes, as the home page's cells between
-      hairlines;
-    - what we build: the modules as tabs beside their mock-ups, an
-      accordion below 1024px (js/public/software-explorer.ts);
+    - why made to order: a centred head, then what it changes as white
+      cards in three staggered columns (components/section/benefit-columns);
+    - what we build: the modules as a carousel to drag through, each its
+      interface beside its name (js/public/software-reel.ts);
     - how we work, on the indigo: the delivery as a timeline lighting up
       once (js/public/software-timeline.ts);
-    - what every project gets, as a bento grid;
+    - what every project gets: a centred head over one white panel of
+      cells (components/section/feature-panel);
     - projects, only when there are software ones;
-    - questions, as /web's rows that open, and as FAQPage JSON-LD from the
-      same list;
+    - questions, the title beside them as on /web, and as FAQPage JSON-LD
+      from the same list;
     then the footer's closing call.
 --}}
 @php
@@ -36,14 +37,25 @@
         ['SPV', 'landmark'],
     ];
 
-    // What an application made to order changes: plain prose, no numbers.
+    // What an application made to order changes: short names, lines of
+    // about the same length, so the cards read as one set.
     $benefits = [
-        ['name' => 'Fiecare știe ce are de făcut.', 'text' => 'Cererile și documentele ajung singure la persoana potrivită, iar stadiul lor se vede oricând.'],
-        ['name' => 'Excepțiile au locul lor.', 'text' => 'Regulile și cazurile speciale ale procesului tău sunt construite în aplicație, nu ținute minte de oameni.'],
-        ['name' => 'Datele sunt într-un singur loc.', 'text' => 'Se introduc o dată și sunt aceleași pentru toată echipa, de la birou până la conducere.'],
-        ['name' => 'Rapoartele sunt gata când ai nevoie de ele.', 'text' => 'Se generează direct din datele reale, în formatul pe care îl folosești.'],
-        ['name' => 'Programele tale lucrează împreună.', 'text' => 'Aplicația se leagă de ce folosești deja, inclusiv de e-Factura și SPV.'],
-        ['name' => 'Crește odată cu organizația.', 'text' => 'Adăugăm module noi peste ce există, atunci când ai nevoie de ele.'],
+        ['route', 'Fiecare știe ce are de făcut', 'Cererile ajung singure la omul potrivit, iar stadiul lor se vede oricând.'],
+        ['branch', 'Cazurile speciale, rezolvate', 'Regulile și excepțiile sunt în aplicație, nu în memoria oamenilor.'],
+        ['database', 'Date într-un singur loc', 'Se introduc o dată și sunt aceleași pentru toată echipa, de la birou la conducere.'],
+        ['chart', 'Rapoarte gata oricând', 'Generate din datele reale, în formatul pe care îl folosești deja.'],
+        ['plug', 'Legată de ce folosești deja', 'Comunică cu programele tale, ca nimic să nu mai fie copiat de mână.'],
+        ['grow', 'Crește odată cu echipa', 'Adăugăm module noi peste ce există, atunci când ai nevoie de ele.'],
+    ];
+
+    // What every project gets.
+    $included = [
+        ['history', 'Istoric complet', 'Fiecare modificare rămâne înregistrată: cine, ce și când.'],
+        ['roles', 'Acces pe roluri', 'Fiecare om vede și modifică doar ce îi e permis.'],
+        ['browser', 'În browser, oriunde', 'Fără instalări, de la birou sau de pe teren, pe orice dispozitiv.'],
+        ['backup', 'Backup și securitate', 'Copii de siguranță automate și acces securizat la date.'],
+        ['training', 'Instruire inclusă', 'Echipa ta știe cum să folosească aplicația din prima zi.'],
+        ['layers', 'Poate crește', 'Module noi se adaugă peste ce există, fără să o iei de la zero.'],
     ];
 
     $modules = [
@@ -55,23 +67,19 @@
         ['integrari', 'Integrări', 'e-Factura, SPV și programele pe care le folosești deja.'],
     ];
 
-    // The delivery: its segments (planning, the modules, then on), and the
-    // five stages described under them.
+    // The delivery, step by step: each its segment of the track (planning,
+    // development, then on) and, under it, what happens then. Development's
+    // segment is three short bars, the modules delivered one after another.
     $stages = [
-        ['Analiză.', 'Vorbim cu oamenii care vor folosi aplicația și înțelegem cum lucrează acum.'],
-        ['Propunere.', 'Stabilim modulele, etapele și bugetul, ca să știi de la început ce primești.'],
-        ['Dezvoltare pe etape.', 'Primești fiecare modul pe măsură ce e gata și îl folosești pe parcurs.'],
-        ['Implementare.', 'Importăm datele existente și instruim echipa ta.'],
-        ['Mentenanță.', 'Rămânem după lansare pentru suport, actualizări și funcții noi.'],
+        ['Analiză', 'plan', 'Analiză.', 'Vorbim cu oamenii care vor folosi aplicația și vedem cum lucrează acum.'],
+        ['Propunere', 'plan', 'Propunere.', 'Stabilim modulele, etapele și bugetul, ca să știi de la început ce primești.'],
+        ['Dezvoltare', 'build', 'Dezvoltare.', 'Livrăm modul cu modul, cu datele importate și echipa instruită la fiecare.'],
+        ['Mentenanță', 'care', 'Mentenanță.', 'După lansare ne ocupăm de suport, actualizări și funcții noi.'],
     ];
 
-    $log = [
-        ['14:02', 'Ana P. a aprobat cererea #2381'],
-        ['13:47', 'Mihai R. a modificat suma'],
-        ['11:15', 'Ioana D. a încărcat documentul'],
-        ['10:38', 'Radu T. a trimis cererea spre aprobare'],
-        ['09:54', 'Elena M. a creat cererea #2381'],
-    ];
+    // When each step lights (in --step's): the modules' bars at 2, 3 and 4,
+    // so maintenance follows the last of them.
+    $at = ['plan' => null, 'build' => 2, 'care' => 5];
 
     // The questions: the accordion and the FAQPage JSON-LD both read this list.
     $questions = [
@@ -109,6 +117,7 @@
     description="Aplicații construite pe procesele tale: ERP, CRM, registratură, fluxuri de aprobare, rapoarte și integrări cu e-Factura și SPV."
     :canonical="$canonical"
     header-theme="dark"
+    :footer-w="true"
 >
     @push('head')
         <script type="application/ld+json">{!! json_encode($faq, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_HEX_TAG | JSON_THROW_ON_ERROR) !!}</script>
@@ -158,142 +167,121 @@
         'onBackdrop' => true,
         'data' => [
             'eyebrow' => 'De ce la comandă',
-            'statement' => "Programele gata făcute te obligă să lucrezi ca ele.\nNoi construim aplicația care lucrează ca tine.",
-            'text' => 'Pornim de la procesul tău așa cum e acum, cu documentele, aprobările și excepțiile lui, și îl transformăm într-o aplicație pe care echipa o folosește fără ocolișuri. O livrăm pe etape, o legăm de programele pe care le ai deja și rămânem alături de tine după lansare.',
+            'statement' => "Aplicația se adaptează\nla felul în care lucrezi,\nnu invers.",
+            'text' => 'Pornim de la procesul tău așa cum e acum, cu documentele, aprobările și excepțiile lui, și îl transformăm într-o aplicație pe care echipa o folosește fără soluții ocolitoare. O livrăm pe etape, o legăm de programele pe care le ai deja și ne ocupăm de ea și după lansare.',
             'link' => ['label' => 'Cum lucrăm ↓', 'url' => '#cum-lucram'],
         ],
     ])
 
     {{-- ================================================== What it changes --}}
-    {{-- The light panel, rising over the dark area. What it changes, as the
-         home page's cells between hairlines, then the honest alternative. --}}
+    {{-- The light panel, rising over the dark area. What it changes, under a
+         centred head, as cards in three staggered columns. --}}
     <section class="chapter chapter--light sw-why" aria-labelledby="sw-why-title" data-reveal-pace="fast">
         <div class="chapter__inner">
-            <header class="chapter__head" data-reveal="head">
-                <div class="chapter__head-main">
-                    <h2 id="sw-why-title" class="chapter__title">De ce software la comandă.</h2>
-                </div>
-                <p class="chapter__intro">O aplicație construită pe procesul tău nu e încă un program de învățat. Preia ce faceți deja, în ordinea în care o faceți, și se ocupă de pașii care se repetă.</p>
-            </header>
+            <x-section.center-head
+                id="sw-why-title"
+                label="Ce se schimbă"
+                title="Munca de rutină o face aplicația,
+                    echipa face ce contează."
+                highlight="o face aplicația"
+            />
 
-            <x-site.chapter.cells :cells="$benefits" :numbered="false" class="chapter-cells--flush" data-reveal />
-
-            <p class="sw-why__foot" data-reveal>
-                Dacă nevoia ta e comună în domeniu, un produs gata de folosit poate fi mai rapid.
-                <a href="/produse/" class="sw-link">Vezi produsele SaaS →</a>
-            </p>
+            <x-section.benefit-columns :items="$benefits" />
         </div>
     </section>
 
     {{-- ================================================== What we build --}}
-    {{-- Tabs: the modules on the left, the active one's mock-up on the
-         right; an accordion below 1024px. Without the script: the first
-         module, the others behind their tabs. --}}
-    <section class="chapter chapter--light sw-build" aria-labelledby="sw-build-title" data-reveal-pace="fast">
+    {{-- The modules as a carousel: a panel each, its interface large beside
+         its name, dragged or stepped through with the arrows and dots; a
+         row that scrolls sideways by itself without the script
+         (js/public/software-reel.ts). --}}
+    <section class="chapter chapter--light sw-build sw-reel" aria-labelledby="sw-build-title" data-reveal-pace="fast" data-sw-reel>
         <div class="chapter__inner">
             <header class="chapter__head" data-reveal="head">
                 <div class="chapter__head-main">
                     <h2 id="sw-build-title" class="chapter__title">Ce construim.</h2>
                 </div>
+                <div class="sw-reel__aside">
+                    <p class="chapter__intro">Module pe care le combinăm după felul în care lucrezi, de la unul singur la tot sistemul.</p>
+                    <p class="sw-reel__count" aria-hidden="true"><span data-sw-reel-current>01</span> / {{ sprintf('%02d', count($modules)) }}</p>
+                </div>
             </header>
 
-            <div class="sw-explorer" data-sw-explorer data-reveal>
-                <div class="sw-explorer__tabs" role="tablist" aria-label="Module" aria-orientation="vertical" data-sw-tablist>
+            <div class="sw-reel__viewport" tabindex="0" role="group" aria-roledescription="carusel" aria-label="Module" data-sw-reel-viewport>
+                <ol class="sw-reel__track" data-sw-reel-track>
                     @foreach ($modules as [$key, $name, $text])
-                        <button type="button" role="tab" id="modul-{{ $key }}-tab" class="sw-tab" aria-selected="{{ $loop->first ? 'true' : 'false' }}" aria-controls="modul-{{ $key }}" @unless ($loop->first) tabindex="-1" @endunless data-sw-tab>
-                            <span class="sw-tab__name">{{ $name }}</span>
-                            <span class="sw-tab__icon" aria-hidden="true"></span>
-                        </button>
-                    @endforeach
-                </div>
-
-                <div class="sw-explorer__stage" data-sw-stage>
-                    @foreach ($modules as [$key, $name, $text])
-                        <div role="tabpanel" id="modul-{{ $key }}" class="sw-panel" aria-labelledby="modul-{{ $key }}-tab" tabindex="0" @unless ($loop->first) hidden @endunless data-sw-panel>
-                            <div class="sw-panel__body">
-                                <div class="sw-panel__copy">
-                                    <h3 class="sw-panel__title">{{ $name }}</h3>
-                                    <p class="sw-panel__text">{{ $text }}</p>
+                        <li class="sw-reel__item" data-sw-reel-item>
+                            <article id="modul-{{ $key }}" class="sw-modcard" aria-labelledby="modul-{{ $key }}-title">
+                                <div class="sw-modcard__copy">
+                                    <span class="sw-modcard__no" aria-hidden="true">{{ sprintf('%02d', $loop->iteration) }}</span>
+                                    <div>
+                                        <h3 id="modul-{{ $key }}-title" class="sw-modcard__name">{{ $name }}</h3>
+                                        <p class="sw-modcard__text">{{ $text }}</p>
+                                    </div>
                                 </div>
-                                <x-software.mockup :variant="$key" />
-                            </div>
-                        </div>
+                                <div class="sw-modcard__screen">
+                                    <x-software.mockup :variant="$key" />
+                                </div>
+                            </article>
+                        </li>
+                    @endforeach
+                </ol>
+            </div>
+
+            {{-- The way through: arrows either side of a dot per module. --}}
+            <div class="sw-reel__controls">
+                <button type="button" class="sw-reel__step sw-reel__step--prev" aria-label="Modulul anterior" data-sw-reel-prev>{!! $arrow !!}</button>
+                <div class="sw-reel__dots">
+                    @foreach ($modules as [$key, $name])
+                        <button type="button" class="sw-reel__dot" aria-label="{{ $name }}" aria-current="{{ $loop->first ? 'true' : 'false' }}" data-sw-reel-dot></button>
                     @endforeach
                 </div>
+                <button type="button" class="sw-reel__step" aria-label="Modulul următor" data-sw-reel-next>{!! $arrow !!}</button>
             </div>
         </div>
     </section>
 
     {{-- ================================================== How we work --}}
-    {{-- On the hero's indigo. The segments light up one after another, once
+    {{-- On the hero's indigo. Four steps, each its segment of the track over
+         its own text; the segments light up one after another, once
          (js/public/software-timeline.ts); drawn lit without the script and
-         with reduced motion. The track is a picture of the stages listed
-         under it, so it is hidden from screen readers. --}}
+         with reduced motion. The track is a picture of the steps' text, so
+         it is hidden from screen readers. --}}
     <section id="cum-lucram" class="chapter chapter--dark sw-steps" aria-labelledby="sw-steps-title" data-nav-tone="dark" data-scroll-target data-reveal-pace="fast">
         <div class="chapter__inner">
             <header class="chapter__head" data-reveal="head">
                 <div class="chapter__head-main">
                     <h2 id="sw-steps-title" class="chapter__title">Cum lucrăm.</h2>
                 </div>
-                <p class="chapter__intro">Lucrând pe etape, primele module ajung la tine devreme, nu la finalul proiectului.</p>
+                <p class="chapter__intro">Lucrăm pe etape, așa că primele module ajung la tine devreme, nu la finalul proiectului.</p>
             </header>
 
             <ol class="sw-timeline" data-sw-timeline>
-                {{-- Planning: two neutral segments, each with its stage. --}}
-                @foreach ([0, 1] as $index)
-                    <li class="sw-stage sw-stage--plan">
-                        <div class="sw-stage__track" aria-hidden="true">
-                            <span class="sw-seg sw-seg--plan" style="--i: {{ $index }}">
-                                <span class="sw-seg__label">{{ rtrim($stages[$index][0], '.') }}</span>
+                {{-- Development carries the "în folosință" tag, once its last
+                     module is in; the other steps keep its place empty, so
+                     every title starts level. --}}
+                @foreach ($stages as $index => [$label, $kind, $name, $line])
+                    <li class="sw-stage sw-stage--{{ $kind }}" style="--i: {{ $at[$kind] ?? $index }}">
+                        <div class="sw-seg sw-seg--{{ $kind }}" aria-hidden="true">
+                            <span class="sw-seg__label">{{ $label }}</span>
+                            @if ($kind === 'build')
+                                <span class="sw-seg__bars">
+                                    @foreach ([2, 3, 4] as $i)
+                                        <span class="sw-seg__bar" style="--i: {{ $i }}"><span class="sw-seg__fill"></span></span>
+                                    @endforeach
+                                </span>
+                                <span class="sw-seg__tag" style="--i: 4">în folosință</span>
+                            @else
                                 <span class="sw-seg__bar"><span class="sw-seg__fill"></span></span>
-                            </span>
+                                <span class="sw-seg__tag sw-seg__tag--none">în folosință</span>
+                            @endif
                         </div>
-                        <div class="sw-stage__text" style="--at: {{ $index }}">
-                            <h3 class="sw-stage__name">{{ $stages[$index][0] }}</h3>
-                            <p class="sw-stage__line">{{ $stages[$index][1] }}</p>
+                        <div class="sw-stage__text">
+                            <h3 class="sw-stage__name">{{ $name }}</h3>
+                            <p class="sw-stage__line">{{ $line }}</p>
                         </div>
                     </li>
                 @endforeach
-
-                {{-- The modules: each in use as soon as it is delivered. --}}
-                <li class="sw-stage sw-stage--build">
-                    <div class="sw-stage__track" aria-hidden="true">
-                        @foreach ([1, 2, 3] as $module)
-                            <span class="sw-seg sw-seg--module" style="--i: {{ $module + 1 }}">
-                                <span class="sw-seg__label">Modul {{ $module }}</span>
-                                <span class="sw-seg__bar"><span class="sw-seg__fill"></span></span>
-                                <span class="sw-seg__tag">în folosință</span>
-                            </span>
-                        @endforeach
-                    </div>
-                    {{-- Phones: the tags over the two stages, the track being a line. --}}
-                    <p class="sw-stage__chips" aria-hidden="true">
-                        @foreach ([1, 2, 3] as $module)
-                            <span>Modul {{ $module }} · în folosință</span>
-                        @endforeach
-                    </p>
-                    {{-- Development lights with the first module, implementation with the last. --}}
-                    @foreach ([2 => 2, 3 => 4] as $index => $at)
-                        <div class="sw-stage__text" style="--at: {{ $at }}">
-                            <h3 class="sw-stage__name">{{ $stages[$index][0] }}</h3>
-                            <p class="sw-stage__line">{{ $stages[$index][1] }}</p>
-                        </div>
-                    @endforeach
-                </li>
-
-                {{-- And on: maintenance fades out to the right. --}}
-                <li class="sw-stage sw-stage--care">
-                    <div class="sw-stage__track" aria-hidden="true">
-                        <span class="sw-seg sw-seg--care" style="--i: 5">
-                            <span class="sw-seg__label">Mentenanță</span>
-                            <span class="sw-seg__bar"><span class="sw-seg__fill"></span></span>
-                        </span>
-                    </div>
-                    <div class="sw-stage__text" style="--at: 5">
-                        <h3 class="sw-stage__name">{{ $stages[4][0] }}</h3>
-                        <p class="sw-stage__line">{{ $stages[4][1] }}</p>
-                    </div>
-                </li>
             </ol>
         </div>
     </section>
@@ -301,78 +289,14 @@
     {{-- ================================================== What every project gets --}}
     <section class="chapter chapter--light sw-gets" aria-labelledby="sw-gets-title" data-reveal-pace="fast">
         <div class="chapter__inner">
-            <header class="chapter__head" data-reveal="head">
-                <div class="chapter__head-main">
-                    <h2 id="sw-gets-title" class="chapter__title">Ce primești în orice proiect.</h2>
-                </div>
-            </header>
+            <x-section.center-head
+                id="sw-gets-title"
+                label="Inclus mereu"
+                title="Tot ce face o aplicație sigură și ușor de folosit, inclus din prima zi."
+                highlight="inclus din prima zi"
+            />
 
-            <ul class="sw-bento" data-reveal>
-                <li class="sw-card sw-card--log" data-reveal-child>
-                    <div class="sw-card__copy">
-                        <h3 class="sw-card__title">Istoric complet.</h3>
-                        <p class="sw-card__text">Fiecare modificare rămâne înregistrată: cine, ce și când.</p>
-                    </div>
-                    <div class="sw-log" aria-hidden="true">
-                        <p class="sw-log__head"><span>Cererea #2381</span><span>Istoric</span></p>
-                        <ol class="sw-log__lines">
-                            @foreach ($log as [$time, $entry])
-                                <li><time>{{ $time }}</time><span>·</span><span>{{ $entry }}</span></li>
-                            @endforeach
-                        </ol>
-                    </div>
-                </li>
-
-                <li class="sw-card sw-card--roles" data-reveal-child>
-                    <div class="sw-roles" aria-hidden="true">
-                        <span class="sw-role sw-role--open"><x-software.icon name="lock-open" />Administrator</span>
-                        <span class="sw-role sw-role--open"><x-software.icon name="lock-open" />Aprobator</span>
-                        <span class="sw-role"><x-software.icon name="lock" />Utilizator</span>
-                    </div>
-                    <div class="sw-card__copy">
-                        <h3 class="sw-card__title">Acces pe roluri.</h3>
-                        <p class="sw-card__text">Fiecare utilizator vede și modifică doar ce îi e permis.</p>
-                    </div>
-                </li>
-
-                <li class="sw-card sw-card--devices" data-reveal-child>
-                    <div class="sw-devices" aria-hidden="true">
-                        <span class="sw-devices__laptop">
-                            <span class="sw-devices__screen">@include('public.software.device-screen')</span>
-                            <span class="sw-devices__base"></span>
-                        </span>
-                        <span class="sw-devices__phone">
-                            <span class="sw-devices__screen">@include('public.software.device-screen')</span>
-                        </span>
-                    </div>
-                    <div class="sw-card__copy">
-                        <h3 class="sw-card__title">În browser, pe orice dispozitiv.</h3>
-                        <p class="sw-card__text">Fără instalări, de la birou sau de pe teren.</p>
-                    </div>
-                </li>
-
-                <li class="sw-card sw-card--backup" data-reveal-child>
-                    <p class="sw-backup" aria-hidden="true"><span class="sw-backup__dot"></span>Ultimul backup: azi, 03:00</p>
-                    <div class="sw-card__copy">
-                        <h3 class="sw-card__title">Backup și securitate.</h3>
-                        <p class="sw-card__text">Copii de siguranță automate și acces securizat.</p>
-                    </div>
-                </li>
-
-                <li class="sw-card sw-card--plain" data-reveal-child>
-                    <div class="sw-card__copy">
-                        <h3 class="sw-card__title">Documentație și instruire.</h3>
-                        <p class="sw-card__text">Echipa ta știe cum să folosească aplicația de la prima zi.</p>
-                    </div>
-                </li>
-
-                <li class="sw-card sw-card--plain" data-reveal-child>
-                    <div class="sw-card__copy">
-                        <h3 class="sw-card__title">Poate crește.</h3>
-                        <p class="sw-card__text">Module noi se adaugă peste ce există, fără să o iei de la zero.</p>
-                    </div>
-                </li>
-            </ul>
+            <x-section.feature-panel :items="$included" />
         </div>
     </section>
 
@@ -417,27 +341,30 @@
     @endif
 
     {{-- ================================================== Questions --}}
-    {{-- /web's rows that open (js/public/project-accordion.ts). --}}
+    {{-- /web's rows that open (js/public/project-accordion.ts), the title
+         beside them, held while they scroll (js/public/split-heads.ts). --}}
     <section class="chapter chapter--light web-faq sw-faq" aria-labelledby="sw-faq-title" data-reveal-pace="fast">
         <div class="chapter__inner">
-            <header class="chapter__head" data-reveal="head">
-                <div class="chapter__head-main">
+            <div class="web-split" data-split>
+                <header class="web-split__head" data-split-head data-reveal="head">
                     <h2 id="sw-faq-title" class="chapter__title">Întrebări frecvente.</h2>
-                </div>
-            </header>
+                    <p class="web-split__line">Fiecare organizație e altfel. Spune-ne cum lucrați și îți răspundem în aceeași zi lucrătoare.</p>
+                    <x-ui.arrow-link href="/contact/">Scrie-ne</x-ui.arrow-link>
+                </header>
 
-            <div class="web-faq__list" data-reveal data-sw-faq>
-                @foreach ($questions as [$question, $answer])
-                    <details class="web-faq__item" data-accordion-item data-reveal-child>
-                        <summary class="web-faq__question">
-                            <span>{{ $question }}</span>
-                            <span class="web-faq__icon" aria-hidden="true"></span>
-                        </summary>
-                        <div class="web-faq__answer" data-accordion-case>
-                            <p>{{ $answer }}</p>
-                        </div>
-                    </details>
-                @endforeach
+                <div class="web-faq__list web-split__body" data-split-body data-reveal data-sw-faq>
+                    @foreach ($questions as [$question, $answer])
+                        <details class="web-faq__item" data-accordion-item data-reveal-child>
+                            <summary class="web-faq__question">
+                                <span>{{ $question }}</span>
+                                <span class="web-faq__icon" aria-hidden="true"></span>
+                            </summary>
+                            <div class="web-faq__answer" data-accordion-case>
+                                <p>{{ $answer }}</p>
+                            </div>
+                        </details>
+                    @endforeach
+                </div>
             </div>
         </div>
     </section>

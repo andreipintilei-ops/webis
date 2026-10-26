@@ -18,6 +18,7 @@ use App\Support\Brand;
 use App\Support\Legacy\Import\BodyConverter;
 use App\Support\Legacy\Import\LegacyBodyConverter;
 use App\Support\RichText\RichText;
+use App\Support\Seo\Sitemap;
 use Carbon\CarbonImmutable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\Relation;
@@ -87,6 +88,13 @@ class AppServiceProvider extends ServiceProvider
             'asset' => Asset::class,
             'lead' => Lead::class,
         ]);
+
+        // The sitemap lists these: a change to one (a slug, a noindex, an
+        // unpublish, a delete) rebuilds it on its next request.
+        foreach ([Page::class, Project::class, PostCategory::class] as $model) {
+            $model::saved(fn () => Sitemap::forget());
+            $model::deleted(fn () => Sitemap::forget());
+        }
 
         // Users, settings, redirects and the 404 log. Editors run everything else.
         Gate::define('admin-only', fn (User $user): bool => $user->isAdmin());

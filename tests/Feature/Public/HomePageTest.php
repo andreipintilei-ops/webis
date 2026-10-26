@@ -70,7 +70,7 @@ it('shows the top bar sections, with the Servicii dropdown and no Produse', func
 
     expect($bar[0])
         // The dropdown opens under a chevron.
-        ->toMatch('#<li class="site-nav__dropdown hidden md:block">\s*<a href="/solutii/" class="site-link"\s*>\s*<span class="roll">.*?</span>\s*<svg class="site-nav__chevron"#s')
+        ->toMatch('#<li class="site-nav__dropdown hidden md:block">\s*<a href="/servicii/" class="site-link"\s*>\s*<span class="roll">.*?</span>\s*<svg class="site-nav__chevron"#s')
         // Its label, rolling letter by letter (components/ui/roll).
         ->and(strip_tags($bar[0]))->toContain('Servicii')
         ->and($bar[0])
@@ -85,10 +85,18 @@ it('shows the top bar sections, with the Servicii dropdown and no Produse', func
         ->not->toContain('href="/despre/"')
         ->toContain('href="/blog/"')
         ->and(substr_count($bar[0], 'site-link__text">Produse<'))->toBe(0);
+
+    // Acasă first, before Servicii, besides the logo; marked on the home page.
+    $text = preg_replace('/\s+/', ' ', strip_tags($bar[0]));
+
+    expect(strpos($text, 'Acasă'))->toBeLessThan(strpos($text, 'Servicii'))
+        ->and($bar[0])->toMatch('#<a href="/" class="site-link is-active"\s*aria-current="page"#');
 });
 
 it('shows Contact in the top bar as the main button, in the header tone', function () {
-    $light = $this->get('/solutii')->assertOk()->getContent();
+    // A page without a hero: the header on the light paper.
+    Page::factory()->create(['slug' => 'pagina', 'blocks' => []]);
+    $light = $this->get('/pagina')->assertOk()->getContent();
 
     preg_match('/<a href="\/contact\/" class="pill btn-light">.*?<\/a>/s', $light, $pill);
 
@@ -169,7 +177,7 @@ it('keeps the home page to its blocks, then the stage, the clients\' wall and th
         ->and($html)->toMatch('#<a href="https://smilesoft.ro"[^>]*target="_blank"[^>]*rel="noopener"#')
         ->toMatch('#<a href="https://bugetare.ro"[^>]*target="_blank"[^>]*rel="noopener"#')
         ->toContain('href="/creare-magazin-online/"')
-        ->toContain('href="/mentenanta/"')
+        ->toContain('href="/mentenanta-site-wordpress/"')
         // Then the closing panel the plates gather into.
         ->toContain('data-stage-finale')
         ->toContain('Site, platformă sau aplicație?')
@@ -235,7 +243,7 @@ it('closes every page with the footer on the violet gradient: the call, the link
     $company->email = 'contact@webis.ro';
     $company->save();
 
-    $html = $this->get('/solutii')->assertOk()->getContent();
+    $html = $this->get('/servicii')->assertOk()->getContent();
 
     preg_match('/<footer class="site-footer".*?<\/footer>/s', $html, $footer);
 
@@ -258,7 +266,7 @@ it('sets the tone of the sections below the hero on /poveste from one setting', 
 
     // Other pages are not affected.
     config(['site.lower_tone' => 'dark']);
-    expect($this->get('/solutii')->assertOk()->getContent())->not->toContain('data-lower');
+    expect($this->get('/servicii')->assertOk()->getContent())->not->toContain('data-lower');
 });
 
 it('keeps the services story trial at /poveste, on a copy of the home page', function () {
@@ -303,4 +311,15 @@ it('builds the home page around the stage, and serves /produse from its own temp
         ->toContain('<title>Produse SaaS')
         ->not->toContain('Pagina din CMS')
         ->not->toContain('data-shapeshifter');
+});
+
+it('keeps the stage\'s object on the right in all three chapters on /acasa-3d-dreapta, and alternates it on the home page', function () {
+    $sides = function (string $html): array {
+        preg_match_all('#data-stage-chapter data-side="([a-z]+)"#', $html, $match);
+
+        return $match[1];
+    };
+
+    expect($sides($this->get('/acasa-3d-dreapta')->assertOk()->getContent()))->toBe(['right', 'right', 'right'])
+        ->and($sides($this->get('/')->getContent()))->toBe(['right', 'left', 'right']);
 });

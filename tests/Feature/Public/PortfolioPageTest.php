@@ -124,14 +124,18 @@ it('never shows Webis\'s own products as client work', function () {
         ->not->toContain('portfolio-products');
 });
 
-it('closes on the home page\'s panel, its own W forming on it, instead of the footer\'s call', function () {
+it('closes on the footer\'s call in its own words, the W forming beside it over the gradient', function () {
     $html = $this->get('/portofoliu')->assertOk()->getContent();
+    preg_match('#<footer.*</footer>#s', $html, $footer);
 
-    expect($html)
-        ->toContain('class="stage-finale stage-finale--standalone portfolio-cta" data-finale-w')
+    expect($footer[0])
+        ->toContain('class="site-footer__cta site-footer__cta--w"')
+        ->toContain('class="site-footer__w" data-finale-w')
         ->toContain('Site, platformă sau aplicație?')
         ->toContain('Un site nou, un magazin online sau o platformă pentru toată organizația.')
-        ->not->toContain('Ai un proiect');
+        ->not->toContain('Ai un proces')
+        // No panel of its own before the footer any more.
+        ->and($html)->not->toContain('stage-finale--standalone');
 });
 
 it('shows the home page\'s wall of clients\' logos, in the list\'s section, with their names as alt text', function () {
@@ -202,9 +206,10 @@ it('shows up to three related client projects of the service page\'s type, and n
     $web = $this->get('/web')->assertOk()->getContent();
     $software = $this->get('/software-la-comanda')->assertOk()->getContent();
 
-    // /web and /software-la-comanda are their own pages: each lists its own
-    // type's projects as the site's card; a plain CMS page lists none.
-    expect(substr_count($web, 'class="post-card web-project"'))->toBe(3)
+    // /web and /software-la-comanda are their own pages: each shows its own
+    // type's projects (/web as the case bento, one at a time; the software
+    // page as the site's card); a plain CMS page lists none.
+    expect(substr_count($web, 'data-bento-case'))->toBe(3)
         ->and($web)->not->toContain('Platforma cinci')
         ->and($software)->toContain('Platforma cinci')->not->toContain('Siteul doi')
         ->and(substr_count($software, 'class="post-card web-project"'))->toBe(1)

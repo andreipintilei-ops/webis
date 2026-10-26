@@ -43,6 +43,11 @@ export async function initSmoothScroll(): Promise<void> {
 
     gsap.registerPlugin(ScrollTrigger, ScrollSmoother);
 
+    // On phones the address bar coming and going resizes the window: not a
+    // real resize, so the scroll-linked parts are not measured again for it
+    // (they would jump mid-scroll). A real one (rotating) still counts.
+    ScrollTrigger.config({ ignoreMobileResize: true });
+
     smoother = ScrollSmoother.create({
         wrapper,
         content,

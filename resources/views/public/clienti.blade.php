@@ -41,6 +41,14 @@
     $description = $page?->seo->description
         ?: 'Proiecte Webis pentru clienți: software la comandă, site-uri de prezentare, magazine online și identitate vizuală.';
 
+    // Each page of the whole list names itself, as the blog's do. A type's
+    // list (?tip=…), at any page, names the portfolio itself: null, the
+    // layout's default, without the query string.
+    $listPage = $projects->currentPage();
+    $canonical = $type === null && $listPage > 1
+        ? \App\Support\PublicUrls::canonical(request()->getPathInfo()).'?pagina='.$listPage
+        : null;
+
     // DUMMY DATA: until the projects are in the admin — a few of the live
     // webis.ro's, their screenshots straight from it, to check the design.
     // Nothing of this is in the database; the links lead nowhere yet.
@@ -87,8 +95,11 @@
 <x-layouts.public
     :title="$title"
     :description="$description"
+    :canonical="$canonical"
     header-theme="dark"
-    :footer-cta="false"
+    footer-cta-title="Site, platformă sau aplicație?"
+    footer-cta-intro="Un site nou, un magazin online sau o platformă pentru toată organizația."
+    :footer-w="true"
 >
     <x-site.page-hero
         label="Clienți · Webis"
@@ -117,10 +128,6 @@
             <header class="portfolio__head" data-reveal="head">
                 <h2 id="portfolio-title" class="chapter__title">Toate proiectele</h2>
 
-                @if ($rows !== [])
-                    <x-site.work-views />
-                @endif
-
                 <nav class="portfolio-filter" aria-label="Tipul proiectului">
                     <ul>
                         @foreach ($filters as $filter)
@@ -130,6 +137,10 @@
                         @endforeach
                     </ul>
                 </nav>
+
+                @if ($rows !== [])
+                    <x-site.work-views />
+                @endif
             </header>
 
             @if ($rows !== [])
@@ -144,10 +155,5 @@
         {{-- The home page's wall of logos, on the list's ground: the section
              runs on under it, out to the screen's edges. --}}
         <x-site.logo-wall :embedded="true" class="portfolio-clients" />
-
-        {{-- ================================================== The closing call --}}
-        {{-- The home page's panel, word for word, the W forming on it out of
-             nowhere; it stands in for the footer's call. --}}
-        <x-site.cta-panel :standalone="true" class="portfolio-cta" />
     </section>
 </x-layouts.public>

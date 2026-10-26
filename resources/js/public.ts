@@ -1,5 +1,6 @@
 import type { Component } from 'vue';
 import { initAnchorScroll } from '@/public/anchor-scroll';
+import { initCaseBentos } from '@/public/case-bento';
 import { initContactForm } from '@/public/contact-form';
 import { initExplorers } from '@/public/explorer';
 import { initReveals } from '@/public/reveals';
@@ -18,7 +19,7 @@ import { initProjectSteps } from '@/public/project-steps';
 import { initRichTextTocs } from '@/public/rich-text-toc';
 import { initSiteNav } from '@/public/site-nav';
 import { initSmoothScroll } from '@/public/smooth-scroll';
-import { initSoftwareExplorer } from '@/public/software-explorer';
+import { initSoftwareReel } from '@/public/software-reel';
 import { initSoftwareTimeline } from '@/public/software-timeline';
 import { initServices } from '@/public/services';
 import { initServiceCards } from '@/public/service-cards';
@@ -101,13 +102,13 @@ function boot(): void {
     initContactForm();
     initLiteVideos();
     initExplorers();
-    initSoftwareExplorer();
     initAnchorScroll(smooth);
     initReviewsCarousels();
     initServicesPlain();
     initHeroPlanes();
     initWorkLists();
     initProjectAccordion();
+    initCaseBentos();
     void smooth.then(() => {
         void initStatements();
         void initRichTextTocs();
@@ -118,12 +119,34 @@ function boot(): void {
         void initProjectSteps();
         void initProductStack();
         void initSoftwareTimeline();
+        initSoftwareReel();
         initLogoWalls();
 
         // The stage's 3D object (Three.js), its own chunk.
         if (document.querySelector('[data-shapeshifter]')) {
             void import('@/public/shapeshifter').then(({ initShapeshifter }) =>
                 initShapeshifter(),
+            );
+        }
+
+        // The benefit rows drifting apart (/web).
+        if (document.querySelector('[data-brows], [data-bcols]')) {
+            void import('@/public/benefit-rows').then(({ initBenefitRows }) =>
+                initBenefitRows(),
+            );
+        }
+
+        // Split sections' heads holding beside their content (/web).
+        if (document.querySelector('[data-split]')) {
+            void import('@/public/split-heads').then(({ initSplitHeads }) =>
+                initSplitHeads(),
+            );
+        }
+
+        // The stage's panel opening out to full width (the home page).
+        if (document.querySelector('.stage [data-stage-finale]')) {
+            void import('@/public/stage-finale-grow').then(
+                ({ initStageFinaleGrow }) => initStageFinaleGrow(),
             );
         }
 

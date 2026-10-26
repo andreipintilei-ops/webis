@@ -5,7 +5,9 @@
 --}}
 @props(['href', 'tone' => 'light'])
 
-<a href="{{ $href }}" {{ $attributes->class(['arrow-link', 'btn-'.$tone]) }}>
+{{-- A path in its canonical form (TrailingSlash::href): a block's link typed
+     as "/web" still takes no 301. --}}
+<a href="{{ \App\Support\TrailingSlash::href($href) }}" {{ $attributes->class(['arrow-link', 'btn-'.$tone]) }}>
     <span class="arrow-link__circle" aria-hidden="true">
         <span class="arrow-link__dot"></span>
         <span class="arrow-link__fill"></span>

@@ -27,7 +27,7 @@
 
     <nav aria-label="Principal">
         <ul class="site-nav__links">
-            @foreach (\App\Support\SiteNavigation::links(withHome: false) as $link)
+            @foreach (\App\Support\SiteNavigation::links() as $link)
                 @continue (! $link['bar'])
 
                 @if ($link['cta'])

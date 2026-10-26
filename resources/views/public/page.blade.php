@@ -29,6 +29,8 @@
 @endphp
 <x-layouts.public
     :title="$page->seo->title ?: $page->title"
+    :canonical="$page->seo->canonical"
+    :noindex="$page->seo->noindex"
     :header-theme="$article ? 'dark' : \App\Blocks\HeroBlock::headerThemeFor($page->blocks)"
     :hero-leave="$heroLeave"
     :footer-cta="! \App\Blocks\QuoteFormBlock::appearsIn($page->blocks)"

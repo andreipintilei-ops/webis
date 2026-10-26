@@ -17,7 +17,9 @@
 @endphp
 
 @if ($href !== null)
-    <a href="{{ $href }}" {{ $attributes->class(['pill', 'btn-'.$tone]) }}>
+    {{-- A path in its canonical form (TrailingSlash::href): a block's link
+         typed as "/contact" still takes no 301. --}}
+    <a href="{{ \App\Support\TrailingSlash::href($href) }}" {{ $attributes->class(['pill', 'btn-'.$tone]) }}>
         <span class="pill__ripple" aria-hidden="true"><span></span></span>
         <span class="pill__title"><x-ui.roll :text="$text" /></span>
     </a>

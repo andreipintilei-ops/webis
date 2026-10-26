@@ -303,7 +303,11 @@
                         "elType": "widget",
                         "widgetType": "progress",
                         "settings": {
-                            "title": "Wordpress"
+                            "title": "Wordpress",
+                            "percent": {
+                                "unit": "%",
+                                "size": 78
+                            }
                         },
                         "elements": []
                     },
@@ -312,7 +316,11 @@
                         "elType": "widget",
                         "widgetType": "progress",
                         "settings": {
-                            "title": "Joomla"
+                            "title": "Joomla",
+                            "percent": {
+                                "unit": "%",
+                                "size": 12
+                            }
                         },
                         "elements": []
                     },
@@ -321,7 +329,11 @@
                         "elType": "widget",
                         "widgetType": "progress",
                         "settings": {
-                            "title": "Alte platforme"
+                            "title": "Alte platforme",
+                            "percent": {
+                                "unit": "%",
+                                "size": 5
+                            }
                         },
                         "elements": []
                     },
@@ -330,7 +342,11 @@
                         "elType": "widget",
                         "widgetType": "progress",
                         "settings": {
-                            "title": "Magento"
+                            "title": "Magento",
+                            "percent": {
+                                "unit": "%",
+                                "size": 3
+                            }
                         },
                         "elements": []
                     },
@@ -339,7 +355,11 @@
                         "elType": "widget",
                         "widgetType": "progress",
                         "settings": {
-                            "title": "Drupal"
+                            "title": "Drupal",
+                            "percent": {
+                                "unit": "%",
+                                "size": 1
+                            }
                         },
                         "elements": []
                     }

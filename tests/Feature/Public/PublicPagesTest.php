@@ -14,7 +14,7 @@ it('serves the section pages', function (string $path, string $title) {
         ->assertSee("<title>{$title} | Webis</title>", escape: false)
         ->assertSee('data-theo-menu', escape: false);
 })->with([
-    ['/solutii', 'Soluții'],
+    ['/servicii', 'Servicii'],
     ['/portofoliu', 'Portofoliu'],
     ['/blog', 'Blog'],
 ]);
@@ -39,13 +39,49 @@ it('redirects a renamed page from its old address', function () {
     $page = Page::factory()->create(['slug' => 'creare-site']);
     $page->update(['slug' => 'creare-site-de-prezentare']);
 
-    $this->get('/creare-site')->assertRedirect('/creare-site-de-prezentare')->assertStatus(301);
+    // Straight to the canonical address, slash and all: one hop, no chain.
+    $this->get('/creare-site')->assertRedirect('/creare-site-de-prezentare/')->assertStatus(301);
 });
 
 it('sends the home page slug to the root', function () {
     Page::factory()->ofType(PageType::Home)->create(['slug' => 'acasa']);
 
     $this->get('/acasa')->assertRedirect('/')->assertStatus(301);
+});
+
+it('serves the industry pages under /servicii, as the old site did, and lists them there', function () {
+    Page::factory()->ofType(PageType::Industry)->create(['title' => 'Creare site stomatologie', 'slug' => 'creare-site-stomatologie']);
+    Page::factory()->ofType(PageType::Industry)->draft()->create(['title' => 'Creare site ciorna', 'slug' => 'creare-site-ciorna']);
+
+    $this->get('/servicii/creare-site-stomatologie')
+        ->assertOk()
+        ->assertSee('<title>Creare site stomatologie | Webis</title>', escape: false);
+
+    $this->get('/servicii')
+        ->assertOk()
+        ->assertSee('href="/servicii/creare-site-stomatologie/"', escape: false)
+        ->assertSee('Stomatologie')
+        ->assertDontSee('creare-site-ciorna');
+
+    $this->get('/servicii/creare-site-ciorna')->assertNotFound();
+    $this->get('/servicii/nu-exista')->assertNotFound();
+});
+
+it('gives each page one address: an industry page at the root, or another page under /servicii, goes to its own', function () {
+    Page::factory()->ofType(PageType::Industry)->create(['slug' => 'creare-site-stomatologie']);
+    Page::factory()->ofType(PageType::Contact)->create(['slug' => 'contact']);
+
+    $this->get('/creare-site-stomatologie')->assertRedirect('/servicii/creare-site-stomatologie/')->assertStatus(301);
+    $this->get('/servicii/contact')->assertRedirect('/contact/')->assertStatus(301);
+    $this->get('/solutii')->assertRedirect('/servicii/')->assertStatus(301);
+});
+
+it('sends a renamed industry page to its address under /servicii', function () {
+    $page = Page::factory()->ofType(PageType::Industry)->create(['slug' => 'creare-site-dentist']);
+    $page->update(['slug' => 'creare-site-stomatologie']);
+
+    $this->get('/servicii/creare-site-dentist')->assertRedirect('/servicii/creare-site-stomatologie/')->assertStatus(301);
+    $this->get('/creare-site-dentist')->assertRedirect('/servicii/creare-site-stomatologie/')->assertStatus(301);
 });
 
 it('never lets the catch-all shadow application routes', function () {
@@ -157,12 +193,16 @@ it('lists the blog\'s categories beside the articles, each filtering them at its
 
 it('serves /web: its own title, one H1, the sections in order, the offers to their pages', function () {
     $html = $this->get('/web')->assertOk()->getContent();
-    preg_match_all('#<h2 id="web-[a-z]+-title"[^>]*>([^<]+)</h2>#', $html, $titles);
+    preg_match_all('#<h2 id="web-[a-z]+-title"[^>]*>([^<]+)#', $html, $titles);
 
     expect($html)->toContain('<title>Site-uri și magazine online | Webis</title>')
         ->and(substr_count($html, '<h1'))->toBe(1)
-        ->and($titles[1])->toBe(['Ce ți se potrivește.', 'Ce primești în orice proiect.', 'Cum lucrăm.', 'Proiecte.', 'După lansare.', 'Întrebări frecvente.'])
-        ->and($html)->toContain('href="/creare-site-de-prezentare/" class="post-card web-offer"')
-        ->toContain('href="/magazin-online/" class="post-card web-offer web-offer--dark"')
+        // No projects here: no projects section between the panel and the steps.
+        ->and(array_map('trim', $titles[1]))->toBe(['Un site care', 'Cum lucrăm', 'După lansare.', 'Întrebări frecvente.'])
+        // The offers across the hero's foot, each to its page; the benefits as cards.
+        ->and($html)->toContain('href="/creare-site-de-prezentare/" class="web-hero-offer"')
+        ->toContain('href="/creare-magazin-online/" class="web-hero-offer"')
+        ->and(substr_count($html, 'class="bcard"'))->toBe(6)
+        ->and(substr_count($html, 'class="ncols__item"'))->toBe(5)
         ->and(substr_count($html, 'class="web-faq__item"'))->toBe(5);
 });

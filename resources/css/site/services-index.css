@@ -1,0 +1,52 @@
+/*
+  /servicii (public/services/index): the hero's three services across its
+  foot (the /web offers, css/site/web.css, three to a row from 1024px), then
+  the industries as an index: names on hairlines, three columns from
+  1024px, each with the arrow that slides in on hover.
+*/
+@layer components {
+    .web-hero-offers--three {
+        @apply lg:grid-cols-3;
+
+        & .web-hero-offer {
+            @apply lg:pr-10;
+        }
+
+        & > li + li .web-hero-offer {
+            @apply lg:pr-10 lg:pl-10;
+        }
+
+        & > li:last-child .web-hero-offer {
+            @apply lg:pr-0;
+        }
+    }
+
+    .services-index {
+        @apply mt-10 grid gap-x-10 sm:grid-cols-2 lg:mt-12 lg:grid-cols-3;
+    }
+
+    .services-index__link {
+        @apply flex items-center justify-between gap-6 border-t py-5 text-lg leading-snug font-medium tracking-[-0.01em] md:text-xl;
+        border-color: var(--line);
+        transition: color var(--slow) var(--ease);
+
+        &:is(:hover, :focus-visible) {
+            color: var(--violet-500);
+
+            & .services-index__arrow {
+                @apply translate-x-0 opacity-100;
+            }
+        }
+    }
+
+    .services-index__arrow {
+        @apply size-3 shrink-0 -translate-x-2 opacity-0;
+        transition:
+            transform var(--slow) var(--ease),
+            opacity var(--slow) var(--ease);
+
+        & svg {
+            @apply size-full;
+        }
+    }
+}

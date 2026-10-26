@@ -20,9 +20,14 @@ use Throwable;
  * (UrlExpectation): 410, a single 301 to a target that answers 200, or 200.
  *
  * A 200 is not enough. Each one must also carry a canonical naming itself
- * (reported as a warning while the layout has no canonical tag), `noindex`
- * only where the old site had it, and a body of at least --min-words words —
- * the tripwire for content an extractor lost.
+ * (its own path, on the base's host or on the canonical site's —
+ * config site.canonical_url — since a local or staging copy still names the
+ * real pages), `noindex` only where the old site had it, and a body of at
+ * least --min-words words — the tripwire for content an extractor lost.
+ *
+ * A site that isn't production noindexes every page (the public layout).
+ * Against one, --not-production reports that blanket tag as a warning, not
+ * a failure on every page; production must never need the flag.
  *
  * Writes every failure and warning to `verify-failures-{timestamp}.csv`.
  * Run it against a staging server on the production stack, not only Herd.
@@ -34,15 +39,21 @@ class VerifyLegacySite extends Command
         {--map= : The reviewed URL map (default: storage/app/private/legacy/url-map-reviewed.csv)}
         {--min-words=80 : Fewer words than this in the main content fails a 200}
         {--insecure : Do not verify TLS certificates (a local or staging host)}
+        {--not-production : The site is not production: its blanket noindex is a warning, not a failure}
         {--output= : Where the failures CSV goes (default: storage/app/private/legacy)}';
 
     protected $description = 'Check every old URL answers as the reviewed map says it should';
+
+    /** The robots tag the public layout puts on every page outside production. */
+    private const string NOT_PRODUCTION_ROBOTS = 'noindex, nofollow';
 
     /** @var list<array{path: string, decision: string, expected: string, got: string, severity: string, problem: string}> */
     private array $problems = [];
 
     public function handle(): int
     {
+        // The same instance answers every call in a process (Artisan::call).
+        $this->problems = [];
         $base = rtrim((string) ($this->option('base') ?: config('app.url')), '/');
         $output = rtrim((string) ($this->option('output') ?: storage_path('app/private/legacy')), '/\\');
         $mapPath = (string) ($this->option('map') ?: $output.'/url-map-reviewed.csv');
@@ -164,7 +175,7 @@ class VerifyLegacySite extends Command
         $canonical = $document->querySelector('link[rel~="canonical"]')?->getAttribute('href');
 
         if ($canonical === null || trim($canonical) === '') {
-            $fail('200', 'no canonical', 'warning');
+            $fail('200', 'no canonical');
         } elseif (! $this->isSelf($canonical, $base.$path, $base)) {
             $fail("canonical {$canonical}", 'canonical is not the page itself');
         }
@@ -173,7 +184,9 @@ class VerifyLegacySite extends Command
         $noindex = str_contains($robots, 'noindex');
         $wanted = in_array(trim($row['noindex'] ?? ''), ['1', 'true'], true);
 
-        if ($noindex !== $wanted) {
+        if ($noindex && ! $wanted && $this->option('not-production') && $robots === self::NOT_PRODUCTION_ROBOTS) {
+            $fail("robots \"{$robots}\"", 'noindex everywhere: not production', 'warning');
+        } elseif ($noindex !== $wanted) {
             $fail("robots \"{$robots}\"", $noindex ? 'noindex, but the old page was indexed' : 'indexable, but the old page was noindex');
         }
 
@@ -185,14 +198,16 @@ class VerifyLegacySite extends Command
     }
 
     /**
-     * Whether a canonical names the page itself: same host (a relative one
-     * counts as the base's) and the same path, trailing slash included.
+     * Whether a canonical names the page itself: the page's host (a relative
+     * canonical counts as the base's) or the canonical site's, and the same
+     * path, trailing slash included.
      */
     private function isSelf(string $canonical, string $page, string $base): bool
     {
         $host = fn (string $url): string => strtolower((string) (parse_url($url, PHP_URL_HOST) ?: parse_url($base, PHP_URL_HOST)));
+        $hosts = [$host($page), strtolower((string) parse_url((string) config('site.canonical_url'), PHP_URL_HOST))];
 
-        return $host($canonical) === $host($page)
+        return in_array($host($canonical), $hosts, true)
             && (string) parse_url($canonical, PHP_URL_PATH) === (string) parse_url($page, PHP_URL_PATH);
     }
 

@@ -125,7 +125,7 @@
                     <x-ui.pill tone="dark" data-contact-submit>{{ $page ? 'Trimite mesajul' : 'Trimite' }}</x-ui.pill>
                     <p class="contact__privacy">
                         Folosim datele doar ca să-ți răspundem.
-                        <a href="/confidentialitate/">Confidențialitate</a>
+                        <a href="/politica-de-confidentialitate/">Confidențialitate</a>
                     </p>
                 </div>
 

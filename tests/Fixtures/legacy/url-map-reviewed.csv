@@ -19,3 +19,5 @@ https://www.webis.ro/bucla-a/,/bucla-a,analytics,,,,,,,,,,,,,,,,,,redirect,/bucl
 https://www.webis.ro/bucla-b/,/bucla-b,analytics,,,,,,,,,,,,,,,,,,redirect,/bucla-a/,,,
 https://www.webis.ro/lant-1/,/lant-1,analytics,,,,,,,,,,,,,,,,,,redirect,/lant-2/,,,
 https://www.webis.ro/lant-2/,/lant-2,analytics,,,,,,,,,,,,,,,,,,redirect,/ghid-seo/,,,
+https://www.webis.ro/2026/03/28/,/2026/03/28,search-console,,,,,,,,,,,,,,,,,url:spam-date,gone,,"Prefix row: spam injected on 2026-03-28",,
+https://www.webis.ro/2026/04/14/ghid-seo/,/2026/04/14/ghid-seo,search-console,,,,,,,,,,,,,,,,,,redirect,/ghid-seo/,"Dated rule: answered by HandleNotFound, no table row",,

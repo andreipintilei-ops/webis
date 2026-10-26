@@ -49,6 +49,45 @@
         }
     }
 
+    /*
+      With the W (/portofoliu): the words and the ways to reach us in the
+      left half, one under the other; the W in the right half, smaller than
+      the home page's, standing over the gradient.
+    */
+    .site-footer__cta--w {
+        @apply lg:items-center;
+
+        /* The W spans both rows, so each is taller than its content: the
+           words sit at the foot of theirs and the button at the head of its,
+           the pair together in the middle, beside the W. */
+        & > div:first-child {
+            @apply lg:col-span-6 lg:self-end;
+        }
+
+        /* Under the words, on the left: the button alone. */
+        & .site-footer__reach {
+            @apply lg:col-span-6 lg:col-start-1 lg:row-start-2 lg:items-start lg:self-start lg:pb-0;
+        }
+    }
+
+    .site-footer__w {
+        @apply relative lg:col-span-6 lg:col-start-7 lg:row-span-2 lg:row-start-1;
+    }
+
+    .site-footer__w-slot {
+        @apply relative grid w-full place-items-center;
+        aspect-ratio: 5 / 3;
+
+        & canvas {
+            @apply absolute inset-0 block size-full;
+        }
+
+        /* Without WebGL: the CSS W (css/site/variant-stage.css), its width. */
+        & .stage-finale__still {
+            @apply w-full;
+        }
+    }
+
     .site-footer__label {
         @apply font-micro text-xs tracking-[0.08em] uppercase;
         color: var(--lavender-300);

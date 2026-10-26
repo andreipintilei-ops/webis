@@ -209,13 +209,13 @@
             <!-- DUMMY DATA: the two projects, until approved ones replace them. -->
             <x-site.explorer id="explorer-web" :items="[
                 ['name' => 'Site de prezentare', 'text' => 'Un site clar despre ce faci, ușor de actualizat de tine.',
-                    'link' => ['label' => 'Despre site-urile de prezentare', 'href' => '/creare-site-iasi/'],
+                    'link' => ['label' => 'Despre site-urile de prezentare', 'href' => '/creare-site-de-prezentare/'],
                     'project' => ['type' => 'Site de prezentare', 'visual' => 'site', 'title' => 'zyanya.ro', 'line' => 'Un site de prezentare pe care clientul îl actualizează singur.', 'href' => route('projects.index')]],
                 ['name' => 'Magazin online', 'text' => 'Catalog, plăți, livrare și facturare, legate între ele.',
                     'link' => ['label' => 'Despre magazinele online', 'href' => '/creare-magazin-online/'],
                     'project' => ['type' => 'Magazin online', 'visual' => 'site', 'title' => 'Nira Mob Design', 'line' => 'Catalogul de mobilier, comenzile și plățile, într-un singur magazin.', 'href' => route('projects.index')]],
                 ['name' => 'Mentenanță și găzduire', 'text' => 'Actualizări, backup și securitate, fără să te ocupi tu.',
-                    'link' => ['label' => 'Despre mentenanță', 'href' => '/mentenanta/'],
+                    'link' => ['label' => 'Despre mentenanță', 'href' => '/mentenanta-site-wordpress/'],
                     'modules' => ['Actualizări și backup', 'Monitorizare', 'Securitate']],
             ]" />
         </x-site.chapter.subsection>

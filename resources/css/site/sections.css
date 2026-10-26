@@ -1,0 +1,405 @@
+/*
+  Reusable sections (components/section/*), first used on /web. Each has
+  its own structure rather than the chapters' head-and-list:
+  - .chead: a centred head, a label in the violet chip over a statement;
+  - .brows: benefits as white cards in two offset rows;
+  - .bcols: benefits as white cards in three columns, the middle one lower;
+  - .fpanel: one white panel of cells between hairlines;
+  - .ncols: a dark band, a statement high on the right, numbered columns
+    at its foot between hairlines;
+  - .bento: one project as a composite of panel, picture and tiles.
+  They read the chapters' tokens where they sit in one (--ink, --muted,
+  --line, --accent) and set their own grounds otherwise.
+*/
+@layer components {
+    /* ---- Centred head: a label in the chip, a statement with its phrase ---- */
+
+    .chead {
+        @apply mx-auto grid max-w-[60rem] justify-items-center gap-7 text-center;
+    }
+
+    /* The home page's title chip (css/site/title-pill.css), its label in
+       place of the icons: as wide as the label, in the micro face. */
+    .chead__pill.title-pill {
+        @apply m-0 h-auto w-auto px-4 py-2 font-micro text-xs tracking-[0.08em] uppercase;
+    }
+
+    .chead__title {
+        @apply font-medium text-balance;
+        font-size: clamp(2.125rem, 3.9vw, 3.75rem);
+        line-height: 1.05;
+        letter-spacing: -0.04em;
+        color: var(--ink);
+    }
+
+    /* The phrase the line turns on, never broken across lines. */
+    .chead__turn {
+        @apply whitespace-nowrap;
+        color: var(--violet-500);
+    }
+
+    /* ---- Benefit rows: white cards in two offset rows ------------------------ */
+
+    /* Out to the screen's edges, so the drifting rows are cut there, not at
+       the column. */
+    .brows {
+        @apply grid gap-5 lg:gap-6;
+        margin-inline: calc(var(--site-gap) * -1);
+        padding-inline: var(--site-gap);
+        overflow-x: clip;
+    }
+
+    .brows__row {
+        @apply grid gap-5 sm:grid-cols-2 lg:flex lg:justify-center lg:gap-6;
+
+        /* Offset: the first row to the left, the second to the right. */
+        @media (min-width: 1024px) {
+            translate: -6% 0;
+        }
+    }
+
+    .brows__row--second {
+        @media (min-width: 1024px) {
+            translate: 6% 0;
+        }
+    }
+
+    /*
+      A card: its ground with a notch cut from the top right corner, as the
+      blog cards' at the bottom right (css/site/blog-posts.css): three mask
+      layers — everything under the corner's row, the row left of the
+      corner, and the corner itself (the same SVG, turned upside down). The
+      icon stands in the notch; the name level with it at the top left,
+      clear of it, and its line under it.
+    */
+    .bcard {
+        /* Smaller than the blog cards': the icon marks, the text leads. */
+        --notch: 64px;
+
+        @apply relative isolate flex flex-col gap-3 p-8 lg:w-[23rem] lg:flex-none lg:p-10;
+    }
+
+    .bcard__bg {
+        @apply absolute inset-0 -z-10 rounded-[20px] bg-white;
+        mask:
+            linear-gradient(#000 0 0) bottom / 100%
+                calc(100% - var(--notch) + 1px) no-repeat,
+            linear-gradient(#000 0 0) left top / calc(100% - var(--notch) + 1px)
+                var(--notch) no-repeat,
+            url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 88 88'%3E%3Cpath transform='matrix(1 0 0 -1 0 88)' d='M0 0H88V4A12 12 0 0 1 76 16H36A20 20 0 0 0 16 36V76A12 12 0 0 1 4 88H0Z'/%3E%3C/svg%3E")
+                right top / var(--notch) var(--notch) no-repeat;
+    }
+
+    /* The icon in the notch: a small rounded square, as the blog cards'
+       button scaled down. */
+    .bcard__icon {
+        @apply absolute top-0 right-0 grid size-11 place-items-center rounded-[10px];
+        /* Quiet: a soft lavender, the icon in the indigo. */
+        color: #1f2868;
+        background: #e9e4ff;
+
+        & svg {
+            @apply size-[18px];
+            stroke-width: 1.5;
+        }
+    }
+
+    .bcard__name {
+        @apply text-xl font-medium md:text-[22px];
+        /* Clear of the icon at its right. */
+        padding-right: 1.5rem;
+        letter-spacing: -0.02em;
+        color: var(--ink);
+    }
+
+    .bcard__line {
+        @apply text-base leading-relaxed text-pretty;
+        color: var(--muted);
+    }
+
+    /* ---- Benefit columns: three, the middle one lower ----------------------- */
+
+    .bcols {
+        @apply grid gap-5 md:grid-cols-2 lg:grid-cols-3 lg:items-start lg:gap-6;
+    }
+
+    .bcols__col {
+        @apply grid gap-5 md:contents lg:grid lg:gap-6;
+    }
+
+    /* Set lower, so the three read as a staggered wall. */
+    .bcols__col--low {
+        @apply lg:mt-10;
+    }
+
+    .bcol-card {
+        @apply flex flex-col gap-3 rounded-[20px] bg-white p-8 lg:p-10;
+    }
+
+    .bcol-card__icon {
+        @apply mb-6 grid size-11 place-items-center rounded-[10px];
+        color: #1f2868;
+        background: #e9e4ff;
+
+        & svg {
+            @apply size-[18px];
+            stroke-width: 1.5;
+        }
+    }
+
+    .bcol-card__name {
+        @apply text-xl font-medium md:text-[22px];
+        letter-spacing: -0.02em;
+        color: var(--ink);
+    }
+
+    .bcol-card__line {
+        @apply text-base leading-relaxed text-pretty;
+        color: var(--muted);
+    }
+
+    /* ---- Feature panel: one white panel, its cells between hairlines --------- */
+
+    .fpanel {
+        @apply grid gap-px overflow-hidden rounded-[1.75rem] md:grid-cols-2 lg:grid-cols-3 lg:rounded-[2rem];
+        /* The hairlines: the panel's own ground showing between the cells. */
+        background: #ebe7fb;
+        box-shadow: 0 30px 70px -50px rgb(31 40 104 / 0.35);
+    }
+
+    .fpanel__cell {
+        @apply flex flex-col gap-3 bg-white p-8 lg:p-12;
+    }
+
+    .fpanel__icon {
+        @apply mb-8 grid size-11 place-items-center rounded-[10px];
+        color: #1f2868;
+        background: #e9e4ff;
+        transition:
+            background-color var(--base) var(--ease),
+            color var(--base) var(--ease);
+
+        & svg {
+            @apply size-[18px];
+            stroke-width: 1.5;
+        }
+    }
+
+    .fpanel__cell:hover .fpanel__icon {
+        @apply text-white;
+        background: #1f2868;
+    }
+
+    .fpanel__name {
+        @apply text-xl font-medium md:text-[22px];
+        letter-spacing: -0.02em;
+        color: var(--ink);
+    }
+
+    .fpanel__line {
+        @apply max-w-[34ch] text-base leading-relaxed text-pretty;
+        color: var(--muted);
+    }
+
+    /* ---- Numbered columns -------------------------------------------------- */
+
+    .ncols {
+        @apply relative z-[1] px-[var(--site-gap)] py-24 text-white lg:py-36;
+        background: #1f2868;
+    }
+
+    .ncols__inner {
+        @apply mx-auto max-w-[var(--content-max)];
+    }
+
+    .ncols__top {
+        @apply grid gap-6 lg:grid-cols-12 lg:gap-10;
+    }
+
+    .ncols__label {
+        @apply font-micro text-xs tracking-[0.08em] uppercase lg:col-span-4 lg:pt-3;
+        color: rgb(255 255 255 / 0.65);
+    }
+
+    .ncols__statement {
+        @apply font-medium text-balance lg:col-span-7 lg:col-start-6;
+        font-size: clamp(1.625rem, 2.7vw, 2.625rem);
+        line-height: 1.18;
+        letter-spacing: -0.03em;
+    }
+
+    .ncols__list {
+        @apply mt-16 grid lg:mt-32;
+
+        @media (min-width: 1024px) {
+            grid-template-columns: repeat(var(--n, 4), minmax(0, 1fr));
+        }
+    }
+
+    .ncols__item {
+        @apply grid content-start gap-3 border-t py-8 lg:border-t-0 lg:border-l lg:px-6 lg:py-0 lg:pb-2;
+        border-color: rgb(255 255 255 / 0.16);
+    }
+
+    .ncols__no {
+        @apply font-light tabular-nums;
+        font-size: clamp(3rem, 4.6vw, 4.75rem);
+        line-height: 0.9;
+        letter-spacing: -0.05em;
+    }
+
+    .ncols__name {
+        @apply mt-4 text-lg font-medium lg:mt-8;
+        letter-spacing: -0.015em;
+    }
+
+    .ncols__line {
+        @apply text-[15px] leading-relaxed text-pretty;
+        color: rgb(255 255 255 / 0.7);
+    }
+
+    /* ---- Case bento ---------------------------------------------------------- */
+
+    .bento__case {
+        @apply grid gap-3 lg:grid-cols-12;
+        animation: bento-in 0.6s var(--ease) both;
+
+        &[hidden] {
+            @apply hidden;
+        }
+    }
+
+    .bento__panel {
+        @apply flex min-h-[26rem] flex-col justify-between gap-10 rounded-[1.75rem] p-8 text-white lg:col-span-5 lg:row-span-2 lg:p-10;
+        background: var(--violet-500);
+    }
+
+    .bento__panel-top {
+        @apply flex items-start gap-8;
+    }
+
+    .bento__no {
+        @apply font-light tabular-nums;
+        font-size: clamp(4rem, 7vw, 6.5rem);
+        line-height: 0.82;
+        letter-spacing: -0.06em;
+    }
+
+    .bento__kicker {
+        @apply font-micro text-xs tracking-[0.08em] uppercase;
+        color: rgb(255 255 255 / 0.7);
+    }
+
+    .bento__client {
+        @apply mt-2 font-medium text-balance;
+        font-size: clamp(1.5rem, 2.2vw, 2rem);
+        line-height: 1.08;
+        letter-spacing: -0.03em;
+    }
+
+    .bento__text {
+        @apply max-w-[32ch] text-[17px] leading-relaxed text-pretty;
+        color: rgb(255 255 255 / 0.9);
+    }
+
+    .bento__nav {
+        @apply mt-8 flex items-center gap-3;
+    }
+
+    .bento__step {
+        @apply grid size-11 cursor-pointer place-items-center rounded-full border;
+        border-color: rgb(255 255 255 / 0.4);
+        transition:
+            background-color var(--base) var(--ease),
+            color var(--base) var(--ease);
+
+        & svg {
+            @apply size-3;
+        }
+
+        &:hover,
+        &:focus-visible {
+            color: var(--violet-500);
+            background: #fff;
+        }
+
+        &:focus-visible {
+            outline: 2px solid #fff;
+            outline-offset: 3px;
+        }
+    }
+
+    .bento__step--prev svg {
+        rotate: 180deg;
+    }
+
+    .bento__count {
+        @apply font-micro text-xs tabular-nums;
+        color: rgb(255 255 255 / 0.75);
+    }
+
+    .bento__media {
+        @apply overflow-hidden rounded-[1.75rem] lg:col-span-7;
+        aspect-ratio: 16 / 10;
+        background: var(--tint);
+
+        & img {
+            @apply size-full object-cover;
+        }
+    }
+
+    .bento__link {
+        @apply flex min-h-[9rem] flex-col justify-between gap-6 rounded-[1.75rem] bg-white p-6 lg:col-span-3;
+        color: var(--ink);
+
+        & > span:first-child {
+            @apply text-lg font-medium;
+            letter-spacing: -0.015em;
+        }
+    }
+
+    .bento__link-go {
+        @apply grid size-11 place-items-center self-end rounded-full text-white;
+        background: var(--violet-500);
+        transition: translate var(--base) var(--ease);
+
+        & svg {
+            @apply size-3;
+        }
+    }
+
+    .bento__link:is(:hover, :focus-visible) .bento__link-go {
+        translate: 4px 0;
+    }
+
+    /* Its facts: big values over small labels. */
+    .bento__facts {
+        @apply grid grid-cols-3 content-end gap-4 rounded-[1.75rem] p-6 text-white lg:col-span-4;
+        background: #1f2868;
+
+        & dt {
+            @apply font-micro text-[11px] tracking-[0.08em] uppercase;
+            color: rgb(255 255 255 / 0.6);
+        }
+
+        & dd {
+            @apply mt-2 font-medium break-words;
+            font-size: clamp(0.95rem, 1.25vw, 1.2rem);
+            line-height: 1.2;
+            letter-spacing: -0.015em;
+        }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .bento__case {
+            animation: none;
+        }
+    }
+}
+
+@keyframes bento-in {
+    from {
+        opacity: 0;
+        transform: translateY(0.75rem);
+    }
+}

@@ -23,6 +23,8 @@
 <x-layouts.public
     :title="$project->seo->title ?: $project->title.' · Portofoliu'"
     :description="$project->seo->description ?: $project->summary"
+    :canonical="$project->seo->canonical"
+    :noindex="$project->seo->noindex"
     header-theme="dark"
     footer-cta-title="Ai un proiect asemănător?"
     footer-cta-intro="Spune-ne ce vrei să construiești și revenim cu o propunere."

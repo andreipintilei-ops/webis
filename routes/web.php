@@ -6,6 +6,7 @@ use App\Http\Controllers\Public\ContactController;
 use App\Http\Controllers\Public\HomeController;
 use App\Http\Controllers\Public\PageController;
 use App\Http\Controllers\Public\ProjectController;
+use App\Http\Controllers\Public\SitemapController;
 use App\Http\Controllers\Public\SoftwareController;
 use App\Support\ReservedSlugs;
 use Illuminate\Support\Facades\Route;
@@ -15,8 +16,14 @@ use Illuminate\Support\Facades\Route;
 */
 Route::get('/', HomeController::class)->name('home');
 
-// Section pages. Their content comes with the design.
-Route::view('solutii', 'public.services.index')->name('services.index');
+// Servicii: the services, and the industry pages under them at the old
+// site's addresses (/servicii/{slug}/), which rank. /solutii was its name
+// for a while.
+Route::view('servicii', 'public.services.index')->name('services.index');
+Route::permanentRedirect('solutii', '/servicii/');
+Route::get('servicii/{slug}', [PageController::class, 'industry'])
+    ->where('slug', '[a-z0-9]+(?:-[a-z0-9]+)*')
+    ->name('pages.industry');
 // The client work: the old site's addresses, which already rank — the list
 // at /portofoliu (the menu calls it Clienți), each project at /proiect/{slug}.
 Route::get('portofoliu', ClientsController::class)->name('projects.index');
@@ -28,6 +35,7 @@ Route::get('proiect/{slug}', [ProjectController::class, 'show'])
     ->name('projects.show');
 // A design trial kept for later: the services as one pinned story (HomeController).
 Route::get('poveste', [HomeController::class, 'poveste'])->name('trials.story');
+Route::get('acasa-3d-dreapta', [HomeController::class, 'right'])->name('trials.right');
 // The blog: its articles are CMS pages (PageType::Article) at their own root
 // addresses, as on the old site; these list them, all or one category's.
 Route::get('blog', [ArticleController::class, 'index'])->name('posts.index');
@@ -47,6 +55,9 @@ Route::view('produse', 'public.products')->name('services.products');
 Route::post('cerere-oferta', [ContactController::class, 'store'])
     ->middleware('throttle:6,1')
     ->name('contact.store');
+
+// Every indexable public page, at its canonical address; robots.txt names it.
+Route::get('sitemap.xml', SitemapController::class)->name('sitemap');
 
 require __DIR__.'/admin.php';
 require __DIR__.'/settings.php';

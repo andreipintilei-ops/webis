@@ -15,4 +15,17 @@ return [
 
     'lower_tone' => env('SITE_LOWER_TONE', 'dark') === 'light' ? 'light' : 'dark',
 
+    /*
+    |--------------------------------------------------------------------------
+    | The canonical site
+    |--------------------------------------------------------------------------
+    |
+    | The scheme and host every canonical tag and sitemap URL names, on any
+    | environment: the address Google has indexed (www, https). Not APP_URL,
+    | so a staging or local copy still points at the real pages.
+    |
+    */
+
+    'canonical_url' => rtrim((string) env('SITE_CANONICAL_URL', 'https://www.webis.ro'), '/'),
+
 ];

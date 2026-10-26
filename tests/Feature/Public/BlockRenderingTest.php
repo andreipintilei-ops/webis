@@ -46,7 +46,8 @@ it('renders a hero over its image as the page h1, with a dark header', function 
         ->toContain('fetchpriority="high"')
         // Preloaded from <head>, before the body starts.
         ->toMatch('/<link rel="preload" as="image"[^>]+>.*<\/head>/s')
-        ->toContain('href="/contact"')
+        // A link typed as "/contact", in its canonical form.
+        ->toContain('href="/contact/"')
         ->toContain('site-nav site-nav--dark')
         ->and(substr_count($html, '<h1'))->toBe(1);
 });
@@ -283,13 +284,13 @@ it('renders the primary button as a pill and the secondary as an arrow link', fu
     ]);
 
     $html = $this->get('/')->assertOk()->getContent();
-    preg_match_all('/<a href="\/contact" class="pill btn-light">.*?<\/a>/s', $html, $pills);
+    preg_match_all('/<a href="\/contact\/" class="pill btn-light">.*?<\/a>/s', $html, $pills);
 
     // The label, rolling letter by letter (components/ui/roll); the top
     // bar's button comes first.
     expect(strip_tags(implode('', $pills[0])))->toContain('Discutați proiectul')
         ->and($html)
-        ->toMatch('/<a href="\/portofoliu" class="arrow-link btn-light">/')
+        ->toMatch('/<a href="\/portofoliu\/" class="arrow-link btn-light">/')
         ->toContain('arrow-link__icon');
 });
 
@@ -323,7 +324,7 @@ it('renders feature cards with their note and a link at the foot', function () {
         ->toContain('md:grid-cols-3')
         ->toContain('<h3')
         ->toContain('Când procesul vostru nu seamănă cu al nimănui.')
-        ->toMatch('/<a href="\/solutii" class="arrow-link btn-light">.*?Află mai multe/s')
+        ->toMatch('/<a href="\/servicii\/" class="arrow-link btn-light">.*?Află mai multe/s')
         ->and(substr_count($section[0], 'class="arrow-link btn-'))->toBe(1);
 });
 
@@ -344,9 +345,9 @@ it('renders the services as illustrated cards when the block asks for them, risi
         ->toContain('class="svc-cards"')
         // The title, a chip between its words (hidden from screen readers);
         // on phones the chip comes under the title instead.
-        ->toMatch('/<h2[^>]*>Tot de ce ai nevoie, <span class="title-pill max-md:hidden" aria-hidden="true" data-title-pill>.*?<\/span><\/span>\s*<br> de la site la sistemul de gestiune.<\/h2>\s*<span class="title-pill svc-cards__pill-below md:hidden"/s')
+        ->toMatch('/<h2[^>]*>Serviciile noastre, <span class="title-pill max-md:hidden" aria-hidden="true" data-title-pill>.*?<\/span><\/span>\s*<br> de la site la sistemul de gestiune.<\/h2>\s*<span class="title-pill svc-cards__pill-below md:hidden"/s')
         ->and(substr_count($section[0], '<article class="svc-card">'))->toBe(3)
-        ->and($section[0])->toContain('Sisteme construite pentru procesele organizației tale.')
+        ->and($section[0])->toContain('Aplicații construite pe felul în care lucrezi: gestiune, aprobări, rapoarte și integrări.')
         // The illustrations: one inline SVG each, nothing loaded.
         ->and(substr_count($section[0], '<svg class="il"'))->toBe(3)
         // The SaaS one: a product in the cloud, no product named.
@@ -637,7 +638,7 @@ it('renders pricing tiers as cards, the highlighted one on the indigo, a tier wi
     expect($section)
         ->toContain('<p class="section-head__intro">Prețuri orientative.</p>')
         ->toContain('block-pricing__list--2')
-        ->toMatch('/<a\s+href="\/contact"\s+class="post-card block-tier block-tier--featured">/')
+        ->toMatch('/<a\s+href="\/contact\/"\s+class="post-card block-tier block-tier--featured">/')
         ->toContain('<h3 class="block-tier__name">Start</h3>')
         ->toContain('<span class="post-card__category">Recomandat</span>')
         ->toContain('<span class="block-tier__amount">de la 2.500 lei</span>')
@@ -665,6 +666,19 @@ it('renders stats on the indigo, the number with its label', function () {
         ->toContain('<dd class="block-stats__value">250+</dd>')
         ->toContain('<dd class="block-stats__note">din 2016</dd>')
         ->toContain('<dd class="block-stats__value">98%</dd>');
+});
+
+it('fills a share\'s hairline that far, and only a share\'s', function () {
+    $section = renderBlocks([contentBlock('s', 'stats', ['items' => [
+        ['value' => '78%', 'label' => 'WordPress'],
+        ['value' => '2,5 %', 'label' => 'Drupal'],
+        ['value' => '250+', 'label' => 'site-uri livrate'],
+    ]])], 's');
+
+    expect($section)
+        ->toMatch('/class="block-stats__item block-stats__item--share"\s+style="--share: 78%"/')
+        ->toMatch('/class="block-stats__item block-stats__item--share"\s+style="--share: 2.5%"/')
+        ->and(substr_count($section, '--share:'))->toBe(2);
 });
 
 it('renders one image per gallery item, captions under them, missing assets left out', function () {
@@ -709,7 +723,7 @@ it('renders image and text: the image on the side asked for, the passage as rich
         ->toMatch('/<h2 id="it-title" class="block-image-text__title">Design propriu<\/h2>/')
         ->toContain('<div class="rich-text block-image-text__body">')
         ->toContain('<p>Fiecare site are concept grafic făcut pentru el.</p>')
-        ->toMatch('/<a href="\/portofoliu" class="arrow-link btn-light">.*?Vezi proiectele/s');
+        ->toMatch('/<a href="\/portofoliu\/" class="arrow-link btn-light">.*?Vezi proiectele/s');
 });
 
 it('renders a CTA banner with the white pill and an arrow link, in the variant asked for', function () {
@@ -726,7 +740,7 @@ it('renders a CTA banner with the white pill and an arrow link, in the variant a
         ->toMatch('/<h2 id="c-title" class="block-cta__title">Hai să discutăm<\/h2>/')
         ->toContain('<p class="block-cta__line">Răspundem în aceeași zi.</p>')
         ->toContain('<a href="tel:+40700000000" class="pill btn-dark">')
-        ->toMatch('/<a href="\/portofoliu" class="arrow-link btn-dark">.*?Vezi portofoliul/s');
+        ->toMatch('/<a href="\/portofoliu\/" class="arrow-link btn-dark">.*?Vezi portofoliul/s');
 });
 
 it('renders the quote form as the site\'s contact form, posting to cerere-oferta', function () {
@@ -765,7 +779,7 @@ it('lets the quote form stand in for the footer\'s contact call', function () {
 it('keeps the footer\'s contact call on pages without a quote form', function () {
     expect(renderBlocks([contentBlock('h', 'hero', ['layout' => 'split', 'heading' => 'Titlu'])]))
         ->toContain('site-footer__cta')
-        ->toContain('un sistem mai bun?')
+        ->toContain('Ai un proiect în minte?')
         ->not->toContain('data-contact-form');
 
     // The home page too.

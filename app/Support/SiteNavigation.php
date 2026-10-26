@@ -43,8 +43,8 @@ final class SiteNavigation
     public static function links(bool $withHome = true): array
     {
         $links = [
-            ['label' => 'Acasă', 'href' => '/', 'bar' => false, 'menu' => false, 'place' => null, 'cta' => null, 'children' => []],
-            ['label' => 'Servicii', 'href' => '/solutii', 'bar' => true, 'menu' => true, 'place' => null, 'cta' => null, 'children' => self::SERVICES],
+            ['label' => 'Acasă', 'href' => '/', 'bar' => true, 'menu' => false, 'place' => null, 'cta' => null, 'children' => []],
+            ['label' => 'Servicii', 'href' => '/servicii', 'bar' => true, 'menu' => true, 'place' => null, 'cta' => null, 'children' => self::SERVICES],
             ['label' => 'Clienți', 'href' => '/portofoliu', 'bar' => true, 'menu' => true, 'place' => 'section', 'cta' => null, 'children' => []],
             ['label' => 'Blog', 'href' => '/blog', 'bar' => true, 'menu' => true, 'place' => 'section', 'cta' => null, 'children' => []],
             ['label' => 'Contact', 'href' => '/contact', 'bar' => true, 'menu' => false, 'place' => null, 'cta' => 'Hai să discutăm', 'children' => []],
@@ -86,7 +86,7 @@ final class SiteNavigation
             ]],
             ['label' => 'Web și e-commerce', 'links' => [
                 ['label' => 'Creare site de prezentare', 'href' => '/creare-site-de-prezentare'],
-                ['label' => 'Magazin online', 'href' => '/magazin-online'],
+                ['label' => 'Magazin online', 'href' => '/creare-magazin-online'],
             ]],
         ];
     }
@@ -97,8 +97,7 @@ final class SiteNavigation
     public static function legal(): array
     {
         return [
-            ['label' => 'Confidențialitate', 'href' => '/confidentialitate'],
-            ['label' => 'Accesibilitate', 'href' => '/accesibilitate'],
+            ['label' => 'Confidențialitate', 'href' => '/politica-de-confidentialitate'],
         ];
     }
 

@@ -2,7 +2,7 @@
 @php
     $services = [
         ['label' => 'Creare site de prezentare', 'href' => '/creare-site-de-prezentare/'],
-        ['label' => 'Creare magazin online', 'href' => '/magazin-online/'],
+        ['label' => 'Creare magazin online', 'href' => '/creare-magazin-online/'],
     ];
 @endphp
 

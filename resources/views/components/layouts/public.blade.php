@@ -9,11 +9,15 @@
      `description`: the meta description (else the SEO settings' default).
      `fullTitle`: the whole <title>, as given — without the site suffix.
      `footerCtaTitle`, `footerCtaIntro`: the footer's closing call, reworded.
-     `canonical`: the page's canonical URL, as <link rel="canonical">;
-     nothing when left out.
+     `footerW`: the Webis W forming beside the footer's call (/portofoliu).
+     `canonical`: the page's canonical URL, as <link rel="canonical">. Left
+     out, the address asked for, on the canonical site, with its trailing
+     slash and without its query string (PublicUrls::canonical); false for
+     none (the error pages).
+     `noindex`: true to keep the page out of search engines (its SEO data).
      `variant`: a design variant under test (e.g. "clienti"), as data-variant
      on <html>, for styles scoped to it. --}}
-@props(['title' => null, 'fullTitle' => null, 'menu' => 'site', 'headerTheme' => 'light', 'lowerTone' => null, 'variant' => null, 'heroLeave' => null, 'footerCta' => true, 'footerOnBackdrop' => false, 'description' => null, 'footerCtaTitle' => null, 'footerCtaIntro' => null, 'canonical' => null])
+@props(['title' => null, 'fullTitle' => null, 'menu' => 'site', 'headerTheme' => 'light', 'lowerTone' => null, 'variant' => null, 'heroLeave' => null, 'footerCta' => true, 'footerOnBackdrop' => false, 'description' => null, 'footerCtaTitle' => null, 'footerCtaIntro' => null, 'footerW' => false, 'canonical' => null, 'noindex' => false])
 
 @php
     $siteName = app(\App\Settings\CompanySettings::class)->name;
@@ -21,6 +25,7 @@
     $fullTitle = $fullTitle ?? ($title ? $title.$suffix : $siteName);
     // The page's own, or the site's default (SEO settings).
     $metaDescription = $description ?: app(\App\Settings\SeoSettings::class)->default_description;
+    $canonical = $canonical === false ? null : ($canonical ?: \App\Support\PublicUrls::canonical(request()->getPathInfo()));
 @endphp
 
 <!DOCTYPE html>
@@ -75,9 +80,13 @@
             <meta name="description" content="{{ $metaDescription }}">
         @endif
 
-        {{-- Nothing outside production may be indexed. SEO head tags come in Phase 4. --}}
+        {{-- Nothing outside production may be indexed; nor may a page set to noindex. --}}
         @unless (app()->isProduction())
             <meta name="robots" content="noindex, nofollow">
+        @else
+            @if ($noindex)
+                <meta name="robots" content="noindex, follow">
+            @endif
         @endunless
 
         @include('partials.favicons')
@@ -154,7 +163,7 @@
                     {{ $slot }}
                 </main>
 
-                <x-site.footer :show-cta="$footerCta" :on-backdrop="$footerOnBackdrop" :cta-title="$footerCtaTitle" :cta-intro="$footerCtaIntro" />
+                <x-site.footer :show-cta="$footerCta" :on-backdrop="$footerOnBackdrop" :cta-title="$footerCtaTitle" :cta-intro="$footerCtaIntro" :w="$footerW" />
             </div>
         </div>
 

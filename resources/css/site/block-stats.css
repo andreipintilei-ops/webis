@@ -22,9 +22,26 @@
         @apply lg:grid-cols-4;
     }
 
+    /* Five in a row from 1024px: a ranking reads along one line. */
+    .block-stats__list--5 {
+        @apply lg:grid-cols-5;
+
+        & .block-stats__value {
+            font-size: clamp(3rem, 5vw, 5rem);
+        }
+    }
+
     .block-stats__item {
-        @apply flex min-w-0 flex-col border-t pt-6 lg:pt-8;
+        @apply relative flex min-w-0 flex-col border-t pt-6 lg:pt-8;
         border-color: var(--line);
+    }
+
+    /* A share: its hairline filled that far, a little heavier, in lavender. */
+    .block-stats__item--share::before {
+        content: '';
+        @apply absolute -top-px left-0 h-[3px] rounded-full;
+        width: max(var(--share), 4px);
+        background: #a18eff;
     }
 
     /* Anton has one weight: font-normal, or the browser fakes a bold. */

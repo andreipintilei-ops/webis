@@ -5,8 +5,10 @@
     there is one; css/site/block-stats.css.
 
     Each figure stands on a hairline: the number in the display face, its
-    label, an optional note in the muted white. Two to a row on phones,
-    up to three from 1024px (four when there are four).
+    label, an optional note in the muted white. A share ("78%") fills its
+    hairline that far, in lavender, so a set of them reads as a comparison.
+    Two to a row on phones, up to three from 1024px (four or five when there
+    are that many).
 --}}
 @php
     $items = array_values(array_filter($data['items'] ?? [], fn ($item) => is_array($item) && trim((string) ($item['value'] ?? '')) !== ''));
@@ -23,7 +25,8 @@
 
             <dl class="block-stats__list block-stats__list--{{ count($items) }}" data-reveal>
                 @foreach ($items as $item)
-                    <div class="block-stats__item" data-reveal-child>
+                    @php preg_match('/^(\d{1,3}(?:[.,]\d+)?)\s*%$/', trim($item['value']), $share); @endphp
+                    <div @class(['block-stats__item', 'block-stats__item--share' => $share !== []]) @if ($share !== []) style="--share: {{ min(100, (float) str_replace(',', '.', $share[1])) }}%" @endif data-reveal-child>
                         <dt class="block-stats__label">{{ $item['label'] }}</dt>
                         <dd class="block-stats__value">{{ $item['value'] }}</dd>
                         @if (! empty($item['note']))

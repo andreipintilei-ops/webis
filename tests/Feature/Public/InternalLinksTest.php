@@ -51,7 +51,7 @@ it('links only to canonical addresses: no internal link answers with a 301', fun
     $pages = [
         '/' => 200, '/blog/' => 200, '/blog/?pagina=2' => 200, '/blog/categorie/seo/' => 200,
         '/portofoliu/' => 200, '/contact/' => 200, '/despre-noi/' => 200, '/articol-1/' => 200,
-        '/proiect/duo-stone/' => 200, '/web/' => 200, '/solutii/' => 200, '/poveste/' => 200,
+        '/proiect/duo-stone/' => 200, '/web/' => 200, '/servicii/' => 200, '/poveste/' => 200,
         '/pagina-inexistenta/' => 404,
     ];
 
@@ -85,5 +85,55 @@ it('links only to canonical addresses: no internal link answers with a 301', fun
     }
 
     expect(count($checked))->toBeGreaterThan(30)
+        ->and($problems)->toBe([]);
+});
+
+/*
+| The same crawl with the pages the site links to in place, so a link to a
+| page that doesn't exist (a 404) fails too, not only a 301; and a home page
+| whose hero an editor gave slash-less links (/contact, /clienti), which
+| render in their canonical form (TrailingSlash::href) all the same.
+*/
+it('links only to pages that answer 200: no 301, no 404', function () {
+    Page::factory()->ofType(PageType::Home)->create(['slug' => 'acasa', 'blocks' => [
+        ['id' => 'hero', 'type' => 'hero', 'v' => 1, 'data' => [
+            'layout' => 'centered', 'heading' => 'Webis',
+            'primary_cta' => ['label' => 'Hai să discutăm', 'url' => '/contact'],
+            'secondary_cta' => ['label' => 'Proiecte', 'url' => '/clienti'],
+        ]],
+    ]]);
+    Page::factory()->ofType(PageType::Contact)->create(['slug' => 'contact', 'title' => 'Contact']);
+    Page::factory()->ofType(PageType::Legal)->create(['slug' => 'politica-de-confidentialitate']);
+    foreach (['creare-site-de-prezentare', 'creare-magazin-online', 'mentenanta-site-wordpress', 'seo-search-engine-optimization'] as $slug) {
+        Page::factory()->create(['slug' => $slug]);
+    }
+    Page::factory()->ofType(PageType::Industry)->create(['slug' => 'creare-site-stomatologie', 'title' => 'Creare site stomatologie']);
+    $category = PostCategory::factory()->create(['slug' => 'seo', 'name' => 'SEO']);
+    Page::factory()->ofType(PageType::Article)->count(3)
+        ->sequence(fn ($sequence) => ['slug' => 'articol-'.($sequence->index + 1), 'published_at' => now()->subDays($sequence->index + 1)])
+        ->create(['post_category_id' => $category->id]);
+    Project::factory()->create(['slug' => 'duo-stone', 'title' => 'Duo Stone']);
+
+    $pages = ['/', '/servicii/', '/servicii/creare-site-stomatologie/', '/web/', '/produse/', '/software-la-comanda/',
+        '/portofoliu/', '/blog/', '/contact/', '/creare-magazin-online/', '/articol-1/', '/proiect/duo-stone/'];
+
+    $problems = [];
+    $checked = [];
+
+    foreach ($pages as $page) {
+        $html = $this->asWritten()->get($page)->assertOk()->getContent();
+
+        foreach (internalLinks($html) as $link) {
+            $checked[$link] ??= $this->asWritten()->get($link)->getStatusCode();
+
+            if ($checked[$link] !== 200) {
+                $problems[$link]['status'] = $checked[$link];
+                $problems[$link]['on'][] = $page;
+            }
+        }
+    }
+
+    expect(count($checked))->toBeGreaterThan(20)
+        ->and($checked)->toHaveKeys(['/contact/', '/portofoliu/', '/servicii/creare-site-stomatologie/'])
         ->and($problems)->toBe([]);
 });

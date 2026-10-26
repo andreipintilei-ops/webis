@@ -34,6 +34,7 @@ beforeEach(function () {
         ['/noindex-vechi', 'page', '/noindex-vechi/', '1'],
         ['/pagina-scurta', 'page', '/pagina-scurta/', ''],
         ['/proiect/zyanya', 'project', '/proiect/zyanya/', ''],
+        ['/proiect/duo-stone', 'project', '/proiect/duo-stone/', ''],
         ['/uncategorized', 'gone', '', ''],
         ['/tag/redirectionat', 'gone', '', ''],
         ['/gazduire', 'redirect', '/blog/categorie/web-development/', ''],
@@ -61,7 +62,11 @@ beforeEach(function () {
             '/pagina-noindex/' => Http::response(verifyPage('/pagina-noindex/', noindex: true)),
             '/noindex-vechi/' => Http::response(verifyPage('/noindex-vechi/', noindex: true)),
             '/pagina-scurta/' => Http::response(verifyPage('/pagina-scurta/', words: 5)),
-            '/proiect/zyanya/' => Http::response(verifyPage('https://www.webis.ro/proiect/zyanya/')),
+            // A canonical naming another page: a Yoast canonical copied over.
+            '/proiect/zyanya/' => Http::response(verifyPage('https://www.webis.ro/proiect/alt-proiect/')),
+            // The page itself on the canonical site (config site.canonical_url):
+            // a staging copy still names the real page.
+            '/proiect/duo-stone/' => Http::response(verifyPage('https://www.webis.ro/proiect/duo-stone/')),
             '/uncategorized/' => Http::response('', 410),
             '/tag/redirectionat/' => Http::response('', 301, ['Location' => '/blog/']),
             '/gazduire/', '/web-development/' => Http::response('', 301, ['Location' => "{$base}/blog/categorie/web-development/"]),
@@ -86,14 +91,14 @@ afterEach(function () {
 });
 
 it('expects a 410, a single 301 to a 200, or a 200, by decision', function () {
-    expect($this->problems)->not->toHaveKeys(['/ghid-seo/', '/uncategorized/', '/gazduire/', '/web-development/', '/noindex-vechi/'])
+    expect($this->problems)->not->toHaveKeys(['/ghid-seo/', '/uncategorized/', '/gazduire/', '/web-development/', '/noindex-vechi/', '/proiect/duo-stone/'])
         ->and($this->problems['/tag/redirectionat/'])->toBe(['failure: answers 301, not 410'])
         ->and($this->problems['/lant/'])->toBe(['failure: redirect chain'])
         ->and($this->problems['/gresit/'])->toBe(['failure: redirects somewhere else']);
 });
 
 it('checks the canonical, noindex and word count of every 200', function () {
-    expect($this->problems['/fara-canonical/'])->toBe(['warning: no canonical'])
+    expect($this->problems['/fara-canonical/'])->toBe(['failure: no canonical'])
         ->and($this->problems['/pagina-noindex/'])->toBe(['failure: noindex, but the old page was indexed'])
         ->and($this->problems['/pagina-scurta/'])->toBe(['failure: fewer than 80 words'])
         ->and($this->problems['/proiect/zyanya/'])->toBe(['failure: canonical is not the page itself']);
@@ -101,5 +106,13 @@ it('checks the canonical, noindex and word count of every 200', function () {
 
 it('fails the run and summarises it', function () {
     expect($this->exit)->toBe(1)
-        ->and($this->console)->toContain('Checked 12 URLs against https://staging.test: 6 passed, 6 failures, 1 warnings.');
+        ->and($this->console)->toContain('Checked 13 URLs against https://staging.test: 6 passed, 7 failures, 0 warnings.');
+});
+
+it('reports the blanket noindex of a site that is not production as a warning, when told', function () {
+    Artisan::call('legacy:verify', ['--base' => 'https://staging.test', '--output' => $this->output, '--not-production' => true]);
+
+    expect(Artisan::output())
+        ->toContain('Checked 13 URLs against https://staging.test: 7 passed, 6 failures, 1 warnings.')
+        ->toContain('1 × warning: noindex everywhere: not production');
 });
