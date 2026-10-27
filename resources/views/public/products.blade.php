@@ -44,7 +44,7 @@
             'screen' => 'rims',
             'for' => 'Pentru universități',
             'points' => ['Proiecte', 'Echipe', 'Finanțări și bugete', 'Raportări'],
-            'text' => 'Research Information Management System ține evidența proiectelor de cercetare ale universității: echipele, finanțările, bugetele și raportările. Conducerea și echipele de proiect lucrează pe aceleași date, iar rapoartele pentru finanțatori se pregătesc din aplicație.',
+            'text' => 'Ține evidența proiectelor de cercetare ale universității: echipele, finanțările, bugetele și raportările. Conducerea și echipele de proiect lucrează pe aceleași date, iar rapoartele pentru finanțatori se generează direct din aplicație.',
         ],
         [
             'product' => Product::ParticipatoryBudgeting,

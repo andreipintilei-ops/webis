@@ -17,8 +17,12 @@
     `featuresLayout`: a page template's choice of layout for the features
     block (home: "services", /clienti: "services-plain"); left null, the
     block's own `layout` setting applies.
+
+    `crumbs`: the page's visible breadcrumbs, [name, path] each, the page
+    itself last — for its opening hero, which shows them above its title
+    (an industry page); null for none.
 --}}
-@props(['blocks' => [], 'featuresLayout' => null])
+@props(['blocks' => [], 'featuresLayout' => null, 'crumbs' => null])
 
 @php
     $registry = app(\App\Blocks\BlockRegistry::class);
@@ -52,5 +56,6 @@
         'isFirst' => $loop->first,
         'onBackdrop' => $onBackdrop,
         'featuresLayout' => $featuresLayout,
+        'crumbs' => $loop->first ? $crumbs : null,
     ])
 @endforeach

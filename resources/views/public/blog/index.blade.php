@@ -59,17 +59,16 @@
                     @if ($articles->isEmpty())
                         <p class="portfolio-empty">{{ $category ? 'Încă nu am publicat articole în această categorie.' : 'Încă nu am publicat articole.' }}</p>
                     @else
-                        {{-- In rows of three, each coming in as it is reached; all white
-                             here (the home page's colour cycle is for its three alone). --}}
-                        <div class="site-blog__rows">
-                            @foreach ($articles->getCollection()->chunk(3) as $row)
-                                <ul class="site-blog__posts" data-reveal>
-                                    @foreach ($row as $post)
-                                        <x-site.post-card :post="$post" :index="$loop->index" />
-                                    @endforeach
-                                </ul>
+                        {{-- One grid, so a row is never left half empty however
+                             many columns fit: three beside the categories only
+                             from 1280px, two below. Each card comes in as it is
+                             reached; all white here (the home page's colour cycle
+                             is for its three alone). --}}
+                        <ul class="site-blog__posts">
+                            @foreach ($articles->getCollection() as $post)
+                                <x-site.post-card :post="$post" :index="$loop->index % 3" :alone="true" sizes="(min-width: 1280px) 22vw, (min-width: 1024px) 32vw, (min-width: 640px) 46vw, 92vw" />
                             @endforeach
-                        </div>
+                        </ul>
 
                         <x-site.pagination :paginator="$articles" label="Paginile blogului" />
                     @endif

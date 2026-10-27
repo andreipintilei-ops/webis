@@ -27,9 +27,13 @@ use Illuminate\Support\Str;
  */
 final class StructuredData
 {
-    /** The section a path's first segment belongs to: its breadcrumb. */
+    /**
+     * The section a path's first segment belongs to: its breadcrumb. The
+     * industry pages, at /servicii/{slug}/, are listed at
+     * /realizare-site-uri-tematice/.
+     */
     private const array SECTIONS = [
-        'servicii' => ['Servicii', '/servicii/'],
+        'servicii' => ['Site-uri tematice', '/realizare-site-uri-tematice/'],
         'proiect' => ['Portofoliu', '/portofoliu/'],
         'blog' => ['Blog', '/blog/'],
     ];
@@ -67,7 +71,7 @@ final class StructuredData
     }
 
     /**
-     * Acasă, the section the path sits in (Servicii, Portofoliu, Blog), then
+     * Acasă, the section the path sits in (Site-uri tematice, Portofoliu, Blog), then
      * the page itself — or `$parent` in the section's place (an article,
      * at the site root, under Blog).
      *

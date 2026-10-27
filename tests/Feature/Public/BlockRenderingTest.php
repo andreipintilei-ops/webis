@@ -345,7 +345,8 @@ it('renders feature cards with their note and a link at the foot', function () {
         ->toContain('md:grid-cols-3')
         ->toContain('<h3')
         ->toContain('Când procesul vostru nu seamănă cu al nimănui.')
-        ->toMatch('/<a href="\/servicii\/" class="arrow-link btn-light">.*?Află mai multe/s')
+        // Typed as /solutii, an old address: straight to where it leads.
+        ->toMatch('/<a href="\/realizare-site-uri-tematice\/" class="arrow-link btn-light">.*?Află mai multe/s')
         ->and(substr_count($section[0], 'class="arrow-link btn-'))->toBe(1);
 });
 

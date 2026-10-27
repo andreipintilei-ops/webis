@@ -39,7 +39,7 @@ it('names every page by its canonical URL', function (string $path, string $cano
     'a CMS page' => ['/creare-magazin-online/', 'https://www.webis.ro/creare-magazin-online/'],
     'an industry page' => ['/servicii/creare-site-stomatologie/', 'https://www.webis.ro/servicii/creare-site-stomatologie/'],
     'a project' => ['/proiect/duo-stone/', 'https://www.webis.ro/proiect/duo-stone/'],
-    'a section' => ['/servicii/', 'https://www.webis.ro/servicii/'],
+    'a section' => ['/realizare-site-uri-tematice/', 'https://www.webis.ro/realizare-site-uri-tematice/'],
     'a filter, without it' => ['/portofoliu/?tip=magazin', 'https://www.webis.ro/portofoliu/'],
     'a query string, without it' => ['/web/?utm_source=x', 'https://www.webis.ro/web/'],
 ]);
@@ -139,6 +139,7 @@ describe('sitemap.xml', function () {
             'https://www.webis.ro/produse/',
             'https://www.webis.ro/blog/',
             'https://www.webis.ro/creare-magazin-online/',
+            'https://www.webis.ro/realizare-site-uri-tematice/',
             'https://www.webis.ro/servicii/creare-site-stomatologie/',
             'https://www.webis.ro/politica-de-confidentialitate/',
             'https://www.webis.ro/articol-1/',
@@ -153,6 +154,8 @@ describe('sitemap.xml', function () {
             'https://www.webis.ro/blog/categorie/gazduire/',
             // The design trials.
             'https://www.webis.ro/poveste/',
+            // The industry index's old address, a redirect now.
+            'https://www.webis.ro/servicii/',
         )->and($locs)->toBe(array_values(array_unique($locs)));
 
         foreach ($locs as $loc) {

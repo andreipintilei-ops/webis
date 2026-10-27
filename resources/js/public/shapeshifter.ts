@@ -208,11 +208,23 @@ const PANEL_FILL_NARROW = 0.78;
  * screen's width, capped against its height. It opens the stage alone, at
  * full strength (the first chapter leaves it the room,
  * css/site/variant-stage.css); as the text comes up over it, it eases to
- * this opacity, until it settles into the panel.
+ * this opacity and softens behind a blur of this many pixels — glass in
+ * front of it, the plates still told apart — until it settles into the
+ * panel, sharp again.
  */
 const BEHIND_FILL = 0.85;
 const BEHIND_CAP = 0.45;
 const BEHIND_DIM = 0.85;
+const BEHIND_BLUR = 4;
+/**
+ * The pixel ratio it is drawn at while mostly blurred: the blur hides the
+ * lost detail, and the fewer pixels pay for the blur. Taken past the first
+ * share of the veil, given back below the second, so it does not flicker
+ * between the two at one point.
+ */
+const BEHIND_PIXEL_RATIO = 1.25;
+const BEHIND_LOW_RES_IN = 0.6;
+const BEHIND_LOW_RES_OUT = 0.35;
 
 export async function initShapeshifter(): Promise<void> {
     const host = document.querySelector<HTMLElement>('[data-shapeshifter]');
@@ -822,11 +834,26 @@ export async function initShapeshifter(): Promise<void> {
 
         width = w;
         height = h;
-        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.75));
+        renderer.setPixelRatio(pixelRatio());
         renderer.setSize(width, height, false);
         camera.aspect = width / height;
         camera.updateProjectionMatrix();
     };
+
+    /** Phones: drawn at fewer pixels while blurred behind the text. */
+    let lowRes = false;
+    const pixelRatio = (): number =>
+        Math.min(window.devicePixelRatio, lowRes ? BEHIND_PIXEL_RATIO : 1.75);
+    const setLowRes = (on: boolean): void => {
+        if (on === lowRes) {
+            return;
+        }
+
+        lowRes = on;
+        renderer.setPixelRatio(pixelRatio());
+        renderer.setSize(width, height, false);
+    };
+    let blurred = '';
 
     /**
      * Standing on the panel, the layer rides the page instead of being held
@@ -891,13 +918,15 @@ export async function initShapeshifter(): Promise<void> {
         let x: number;
         let y: number;
         let size: number;
+        // Behind the text (phones): how far, 0–1, from alone to under it.
+        let veil = 0;
 
         if (narrow.matches) {
             // Alone at first, a quarter of the screen below the stage's top
             // and then in the middle; behind the text once it comes up over
-            // it, a little dimmed, until the panel takes it: there it stands
-            // at full strength in the panel's slot and rides it off the
-            // screen.
+            // it, a little dimmed and blurred, until the panel takes it:
+            // there it stands sharp, at full strength, in the panel's slot
+            // and rides it off the screen.
             const along = Math.min(Math.max(phase - 1, 0), 3);
             const home = panelSlot.getBoundingClientRect();
             const settled = smooth(clamp01(along - 2));
@@ -919,7 +948,8 @@ export async function initShapeshifter(): Promise<void> {
                 clamp01((hold + behind / 2 - textTop) / (behind / 2)),
             );
 
-            opacity *= lerp(lerp(1, BEHIND_DIM, under), 1, settled);
+            veil = under * (1 - settled);
+            opacity *= lerp(1, BEHIND_DIM, veil);
         } else {
             // In the middle of the screen, in the half of the chapter it is
             // in (or crossing between two), until the panel takes it: there
@@ -963,6 +993,20 @@ export async function initShapeshifter(): Promise<void> {
 
         renderer.domElement.style.visibility = visible ? '' : 'hidden';
         renderer.domElement.style.opacity = opacity.toFixed(3);
+
+        // The glass: the blur in tenths of a pixel, set only when it
+        // changes; none at all once it is sharp, so nothing is filtered.
+        const blur = Math.round(veil * BEHIND_BLUR * 10) / 10;
+        const filter = blur > 0 ? `blur(${blur}px)` : '';
+
+        if (filter !== blurred) {
+            blurred = filter;
+            renderer.domElement.style.filter = filter;
+        }
+
+        setLowRes(
+            lowRes ? veil > BEHIND_LOW_RES_OUT : veil > BEHIND_LOW_RES_IN,
+        );
 
         if (!visible) {
             return;

@@ -9,6 +9,22 @@
         @apply mt-0 rounded-none pt-0;
     }
 
+    /*
+      From 1024px the four in a row, from the hairline to their labels, are
+      on the first screen whole, however short it is (a laptop, a tablet on
+      its side): the hero leaves them 17rem under it (a label on two lines
+      included), its padding the less for it, rather than the screen's edge
+      cutting through the numbers. A tall screen keeps the hero as the
+      other pages' (page-hero.css).
+    */
+    @media (min-width: 1024px) {
+        .page-hero:has(+ .figures) {
+            min-height: min(48rem, calc(100svh - 17rem));
+            padding-top: 9rem;
+            padding-bottom: 3rem;
+        }
+    }
+
     .figures {
         @apply relative px-[var(--site-gap)] pb-20 text-white md:pb-28;
     }

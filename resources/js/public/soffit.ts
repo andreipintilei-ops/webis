@@ -67,6 +67,13 @@ const CONFIG = {
     cursor: 1,
     parallax: 0.0137,
     maxDpr: 1,
+    // Webis: drawn at this share of its box, the browser scaling it up — a
+    // soft field shows no difference, and the cost falls with the square
+    // of it; and no more often than this, though the screen may refresh at
+    // 120 or 144 Hz — it drifts slowly. Together about a quarter of the
+    // work at 60 Hz, which a weaker GPU (or Firefox's WebGL) needs.
+    renderScale: 0.6,
+    maxFps: 30,
 } as const;
 
 const VERT = `#version 300 es
@@ -401,7 +408,9 @@ function mount(canvas: HTMLCanvasElement): void {
     // ---- Size: from the element, coalesced to one resize per frame -------------------
 
     const resize = (): void => {
-        const dpr = Math.min(window.devicePixelRatio || 1, CONFIG.maxDpr);
+        const dpr =
+            Math.min(window.devicePixelRatio || 1, CONFIG.maxDpr) *
+            CONFIG.renderScale;
         const width = Math.max(1, Math.round(canvas.clientWidth * dpr));
         const height = Math.max(1, Math.round(canvas.clientHeight * dpr));
 
@@ -539,10 +548,19 @@ function mount(canvas: HTMLCanvasElement): void {
 
     let previous = performance.now();
 
+    // A little under the interval, so a 60 Hz screen's frames are not
+    // skipped two at a time by timer jitter.
+    const minInterval = 1000 / CONFIG.maxFps - 2;
+
     const frame = (now: number): void => {
         requestAnimationFrame(frame);
 
         const raw = now - previous;
+
+        if (raw < minInterval) {
+            return;
+        }
+
         previous = now;
 
         if (!visible || document.hidden) {

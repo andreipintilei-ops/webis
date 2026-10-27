@@ -24,14 +24,28 @@
         ])->filter()->implode(' · ');
     }
 
-    // Sharing: the page's own share image, else its hero's (an article's
-    // cover); else the layout's default.
-    $shareImage = \App\Support\Seo\StructuredData::image(
-        \App\Models\Asset::with('media')->find($page->seo->ogImageAssetId ?? $page->hero_asset_id),
-    );
+    // An article's cover (Support\Blog\Cover): in its hero, and its share
+    // image (1200×630).
+    $cover = $article ? \App\Support\Blog\Cover::of($page) : null;
+
+    // Sharing: the page's own share image, else the cover's, else its
+    // hero image's; else the layout's default.
+    $shareImage = $page->seo->ogImageAssetId
+        ? \App\Support\Seo\StructuredData::image(\App\Models\Asset::with('media')->find($page->seo->ogImageAssetId))
+        : ($cover?->shareImage() ?? \App\Support\Seo\StructuredData::image(\App\Models\Asset::with('media')->find($page->hero_asset_id)));
     $schema = $article
         ? [app(\App\Support\Seo\StructuredData::class)->blogPosting($page, $heading ?: $page->title, \App\Support\PublicUrls::canonical($page), $shareImage['url'] ?? null)]
         : [];
+
+    // An industry page shows its breadcrumbs (Acasă › Site-uri tematice ›
+    // the page) above its hero's title: the trail its BreadcrumbList gives
+    // (the layout), as paths.
+    $crumbs = $page->type === \App\Enums\PageType::Industry
+        ? array_map(
+            fn (array $crumb): array => [$crumb[0], parse_url($crumb[1], PHP_URL_PATH) ?: '/'],
+            \App\Support\Seo\StructuredData::breadcrumbs(request()->getPathInfo(), $page->title),
+        )
+        : null;
 @endphp
 <x-layouts.public
     :title="$page->seo->title ?: $page->title"
@@ -53,11 +67,21 @@
             :label="$label ?: 'Blog'"
             :title="$heading ?: $page->title"
             :planes="false"
-            class="page-hero--article"
-        />
+            :class="$cover ? 'page-hero--article page-hero--cover' : 'page-hero--article'"
+        >
+            {{-- The cover beside the title from 1024px, under it below;
+                 the page's main image, so not lazy. --}}
+            @if ($cover)
+                <x-slot:after>
+                    <figure @class(['article-cover', 'is-cutout' => $cover->cutout])>
+                        <img src="{{ $cover->src }}" srcset="{{ $cover->srcset }}" sizes="(min-width: 1024px) 40vw, 92vw" width="{{ $cover->width }}" height="{{ $cover->height }}" alt="{{ $cover->alt }}" fetchpriority="high" decoding="async">
+                    </figure>
+                </x-slot:after>
+            @endif
+        </x-site.page-hero>
     @endif
 
-    <x-blocks :blocks="$blocks" />
+    <x-blocks :blocks="$blocks" :crumbs="$crumbs" />
 
     {{-- After the illustrated service cards: the projects,
          on the same lavender as the cards. --}}

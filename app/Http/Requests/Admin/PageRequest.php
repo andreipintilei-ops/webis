@@ -36,6 +36,8 @@ class PageRequest extends ContentRequest
             'excerpt' => ['nullable', 'string', 'max:500'],
             'icon' => ['nullable', 'string', 'max:50', 'regex:/^[a-z0-9-]+$/'],
             'hero_asset_id' => ['nullable', 'integer', Rule::exists('assets', 'id')],
+            // An article with a cover needs its alt text.
+            'cover_alt' => [Rule::requiredIf($page instanceof Page && $page->hasMedia(Page::COVER)), 'nullable', 'string', 'max:125'],
             ...app(BlockRegistry::class)->rules(is_array($blocks) ? $blocks : []),
             'details' => ['nullable', 'array:price_from,service_type'],
             'details.price_from' => ['nullable', 'string', 'max:40'],
@@ -70,6 +72,7 @@ class PageRequest extends ContentRequest
     {
         return [
             'type.unique' => 'Există deja o primă pagină.',
+            'cover_alt.required' => 'Descrie coperta în câteva cuvinte: ce se vede în imagine.',
             'slug.unique' => 'Adresa este folosită de altă pagină (poate din coș).',
             'slug.regex' => 'Doar litere mici, cifre și cratime, ex. creare-site-web.',
         ];
@@ -94,6 +97,7 @@ class PageRequest extends ContentRequest
             'excerpt' => $this->input('excerpt'),
             'icon' => $this->input('icon'),
             'hero_asset_id' => $this->input('hero_asset_id'),
+            'cover_alt' => $this->filled('cover_alt') ? $this->string('cover_alt')->trim()->toString() : null,
             'blocks' => app(BlockRegistry::class)->prepare((array) $this->input('blocks', [])),
             'details' => $details === [] ? null : $details,
             'sort_order' => (int) $this->input('sort_order', 0),

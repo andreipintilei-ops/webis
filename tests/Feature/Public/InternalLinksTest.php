@@ -51,7 +51,7 @@ it('links only to canonical addresses: no internal link answers with a 301', fun
     $pages = [
         '/' => 200, '/blog/' => 200, '/blog/?pagina=2' => 200, '/blog/categorie/seo/' => 200,
         '/portofoliu/' => 200, '/contact/' => 200, '/despre-noi/' => 200, '/articol-1/' => 200,
-        '/proiect/duo-stone/' => 200, '/web/' => 200, '/servicii/' => 200, '/poveste/' => 200,
+        '/proiect/duo-stone/' => 200, '/web/' => 200, '/realizare-site-uri-tematice/' => 200, '/poveste/' => 200,
         '/pagina-inexistenta/' => 404,
     ];
 
@@ -85,7 +85,9 @@ it('links only to canonical addresses: no internal link answers with a 301', fun
     }
 
     expect(count($checked))->toBeGreaterThan(30)
-        ->and($problems)->toBe([]);
+        ->and($problems)->toBe([])
+        // The industry index's old addresses: nothing links to them.
+        ->and($checked)->not->toHaveKeys(['/servicii/', '/servicii', '/solutii/', '/solutii']);
 });
 
 /*
@@ -114,7 +116,7 @@ it('links only to pages that answer 200: no 301, no 404', function () {
         ->create(['post_category_id' => $category->id]);
     Project::factory()->create(['slug' => 'duo-stone', 'title' => 'Duo Stone']);
 
-    $pages = ['/', '/servicii/', '/servicii/creare-site-stomatologie/', '/web/', '/produse/', '/software-la-comanda/',
+    $pages = ['/', '/realizare-site-uri-tematice/', '/servicii/creare-site-stomatologie/', '/web/', '/produse/', '/software-la-comanda/',
         '/portofoliu/', '/blog/', '/contact/', '/creare-magazin-online/', '/articol-1/', '/proiect/duo-stone/'];
 
     $problems = [];
@@ -134,6 +136,7 @@ it('links only to pages that answer 200: no 301, no 404', function () {
     }
 
     expect(count($checked))->toBeGreaterThan(20)
-        ->and($checked)->toHaveKeys(['/contact/', '/portofoliu/', '/servicii/creare-site-stomatologie/'])
+        ->and($checked)->toHaveKeys(['/contact/', '/portofoliu/', '/servicii/creare-site-stomatologie/', '/realizare-site-uri-tematice/'])
+        ->and($checked)->not->toHaveKeys(['/servicii/', '/servicii', '/solutii/', '/solutii'])
         ->and($problems)->toBe([]);
 });

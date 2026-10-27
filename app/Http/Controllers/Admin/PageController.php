@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Actions\Blog\StoreCover;
 use App\Enums\ContentStatus;
 use App\Enums\PageType;
 use App\Http\Controllers\Admin\Concerns\EditsContent;
@@ -135,6 +136,39 @@ class PageController extends Controller
         return to_route('admin.pages.edit', $page->id);
     }
 
+    /**
+     * POST /admin/pagini/{page}/coperta — an article's cover, uploaded on its
+     * own (the page's form is sent as JSON, a file is not), and its alt
+     * text if given; it replaces the one it had.
+     */
+    public function storeCover(Request $request, Page $page, StoreCover $storeCover): RedirectResponse
+    {
+        abort_unless($page->type === PageType::Article, 404);
+
+        $request->validate([
+            'cover' => ['required', 'file', 'mimes:png,jpg,jpeg,webp', 'max:12288', 'dimensions:min_width=1200,min_height=675'],
+            'cover_alt' => ['nullable', 'string', 'max:125'],
+        ], [
+            'cover.dimensions' => 'Imaginea trebuie să aibă cel puțin 1200 × 675 px (ideal 1536 × 1024).',
+        ], ['cover' => 'coperta', 'cover_alt' => 'textul alternativ']);
+
+        $storeCover($page, $request->file('cover'), $request->filled('cover_alt') ? $request->string('cover_alt')->trim()->toString() : null);
+        Inertia::flash('toast', ['type' => 'success', 'message' => 'Coperta a fost încărcată.']);
+
+        return back();
+    }
+
+    /**
+     * DELETE /admin/pagini/{page}/coperta
+     */
+    public function destroyCover(Page $page): RedirectResponse
+    {
+        $page->clearMediaCollection(Page::COVER);
+        Inertia::flash('toast', ['type' => 'success', 'message' => 'Coperta a fost eliminată.']);
+
+        return back();
+    }
+
     public function destroy(Page $page): RedirectResponse
     {
         $response = $this->trash($page);
@@ -191,6 +225,8 @@ class PageController extends Controller
                 'excerpt' => $page->excerpt,
                 'icon' => $page->icon,
                 'hero_asset_id' => $page->hero_asset_id,
+                'cover_url' => ($media = $page->getFirstMedia(Page::COVER)) ? $media->getUrl('cover-768') : null,
+                'cover_alt' => $page->cover_alt,
                 'blocks' => $page->blocks ?? [],
                 'details' => [
                     'price_from' => $page->details['price_from'] ?? null,

@@ -1,6 +1,7 @@
 {{--
-    /servicii — what Webis does, and the industry pages under it at the old
-    site's addresses (/servicii/{slug}/, PageController@industry):
+    /realizare-site-uri-tematice — the industry pages, each at the old site's
+    address for it (/servicii/{slug}/, PageController@industry), and what
+    else Webis does:
     - the internal pages' hero, the three services across its foot (as /web
       closes its hero on its two offers);
     - the industries: a centred head, then an index of them on hairlines,
@@ -39,14 +40,15 @@
 @endphp
 
 <x-layouts.public
-    title="Servicii"
-    description="Software la comandă, produse SaaS, site-uri și magazine online, pentru companii, instituții și universități."
+    title="Realizare site-uri tematice pe domenii"
+    crumb="Site-uri tematice"
+    description="Site-uri de prezentare și magazine online gândite pentru domeniul tău: clinici, restaurante, construcții, primării și multe altele."
     header-theme="dark"
 >
     <x-site.page-hero
-        label="Servicii · Webis"
-        :title="['Ce construim', 'pentru tine.']"
-        intro="Software la comandă, produse gata de folosit, site-uri și magazine online, de la aceeași echipă."
+        label="Web și e-commerce · Webis"
+        :title="['Site-uri', 'tematice.']"
+        intro="Site-uri de prezentare și magazine online gândite pentru felul în care lucrează domeniul tău."
         class="page-hero--led"
         data-reveal-pace="fast"
     >

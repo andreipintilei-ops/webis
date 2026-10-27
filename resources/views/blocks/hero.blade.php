@@ -8,6 +8,9 @@
       light-on-dark variant); without one it is dark on the page's white.
     - split: text beside the image, on the page's white or, with a gradient
       background, on the gradient in its own section (white text).
+
+    `$crumbs` (components/blocks): the page's breadcrumbs above the title,
+    when the page has them (an industry page).
 --}}
 @php
     $image = isset($data['image_asset_id']) ? $assets->get($data['image_asset_id']) : null;
@@ -95,6 +98,10 @@
 
         {{-- Left: the content column (--content-max), narrower than the header. --}}
         <div @class(['mx-auto w-full', 'max-w-[var(--content-max)]' => $left, 'max-w-5xl' => ! $left])>
+            @if (! empty($crumbs))
+                <div data-intro-fade>@include('blocks.partials.hero-crumbs', ['crumbs' => $crumbs, 'dark' => $dark])</div>
+            @endif
+
             @if (! empty($data['eyebrow']))
                 <p @class(['mb-5 text-sm md:mb-6 md:text-base', 'text-white/85' => $dark, 'text-neutral-600' => ! $dark]) data-intro-fade>{{ $data['eyebrow'] }}</p>
             @endif
@@ -149,6 +156,10 @@
 
         <div @class(['mx-auto grid max-w-[var(--content-max)] items-center gap-12', 'lg:grid-cols-2' => $image])>
             <div>
+                @if (! empty($crumbs))
+                    @include('blocks.partials.hero-crumbs', ['crumbs' => $crumbs, 'dark' => $dark])
+                @endif
+
                 @if (! empty($data['eyebrow']))
                     <p @class(['mb-5 text-sm md:text-base', 'text-white/85' => $dark, 'text-neutral-600' => ! $dark])>{{ $data['eyebrow'] }}</p>
                 @endif

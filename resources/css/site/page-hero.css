@@ -134,4 +134,38 @@
             letter-spacing: -0.03em;
         }
     }
+
+    /*
+      With its cover (public/page, Support\Blog\Cover): under the title on
+      phones and tablets; from 1024px beside it, the label and the title in
+      the left seven columns, the cover in the right five, in the middle of
+      the hero's height. The title a little smaller for its narrower column.
+    */
+    .page-hero--cover {
+        & .article-cover {
+            @apply mt-10 aspect-video overflow-hidden rounded-2xl md:mt-12 lg:rounded-3xl;
+            box-shadow: 0 40px 80px -40px rgb(10 8 40 / 0.6);
+        }
+
+        @media (min-width: 1024px) {
+            & .page-hero__inner {
+                @apply grid grid-cols-12 items-center gap-x-12;
+            }
+
+            & .page-hero__label,
+            & .page-hero__title {
+                grid-column: 1 / span 7;
+            }
+
+            & .page-hero__title {
+                font-size: clamp(2rem, 3.4vw, 3.25rem);
+            }
+
+            & .article-cover {
+                @apply mt-0;
+                grid-column: 8 / span 5;
+                grid-row: 1 / span 2;
+            }
+        }
+    }
 }

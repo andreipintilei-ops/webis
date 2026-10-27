@@ -15,7 +15,7 @@ class ClientsController extends Controller
     public const int PER_PAGE = 12;
 
     /**
-     * GET /portofoliu — the client work (the menu's "Clienți"): up to three
+     * GET /portofoliu — the client work (the menu's "Portofoliu"): up to three
      * featured projects, then the published projects as a list, all or one
      * type (?tip=magazin), a page at a time (?pagina=2). Only client work:
      * Webis's own products are on Produse SaaS. The clients' logos load their own (x-logo-marquee).

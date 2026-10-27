@@ -19,9 +19,22 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Spatie\Image\Enums\Fit;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 /**
  * A CMS page served at a root slug. See App\Enums\PageType for the kinds.
+ *
+ * An article may have a cover (the `cover` media collection, COVER): the
+ * uploaded original kept privately, so its sizes can be made again; from
+ * it, WebP at each of COVER_WIDTHS — the middle 16:9 of one with its own
+ * ground, a cut-out (a transparent ground) whole, its transparency kept —
+ * and the 1200×630 share image as a JPEG (a cut-out laid on the hero's
+ * gradient: Listeners\FlattenCoverShareImage). Its alt text is `cover_alt`. Made
+ * at once, not on the queue: the article shows it as soon as it is saved.
+ * Support\Blog\Cover reads it for the views.
  *
  * @property int $id
  * @property PageType $type
@@ -31,6 +44,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property string|null $excerpt
  * @property string|null $icon
  * @property int|null $hero_asset_id
+ * @property string|null $cover_alt
  * @property list<array<string, mixed>>|null $blocks
  * @property array<string, mixed>|null $details
  * @property int $sort_order
@@ -43,13 +57,52 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property-read Collection<int, Project> $projects
  */
 #[Fillable([
-    'type', 'post_category_id', 'title', 'slug', 'excerpt', 'icon', 'hero_asset_id',
+    'type', 'post_category_id', 'title', 'slug', 'excerpt', 'icon', 'hero_asset_id', 'cover_alt',
     'blocks', 'details', 'sort_order', 'status', 'published_at', 'seo',
 ])]
-class Page extends Model
+class Page extends Model implements HasMedia
 {
     /** @use HasFactory<PageFactory> */
-    use HasFactory, HasPublication, HasRevisions, RecordsSlugHistory, SoftDeletes, TracksAssetUsage;
+    use HasFactory, HasPublication, HasRevisions, InteractsWithMedia, RecordsSlugHistory, SoftDeletes, TracksAssetUsage;
+
+    public const string COVER = 'cover';
+
+    /** The cover's widths, for srcset; the first is the largest. */
+    public const array COVER_WIDTHS = [1536, 1200, 768, 480];
+
+    public function registerMediaCollections(): void
+    {
+        $this->addMediaCollection(self::COVER)
+            ->singleFile()
+            ->acceptsMimeTypes(['image/png', 'image/jpeg', 'image/webp'])
+            // The original, private; what is shown, public.
+            ->useDisk('local')
+            ->storeConversionsOnDisk('public');
+    }
+
+    public function registerMediaConversions(?Media $media = null): void
+    {
+        // A cut-out (Actions\Blog\StoreCover) whole, at its own proportions,
+        // fitted into its frame with room around it; one with its own ground
+        // cropped to 16:9, to fill the frame.
+        $cutout = (bool) $media?->getCustomProperty('transparent');
+
+        foreach (self::COVER_WIDTHS as $width) {
+            $this->addMediaConversion('cover-'.$width)
+                ->performOnCollections(self::COVER)
+                ->nonQueued()
+                ->format('webp')
+                ->quality(80)
+                ->fit($cutout ? Fit::Max : Fit::Crop, $width, $cutout ? $width : (int) round($width * 9 / 16));
+        }
+
+        $this->addMediaConversion('og')
+            ->performOnCollections(self::COVER)
+            ->nonQueued()
+            ->format('jpg')
+            ->quality(85)
+            ->fit(Fit::Crop, 1200, 630);
+    }
 
     protected function casts(): array
     {
@@ -119,7 +172,7 @@ class Page extends Model
 
     public function revisionAttributes(): array
     {
-        return ['title', 'excerpt', 'icon', 'hero_asset_id', 'blocks', 'details', 'seo'];
+        return ['title', 'excerpt', 'icon', 'hero_asset_id', 'cover_alt', 'blocks', 'details', 'seo'];
     }
 
     public function assetReferences(): array

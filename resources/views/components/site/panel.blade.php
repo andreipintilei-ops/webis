@@ -28,12 +28,15 @@
             <p class="site-panel__label">Navigare</p>
             <hr class="site-panel__stripe">
             <ul class="site-panel__links">
+                {{-- An item with no page of its own (Servicii): its children in its place. --}}
                 @foreach (\App\Support\SiteNavigation::links() as $link)
-                    <li class="site-panel__item">
-                        <a href="{{ \App\Support\TrailingSlash::href($link['href']) }}" @class(['site-panel__link', 'is-active' => $link['current']]) @if ($link['current']) aria-current="page" @endif>
-                            {{ $link['label'] }}
-                        </a>
-                    </li>
+                    @foreach ($link['href'] === null ? \App\Support\SiteNavigation::services() : [$link] as $item)
+                        <li class="site-panel__item">
+                            <a href="{{ \App\Support\TrailingSlash::href($item['href']) }}" @class(['site-panel__link', 'is-active' => $item['current']]) @if ($item['current']) aria-current="page" @endif>
+                                {{ $item['label'] }}
+                            </a>
+                        </li>
+                    @endforeach
                 @endforeach
             </ul>
         </nav>

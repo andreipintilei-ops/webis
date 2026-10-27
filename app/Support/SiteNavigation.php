@@ -10,14 +10,15 @@ use App\Enums\ProjectType;
  * `links()`, the sections:
  * - `bar`: shown in the top bar
  * - `menu`: a main section — the footer's page list
- * - `place`: "section" — in the full-screen menu, in the row of smaller
- *   links under the services
+ * - `place`: "section" — one of the side menu's pages
  * - `cta`: shown as the button (a pill) instead, with this label — the
- *   full-screen menu's one way to Contact
- * - `children`: a dropdown under the item in the top bar
+ *   side menu's way to Contact, its last page
+ * - `children`: a dropdown under the item in the top bar; in the side
+ *   menu, the item opens them under it. Such an item links nowhere
+ *   (`href` null): in both it only opens them
  *
- * `services()`: the three services, the Servicii dropdown and the numbered
- * rows of the full-screen menu, each with its line of description (`blurb`).
+ * `services()`: the three services, the Servicii dropdown and the side
+ * menu's Servicii group, each with its line of description (`blurb`).
  * `groups()`: the footer's columns of grouped links.
  * `legal()`: the legal pages, under their own heading in the footer.
  *
@@ -38,14 +39,17 @@ final class SiteNavigation
     ];
 
     /**
-     * @return list<array{label: string, href: string, bar: bool, menu: bool, place: string|null, cta: string|null, children: list<array{label: string, href: string, blurb?: string}>, current: bool}>
+     * Servicii has no page of its own: its `href` is null, and it only opens
+     * its children.
+     *
+     * @return list<array{label: string, href: string|null, bar: bool, menu: bool, place: string|null, cta: string|null, children: list<array{label: string, href: string, blurb?: string}>, current: bool}>
      */
     public static function links(bool $withHome = true): array
     {
         $links = [
             ['label' => 'Acasă', 'href' => '/', 'bar' => true, 'menu' => false, 'place' => null, 'cta' => null, 'children' => []],
-            ['label' => 'Servicii', 'href' => '/servicii', 'bar' => true, 'menu' => true, 'place' => null, 'cta' => null, 'children' => self::SERVICES],
-            ['label' => 'Clienți', 'href' => '/portofoliu', 'bar' => true, 'menu' => true, 'place' => 'section', 'cta' => null, 'children' => []],
+            ['label' => 'Servicii', 'href' => null, 'bar' => true, 'menu' => true, 'place' => null, 'cta' => null, 'children' => self::SERVICES],
+            ['label' => 'Portofoliu', 'href' => '/portofoliu', 'bar' => true, 'menu' => true, 'place' => 'section', 'cta' => null, 'children' => []],
             ['label' => 'Blog', 'href' => '/blog', 'bar' => true, 'menu' => true, 'place' => 'section', 'cta' => null, 'children' => []],
             ['label' => 'Contact', 'href' => '/contact', 'bar' => true, 'menu' => false, 'place' => null, 'cta' => 'Hai să discutăm', 'children' => []],
         ];
@@ -87,6 +91,7 @@ final class SiteNavigation
             ['label' => 'Web și e-commerce', 'links' => [
                 ['label' => 'Creare site de prezentare', 'href' => '/creare-site-de-prezentare'],
                 ['label' => 'Magazin online', 'href' => '/creare-magazin-online'],
+                ['label' => 'Site-uri tematice', 'href' => '/realizare-site-uri-tematice'],
             ]],
         ];
     }
@@ -109,6 +114,18 @@ final class SiteNavigation
     private static function mark(array $link): array
     {
         $path = self::path();
+
+        // Servicii, no page of its own: current on one of its services, and
+        // on the industry pages and their index.
+        if ($link['href'] === null) {
+            return [
+                ...$link,
+                'current' => in_array(true, array_column(array_map(self::mark(...), $link['children']), 'current'), true)
+                    || str_starts_with($path, '/servicii/')
+                    || $path === '/realizare-site-uri-tematice',
+            ];
+        }
+
         // Compared without a trailing slash: "/web/" marks "/web" (the
         // request's path never ends in one).
         $href = rtrim((string) $link['href'], '/') ?: '/';

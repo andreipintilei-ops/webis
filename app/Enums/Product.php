@@ -35,6 +35,8 @@ enum Product: string
     public function externalUrl(): ?string
     {
         return match ($this) {
+            self::SmileSoft => 'https://smilesoft.ro/',
+            self::ParticipatoryBudgeting => 'https://bugetare.ro/',
             self::Confirmo => 'https://confirmo.ro/',
             default => null,
         };

@@ -63,11 +63,11 @@ it('matches a prefix row against everything under it', function () {
 });
 
 it('prefers the longest matching prefix', function () {
-    Redirect::factory()->prefix()->create(['source_path' => '/servicii-vechi', 'target' => '/servicii/']);
+    Redirect::factory()->prefix()->create(['source_path' => '/servicii-vechi', 'target' => '/portofoliu/']);
     Redirect::factory()->prefix()->create(['source_path' => '/servicii-vechi/web', 'target' => '/web/']);
 
     $this->get('/servicii-vechi/web/magazine')->assertRedirect('/web/');
-    $this->get('/servicii-vechi/seo')->assertRedirect('/servicii/');
+    $this->get('/servicii-vechi/seo')->assertRedirect('/portofoliu/');
 });
 
 it('prefers an exact row over a prefix that also matches', function () {
@@ -117,7 +117,7 @@ it('never fires a row whose source is a live page', function () {
     Redirect::factory()->create(['source_path' => '/contact', 'target' => '/altundeva']);
 
     $this->get('/contact')->assertOk();
-    $this->get('/servicii')->assertOk();
+    $this->get('/realizare-site-uri-tematice')->assertOk();
 });
 
 it('lets slug history win over a conflicting row', function () {

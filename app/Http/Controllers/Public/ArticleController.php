@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Page;
 use App\Models\PostCategory;
 use App\Models\SlugHistory;
+use App\Support\Blog\Cover;
 use App\Support\PublicUrls;
 use Carbon\CarbonInterface;
 use Illuminate\Contracts\View\View;
@@ -88,7 +89,7 @@ class ArticleController extends Controller
     {
         return $query
             ->published()
-            ->with('category:id,name,slug')
+            ->with(['category:id,name,slug', 'media'])
             ->orderByDesc('published_at')
             ->orderByDesc('id');
     }
@@ -139,7 +140,7 @@ class ArticleController extends Controller
     /**
      * An article as components/site/post-card takes it.
      *
-     * @return array{href: string, title: string, category: string|null, date: CarbonInterface|null}
+     * @return array{href: string, title: string, category: string|null, date: CarbonInterface|null, cover: Cover|null}
      */
     private function card(Page $article): array
     {
@@ -148,6 +149,7 @@ class ArticleController extends Controller
             'title' => $article->title,
             'category' => $article->category?->name,
             'date' => $article->published_at,
+            'cover' => Cover::of($article),
         ];
     }
 }

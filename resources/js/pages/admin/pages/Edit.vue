@@ -13,6 +13,7 @@ import ChoiceList from '@/components/admin/fields/ChoiceList.vue';
 import SelectField from '@/components/admin/fields/SelectField.vue';
 import TextField from '@/components/admin/fields/TextField.vue';
 import AssetField from '@/components/admin/media/AssetField.vue';
+import CoverField from '@/components/admin/media/CoverField.vue';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -39,6 +40,8 @@ type PagePayload = {
     excerpt: string | null;
     icon: string | null;
     hero_asset_id: number | null;
+    cover_url: string | null;
+    cover_alt: string | null;
     blocks: StoredBlock[];
     details: { price_from: string | null; service_type: string | null };
     sort_order: number;
@@ -77,6 +80,7 @@ const form = useForm({
     excerpt: props.page.excerpt,
     icon: props.page.icon,
     hero_asset_id: props.page.hero_asset_id,
+    cover_alt: props.page.cover_alt,
     blocks: props.page.blocks,
     details: props.page.details,
     sort_order: props.page.sort_order,
@@ -198,6 +202,15 @@ function remove(): void {
                         :error="form.errors.excerpt"
                         hint="Apare pe carduri și în liste; e și descrierea implicită pentru Google."
                     />
+                    <div v-if="form.type === 'article'" class="grid gap-1.5">
+                        <Label>Copertă</Label>
+                        <CoverField
+                            v-model:alt="form.cover_alt"
+                            :page-id="page.id"
+                            :url="page.cover_url"
+                            :error="form.errors.cover_alt"
+                        />
+                    </div>
                     <div class="grid gap-1.5">
                         <Label>Imagine reprezentativă</Label>
                         <AssetField v-model="form.hero_asset_id" />

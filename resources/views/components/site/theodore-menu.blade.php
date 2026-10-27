@@ -9,9 +9,12 @@
     CSS :target shows it.
 
     Inside, after the panel on dennissnellenberg.com: a label over a
-    hairline, the pages large (Contact last; the current one with a dot; on hover
-    the label rolls letter by letter, as in the top bar),
-    the three services smaller, and at the foot how to reach us.
+    hairline, the pages large in the top bar's order (Contact last; the
+    current one with a dot; on hover the label rolls letter by letter, as in
+    the top bar) — Servicii among them not a link but a disclosure, opening
+    the three services under it (closed each time the menu opens; the dot
+    on it on one of their pages) —
+    and at the foot how to reach us.
 
     `close`: render the menu's own ✕ — not needed when an outside toggle (the
     round header button) already turns into one.
@@ -19,11 +22,14 @@
 @props(['id' => 'meniu', 'close' => true])
 
 @php
-    // The pages: home, the sections, Contact last.
+    // The pages: home, the services, the sections, Contact last.
     $pages = array_values(array_filter(
         \App\Support\SiteNavigation::links(),
-        fn ($link) => $link['href'] === '/' || $link['place'] === 'section' || $link['cta'] !== null,
+        fn ($link) => $link['href'] === '/' || $link['children'] !== [] || $link['place'] === 'section' || $link['cta'] !== null,
     ));
+
+    $services = \App\Support\SiteNavigation::services();
+    $onService = in_array(true, array_column($services, 'current'), true);
 
     $company = app(\App\Settings\CompanySettings::class);
     $phoneHref = \App\Support\PhoneLink::href($company->phone);
@@ -42,21 +48,25 @@
             <ul class="theo-menu__links">
                 @foreach ($pages as $link)
                     <li>
-                        <a href="{{ \App\Support\TrailingSlash::href($link['href']) }}" @class(['theo-menu__link', 'is-active' => $link['current']]) data-theo-item @if ($link['current']) aria-current="page" @endif><x-ui.roll :text="$link['label']" /></a>
+                        @if ($link['children'] !== [])
+                            <details class="theo-menu__group" data-theo-group>
+                                <summary @class(['theo-menu__link', 'is-active' => $onService]) data-theo-item><x-ui.roll :text="$link['label']" /><svg class="theo-menu__plus" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v18M3 12h18" /></svg></summary>
+                                <div class="theo-menu__sub" data-theo-group-body>
+                                    <ul class="theo-menu__services" data-theo-reveal>
+                                        @foreach ($services as $service)
+                                            <li>
+                                                <a href="{{ \App\Support\TrailingSlash::href($service['href']) }}" @class(['theo-menu__service', 'is-active' => $service['current']]) data-theo-link @if ($service['current']) aria-current="page" @endif><x-ui.roll :text="$service['label']" /></a>
+                                            </li>
+                                        @endforeach
+                                    </ul>
+                                </div>
+                            </details>
+                        @else
+                            <a href="{{ \App\Support\TrailingSlash::href($link['href']) }}" @class(['theo-menu__link', 'is-active' => $link['current']]) data-theo-item @if ($link['current']) aria-current="page" @endif><x-ui.roll :text="$link['label']" /></a>
+                        @endif
                     </li>
                 @endforeach
             </ul>
-
-            <div data-theo-reveal>
-                <p class="theo-menu__label theo-menu__label--services">Servicii</p>
-                <ul class="theo-menu__services">
-                    @foreach (\App\Support\SiteNavigation::services() as $link)
-                        <li>
-                            <a href="{{ \App\Support\TrailingSlash::href($link['href']) }}" @class(['theo-menu__service', 'is-active' => $link['current']]) data-theo-link @if ($link['current']) aria-current="page" @endif><x-ui.roll :text="$link['label']" /></a>
-                        </li>
-                    @endforeach
-                </ul>
-            </div>
         </nav>
 
         <div class="theo-menu__foot" data-theo-reveal>

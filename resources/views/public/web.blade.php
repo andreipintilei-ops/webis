@@ -117,6 +117,9 @@
         class="page-hero--led"
         data-reveal-pace="fast"
     >
+        {{-- Beside the intro: the sites made for one domain each. --}}
+        <x-ui.arrow-link :href="route('services.index')" tone="dark">Vezi site-uri tematice pe domenii</x-ui.arrow-link>
+
         {{-- The two offers close the hero, side by side on a hairline across
              its foot, as the home page's rating and logos close its own. The section
              after rises over the hero on a rounded top, as on the home page. --}}

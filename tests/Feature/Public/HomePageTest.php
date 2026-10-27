@@ -49,15 +49,21 @@ it('opens the menu panel, behind its curtain, from the round header button and t
         ->not->toContain('id="site-panel"');
 });
 
-it('lists in the menu the pages (Contact last), the three services and how to reach us', function () {
+it('lists in the menu the pages (Contact last), Servicii opening the three services, and how to reach us', function () {
     app(CompanySettings::class)->fill(['email' => 'contact@webis.ro', 'phone' => '0770 700 607'])->save();
 
     $html = $this->get('/')->assertOk()->getContent();
     preg_match('#<div id="meniu".*?<svg class="theo-overlay"#s', $html, $menu);
     preg_match_all('#<a href="([^"]+)" class="theo-menu__link#', $menu[0], $pages);
-    preg_match_all('#<a href="([^"]+)" class="theo-menu__service#', $menu[0], $services);
+    preg_match('#<details class="theo-menu__group" data-theo-group\s*>\s*<summary class="theo-menu__link" data-theo-item>.*?</details>#s', $menu[0], $group);
+    preg_match_all('#<a href="([^"]+)" class="theo-menu__service#', $group[0] ?? '', $services);
 
+    // Servicii between home and the portfolio, as in the top bar: not a
+    // link, closed away from the services' pages.
     expect($pages[1])->toBe(['/', '/portofoliu/', '/blog/', '/contact/'])
+        ->and(strip_tags($group[0]))->toContain('Servicii')
+        ->and(strpos($menu[0], 'theo-menu__group'))->toBeGreaterThan(strpos($menu[0], 'href="/" class="theo-menu__link'))
+        ->toBeLessThan(strpos($menu[0], 'href="/portofoliu/" class="theo-menu__link'))
         ->and($services[1])->toBe(['/software-la-comanda/', '/produse/', '/web/'])
         ->and($menu[0])->toContain('href="mailto:contact@webis.ro"')
         ->toContain('href="tel:')
@@ -65,12 +71,21 @@ it('lists in the menu the pages (Contact last), the three services and how to re
         ->toMatch('#href="/" class="theo-menu__link is-active" data-theo-item\s+aria-current="page"#');
 });
 
+it('marks the menu\'s Servicii on a service\'s page, closed, and that service in it', function () {
+    preg_match('#<div id="meniu".*?<svg class="theo-overlay"#s', $this->get('/web')->assertOk()->getContent(), $menu);
+
+    expect($menu[0])
+        ->toMatch('#<details class="theo-menu__group" data-theo-group\s*>\s*<summary class="theo-menu__link is-active" data-theo-item>#')
+        ->toMatch('#href="/web/" class="theo-menu__service is-active" data-theo-link\s+aria-current="page"#');
+});
+
 it('shows the top bar sections, with the Servicii dropdown and no Produse', function () {
     preg_match('#<header class="site-nav.*?</header>#s', $this->get('/')->assertOk()->getContent(), $bar);
 
     expect($bar[0])
-        // The dropdown opens under a chevron.
-        ->toMatch('#<li class="site-nav__dropdown hidden md:block">\s*<a href="/servicii/" class="site-link"\s*>\s*<span class="roll">.*?</span>\s*<svg class="site-nav__chevron"#s')
+        // The dropdown opens under a chevron, from a button: Servicii links nowhere.
+        ->toMatch('#<li class="site-nav__dropdown hidden md:block">\s*<button type="button" class="site-link cursor-pointer"\s*>\s*<span class="roll">.*?</span>\s*<svg class="site-nav__chevron"#s')
+        ->not->toContain('href="/servicii/"')
         // Its label, rolling letter by letter (components/ui/roll).
         ->and(strip_tags($bar[0]))->toContain('Servicii')
         ->and($bar[0])
@@ -246,7 +261,7 @@ it('closes every page with the footer on the violet gradient: the call, the link
     $company->email = 'contact@webis.ro';
     $company->save();
 
-    $html = $this->get('/servicii')->assertOk()->getContent();
+    $html = $this->get('/realizare-site-uri-tematice')->assertOk()->getContent();
 
     preg_match('/<footer class="site-footer".*?<\/footer>/s', $html, $footer);
 
@@ -272,7 +287,7 @@ it('sets the tone of the sections below the hero on /poveste from one setting', 
 
     // Other pages are not affected.
     config(['site.lower_tone' => 'dark']);
-    expect($this->get('/servicii')->assertOk()->getContent())->not->toContain('data-lower');
+    expect($this->get('/realizare-site-uri-tematice')->assertOk()->getContent())->not->toContain('data-lower');
 });
 
 it('keeps the services story trial at /poveste, on a copy of the home page', function () {

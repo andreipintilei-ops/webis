@@ -250,7 +250,8 @@ it('gives a link written as a path its canonical form, still as a path', functio
 it('links one of the app\'s own permanent redirects straight to where it leads', function () {
     expect(TrailingSlash::href('/clienti'))->toBe('/portofoliu/')
         ->and(TrailingSlash::href('/clienti?tip=logo'))->toBe('/portofoliu/?tip=logo')
-        ->and(TrailingSlash::href('/solutii'))->toBe('/servicii/')
+        ->and(TrailingSlash::href('/solutii'))->toBe('/realizare-site-uri-tematice/')
+        ->and(TrailingSlash::href('/servicii'))->toBe('/realizare-site-uri-tematice/')
         ->and(TrailingSlash::href('/proiect'))->toBe('/portofoliu/')
         // Not a redirect: a project under /proiect/.
         ->and(TrailingSlash::href('/proiect/duo-stone'))->toBe('/proiect/duo-stone/');

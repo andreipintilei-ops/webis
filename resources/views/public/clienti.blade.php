@@ -1,5 +1,5 @@
 {{--
-    /portofoliu — the client work, "Clienți" in the menu
+    /portofoliu — the client work, "Portofoliu" in the menu
     (Public\ClientsController): the internal pages' hero with the planes and
     the figures under it (components/site/figures); the featured projects
     as stacking cards (components/site/featured-work); every project as a
@@ -35,8 +35,8 @@
 
     // The page's CMS entry (ClientsController) titles it, and the filter in
     // effect goes in front: "Magazine · Portofoliu". Only an SEO title set in
-    // the admin replaces "Portofoliu" — the entry's own title names it in the
-    // page list, where the menu's word for it ("Clienți") belongs.
+    // the admin replaces "Portofoliu" — the entry's own title only names it
+    // in the admin's page list.
     $title = $page?->seo->title ?: 'Portofoliu';
     $title = $type ? $type->plural().' · '.$title : $title;
     $description = $page?->seo->description
@@ -103,7 +103,7 @@
     :footer-w="true"
 >
     <x-site.page-hero
-        label="Clienți · Webis"
+        label="Portofoliu · Webis"
         :title="['Proiecte', 'pentru clienți.']"
         intro="Software la comandă, site-uri de prezentare și magazine online realizate de Webis."
         data-reveal-pace="fast"

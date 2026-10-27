@@ -14,7 +14,7 @@ it('serves the section pages', function (string $path, string $title) {
         ->assertSee("<title>{$title} | Webis</title>", escape: false)
         ->assertSee('data-theo-menu', escape: false);
 })->with([
-    ['/servicii', 'Servicii'],
+    ['/realizare-site-uri-tematice', 'Realizare site-uri tematice pe domenii'],
     ['/portofoliu', 'Portofoliu'],
     ['/blog', 'Blog'],
 ]);
@@ -49,7 +49,7 @@ it('sends the home page slug to the root', function () {
     $this->get('/acasa')->assertRedirect('/')->assertStatus(301);
 });
 
-it('serves the industry pages under /servicii, as the old site did, and lists them there', function () {
+it('serves the industry pages under /servicii, as the old site did, and lists them at /realizare-site-uri-tematice', function () {
     Page::factory()->ofType(PageType::Industry)->create(['title' => 'Creare site stomatologie', 'slug' => 'creare-site-stomatologie']);
     Page::factory()->ofType(PageType::Industry)->draft()->create(['title' => 'Creare site ciorna', 'slug' => 'creare-site-ciorna']);
 
@@ -57,7 +57,7 @@ it('serves the industry pages under /servicii, as the old site did, and lists th
         ->assertOk()
         ->assertSee('<title>Creare site stomatologie | Webis</title>', escape: false);
 
-    $this->get('/servicii')
+    $this->get('/realizare-site-uri-tematice')
         ->assertOk()
         ->assertSee('href="/servicii/creare-site-stomatologie/"', escape: false)
         ->assertSee('Stomatologie')
@@ -67,13 +67,45 @@ it('serves the industry pages under /servicii, as the old site did, and lists th
     $this->get('/servicii/nu-exista')->assertNotFound();
 });
 
+it('names the industry index Site-uri tematice: its H1, its own canonical, the industry pages\' breadcrumbs, the footer and /web', function () {
+    Page::factory()->ofType(PageType::Industry)->create(['title' => 'Creare site stomatologie', 'slug' => 'creare-site-stomatologie', 'blocks' => [
+        ['id' => 'hero', 'type' => 'hero', 'v' => 1, 'data' => ['layout' => 'split', 'heading' => 'Creare site stomatologie', 'background' => 'gradient-violet']],
+    ]]);
+
+    $index = $this->get('/realizare-site-uri-tematice/')->assertOk()->getContent();
+    $industry = $this->get('/servicii/creare-site-stomatologie/')->assertOk()->getContent();
+    preg_match('#<nav aria-label="Breadcrumb".*?</nav>#s', $industry, $crumbs);
+    preg_match('#<footer class="site-footer".*?</footer>#s', $index, $footer);
+    preg_match('#<h3 class="site-footer__group-label">Web și e-commerce</h3>.*?</ul>#s', $footer[0], $web);
+    preg_match('#<h3 class="site-footer__group-label[^"]*">Webis</h3>.*?</ul>#s', $footer[0], $webis);
+
+    expect($index)
+        ->toContain('<title>Realizare site-uri tematice pe domenii | Webis</title>')
+        ->toContain('<meta name="description" content="Site-uri de prezentare și magazine online gândite pentru domeniul tău: clinici, restaurante, construcții, primării și multe altele.">')
+        ->toContain('<link rel="canonical" href="https://www.webis.ro/realizare-site-uri-tematice/">')
+        ->and(trim(preg_replace('/\s+/', ' ', strip_tags(preg_replace('#.*?(<h1.*?</h1>).*#s', '$1', $index)))))->toBe('Site-uri tematice.')
+        // Shown above the hero's title, the same trail as the JSON-LD's.
+        ->and($crumbs[0])
+        ->toContain('<a href="/"')
+        ->toContain('<a href="/realizare-site-uri-tematice/"')
+        ->toContain('<span aria-current="page">Creare site stomatologie</span>')
+        ->and(trim(preg_replace('/\s+/', ' ', strip_tags($crumbs[0]))))->toBe('Acasă › Site-uri tematice › Creare site stomatologie')
+        // In "Web și e-commerce", not under Webis.
+        ->and($web[0])->toContain('href="/realizare-site-uri-tematice/"')
+        ->and($webis[0])->not->toContain('realizare-site-uri-tematice')
+        ->and($this->get('/web/')->getContent())->toContain('Vezi site-uri tematice pe domenii');
+});
+
 it('gives each page one address: an industry page at the root, or another page under /servicii, goes to its own', function () {
     Page::factory()->ofType(PageType::Industry)->create(['slug' => 'creare-site-stomatologie']);
     Page::factory()->ofType(PageType::Contact)->create(['slug' => 'contact']);
 
     $this->get('/creare-site-stomatologie')->assertRedirect('/servicii/creare-site-stomatologie/')->assertStatus(301);
     $this->get('/servicii/contact')->assertRedirect('/contact/')->assertStatus(301);
-    $this->get('/solutii')->assertRedirect('/servicii/')->assertStatus(301);
+    // The index's old addresses, each straight to it: one hop.
+    $this->get('/servicii')->assertRedirect('/realizare-site-uri-tematice/')->assertStatus(301);
+    $this->get('/servicii/')->assertRedirect('/realizare-site-uri-tematice/')->assertStatus(301);
+    $this->get('/solutii')->assertRedirect('/realizare-site-uri-tematice/')->assertStatus(301);
 });
 
 it('sends a renamed industry page to its address under /servicii', function () {

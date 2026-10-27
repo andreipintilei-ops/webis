@@ -39,18 +39,19 @@
                     </li>
                 @elseif ($link['children'] !== [])
                     {{--
-                        A dropdown that opens on hover and on keyboard focus
-                        (:focus-within), so tabbing walks into its links. The
-                        item itself stays a link to the section overview.
+                        A dropdown that opens on hover and on focus
+                        (:focus-within), so tabbing walks into its links and a
+                        tap opens it. The item itself is no link, only the
+                        button that opens it.
                     --}}
                     <li class="site-nav__dropdown hidden md:block">
-                        <a href="{{ \App\Support\TrailingSlash::href($link['href']) }}" @class(['site-link', 'is-active' => $link['current']]) @if ($link['current']) aria-current="page" @endif>
+                        <button type="button" @class(['site-link cursor-pointer', 'is-active' => $link['current']])>
                             <x-ui.roll :text="$link['label']" />
                             {{-- A chevron: it turns over while the dropdown is open. --}}
                             <svg class="site-nav__chevron" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
                                 <path d="M3 4.75 6 7.75l3-3" stroke-linecap="round" stroke-linejoin="round" />
                             </svg>
-                        </a>
+                        </button>
                         <div class="site-dropdown">
                             <ul class="site-dropdown__list">
                                 @foreach ($link['children'] as $child)

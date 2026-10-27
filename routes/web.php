@@ -16,16 +16,18 @@ use Illuminate\Support\Facades\Route;
 */
 Route::get('/', HomeController::class)->name('home');
 
-// Servicii: the services, and the industry pages under them at the old
-// site's addresses (/servicii/{slug}/), which rank. /solutii was its name
-// for a while.
-Route::view('servicii', 'public.services.index')->name('services.index');
-Route::permanentRedirect('solutii', '/servicii/');
+// Site-uri tematice: the index of the industry pages, at the old site's
+// address for it, which ranks; the pages themselves stay at its addresses
+// for them (/servicii/{slug}/). /servicii/ was the index's address for a
+// while, /solutii/ before it: both straight to it, in one hop.
+Route::view('realizare-site-uri-tematice', 'public.services.index')->name('services.index');
+Route::permanentRedirect('servicii', '/realizare-site-uri-tematice/');
+Route::permanentRedirect('solutii', '/realizare-site-uri-tematice/');
 Route::get('servicii/{slug}', [PageController::class, 'industry'])
     ->where('slug', '[a-z0-9]+(?:-[a-z0-9]+)*')
     ->name('pages.industry');
 // The client work: the old site's addresses, which already rank — the list
-// at /portofoliu (the menu calls it Clienți), each project at /proiect/{slug}.
+// at /portofoliu (as the menu calls it), each project at /proiect/{slug}.
 Route::get('portofoliu', ClientsController::class)->name('projects.index');
 Route::permanentRedirect('clienti', '/portofoliu');
 // The old site's archive of its projects.

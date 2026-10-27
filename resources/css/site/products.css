@@ -14,6 +14,13 @@
         @apply gap-10 md:flex-col md:items-start md:justify-start;
     }
 
+    /* From a tablet up the hairlines between them run down to the hero's
+       foot — the screen's, from 1024px (page-hero--led) — with no margin
+       under them: the room under the words is the cells' own. */
+    .saas-hero {
+        @apply md:pb-0;
+    }
+
     .saas-hero-products {
         @apply grid border-t sm:grid-cols-2 md:mt-auto lg:grid-cols-4;
         border-color: rgb(255 255 255 / 0.25);
@@ -26,7 +33,7 @@
     }
 
     .saas-hero-product {
-        @apply relative grid flex-1 content-start gap-y-2 py-6 text-white md:py-8 lg:pr-8;
+        @apply relative grid flex-1 content-start gap-y-2 py-6 text-white md:pt-8 md:pb-14 lg:pr-8;
         transition: opacity var(--base) var(--ease);
     }
 
@@ -88,6 +95,13 @@
 
         &::before {
             @apply hidden;
+        }
+
+        /* The names smaller than /portofoliu's clients, the same on every
+           card: the longest, Research Information Management System, on
+           two lines, the others on one. */
+        & .work-stack__client {
+            font-size: clamp(2.25rem, 4.2vw, 3.8rem);
         }
     }
 

@@ -31,7 +31,29 @@ it('renders a published contact page with the shared form and company details', 
         ->assertDontSee('site-footer__cta', escape: false)
         ->assertDontSee('chapter--light', escape: false);
 
-    $this->get('/servicii')->assertOk()->assertSee('site-footer__cta', escape: false);
+    $this->get('/realizare-site-uri-tematice')->assertOk()->assertSee('site-footer__cta', escape: false);
+});
+
+it('shows where the office is: a lite map, nothing from Google until asked for, and a link to the place', function () {
+    Page::factory()->ofType(PageType::Contact)->create(['title' => 'Contact', 'slug' => 'contact']);
+
+    $company = app(CompanySettings::class);
+    $company->street_address = 'B-dul Poitiers 16';
+    $company->locality = 'Iași';
+    $company->google_reviews_url = 'https://search.google.com/local/reviews?placeid=ChIJdb43T2j6ykARljUR4Ws4GEI';
+    $company->save();
+
+    $html = $this->get('/contact')->assertOk()->getContent();
+    preg_match('#<div class="contact-page__map">.*?</a>\s*</div>\s*</div>#s', $html, $map);
+
+    expect($map[0])
+        ->toContain('Unde ne găsești')
+        ->toContain('data-lite-map="https://maps.google.com/maps?q=Webis%2C+B-dul+Poitiers+16%2C+Ia%C8%99i&amp;z=16&amp;hl=ro&amp;output=embed"')
+        // The link lands on the business itself, its place behind the reviews.
+        ->toContain('href="https://www.google.com/maps/search/?api=1&amp;query=Webis%2C+B-dul+Poitiers+16%2C+Ia%C8%99i&amp;query_place_id=ChIJdb43T2j6ykARljUR4Ws4GEI"')
+        ->toContain('Arată harta')
+        // The map itself only once asked for (js/public/lite-map.ts).
+        ->and($html)->not->toContain('<iframe');
 });
 
 it('keeps the contact template and redirects when a contact page is renamed', function () {

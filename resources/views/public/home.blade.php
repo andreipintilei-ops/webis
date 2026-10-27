@@ -24,7 +24,9 @@
     <x-site.stage :side="$stageSide ?? null" />
     <x-site.logo-wall />
     <x-site.blog-posts>
-        <x-slot:title>Ultimele <span class="whitespace-nowrap">articole <x-ui.title-pill variant="blog" /></span></x-slot:title>
+        {{-- On a phone the two words together and the pill under them (both
+             do not fit one line); from 768px the pill keeps to "articole". --}}
+        <x-slot:title><span class="max-md:whitespace-nowrap">Ultimele <span class="max-md:whitespace-normal md:whitespace-nowrap">articole <x-ui.title-pill variant="blog" class="max-md:mt-3" /></span></span></x-slot:title>
     </x-site.blog-posts>
 
     {{-- The object: drawn between the sections' backgrounds and their text.

@@ -81,10 +81,11 @@ export function initTheodoreMenu(): void {
         return;
     }
 
-    // The big links, which rise in; the rest of the menu (logo row, side
-    // column, foot), which fades up after them.
+    // The big links (and Servicii, which opens rather than leads), which
+    // rise in; the rest of the menu (logo row, side column, foot), which
+    // fades up after them.
     const items = Array.from(
-        menu.querySelectorAll<HTMLAnchorElement>('[data-theo-item]'),
+        menu.querySelectorAll<HTMLElement>('[data-theo-item]'),
     );
     const reveals = Array.from(
         menu.querySelectorAll<HTMLElement>('[data-theo-reveal]'),
@@ -95,6 +96,20 @@ export function initTheodoreMenu(): void {
             'a[data-theo-item], a[data-theo-link]',
         ),
     );
+    // Servicii, which opens the services under it; closed each time the
+    // menu opens, whatever it was left as.
+    const groups = Array.from(
+        menu.querySelectorAll<HTMLDetailsElement>('[data-theo-group]'),
+    );
+    const groupBodies = Array.from(
+        menu.querySelectorAll<HTMLElement>('[data-theo-group-body]'),
+    );
+    const closeGroups = (): void => {
+        for (const group of groups) {
+            group.open = false;
+            group.classList.remove('is-closing');
+        }
+    };
     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
 
     let isOpen = false;
@@ -204,6 +219,7 @@ export function initTheodoreMenu(): void {
         }
 
         if (reducedMotion.matches) {
+            closeGroups();
             setOpenState(true);
             focusInside();
 
@@ -226,6 +242,9 @@ export function initTheodoreMenu(): void {
         drawBand();
         // Open from the start, hidden by its clip until the band uncovers it.
         setOpenState(true);
+        gsap.killTweensOf(groupBodies);
+        gsap.set(groupBodies, { clearProps: 'height' });
+        closeGroups();
         gsap.set(items, { opacity: 0, x: 120 });
         // x: 0 — closing slid them out to the right.
         gsap.set(reveals, { opacity: 0, x: 0, y: 30 });
@@ -424,6 +443,64 @@ export function initTheodoreMenu(): void {
             // Prevented here, so the page-wide transition leaves it alone.
             event.preventDefault();
             void leave(url.href).catch(() => window.location.assign(url.href));
+        });
+    }
+
+    // Servicii: the services ease open under it and shut again, rather than
+    // snapping as <details> does; a click mid-way turns it back from where
+    // it is. Its plus turns while it opens and back while it closes
+    // (`is-closing`). With reduced motion, the plain toggle.
+    for (const group of groups) {
+        const summary = group.querySelector('summary');
+        const body = group.querySelector<HTMLElement>('[data-theo-group-body]');
+
+        if (!summary || !body) {
+            continue;
+        }
+
+        summary.addEventListener('click', (event) => {
+            if (reducedMotion.matches) {
+                return;
+            }
+
+            event.preventDefault();
+
+            const opening =
+                !group.open || group.classList.contains('is-closing');
+            const from = group.open ? body.getBoundingClientRect().height : 0;
+
+            void loadGsap().then((gsap) => {
+                gsap.killTweensOf(body);
+
+                if (opening) {
+                    group.classList.remove('is-closing');
+                    group.open = true;
+                    gsap.fromTo(
+                        body,
+                        { height: from },
+                        {
+                            height: 'auto',
+                            duration: TIMING.rise,
+                            ease: EASE.out,
+                            clearProps: 'height',
+                        },
+                    );
+
+                    return;
+                }
+
+                group.classList.add('is-closing');
+                gsap.to(body, {
+                    height: 0,
+                    duration: TIMING.cover,
+                    ease: EASE.curtain,
+                    onComplete: () => {
+                        group.open = false;
+                        group.classList.remove('is-closing');
+                        gsap.set(body, { clearProps: 'height' });
+                    },
+                });
+            });
         });
     }
 

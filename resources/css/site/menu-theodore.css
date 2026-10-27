@@ -164,11 +164,12 @@
 
     /*
       The labels roll letter by letter on hover, as the top bar's
-      (css/site/roll.css); the other links dim back. Each label is its own
-      row, so two rolling at once never cross.
+      (css/site/roll.css); the other links dim back — for a link only, not
+      Servicii, which would dim the services it has just opened. Each label
+      is its own row, so two rolling at once never cross.
     */
     :is(.theo-menu__links, .theo-menu__services):has(
-            :is(.theo-menu__link, .theo-menu__service):is(
+            a:is(.theo-menu__link, .theo-menu__service):is(
                 :hover,
                 :focus-visible
             )
@@ -183,16 +184,49 @@
         transition: opacity var(--duration) var(--motion-out);
     }
 
-    .theo-menu__label--services {
-        @apply mt-[4.5vh];
+    /*
+      Servicii: a page's size, but a disclosure — its plus turns to a ✕ and
+      the three services open under it, the height easing
+      (js/public/theodore-menu.ts; at once without it). Not selectable, so
+      a quick second click never paints the roll's hidden copies.
+    */
+    .theo-menu__group > summary {
+        @apply inline-flex cursor-pointer list-none items-center gap-[0.22em] select-none;
+        -webkit-tap-highlight-color: transparent;
+
+        &::-webkit-details-marker {
+            display: none;
+        }
+    }
+
+    /* What the script eases the height of. */
+    .theo-menu__sub {
+        @apply overflow-hidden;
+    }
+
+    /* The plus, centred on the word's capitals, turned an eighth of a turn
+       into a ✕ as the group opens; back as it closes (`is-closing`, while
+       it eases shut). */
+    .theo-menu__plus {
+        @apply size-[0.6em] shrink-0;
+        fill: none;
+        stroke: currentColor;
+        stroke-width: 2;
+        stroke-linecap: round;
+        transition: rotate var(--duration) var(--motion-out);
+
+        .theo-menu__group[open]:not(.is-closing) & {
+            rotate: 45deg;
+        }
     }
 
     .theo-menu__services {
-        @apply mt-3 flex flex-col items-start gap-0.5;
+        @apply flex flex-col items-start gap-2.5 pt-6 pb-5 md:gap-3;
     }
 
     .theo-menu__service {
-        @apply text-xl leading-none opacity-75 md:text-2xl;
+        @apply leading-tight opacity-75;
+        font-size: clamp(1.375rem, 2.2vw, 1.75rem);
         transition: opacity var(--duration-fast) var(--motion-out);
 
         &:hover,
@@ -253,6 +287,7 @@
     @media (prefers-reduced-motion: reduce) {
         .theo-menu__link::before,
         .theo-menu__service,
+        .theo-menu__plus,
         .theo-backdrop {
             transition: none;
         }

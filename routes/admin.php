@@ -40,6 +40,9 @@ Route::middleware(['auth', 'verified', 'can.access-admin'])->prefix('admin')->na
         Route::post('ordine', 'reorder')->name('reorder');
         Route::get('{page:id}/editeaza', 'edit')->name('edit');
         Route::put('{page:id}', 'update')->name('update');
+        // An article's cover: uploaded on its own, the page saved as it is.
+        Route::post('{page:id}/coperta', 'storeCover')->name('cover.store');
+        Route::delete('{page:id}/coperta', 'destroyCover')->name('cover.destroy');
         Route::delete('{page:id}', 'destroy')->name('destroy');
         Route::post('{page:id}/restaureaza', 'restore')->name('restore')->withTrashed();
         Route::delete('{page:id}/definitiv', 'forceDestroy')->name('force-destroy')->withTrashed();

@@ -657,4 +657,75 @@
     .stage-finale__canvas {
         @apply absolute inset-0 z-[1] block size-full;
     }
+
+    /*
+      A test: below 1024px, where the object sits behind the text, the whole
+      stage on the finale panel's ground — its indigo and film grain — so
+      the panel at its end is the same night it has been in all along. The
+      light chapter's colours turn to the dark one's (service-chapters.css);
+      the few set by hand follow.
+    */
+    @media (max-width: 1023px) {
+        :root[data-variant='stage'] .stage.chapter--light {
+            --surface: #1f2868;
+            --ink: #fff;
+            --muted: rgb(255 255 255 / 0.78);
+            --line: rgb(255 255 255 / 0.14);
+            --tint: rgb(255 255 255 / 0.06);
+            --accent: var(--lavender-300);
+
+            /* Its top 32px under the lavender cards before it, which show it
+               through a rounded top cut from their foot (below). Its foot
+               short: the panel, now the same night, ends it already. */
+            @apply -mt-8 pb-8;
+
+            &::before {
+                background-image: var(--grain);
+                mix-blend-mode: overlay;
+                opacity: 0.35;
+            }
+
+            /* The links in white, their circle filling white (the dark tone,
+               buttons.css). */
+            & .arrow-link.btn-light {
+                --btn-ink: #fff;
+                --btn-contrast: var(--site-dark);
+            }
+
+            & .stage-checks svg {
+                stroke: var(--lavender-300);
+            }
+
+            & :is(.stage-item__icon:not(.stage-item__icon--solid), .stage-project__go) {
+                background: rgb(255 255 255 / 0.1);
+                color: var(--lavender-300);
+            }
+
+            & .stage-product {
+                background: rgb(255 255 255 / 0.07);
+                box-shadow: inset 0 0 0 1px var(--line);
+            }
+        }
+
+        /*
+          The stage cannot rise over the cards (it is no layer of its own,
+          so the object can sit between its ground and its text), so the
+          cards' foot — the 32px kept for whatever rises over it — opens
+          instead: all of it see-through but its two corners, which stay
+          lavender outside a 32px curve. The stage shows through, grain and
+          all, on a rounded top.
+        */
+        /* The lavender after it starts on its own top padding again: no
+           longer one ground with the stage (service-chapters.css). */
+        :root[data-variant='stage'] .stage.chapter--light + .chapter--light {
+            @apply pt-24;
+        }
+
+        :root[data-variant='stage'] .svc-cards:has(+ .stage) {
+            mask:
+                linear-gradient(#000 0 0) top / 100% calc(100% - 31px) no-repeat,
+                radial-gradient(circle at 100% 100%, transparent 31.5px, #000 32px) bottom left / 32px 32px no-repeat,
+                radial-gradient(circle at 0 100%, transparent 31.5px, #000 32px) bottom right / 32px 32px no-repeat;
+        }
+    }
 }

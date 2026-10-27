@@ -19,7 +19,7 @@
     $posts = \App\Models\Page::query()
         ->ofType(\App\Enums\PageType::Article)
         ->published()
-        ->with('category:id,name')
+        ->with(['category:id,name', 'media'])
         ->orderByDesc('published_at')
         ->orderByDesc('id')
         ->take(3)
@@ -29,6 +29,7 @@
             'category' => $article->category?->name,
             'date' => $article->published_at,
             'href' => \App\Support\PublicUrls::for($article),
+            'cover' => \App\Support\Blog\Cover::of($article),
         ]);
 @endphp
 

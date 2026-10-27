@@ -146,7 +146,8 @@ it('describes the organization everywhere, an internal page\'s path and an artic
 
     expect($industry)->toHaveKey('Organization')
         ->not->toHaveKey('Organization+LocalBusiness')
-        ->and(array_column($industry['BreadcrumbList']['itemListElement'], 'name'))->toBe(['Acasă', 'Servicii', 'Creare site stomatologie'])
+        ->and(array_column($industry['BreadcrumbList']['itemListElement'], 'name'))->toBe(['Acasă', 'Site-uri tematice', 'Creare site stomatologie'])
+        ->and(array_column($industry['BreadcrumbList']['itemListElement'], 'item')[1])->toBe('https://www.webis.ro/realizare-site-uri-tematice/')
         ->and($article['BlogPosting'])->toHaveKeys(['headline', 'datePublished', 'dateModified', 'author', 'image', 'mainEntityOfPage'])
         ->and($article['BlogPosting']['author']['@id'])->toBe('https://www.webis.ro/#organization')
         ->and(array_column($article['BreadcrumbList']['itemListElement'], 'name')[1])->toBe('Blog');

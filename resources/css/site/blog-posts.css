@@ -19,11 +19,12 @@
         @apply grid gap-5 sm:grid-cols-2 lg:grid-cols-3;
     }
 
-    /* The listing (/blog): rows of three one under the other, all white —
-       the colour cycle is the home page's three alone; repeated down a long
-       list it turns into stripes. */
-    .site-blog__rows {
-        @apply grid gap-5;
+    /* The listing (/blog), beside the categories from 1024px: two to a row
+       until 1280px, where three get room enough for their titles. All
+       white — the colour cycle is the home page's three alone; repeated
+       down a long list it turns into stripes. */
+    .site-blog--page .site-blog__posts {
+        @apply lg:grid-cols-2 xl:grid-cols-3;
     }
 
     .site-blog--page .site-blog__posts > li:nth-child(n) .post-card {
@@ -155,6 +156,57 @@
                 calc(100% - var(--notch) + 1px) var(--notch) no-repeat,
             url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 88 88'%3E%3Cpath d='M0 0H88V4A12 12 0 0 1 76 16H36A20 20 0 0 0 16 36V76A12 12 0 0 1 4 88H0Z'/%3E%3C/svg%3E")
                 right bottom / var(--notch) var(--notch) no-repeat;
+    }
+
+    /*
+      An article's cover (Support\Blog\Cover), on a card and in its hero:
+      on the header pills' gradient (css/site/title-pill.css), the purple
+      into the violet, a light falling across it from the top left; on the
+      home page's indigo card a pale lavender instead, which it sets off,
+      and on its violet one the gradient deeper. A
+      cut-out (`is-cutout`: no ground of its
+      own) sits whole in the middle, room around it; one with its own ground
+      fills the frame and hides it.
+    */
+    .post-card__cover,
+    .article-cover {
+        background:
+            radial-gradient(ellipse 80% 70% at 15% 10%, rgb(255 255 255 / 0.22), transparent 65%),
+            linear-gradient(135deg, var(--purple-500), var(--violet-500));
+
+        & img {
+            @apply block size-full object-cover;
+        }
+
+        &.is-cutout img {
+            @apply object-contain p-[5%];
+        }
+    }
+
+    .site-blog__posts > li:nth-child(3n + 2) .post-card__cover {
+        background:
+            radial-gradient(ellipse 80% 70% at 15% 10%, #fff, transparent 70%),
+            #e9e5fb;
+    }
+
+    /* On the violet card, the same gradient a few shades deeper, so the
+       frame stands off the card rather than melting into it. */
+    .site-blog__posts > li:nth-child(3n + 3) .post-card__cover {
+        background:
+            radial-gradient(ellipse 80% 70% at 15% 10%, rgb(255 255 255 / 0.16), transparent 65%),
+            linear-gradient(135deg, #6c2fc0, #4a35c8);
+    }
+
+    /* The listing's cards are all white: the pills' gradient on each. */
+    .site-blog--page .site-blog__posts > li:nth-child(n) .post-card__cover {
+        background:
+            radial-gradient(ellipse 80% 70% at 15% 10%, rgb(255 255 255 / 0.22), transparent 65%),
+            linear-gradient(135deg, var(--purple-500), var(--violet-500));
+    }
+
+    /* A cover, opening the card: 16:9, its corners inside the card's. */
+    .post-card__cover {
+        @apply -mx-3 -mt-2 block aspect-video overflow-hidden rounded-xl lg:-mx-4 lg:-mt-3;
     }
 
     .post-card__meta {

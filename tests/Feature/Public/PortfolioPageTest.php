@@ -12,13 +12,13 @@ use Illuminate\Support\Facades\Storage;
 
 uses(RefreshDatabase::class);
 
-it('moves the client work to the old /portofoliu address, still "Clienți" in the menu', function () {
+it('moves the client work to the old /portofoliu address, "Portofoliu" in the menu', function () {
     $this->get('/clienti')->assertStatus(301)->assertRedirect('/portofoliu');
 
     preg_match('#<header class="site-nav.*?</header>#s', $this->get('/blog')->getContent(), $bar);
 
     expect($bar[0])->toContain('href="/portofoliu/"')
-        ->and(strip_tags($bar[0]))->toContain('Clienți')
+        ->and(strip_tags($bar[0]))->toContain('Portofoliu')->not->toContain('Clienți')
         ->and($bar[0])->not->toContain('href="/clienti/"');
 });
 

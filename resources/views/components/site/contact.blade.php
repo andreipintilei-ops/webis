@@ -21,6 +21,14 @@
     $company = app(\App\Settings\CompanySettings::class);
     $phoneHref = \App\Support\PhoneLink::href($company->phone);
     $address = implode(', ', array_filter([$company->street_address, $company->locality]));
+    // The map (the contact page): where the office is, from the address;
+    // the Google place behind the reviews link, when there is one, so
+    // "open in Google Maps" lands on the business itself, not just the
+    // street.
+    parse_str((string) parse_url((string) $company->google_reviews_url, PHP_URL_QUERY), $reviewsQuery);
+    $mapQuery = implode(', ', array_filter([$company->name, $company->street_address, $company->locality]));
+    $mapOpen = 'https://www.google.com/maps/search/?'.http_build_query(array_filter(['api' => 1, 'query' => $mapQuery, 'query_place_id' => $reviewsQuery['placeid'] ?? null]));
+    $mapEmbed = 'https://maps.google.com/maps?'.http_build_query(['q' => $mapQuery, 'z' => 16, 'hl' => 'ro', 'output' => 'embed']);
     $product = $page ? \App\Enums\Product::tryFrom((string) request()->query('produs')) : null;
     $message = $product ? 'Aș vrea o prezentare pentru '.$product->label().'.' : '';
     $sent = session('contact-sent', false);
@@ -156,5 +164,27 @@
                 </li>
             </ol>
         </div>
+
+        {{-- Where we are: until asked for, a panel with the address and a
+             link to Google Maps; a click swaps in Google's map, so its
+             script and cookies load only for whoever wants it
+             (js/public/lite-map.ts). Without the script the link opens
+             Google Maps. --}}
+        @if ($address !== '')
+            <div class="contact-page__map">
+                <div class="chapter-sub__header">
+                    <h2 class="chapter-sub__label">Unde ne găsești</h2>
+                    <a href="{{ $mapOpen }}" class="contact-map__open" target="_blank" rel="noopener">Deschide în Google Maps</a>
+                </div>
+                <div class="contact-map" data-lite-map="{{ $mapEmbed }}" data-title="Harta: {{ $mapQuery }}">
+                    <a href="{{ $mapOpen }}" class="contact-map__poster" data-lite-map-show target="_blank" rel="noopener">
+                        <svg class="contact-map__pin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0" /><circle cx="12" cy="10" r="3" /></svg>
+                        <span class="contact-map__address">{{ $address }}</span>
+                        <span class="contact-map__show">Arată harta</span>
+                        <span class="contact-map__note">Harta se încarcă de la Google Maps, care poate pune cookie-uri.</span>
+                    </a>
+                </div>
+            </div>
+        @endif
     @endif
 </section>

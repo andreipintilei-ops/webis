@@ -28,10 +28,11 @@
     $socials = array_filter($company->social);
     $socialNames = ['facebook' => 'Facebook', 'instagram' => 'Instagram', 'linkedin' => 'LinkedIn', 'youtube' => 'YouTube', 'tiktok' => 'TikTok'];
 
-    // Not /servicii: the services are their own group, first.
+    // Not Servicii, no page of its own: the services are their own group,
+    // first; the industry index is in "Web și e-commerce".
     $pages = array_values(array_filter(
         \App\Support\SiteNavigation::links(withHome: false),
-        fn ($link) => ($link['menu'] || $link['cta']) && $link['href'] !== '/servicii',
+        fn ($link) => ($link['menu'] || $link['cta']) && $link['href'] !== null,
     ));
 @endphp
 
