@@ -28,8 +28,7 @@
     :og-image="\App\Support\Seo\StructuredData::image(\App\Models\Asset::with('media')->find($project->seo->ogImageAssetId ?? $project->cover_asset_id))"
     :crumb="$project->title"
     header-theme="dark"
-    footer-cta-title="Ai un proiect asemănător?"
-    footer-cta-intro="Spune-ne ce vrei să construiești și revenim cu o propunere."
+    footer-cta-key="project"
 >
     <x-site.page-hero
         :label="$label !== '' ? $label : 'Portofoliu'"

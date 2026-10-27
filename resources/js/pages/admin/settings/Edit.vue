@@ -16,12 +16,23 @@ import {
     brand as brandRoute,
     company as companyRoute,
     edit,
+    footerCta as footerCtaRoute,
     leads as leadsRoute,
     seo as seoRoute,
 } from '@/routes/admin/settings';
 import type { Option } from '@/types/content';
 
 type OpeningHours = { days: string[]; opens: string; closes: string };
+
+/** One page's closing call in the footer; a blank field takes the default's. */
+type FooterCta = {
+    key: string;
+    label: string;
+    title: string | null;
+    intro: string | null;
+    button: string | null;
+    url: string | null;
+};
 
 type BrandSettings = {
     logo_asset_id: number | null;
@@ -84,6 +95,7 @@ const props = defineProps<{
     seo: SeoSettings;
     analytics: AnalyticsSettings;
     leads: LeadSettings;
+    footerCta: FooterCta[];
     socialPlatforms: string[];
     days: Option[];
 }>();
@@ -198,6 +210,31 @@ function listError(field: string): string | undefined {
 function submitLeads(): void {
     leadsForm.put(leadsRoute.url(), saveOptions);
 }
+
+// Footer: each page's closing call
+
+type FooterFields = Omit<FooterCta, 'key' | 'label'>;
+
+const footerForm = useForm<{ pages: Record<string, FooterFields> }>({
+    pages: Object.fromEntries(
+        props.footerCta.map(({ key, title, intro, button, url }) => [
+            key,
+            { title, intro, button, url },
+        ]),
+    ),
+});
+
+const footerErrors = computed(
+    () => footerForm.errors as Record<string, string>,
+);
+
+function footerError(key: string, field: keyof FooterFields): string | undefined {
+    return footerErrors.value[`pages.${key}.${field}`];
+}
+
+function submitFooter(): void {
+    footerForm.put(footerCtaRoute.url(), saveOptions);
+}
 </script>
 
 <template>
@@ -213,6 +250,7 @@ function submitLeads(): void {
                 <TabsTrigger value="seo">SEO</TabsTrigger>
                 <TabsTrigger value="analytics">Analiză</TabsTrigger>
                 <TabsTrigger value="leads">Cereri</TabsTrigger>
+                <TabsTrigger value="footer">Subsol</TabsTrigger>
             </TabsList>
 
             <TabsContent value="brand" class="pt-4">
@@ -769,6 +807,60 @@ function submitLeads(): void {
 
                     <div class="flex justify-end">
                         <Button type="submit" :disabled="leadsForm.processing">
+                            Salvează
+                        </Button>
+                    </div>
+                </form>
+            </TabsContent>
+
+            <TabsContent value="footer" class="pt-4">
+                <form
+                    class="flex flex-col gap-4"
+                    @submit.prevent="submitFooter"
+                >
+                    <p class="text-sm text-muted-foreground">
+                        Chemarea de la finalul fiecărei pagini, deasupra
+                        subsolului. Un câmp lăsat gol preia textul implicit.
+                        Prima pagină își păstrează chemarea ei, iar pagina de
+                        contact nu are una.
+                    </p>
+                    <section
+                        v-for="page in footerCta"
+                        :key="page.key"
+                        class="flex flex-col gap-4 rounded-xl border bg-card p-4"
+                    >
+                        <h2 class="text-sm font-medium">{{ page.label }}</h2>
+                        <TextField
+                            v-model="footerForm.pages[page.key]!.title"
+                            label="Titlu"
+                            :max="80"
+                            :error="footerError(page.key, 'title')"
+                        />
+                        <TextField
+                            v-model="footerForm.pages[page.key]!.intro"
+                            label="Descriere"
+                            multiline
+                            :max="240"
+                            :error="footerError(page.key, 'intro')"
+                        />
+                        <div class="grid gap-4 sm:grid-cols-2">
+                            <TextField
+                                v-model="footerForm.pages[page.key]!.button"
+                                label="Buton"
+                                :max="40"
+                                :error="footerError(page.key, 'button')"
+                            />
+                            <TextField
+                                v-model="footerForm.pages[page.key]!.url"
+                                label="Legătura butonului"
+                                placeholder="/contact/"
+                                :error="footerError(page.key, 'url')"
+                            />
+                        </div>
+                    </section>
+
+                    <div class="flex justify-end">
+                        <Button type="submit" :disabled="footerForm.processing">
                             Salvează
                         </Button>
                     </div>

@@ -18,6 +18,7 @@
     variant="stage"
     hero-leave="overlap"
     :footer-cta="! \App\Blocks\QuoteFormBlock::appearsIn($page?->blocks)"
+    :footer-w="false"
 >
     <x-blocks :blocks="$page->blocks ?? []" />
     {{-- `stageSide`: "right" on the trial at /acasa-3d-dreapta (HomeController). --}}

@@ -10,6 +10,7 @@
     variant="poveste"
     hero-leave="overlap"
     :footer-cta="! \App\Blocks\QuoteFormBlock::appearsIn($page?->blocks)"
+    :footer-w="false"
 >
     <x-blocks :blocks="$page->blocks ?? []" />
     <x-site.services-story />

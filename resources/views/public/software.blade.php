@@ -109,7 +109,7 @@
     crumb="Software la comandă"
     :canonical="$canonical"
     header-theme="dark"
-    :footer-w="true"
+    footer-cta-key="software"
 >
 
     {{-- ================================================== Hero --}}

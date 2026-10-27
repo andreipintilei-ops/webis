@@ -161,11 +161,28 @@ function boot(): void {
             );
         }
 
-        // A closing panel's own W, where there is no stage (/portofoliu).
-        if (document.querySelector('[data-finale-w]')) {
-            void import('@/public/finale-w').then(({ initFinaleW }) =>
-                initFinaleW(),
+        // A closing panel's own W, where there is no stage (/portofoliu, the
+        // footer's call on most pages). Three.js and the scene are heavy and
+        // it sits at the page's foot: fetched and built only once it is
+        // within a screen and a half of coming into view, not at load.
+        const finaleW = document.querySelectorAll('[data-finale-w]');
+
+        if (finaleW.length > 0) {
+            const near = new IntersectionObserver(
+                (entries) => {
+                    if (!entries.some((entry) => entry.isIntersecting)) {
+                        return;
+                    }
+
+                    near.disconnect();
+                    void import('@/public/finale-w').then(({ initFinaleW }) =>
+                        initFinaleW(),
+                    );
+                },
+                { rootMargin: '150% 0px' },
             );
+
+            finaleW.forEach((panel) => near.observe(panel));
         }
 
         // The services story (/poveste): Three.js, its own chunks, only there.

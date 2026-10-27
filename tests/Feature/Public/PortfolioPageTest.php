@@ -131,8 +131,9 @@ it('closes on the footer\'s call in its own words, the W forming beside it over 
     expect($footer[0])
         ->toContain('class="site-footer__cta site-footer__cta--w"')
         ->toContain('class="site-footer__w" data-finale-w')
-        ->toContain('Site, platformă sau aplicație?')
-        ->toContain('Un site nou, un magazin online sau o platformă pentru toată echipa.')
+        // Its own words, from Setări › Subsol (Support\FooterCta).
+        ->toContain('Îți place ce ai văzut?')
+        ->toContain('Spune-ne ce vrei să construiești și îți arătăm proiecte apropiate de al tău.')
         ->not->toContain('Ai un proces')
         // No panel of its own before the footer any more.
         ->and($html)->not->toContain('stage-finale--standalone');

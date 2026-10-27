@@ -172,6 +172,7 @@ it('shows the cover on the article, the listing and the home page, with its alt 
     $home = $this->get('/')->assertOk()->getContent();
     preg_match('#<figure class="article-cover">\s*<img ([^>]+)>#', $article, $hero);
     preg_match('#<span class="post-card__cover">\s*<img ([^>]+)>#', $blog, $card);
+    preg_match('#<span class="post-card__cover">\s*<img ([^>]+)>#', $home, $homeCard);
     preg_match('#"@type":"BlogPosting".*?"image":"([^"]+)"#', $article, $ld);
 
     expect($hero[1])
@@ -180,7 +181,9 @@ it('shows the cover on the article, the listing and the home page, with its alt 
         ->toContain('fetchpriority="high"')
         ->not->toContain('loading="lazy"')
         ->toMatch('#srcset="[^"]*cover-768\.webp 768w, [^"]*cover-1200\.webp 1200w, [^"]*cover-1536\.webp 1536w"#')
-        ->and($card[1])->toContain('loading="lazy"')->toContain('alt="Un telefon cu un calendar"')
+        // On /blog the first card is on the first screen, its cover the page's main image; far down the home page, lazy.
+        ->and($card[1])->toContain('fetchpriority="high"')->not->toContain('loading="lazy"')->toContain('alt="Un telefon cu un calendar"')
+        ->and($homeCard[1])->toContain('loading="lazy"')
         ->and($home)->toContain('class="post-card__cover"')
         ->and($article)->toMatch('#<meta property="og:image" content="[^"]+-og\.jpg">#')
         ->and(stripslashes($ld[1]))->toEndWith('-og.jpg')->toStartWith('http');

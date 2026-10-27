@@ -9,7 +9,9 @@
     or a company — and so who answers.
 
     On the contact page, ?produs={product} (Produse SaaS's "Cere o
-    prezentare") starts the message as a demo request for that product.
+    prezentare") starts the message as a demo request for that product;
+    ?cerere=prezentare (the footer's call there) as one for a product the
+    visitor names.
 
     The quote-form block (blocks/quote-form) sets its own `title` and
     `intro`, and may leave out the phone, email and address (`details`).
@@ -30,7 +32,13 @@
     $mapOpen = 'https://www.google.com/maps/search/?'.http_build_query(array_filter(['api' => 1, 'query' => $mapQuery, 'query_place_id' => $reviewsQuery['placeid'] ?? null]));
     $mapEmbed = 'https://maps.google.com/maps?'.http_build_query(['q' => $mapQuery, 'z' => 16, 'hl' => 'ro', 'output' => 'embed']);
     $product = $page ? \App\Enums\Product::tryFrom((string) request()->query('produs')) : null;
-    $message = $product ? 'Aș vrea o prezentare pentru '.$product->label().'.' : '';
+    // ?cerere=prezentare (the footer's call on Produse SaaS): a demo, the
+    // product left for the visitor to name.
+    $message = match (true) {
+        $product !== null => 'Aș vrea o prezentare pentru '.$product->label().'.',
+        $page && request()->query('cerere') === 'prezentare' => 'Aș dori o prezentare pentru produsul: ',
+        default => '',
+    };
     $sent = session('contact-sent', false);
 
     $fields = [

@@ -22,7 +22,7 @@
         ?: 'Articole despre software la comandă, produse SaaS, site-uri și magazine online, scrise de echipa Webis din Iași.';
 @endphp
 
-<x-layouts.public :title="$page > 1 ? $title.', pagina '.$page : $title" :crumb="$category?->name ?? 'Blog'" :description="$description" :canonical="$canonical" :noindex="(bool) $category?->seo->noindex" header-theme="dark" :footer-w="true">
+<x-layouts.public :title="$page > 1 ? $title.', pagina '.$page : $title" :crumb="$category?->name ?? 'Blog'" :description="$description" :canonical="$canonical" :noindex="(bool) $category?->seo->noindex" header-theme="dark" footer-cta-key="blog">
     <x-site.page-hero
         :label="$category ? 'Blog · '.$category->name : 'Blog · Webis'"
         :title="['Articole despre', 'software și web.']"
@@ -63,10 +63,12 @@
                              many columns fit: three beside the categories only
                              from 1280px, two below. Each card comes in as it is
                              reached; all white here (the home page's colour cycle
-                             is for its three alone). --}}
+                             is for its three alone). The top row's covers on the
+                             first screen load at once, the first of them the
+                             page's main image. --}}
                         <ul class="site-blog__posts">
                             @foreach ($articles->getCollection() as $post)
-                                <x-site.post-card :post="$post" :index="$loop->index % 3" :alone="true" sizes="(min-width: 1280px) 22vw, (min-width: 1024px) 32vw, (min-width: 640px) 46vw, 92vw" />
+                                <x-site.post-card :post="$post" :index="$loop->index % 3" :alone="true" :priority="$loop->index < 3 ? ($loop->first ? 'high' : 'auto') : null" sizes="(min-width: 1280px) 22vw, (min-width: 1024px) 32vw, (min-width: 640px) 46vw, 92vw" />
                             @endforeach
                         </ul>
 

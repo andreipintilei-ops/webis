@@ -60,7 +60,7 @@
     :schema="$schema"
     :header-theme="$article ? 'dark' : \App\Blocks\HeroBlock::headerThemeFor($page->blocks)"
     :footer-cta="! \App\Blocks\QuoteFormBlock::appearsIn($page->blocks)"
-    :footer-w="true"
+    :footer-cta-key="$article ? 'blog' : null"
 >
     @if ($article)
         <x-site.page-hero

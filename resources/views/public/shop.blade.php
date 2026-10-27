@@ -123,10 +123,7 @@
     :crumb-parent="['Web și e-commerce', '/web/']"
     :canonical="$canonical"
     header-theme="dark"
-    footer-cta-title="Vrei să vinzi online?"
-    footer-cta-intro="Spune-ne ce produse ai și cum livrezi acum, iar noi revenim cu pașii următori și o ofertă pe etape."
-    footer-cta-button="Cere o ofertă"
-    :footer-w="true"
+    footer-cta-key="shop"
 >
 
     {{-- ================================================== Hero --}}

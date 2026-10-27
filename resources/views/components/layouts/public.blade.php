@@ -9,10 +9,10 @@
      instead, is kept for trials.
      `description`: the meta description (else the SEO settings' default).
      `fullTitle`: the whole <title>, as given — without the site suffix.
-     `footerCtaTitle`, `footerCtaIntro`, `footerCtaButton`: the footer's closing
-     call, reworded.
-     `footerW`: the Webis W forming beside the footer's call (/portofoliu,
-     /software-la-comanda, /web, /produse, /blog).
+     `footerCtaKey`: whose closing call the footer gives (Support\FooterCta,
+     its wording in Setări › Subsol); null for the default.
+     `footerW`: the Webis W forming beside the footer's call: on every page
+     but the home page's (false there), whose call is text alone.
      `canonical`: the page's canonical URL, as <link rel="canonical">. Left
      out, the address asked for, on the canonical site, with its trailing
      slash and without its query string (PublicUrls::canonical); false for
@@ -27,7 +27,7 @@
      `crumb`: the page's name in its breadcrumbs (else `title`);
      `crumbParent`: [name, path] in place of the path's section (an article
      under Blog); `schema`: the page's own JSON-LD nodes (a BlogPosting). --}}
-@props(['title' => null, 'fullTitle' => null, 'menu' => 'site', 'headerTheme' => 'light', 'lowerTone' => null, 'variant' => null, 'heroLeave' => 'overlap', 'footerCta' => true, 'footerOnBackdrop' => false, 'description' => null, 'footerCtaTitle' => null, 'footerCtaIntro' => null, 'footerCtaButton' => null, 'footerW' => false, 'canonical' => null, 'noindex' => false, 'ogImage' => null, 'ogType' => 'website', 'localBusiness' => false, 'crumb' => null, 'crumbParent' => null, 'schema' => []])
+@props(['title' => null, 'fullTitle' => null, 'menu' => 'site', 'headerTheme' => 'light', 'lowerTone' => null, 'variant' => null, 'heroLeave' => 'overlap', 'footerCta' => true, 'footerOnBackdrop' => false, 'description' => null, 'footerCtaKey' => null, 'footerW' => true, 'canonical' => null, 'noindex' => false, 'ogImage' => null, 'ogType' => 'website', 'localBusiness' => false, 'crumb' => null, 'crumbParent' => null, 'schema' => []])
 
 @php
     $siteName = app(\App\Settings\CompanySettings::class)->name;
@@ -214,7 +214,7 @@
                     {{ $slot }}
                 </main>
 
-                <x-site.footer :show-cta="$footerCta" :on-backdrop="$footerOnBackdrop" :cta-title="$footerCtaTitle" :cta-intro="$footerCtaIntro" :cta-button="$footerCtaButton" :w="$footerW" />
+                <x-site.footer :show-cta="$footerCta" :on-backdrop="$footerOnBackdrop" :cta="\App\Support\FooterCta::for($footerCtaKey)" :w="$footerW" />
             </div>
         </div>
 

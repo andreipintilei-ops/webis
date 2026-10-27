@@ -95,7 +95,7 @@
     crumb="Produse SaaS"
     :canonical="$canonical"
     header-theme="dark"
-    :footer-w="true"
+    footer-cta-key="products"
 >
 
     {{-- ================================================== Hero --}}

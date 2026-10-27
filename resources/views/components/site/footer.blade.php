@@ -10,15 +10,16 @@
 
     On a page that already carries the gradient fixed behind it, pass
     `on-backdrop` and the footer shows through to that one instead.
-    `cta-title`, `cta-intro`, `cta-button`: a page's own wording for the closing call
-    (/clienti), in place of the default. `w`: the call's words and ways in
-    the left half, and the Webis W forming in the right half, over the
-    gradient, as it scrolls in (js/public/finale-w.ts; /portofoliu,
-    /software-la-comanda, /web, /produse).
+    `cta`: the closing call, ['title', 'intro', 'button', 'url']
+    (Support\FooterCta::for; the default without one). `w`: the call's
+    words and ways in the left half, and the Webis W forming in the right
+    half, over the gradient, as it scrolls in (js/public/finale-w.ts; every
+    page but the home page).
 --}}
-@props(['showCta' => true, 'onBackdrop' => false, 'ctaTitle' => null, 'ctaIntro' => null, 'ctaButton' => null, 'w' => false])
+@props(['showCta' => true, 'onBackdrop' => false, 'cta' => null, 'w' => false])
 
 @php
+    $cta ??= \App\Support\FooterCta::for(null);
     $company = app(\App\Settings\CompanySettings::class);
     $logo = app(\App\Support\Brand::class)->logoNegative();
     $phoneHref = \App\Support\PhoneLink::href($company->phone);
@@ -56,8 +57,8 @@
                 @unless ($w)
                     <p class="site-footer__label">Contact</p>
                 @endunless
-                <h2 class="site-footer__title">{{ $ctaTitle ?? 'Ai un proiect în minte?' }}</h2>
-                <p class="site-footer__intro">{{ $ctaIntro ?? 'Un site de prezentare, un magazin online sau software la comandă: spune-ne ce vrei să construiești și revenim cu pașii următori.' }}</p>
+                <h2 class="site-footer__title">{{ $cta['title'] }}</h2>
+                <p class="site-footer__intro">{{ $cta['intro'] }}</p>
             </div>
             @if ($w)
                 {{-- The W, forming as the footer comes up; drawn in CSS
@@ -69,7 +70,7 @@
                 </div>
             @endif
             <div class="site-footer__reach">
-                <x-ui.pill href="/contact/" tone="dark">{{ $ctaButton ?? 'Hai să discutăm' }}</x-ui.pill>
+                <x-ui.pill :href="$cta['url']" tone="dark">{{ $cta['button'] }}</x-ui.pill>
                 {{-- Beside the W, only the button: the phone and e-mail are in
                      the last column below. --}}
                 @unless ($w)

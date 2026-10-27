@@ -7,8 +7,10 @@ use App\Http\Controllers\Controller;
 use App\Settings\AnalyticsSettings;
 use App\Settings\BrandSettings;
 use App\Settings\CompanySettings;
+use App\Settings\FooterCtaSettings;
 use App\Settings\LeadSettings;
 use App\Settings\SeoSettings;
+use App\Support\FooterCta;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -28,9 +30,15 @@ class SettingsController extends Controller
     /**
      * GET /admin/setari
      */
-    public function edit(CompanySettings $company, SeoSettings $seo, AnalyticsSettings $analytics, LeadSettings $leads, BrandSettings $brand): Response
+    public function edit(CompanySettings $company, SeoSettings $seo, AnalyticsSettings $analytics, LeadSettings $leads, BrandSettings $brand, FooterCtaSettings $footerCta): Response
     {
         return Inertia::render('admin/settings/Edit', [
+            // Every page, in FooterCta's order, each field there (blank: the default's).
+            'footerCta' => collect(FooterCta::PAGES)->map(fn (string $label, string $key): array => [
+                'key' => $key,
+                'label' => $label,
+                ...collect(FooterCta::FIELDS)->mapWithKeys(fn (string $field): array => [$field => $footerCta->pages[$key][$field] ?? null])->all(),
+            ])->values()->all(),
             'brand' => [
                 'logo_asset_id' => $brand->logo_asset_id,
                 'logo_negative_asset_id' => $brand->logo_negative_asset_id,
@@ -183,6 +191,36 @@ class SettingsController extends Controller
             'budget_options' => array_values($data['budget_options'] ?? []),
             'send_confirmation' => $request->boolean('send_confirmation'),
         ])->save();
+
+        return $this->saved();
+    }
+
+    /**
+     * PUT /admin/setari/subsol — the footer's closing call, page by page
+     * (Support\FooterCta). A field left blank takes the default's.
+     */
+    public function updateFooterCta(Request $request, FooterCtaSettings $settings): RedirectResponse
+    {
+        $rules = [];
+
+        foreach (array_keys(FooterCta::PAGES) as $key) {
+            $rules["pages.{$key}.title"] = ['nullable', 'string', 'max:80'];
+            $rules["pages.{$key}.intro"] = ['nullable', 'string', 'max:240'];
+            $rules["pages.{$key}.button"] = ['nullable', 'string', 'max:40'];
+            // On the site (/contact/?cerere=…) or a full https address.
+            $rules["pages.{$key}.url"] = ['nullable', 'string', 'max:255', 'regex:#^(/(?!/)|https://)#'];
+        }
+
+        $data = $request->validate($rules, [
+            'pages.*.url.regex' => 'O adresă de pe site (/contact/) sau una completă, cu https://.',
+        ]);
+
+        $settings->pages = collect(FooterCta::PAGES)
+            ->map(fn (string $label, string $key): array => collect(FooterCta::FIELDS)
+                ->mapWithKeys(fn (string $field): array => [$field => trim((string) ($data['pages'][$key][$field] ?? '')) ?: null])
+                ->all())
+            ->all();
+        $settings->save();
 
         return $this->saved();
     }

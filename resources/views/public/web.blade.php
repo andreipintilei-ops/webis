@@ -108,7 +108,7 @@
     description="Site-uri de prezentare și magazine online pe brandul tău, cu SEO de la început. Dacă nu ai încă un brand, creăm și identitatea vizuală."
     header-theme="dark"
     hero-leave="overlap"
-    :footer-w="true"
+    footer-cta-key="web"
 >
     <x-site.page-hero
         label="Web și e-commerce · Webis"

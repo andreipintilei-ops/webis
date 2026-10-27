@@ -133,6 +133,7 @@ Route::middleware(['auth', 'verified', 'can.access-admin'])->prefix('admin')->na
             Route::put('seo', 'updateSeo')->name('seo');
             Route::put('analiza', 'updateAnalytics')->name('analytics');
             Route::put('cereri', 'updateLeads')->name('leads');
+            Route::put('subsol', 'updateFooterCta')->name('footer-cta');
         });
 
         Route::controller(UserController::class)->prefix('utilizatori')->name('users.')->group(function () {

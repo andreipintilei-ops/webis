@@ -67,12 +67,12 @@ const CONFIG = {
     cursor: 1,
     parallax: 0.0137,
     maxDpr: 1,
-    // Webis: drawn at this share of its box, the browser scaling it up — a
-    // soft field shows no difference, and the cost falls with the square
-    // of it; and no more often than this, though the screen may refresh at
-    // 120 or 144 Hz — it drifts slowly. Together about a quarter of the
-    // work at 60 Hz, which a weaker GPU (or Firefox's WebGL) needs.
-    renderScale: 0.6,
+    // Webis: drawn at this share of its box. Kept whole: the grain and the
+    // dither are drawn per pixel, and scaled up they turn into blotches.
+    renderScale: 1,
+    // Webis: drawn no more often than this, though the screen may refresh
+    // at 120 or 144 Hz — it drifts slowly. Half the work at 60 Hz, which a
+    // weaker GPU (or Firefox's WebGL) needs.
     maxFps: 30,
 } as const;
 

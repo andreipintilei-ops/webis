@@ -126,10 +126,7 @@
     :crumb-parent="['Web și e-commerce', '/web/']"
     :canonical="$canonical"
     header-theme="dark"
-    footer-cta-title="Vrei un site nou pentru firma ta?"
-    footer-cta-intro="Spune-ne ce face firma ta și ce vrei să afle clienții, iar noi revenim cu pașii următori și o ofertă."
-    footer-cta-button="Cere o ofertă"
-    :footer-w="true"
+    footer-cta-key="presentation"
 >
 
     {{-- ================================================== Hero --}}

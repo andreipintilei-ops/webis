@@ -161,11 +161,49 @@
                 font-size: clamp(2rem, 3.4vw, 3.25rem);
             }
 
+            /* Together in the middle, however tall the cover makes the two
+               rows: the label at the foot of the first, the title at the
+               head of the second. */
+            & .page-hero__label {
+                align-self: end;
+            }
+
+            & .page-hero__title {
+                align-self: start;
+            }
+
             & .article-cover {
                 @apply mt-0;
                 grid-column: 8 / span 5;
                 grid-row: 1 / span 2;
             }
+
+            /* A cut-out takes the room a frame would, and more: into the gap
+               beside the title and out past the column's edge. */
+            & .article-cover.is-cutout {
+                margin-left: -2rem;
+                margin-right: calc(-1 * min(4vw, 3rem));
+            }
         }
+
+        /* A cut-out (no ground of its own) stands straight on the hero's
+           gradient: no frame, no shadow, its whole drawing at its own
+           proportions. */
+        & .article-cover.is-cutout {
+            @apply aspect-auto overflow-visible rounded-none;
+            background: none;
+            box-shadow: none;
+
+            & img {
+                @apply h-auto p-0;
+            }
+        }
+    }
+
+    /* The article after its hero: room under the sheet's rounded top before
+       the text, as the other chapters keep (the rule above leaves it the
+       32px it rises by). */
+    .page-hero--article + * {
+        @apply pt-[calc(32px+3.5rem)] lg:pt-[calc(32px+5rem)];
     }
 }
