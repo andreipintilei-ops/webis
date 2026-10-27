@@ -118,7 +118,7 @@ it('never shows Webis\'s own products as client work', function () {
 
     expect($main[0])
         ->not->toContain('SmileSoft')
-        ->not->toContain('RIMS')
+        ->not->toContain('Research Information Management System')
         ->not->toContain('Bugetare participativă')
         ->not->toContain('Confirmo')
         ->not->toContain('portfolio-products');

@@ -19,7 +19,7 @@ enum Product: string
     {
         return match ($this) {
             self::SmileSoft => 'SmileSoft',
-            self::Rims => 'RIMS',
+            self::Rims => 'Research Information Management System',
             self::ParticipatoryBudgeting => 'Bugetare participativă',
             self::Confirmo => 'Confirmo',
         };

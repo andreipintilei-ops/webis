@@ -12,7 +12,7 @@
      `footerCtaTitle`, `footerCtaIntro`, `footerCtaButton`: the footer's closing
      call, reworded.
      `footerW`: the Webis W forming beside the footer's call (/portofoliu,
-     /software-la-comanda, /web, /produse).
+     /software-la-comanda, /web, /produse, /blog).
      `canonical`: the page's canonical URL, as <link rel="canonical">. Left
      out, the address asked for, on the canonical site, with its trailing
      slash and without its query string (PublicUrls::canonical); false for

@@ -93,8 +93,8 @@ it('never lets the catch-all shadow application routes', function () {
     $this->get('/pagina_veche.php')->assertNotFound();
 });
 
-it('lists the articles at /blog: a hero, the latest one featured, then nine cards to a page', function () {
-    // Eleven articles: the latest leads, then nine, then one on page 2.
+it('lists the articles at /blog: a hero, then nine cards to a page, the footer\'s W', function () {
+    // Eleven articles: nine, then two on page 2.
     Page::factory()->ofType(PageType::Article)->count(10)
         ->sequence(fn (Sequence $sequence) => ['published_at' => now()->subDays($sequence->index + 2)])
         ->create();
@@ -106,28 +106,28 @@ it('lists the articles at /blog: a hero, the latest one featured, then nine card
     ]);
 
     $html = $this->get('/blog')->assertOk()->getContent();
-    preg_match('#<a href="([^"]+)" class="blog-lead">.*?</a>#s', $html, $lead);
+    preg_match('#<a href="([^"]+)" class="post-card">#', $html, $first);
 
     expect($html)
         ->toContain('<title>Blog | Webis</title>')
-        // The section after it rises over its foot, as on the home page.
-        ->toContain('class="page-hero has-hero-planes page-hero--sheet page-hero--led"')
+        // The section after it rises over its foot, as on the home page;
+        // no article across it, so no taller hero.
+        ->toContain('class="page-hero has-hero-planes page-hero--sheet"')
         // The planes, inline so they can float.
         ->toContain('<g class="plane plane--green">')
         ->not->toContain('DUMMY DATA')
-        ->and(substr_count($html, 'class="blog-lead"'))->toBe(1)
-        // The lead goes to the article's own root address.
-        ->and($lead[1])->toBe('/cum-poti-avea-un-magazin-online-de-succes/')
-        ->and($lead[0])->toContain('Cum poți avea un magazin online de succes')
-        ->toContain('Ce contează ca un magazin online să aibă succes.')
+        ->not->toContain('class="blog-lead"')
+        // The latest is the first card, at the article's own root address.
+        ->and($first[1])->toBe('/cum-poti-avea-un-magazin-online-de-succes/')
         ->and(substr_count($html, 'class="post-card"'))->toBe(9)
         ->and($html)->toContain('aria-current="page">1</span>')
-        ->toContain('href="'.route('posts.index').'?pagina=2"');
+        ->toContain('href="'.route('posts.index').'?pagina=2"')
+        ->toContain('class="site-footer__w" data-finale-w');
 });
 
-it('pages through the rest of the articles, without the featured one', function () {
-    // 45 cards after the featured one: five pages of nine.
-    Page::factory()->ofType(PageType::Article)->count(46)
+it('pages through the articles', function () {
+    // Five pages of nine.
+    Page::factory()->ofType(PageType::Article)->count(45)
         ->sequence(fn (Sequence $sequence) => ['published_at' => now()->subDays($sequence->index + 1)])
         ->create();
 
@@ -135,7 +135,6 @@ it('pages through the rest of the articles, without the featured one', function 
 
     expect($html)
         ->toContain('<title>Blog, pagina 5 | Webis</title>')
-        ->not->toContain('class="blog-lead"')
         ->and(substr_count($html, 'class="post-card"'))->toBe(9)
         ->and($html)->toContain('rel="prev"')
         ->not->toContain('rel="next"');
@@ -181,29 +180,32 @@ it('lists the blog\'s categories beside the articles, each filtering them at its
         ->not->toContain('?categorie=')
         // Every article, then the categories, most first.
         ->and(array_combine($counts[1], $counts[2]))->toBe(['Toate articolele' => '5', 'SEO' => '3', 'Design' => '2'])
-        // The featured article leads the unfiltered list only.
-        ->and($all)->toContain('class="blog-lead"');
+        ->and(substr_count($all, 'class="post-card"'))->toBe(5);
 
     $html = $this->get('/blog/categorie/seo')->assertOk()->getContent();
     preg_match_all('#<span class="post-card__category">([^<]+)</span>#', $html, $categories);
 
     expect($categories[1])->toBe(['SEO', 'SEO', 'SEO'])
-        ->and($html)->not->toContain('class="blog-lead"')
-        ->toMatch('#/blog/categorie/seo/\#articole" class="blog-categories__link"\s*aria-current="page"#');
+        ->and($html)->toMatch('#/blog/categorie/seo/\#articole" class="blog-categories__link"\s*aria-current="page"#');
 });
 
 it('serves /web: its own title, one H1, the sections in order, the offers to their pages', function () {
     $html = $this->get('/web')->assertOk()->getContent();
     preg_match_all('#<h2 id="web-[a-z]+-title"[^>]*>([^<]+)#', $html, $titles);
 
-    expect($html)->toContain('<title>Site-uri și magazine online | Webis</title>')
+    expect($html)->toContain('<title>Site-uri, magazine online și identitate vizuală | Webis</title>')
+        ->toContain('<meta name="description" content="Site-uri de prezentare și magazine online pe brandul tău, cu SEO de la început. Dacă nu ai încă un brand, creăm și identitatea vizuală.">')
         ->and(substr_count($html, '<h1'))->toBe(1)
-        // No projects here: no projects section between the panel and the steps.
-        ->and(array_map('trim', $titles[1]))->toBe(['Un site care', 'Cum lucrăm', 'După lansare.', 'Întrebări frecvente.'])
+        // No projects here: no projects section between the panel and the
+        // visual identity, then the steps.
+        ->and(array_map('trim', $titles[1]))->toBe(['Un site care', 'Logo, culori și fonturi,', 'Cum lucrăm', 'După lansare.', 'Întrebări frecvente.'])
+        // What the visual identity includes, four cells in one panel.
+        ->and($html)->toContain('class="fpanel fpanel--four"')
+        ->and(substr_count($html, 'class="fpanel__cell"'))->toBe(4)
         // The offers across the hero's foot, each to its page; the benefits as cards.
         ->and($html)->toContain('href="/creare-site-de-prezentare/" class="web-hero-offer"')
         ->toContain('href="/creare-magazin-online/" class="web-hero-offer"')
         ->and(substr_count($html, 'class="bcard"'))->toBe(6)
         ->and(substr_count($html, 'class="ncols__item"'))->toBe(5)
-        ->and(substr_count($html, 'class="web-faq__item"'))->toBe(5);
+        ->and(substr_count($html, 'class="web-faq__item"'))->toBe(6);
 });

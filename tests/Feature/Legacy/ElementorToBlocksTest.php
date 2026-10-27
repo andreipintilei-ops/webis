@@ -307,6 +307,19 @@ it('counts the decorative widgets it drops', function () {
     ]);
 });
 
+it('drops Elementor\'s default heading title, left in by mistake', function () {
+    $widget = fn (string $type, array $settings = []) => ['id' => uniqid(), 'elType' => 'widget', 'widgetType' => $type, 'settings' => $settings, 'elements' => []];
+    $data = [['id' => 's', 'elType' => 'container', 'settings' => [], 'elements' => [
+        $widget('text-editor', ['editor' => '<p>Un site pentru fotografi.</p>']),
+        $widget('heading', ['title' => 'Adaugă aici textul pentru subtitlu', 'header_size' => 'h2']),
+    ]]];
+
+    $conversion = elementorConverter()->convert($data, 'Articol');
+
+    expect(json_encode($conversion->blocks, JSON_UNESCAPED_UNICODE))->not->toContain('Adaugă aici textul')
+        ->and($conversion->report->dropped())->toMatchArray(['widget:heading (placeholder)' => 1]);
+});
+
 it('returns only blocks that pass the registry\'s validation', function (string $fixture, bool $titleIsHeading) {
     $conversion = elementorConverter(elementorMedia([1867, 2105, 1279, 1280, 1281, 12452]))->convert(elementorFixture($fixture), 'Titlu', $titleIsHeading);
 

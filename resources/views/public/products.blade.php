@@ -44,7 +44,7 @@
             'screen' => 'rims',
             'for' => 'Pentru universități',
             'points' => ['Proiecte', 'Echipe', 'Finanțări și bugete', 'Raportări'],
-            'text' => 'RIMS (Research Information Management System) ține evidența proiectelor de cercetare ale universității: echipele, finanțările, bugetele și raportările. Conducerea și echipele de proiect lucrează pe aceleași date, iar rapoartele pentru finanțatori se pregătesc din aplicație.',
+            'text' => 'Research Information Management System ține evidența proiectelor de cercetare ale universității: echipele, finanțările, bugetele și raportările. Conducerea și echipele de proiect lucrează pe aceleași date, iar rapoartele pentru finanțatori se pregătesc din aplicație.',
         ],
         [
             'product' => Product::ParticipatoryBudgeting,
@@ -90,8 +90,8 @@
 
 {{-- The title and description held to 60 and 155 characters. --}}
 <x-layouts.public
-    title="Produse SaaS: SmileSoft, RIMS, Bugetare, Confirmo"
-    description="Aplicații gata de folosit, pe abonament lunar: SmileSoft pentru clinici stomatologice, RIMS pentru universități, Bugetare participativă și Confirmo."
+    title="Produse SaaS: clinici, universități și primării"
+    description="Aplicații pe abonament: SmileSoft pentru stomatologie, Research Information Management System pentru universități, Bugetare participativă și Confirmo."
     crumb="Produse SaaS"
     :canonical="$canonical"
     header-theme="dark"

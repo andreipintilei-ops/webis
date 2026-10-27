@@ -132,7 +132,7 @@
                 {{-- The smaller products, side by side below. TODO: their logos and real screenshots. --}}
                 @foreach ([
                     [
-                        'name' => 'RIMS',
+                        'name' => 'Research Information Management System',
                         'for' => 'Pentru universități și institute de cercetare.',
                         'checks' => ['Proiecte, bugete și termene într-un singur loc', 'Deconturi și achiziții urmărite pe fiecare proiect', 'Rapoarte pentru finanțatori, generate automat'],
                         'link' => ['label' => 'Cere o prezentare', 'href' => '/contact/', 'external' => false],

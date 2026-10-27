@@ -476,7 +476,7 @@
 
     :root[data-variant='stage'] .stage-product__name {
         @apply font-medium;
-        font-size: 18px;
+        font-size: 16px;
     }
 
     :root[data-variant='stage'] .stage-product__text {

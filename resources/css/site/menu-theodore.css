@@ -101,11 +101,12 @@
     /*
       After the panel on dennissnellenberg.com: the navigation from below
       the round button, the foot at the bottom. Scrolls on its own when a
-      short screen cannot hold it.
+      short screen cannot hold it. On a phone at least 2.5rem at the sides,
+      so the current page's dot, set outside its word, keeps clear of the edge.
     */
     .theo-menu__inner {
         @apply relative z-[1] flex h-full flex-col justify-between gap-10 overflow-y-auto;
-        padding: max(7.5rem, 14vh) clamp(1.5rem, 6vw, 5rem) max(2rem, 7vh);
+        padding: max(7.5rem, 14vh) clamp(2.5rem, 6vw, 5rem) max(2rem, 7vh);
     }
 
     .theo-menu__label {
@@ -141,6 +142,23 @@
         &:focus-visible::before,
         &.is-active::before {
             transform: translateY(-50%) scale(1);
+        }
+
+        /* On a phone the current page's dot comes inside, on the menu's
+           edge with the other links, its word moved over for it; none on
+           a tap elsewhere. */
+        @media (max-width: 767px) {
+            &::before {
+                left: 0;
+            }
+
+            &.is-active {
+                padding-left: 1.4rem;
+            }
+
+            &:not(.is-active):is(:hover, :focus-visible)::before {
+                transform: translateY(-50%) scale(0);
+            }
         }
     }
 

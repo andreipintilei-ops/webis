@@ -40,7 +40,7 @@
     }
 
     /*
-      As /blog's hero with its featured article (.page-hero--led): the hero
+      As /web's hero with its offers (.page-hero--led): the hero
       fills the first screen on a desktop and the strip sits on its foot, a
       short step above the fold. The band itself runs the window's full
       width, out of the column; the hero clips the scrollbar's few pixels of
@@ -142,7 +142,7 @@
       above then ends as far below its link as the home page's does.
     */
     .chapter.sw-why {
-        @apply -mt-8 rounded-t-[2.5rem] pt-12 md:rounded-t-[5rem] md:pt-16 lg:pt-20;
+        @apply -mt-8 rounded-t-[32px] pt-12 md:pt-16 lg:pt-20;
 
         &::before {
             border-radius: inherit;

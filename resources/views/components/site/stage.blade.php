@@ -104,7 +104,7 @@
                 <ul class="stage-products" data-reveal>
                     @foreach ([
                         ['smile', 'SmileSoft', 'Programări, tratamente și încasări pentru clinici stomatologice.', 'https://smilesoft.ro'],
-                        ['graduation-cap', 'RIMS', 'Proiecte și bugete pentru universități și cercetare.', '/contact/'],
+                        ['graduation-cap', 'Research Information Management System', 'Proiecte și bugete pentru universități și cercetare.', '/contact/'],
                         ['landmark', 'Bugetare participativă', 'Propuneri și voturi pentru proiectele comunității.', 'https://bugetare.ro'],
                     ] as [$glyph, $name, $text, $href])
                         @php($external = str_starts_with($href, 'http'))

@@ -70,10 +70,10 @@ it('lists only published articles at /blog, newest first, each linking to its ro
     Post::factory()->create(['title' => 'O postare', 'status' => ContentStatus::Published, 'published_at' => now()->subMinute()]);
 
     $html = $this->get('/blog')->assertOk()->getContent();
-    preg_match('#<a href="([^"]+)" class="blog-lead">#', $html, $lead);
 
-    expect($lead[1])->toBe('/cel-mai-nou/')
-        ->and(cardLinks($html))->toBe(['/al-doilea/', '/al-treilea/', '/al-patrulea/'])
+    expect(cardLinks($html))->toBe(['/cel-mai-nou/', '/al-doilea/', '/al-treilea/', '/al-patrulea/'])
+        ->and($html)->not->toContain('class="blog-lead"')
+        ->not->toContain('page-hero--led')
         ->and($html)->toContain('<span class="blog-categories__count">4</span>')
         ->not->toContain('Articol ciornă')
         ->not->toContain('Articol programat')
@@ -83,18 +83,17 @@ it('lists only published articles at /blog, newest first, each linking to its ro
 });
 
 it('pages through the articles with ?pagina=, and finds no page past the last', function () {
-    // The lead, then 12 cards: nine, then three.
-    Page::factory()->ofType(PageType::Article)->count(13)
+    // 12 cards: nine, then three.
+    Page::factory()->ofType(PageType::Article)->count(12)
         ->sequence(fn (Sequence $sequence) => ['slug' => 'articol-'.($sequence->index + 1), 'published_at' => now()->subDays($sequence->index + 1)])
         ->create();
 
     $first = $this->get('/blog')->assertOk()->getContent();
     $second = $this->get('/blog?pagina=2')->assertOk()->getContent();
 
-    expect(cardLinks($first))->toHaveCount(9)->toContain('/articol-2/')->not->toContain('/articol-1/')
+    expect(cardLinks($first))->toHaveCount(9)->toContain('/articol-1/')->not->toContain('/articol-10/')
         ->and($second)->toContain('<title>Blog, pagina 2 | Webis</title>')
-        ->not->toContain('class="blog-lead"')
-        ->and(cardLinks($second))->toBe(['/articol-11/', '/articol-12/', '/articol-13/']);
+        ->and(cardLinks($second))->toBe(['/articol-10/', '/articol-11/', '/articol-12/']);
 
     $this->get('/blog?pagina=3')->assertNotFound();
 });
@@ -127,8 +126,6 @@ it('lists one category\'s articles at /blog/categorie/{slug}, with its own title
 
     expect($html)->toContain('<title>SEO · Blog | Webis</title>')
         ->toContain('<meta name="description" content="Cum te găsesc clienții pe Google.">')
-        // No lead on a category: all its articles are cards.
-        ->not->toContain('class="blog-lead"')
         ->and(cardLinks($html))->toHaveCount(9)->toContain('/seo-1/')->not->toContain('/alt-subiect/')
         ->and($html)->toContain('href="'.route('posts.category', 'seo').'?pagina=2"');
 

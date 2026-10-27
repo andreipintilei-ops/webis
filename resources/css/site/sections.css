@@ -176,6 +176,12 @@
         box-shadow: 0 30px 70px -50px rgb(31 40 104 / 0.35);
     }
 
+    /* Four cells: two by two, then one row from 1280px — never three and
+       one left over. */
+    .fpanel--four {
+        @apply lg:grid-cols-2 xl:grid-cols-4;
+    }
+
     .fpanel__cell {
         @apply flex flex-col gap-3 bg-white p-8 lg:p-12;
     }

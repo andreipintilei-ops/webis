@@ -30,6 +30,16 @@
         }
     }
 
+    /* After the figures on the dark area: rising 32px over them on a 32px
+       rounded top, as the home page's cards (css/site/service-cards.css). */
+    .figures + .work-stack {
+        @apply -mt-8 rounded-t-[32px];
+
+        &::before {
+            border-radius: inherit;
+        }
+    }
+
     /* ---- Head ------------------------------------------------------------------ */
 
     .work-stack__head {

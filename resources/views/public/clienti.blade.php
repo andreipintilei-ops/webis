@@ -9,9 +9,10 @@
     closing panel, its W forming out of nowhere, instead of the footer's
     call (components/site/cta-panel).
 
-    Client work only: Webis's own products (SmileSoft, RIMS, Bugetare
-    participativă, Confirmo) are on Produse SaaS and their own pages, never
-    here. Entry: fast and quiet (data-reveal-pace="fast").
+    Client work only: Webis's own products (SmileSoft, Research Information
+    Management System, Bugetare participativă, Confirmo) are on Produse SaaS
+    and their own pages, never here. Entry: fast and quiet
+    (data-reveal-pace="fast").
 --}}
 @php
     use App\Enums\ProjectType;

@@ -27,22 +27,18 @@ class ArticleController extends Controller
     private const int PER_PAGE = 9;
 
     /**
-     * GET /blog — every article: the latest leads the first page across the
-     * hero's foot, the rest follow as cards. A page past the last is not
+     * GET /blog — every article, as cards. A page past the last is not
      * found.
      */
     public function index(): View
     {
-        $featured = $this->published($this->articles())->first();
-
         $articles = $this->published($this->articles())
-            ->when($featured, fn (Builder $query, Page $featured) => $query->whereKeyNot($featured->getKey()))
             ->paginate(self::PER_PAGE, pageName: 'pagina')
             ->withPath(route('posts.index'));
 
         abort_if($articles->currentPage() > $articles->lastPage(), 404);
 
-        return $this->listing($articles, $articles->onFirstPage() ? $featured : null);
+        return $this->listing($articles);
     }
 
     /**
@@ -68,7 +64,7 @@ class ArticleController extends Controller
 
         abort_if($articles->currentPage() > $articles->lastPage(), 404);
 
-        return $this->listing($articles, null, $category);
+        return $this->listing($articles, $category);
     }
 
     /**
@@ -100,11 +96,10 @@ class ArticleController extends Controller
     /**
      * @param  LengthAwarePaginator<int, Page>  $articles
      */
-    private function listing(LengthAwarePaginator $articles, ?Page $featured, ?PostCategory $category = null): View
+    private function listing(LengthAwarePaginator $articles, ?PostCategory $category = null): View
     {
         return view('public.blog.index', [
             'category' => $category,
-            'featured' => $featured ? [...$this->card($featured), 'excerpt' => $featured->excerpt] : null,
             'articles' => $articles->through(fn (Page $article): array => $this->card($article)),
             'categories' => $this->categories(),
             'total' => $this->articles()->published()->count(),

@@ -212,7 +212,7 @@ const PANEL_FILL_NARROW = 0.78;
  */
 const BEHIND_FILL = 0.85;
 const BEHIND_CAP = 0.45;
-const BEHIND_DIM = 0.6;
+const BEHIND_DIM = 0.85;
 
 export async function initShapeshifter(): Promise<void> {
     const host = document.querySelector<HTMLElement>('[data-shapeshifter]');

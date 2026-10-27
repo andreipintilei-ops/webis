@@ -87,7 +87,7 @@
                 <ul class="story-panel__products">
                     @foreach ([
                         ['SmileSoft', 'Clinici stomatologice', 'https://smilesoft.ro'],
-                        ['RIMS', 'Universități și institute de cercetare', '/contact/'],
+                        ['Research Information Management System', 'Universități și institute de cercetare', '/contact/'],
                         ['Bugetare participativă', 'Primării', 'https://bugetare.ro'],
                     ] as [$name, $for, $href])
                         <li>

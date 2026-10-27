@@ -78,7 +78,7 @@
         mask-image: linear-gradient(to bottom, #000 55%, transparent 92%);
     }
 
-    /* With an article across the hero's foot (/blog): the drawing kept
+    /* With offers across the hero's foot (/web, /servicii): the drawing kept
        above its hairline, whole, rather than running behind its text. */
     @media (min-width: 768px) {
         .page-hero--led .hero-planes__svg {

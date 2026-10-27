@@ -3,7 +3,7 @@
     (js/public/soffit.ts, which pauses it while it is off screen): a closing
     call to talk with the ways to reach us, then the site's links in groups
     (App\Support\SiteNavigation) and the company's details
-    (CompanySettings): the site's pages with the legal ones under them,
+    (CompanySettings): the services over the site's pages, the legal ones,
     the address with the Google rating and the social profiles; then the
     logo, the legal line and the ANPC SAL/SOL pictograms.
     css/site/footer.css.
@@ -28,9 +28,10 @@
     $socials = array_filter($company->social);
     $socialNames = ['facebook' => 'Facebook', 'instagram' => 'Instagram', 'linkedin' => 'LinkedIn', 'youtube' => 'YouTube', 'tiktok' => 'TikTok'];
 
+    // Not /servicii: the services are their own group, first.
     $pages = array_values(array_filter(
         \App\Support\SiteNavigation::links(withHome: false),
-        fn ($link) => $link['menu'] || $link['cta'],
+        fn ($link) => ($link['menu'] || $link['cta']) && $link['href'] !== '/servicii',
     ));
 @endphp
 
@@ -84,7 +85,8 @@
         </div>
         @endif
 
-        {{-- The site, in groups; then where we are. --}}
+        {{-- The site, in groups — the services first, over the pages; then
+             the legal ones, and where we are. --}}
         <nav class="site-footer__nav" aria-label="Subsol">
             @foreach (\App\Support\SiteNavigation::groups() as $group)
                 <div class="site-footer__group">
@@ -94,18 +96,20 @@
                             <li><a href="{{ \App\Support\TrailingSlash::href($link['href']) }}" class="site-footer__link"><x-ui.roll :text="$link['label']" /></a></li>
                         @endforeach
                     </ul>
+
+                    @if ($loop->first)
+                        <h3 class="site-footer__group-label site-footer__group-label--follow">Webis</h3>
+                        <ul>
+                            @foreach ($pages as $page)
+                                <li><a href="{{ \App\Support\TrailingSlash::href($page['href']) }}" class="site-footer__link"><x-ui.roll :text="$page['label']" /></a></li>
+                            @endforeach
+                        </ul>
+                    @endif
                 </div>
             @endforeach
 
             <div class="site-footer__group">
-                <h3 class="site-footer__group-label">Webis</h3>
-                <ul>
-                    @foreach ($pages as $page)
-                        <li><a href="{{ \App\Support\TrailingSlash::href($page['href']) }}" class="site-footer__link"><x-ui.roll :text="$page['label']" /></a></li>
-                    @endforeach
-                </ul>
-
-                <h3 class="site-footer__group-label site-footer__group-label--follow">Informații legale</h3>
+                <h3 class="site-footer__group-label">Informații legale</h3>
                 <ul>
                     @foreach (\App\Support\SiteNavigation::legal() as $link)
                         <li><a href="{{ \App\Support\TrailingSlash::href($link['href']) }}" class="site-footer__link"><x-ui.roll :text="$link['label']" /></a></li>

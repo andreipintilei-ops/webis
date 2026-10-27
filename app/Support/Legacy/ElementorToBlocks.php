@@ -271,6 +271,13 @@ final class ElementorToBlocks
             return [];
         }
 
+        // Elementor's default title, left in by mistake.
+        if (in_array($text, ['Adaugă aici textul pentru subtitlu', 'Add Your Heading Text Here'], true)) {
+            $this->report->drop('widget:heading (placeholder)');
+
+            return [];
+        }
+
         if (! preg_match('/^h[1-6]$/', $size) || ($link !== null && preg_match('~^(tel|mailto):~i', $link) === 1)) {
             return [['kind' => 'html', 'html' => '<p>'.$this->linked(e($text), $link).'</p>']];
         }

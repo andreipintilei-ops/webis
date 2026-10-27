@@ -5,11 +5,12 @@
     chapters, under a head.
 
     `items`: list of [icon (components/section/icon), name, line]; three to
-    a row from 1024px, two from 768px.
+    a row from 1024px, two from 768px. Four of them: two by two, then four
+    to a row from 1280px.
 --}}
 @props(['items'])
 
-<ul {{ $attributes->class('fpanel') }} data-reveal>
+<ul {{ $attributes->class(['fpanel', 'fpanel--four' => count($items) === 4]) }} data-reveal>
     @foreach ($items as [$icon, $name, $line])
         <li class="fpanel__cell" data-reveal-child>
             <span class="fpanel__icon"><x-section.icon :name="$icon" /></span>

@@ -5,6 +5,7 @@
     - the internal pages' hero, the two offers across its foot;
     - what every project gets: white cards in two offset rows;
     - projects: the case bento, one at a time;
+    - visual identity: what it includes, in the feature panel;
     - how we work: the numbered columns, on the indigo;
     - after launch, as a pair;
     - questions, the title beside them;
@@ -49,15 +50,23 @@
     $benefits = [
         ['speed', 'Se încarcă repede', 'Pagini rapide pe orice conexiune, pe care Google le pune mai sus.'],
         ['search', 'Găsit în Google', 'Structură și adrese gândite de la început, ca paginile să apară în căutări.'],
-        ['brand', 'Pe brandul tău', 'Culorile și tonul firmei tale, nu o temă pe care o folosesc și alții.'],
+        ['brand', 'Pe brandul tău', 'Culorile și tonul firmei tale, nu o temă pe care o folosesc și alții. Dacă nu ai încă un brand, îl construim împreună.'],
         ['screens', 'Pe orice ecran', 'Arată și funcționează la fel de bine pe telefon, tabletă și desktop.'],
         ['edit', 'Îl editezi singur', 'Schimbi texte, imagini și produse fără să ne suni de fiecare dată.'],
         ['own', 'E al tău', 'Site-ul, domeniul și tot conținutul îți aparțin, fără licențe lunare.'],
     ];
 
+    // Visual identity, for a firm starting out or whose brand fell behind.
+    $identity = [
+        ['logo', 'Logo', 'Cu variante pentru fundal deschis și închis.'],
+        ['brand', 'Culori și fonturi', 'Alese să funcționeze pe ecran și la print.'],
+        ['guide', 'Reguli de folosire', 'Cum și unde apare logo-ul.'],
+        ['files', 'Fișiere pentru orice folosință', 'În format vectorial pentru print și la dimensiunile potrivite pentru online.'],
+    ];
+
     $steps = [
         ['Analiză', 'Stabilim ce trebuie să facă site-ul pe termen scurt și lung.'],
-        ['Design', 'Propunem conceptul grafic și structura paginilor.'],
+        ['Design', 'Pornim de la brandul tău sau îl construim împreună, apoi facem un concept propriu pentru site.'],
         ['Dezvoltare', 'Construim site-ul și funcțiile: plăți, facturare, formulare.'],
         ['Testare', 'Verificăm totul pe date reale, pe toate dispozitivele.'],
         ['Lansare', 'Punem site-ul online și îți arătăm cum îl actualizezi.'],
@@ -72,6 +81,7 @@
         ['Cât costă un site?', 'Depinde de numărul de pagini și de funcții. După o discuție scurtă primești o ofertă detaliată.'],
         ['Cât durează?', 'Depinde de numărul de pagini, de produse și de funcții. Termenul îl stabilim împreună și îl găsești în ofertă.'],
         ['Pot modifica singur conținutul?', 'Da. Primești acces la panoul de administrare și instruire la predare.'],
+        ['Nu am încă logo. Mă puteți ajuta?', 'Da. Creăm identitatea vizuală înaintea site-ului: logo, culori și fonturi, cu fișiere pentru online și print, pe care le poți folosi pe orice material.'],
         ['Am deja un site. Îl puteți reface?', 'Da. Păstrăm adresele importante sau le redirecționăm, ca să nu pierzi pozițiile din Google.'],
         ['Pot adăuga mai târziu un magazin sau o limbă nouă?', 'Da, site-ul e construit să poată fi extins.'],
     ];
@@ -93,9 +103,9 @@
 @endphp
 
 <x-layouts.public
-    title="Site-uri și magazine online"
+    title="Site-uri, magazine online și identitate vizuală"
     crumb="Web și e-commerce"
-    description="Site-uri și magazine online rapide, ușor de găsit în Google și făcute pe brandul tău."
+    description="Site-uri de prezentare și magazine online pe brandul tău, cu SEO de la început. Dacă nu ai încă un brand, creăm și identitatea vizuală."
     header-theme="dark"
     hero-leave="overlap"
     :footer-w="true"
@@ -108,7 +118,7 @@
         data-reveal-pace="fast"
     >
         {{-- The two offers close the hero, side by side on a hairline across
-             its foot, as /blog's featured article closes its own. The section
+             its foot, as the home page's rating and logos close its own. The section
              after rises over the hero on a rounded top, as on the home page. --}}
         <x-slot:after>
             <ul class="web-hero-offers">
@@ -161,6 +171,21 @@
             </div>
         </section>
     @endif
+
+    {{-- ================================================== Visual identity --}}
+    <section class="chapter chapter--light" aria-labelledby="web-identity-title" data-reveal-pace="fast">
+        <div class="chapter__inner">
+            <x-section.center-head
+                id="web-identity-title"
+                label="Identitate vizuală"
+                title="Logo, culori și fonturi, înainte de prima pagină."
+                highlight="înainte de prima pagină"
+                intro="Dacă pornești de la zero sau brandul tău a rămas în urmă, creăm identitatea vizuală împreună cu site-ul, ca firma ta să arate la fel pe site, pe social media și pe materialele tipărite."
+            />
+
+            <x-section.feature-panel :items="$identity" />
+        </div>
+    </section>
 
     {{-- ================================================== How we work --}}
     <x-section.numbered-columns
