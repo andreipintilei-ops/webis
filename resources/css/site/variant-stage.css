@@ -545,20 +545,14 @@
     }
 
     /*
-      A plain CSS gradient, no WebGL: the hero's indigo with one soft violet
-      glow behind the W, and nothing else. It has to stay deep — the W
-      standing on it runs from a near-navy plate to a white one, and a bright
-      ground would swallow both ends.
+      The hero's indigo, plain: no glow of its own where the W will stand —
+      the W brings its light with it (the haze behind it, shapeshifter.ts).
+      It has to stay deep — the W standing on it runs from a near-navy plate
+      to a white one, and a bright ground would swallow both ends.
     */
     .stage-finale__ground {
         @apply absolute inset-0 z-0;
-        background:
-            radial-gradient(
-                ellipse 60% 50% at 50% 32%,
-                rgb(119 90 252 / 0.32),
-                transparent 72%
-            ),
-            #1f2868;
+        background: #1f2868;
 
         /* The same film grain the dark sections use, so it is not flat. */
         &::after {
