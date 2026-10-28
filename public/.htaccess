@@ -69,6 +69,7 @@
 # root's .htaccess — this file, a tracked one — and a changed file stops
 # cPanel from deploying. Already here and the same, it changes nothing.
 # Ignored by nginx (Herd, locally).
+
 # php -- BEGIN cPanel-generated handler, do not edit
 # Set the “ea-php84” package as the default “PHP” programming language.
 <IfModule mime_module>
