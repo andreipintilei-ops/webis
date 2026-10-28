@@ -5,6 +5,8 @@ use App\Events\ContentPublished;
 use App\Models\Page;
 use App\Models\Post;
 use App\Models\Project;
+use Illuminate\Console\Scheduling\CallbackEvent;
+use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Event;
 
@@ -48,6 +50,21 @@ it('publishes scheduled items that are due and announces each one', function () 
 
     Event::assertDispatchedTimes(ContentPublished::class, 3);
     Event::assertDispatched(fn (ContentPublished $event) => $event->content->is($duePost));
+});
+
+it('publishes due items from the scheduler without starting a process', function () {
+    // The hosting disables proc_open: a scheduled command of its own
+    // (Schedule::command) would never run there.
+    $events = app(Schedule::class)->events();
+
+    expect($events)->not->toBeEmpty()
+        ->and(collect($events)->every(fn ($event) => $event instanceof CallbackEvent))->toBeTrue();
+
+    $due = Post::factory()->scheduled(now()->subMinute())->create();
+
+    $this->artisan('schedule:run')->assertSuccessful();
+
+    expect($due->fresh()->status)->toBe(ContentStatus::Published);
 });
 
 it('keeps the scheduled publishing time rather than the moment the command ran', function () {
