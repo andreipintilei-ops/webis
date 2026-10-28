@@ -5,6 +5,12 @@
 
     RewriteEngine On
 
+    # The bare domain to the canonical one, with www (config/site.php,
+    # canonical_url): one address per page. That host only — the test site
+    # and the local one are left alone.
+    RewriteCond %{HTTP_HOST} ^webis\.ro$ [NC]
+    RewriteRule ^ https://www.webis.ro%{REQUEST_URI} [R=301,L]
+
     # Handle Authorization Header
     RewriteCond %{HTTP:Authorization} .
     RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
