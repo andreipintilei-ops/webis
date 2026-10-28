@@ -1177,5 +1177,18 @@ export async function initShapeshifter(): Promise<void> {
 
     resize();
     window.addEventListener('resize', resize);
+
+    // Every shader compiled before the first frame — in the background where
+    // the browser can (KHR_parallel_shader_compile). The parts hidden until
+    // their chapter (the cross, the guides, the ring and its dots) were
+    // otherwise compiled the moment they first showed, mid-scroll: over a
+    // second of stalls on a phone, as the panel and the clients' wall came
+    // up. Shown for it only: each frame sets them again.
+    for (const part of [cross, guides, ring]) {
+        part.visible = true;
+    }
+
+    await renderer.compileAsync(scene, camera).catch(() => undefined);
+
     gsap.ticker.add(frame);
 }
