@@ -50,7 +50,7 @@
                     <li>
                         @if ($link['children'] !== [])
                             <details class="theo-menu__group" data-theo-group>
-                                <summary @class(['theo-menu__link', 'is-active' => $onService]) data-theo-item><x-ui.roll :text="$link['label']" /><svg class="theo-menu__plus" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v18M3 12h18" /></svg></summary>
+                                <summary @class(['theo-menu__link', 'is-active' => $onService]) data-theo-item><x-ui.roll :text="$link['label']" /><svg class="theo-menu__plus" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 0v24M0 12h24" /></svg></summary>
                                 <div class="theo-menu__sub" data-theo-group-body>
                                     <ul class="theo-menu__services" data-theo-reveal>
                                         @foreach ($services as $service)
