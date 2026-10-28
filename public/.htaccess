@@ -21,3 +21,39 @@
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteRule ^ index.php [L]
 </IfModule>
+
+# Types the server may not know: fonts and modern images go out as what
+# they are, so the cache and compression rules below can tell them apart.
+<IfModule mod_mime.c>
+    AddType font/woff2 .woff2
+    AddType image/webp .webp
+    AddType image/avif .avif
+    AddType image/svg+xml .svg
+</IfModule>
+
+# Compression: pages, styles, scripts and the like go out gzipped (the
+# site's stylesheet is ~350 KB as written, ~52 KB compressed). Images and
+# fonts are compressed already and are left alone.
+<IfModule mod_deflate.c>
+    <IfModule mod_filter.c>
+        AddOutputFilterByType DEFLATE text/html text/plain text/css text/xml text/javascript application/javascript application/json application/xml application/rss+xml image/svg+xml application/manifest+json
+    </IfModule>
+</IfModule>
+
+# Browser caching for the files the server sends itself (PHP pages set
+# their own headers: they are not cached).
+<IfModule mod_headers.c>
+    # Images, icons and fonts — the uploads under /storage, the favicons: a
+    # month. A replaced upload gets a new address (a new media folder).
+    <FilesMatch "\.(avif|webp|jpe?g|png|gif|svg|ico|woff2?)$">
+        Header set Cache-Control "public, max-age=2592000"
+    </FilesMatch>
+
+    # The build (/build/assets): every name carries a hash of its content
+    # (site-CmfehY_A.css, onest-400-normal-9AYXx_QC.woff2), so a new version
+    # is a new address. A year, never asked again. Last, so it wins over the
+    # month above for the fonts.
+    <FilesMatch "-[A-Za-z0-9_-]{8}\.(js|css|woff2)$">
+        Header set Cache-Control "public, max-age=31536000, immutable"
+    </FilesMatch>
+</IfModule>

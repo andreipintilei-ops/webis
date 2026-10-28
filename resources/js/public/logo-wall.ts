@@ -141,7 +141,8 @@ async function setUp(stage: HTMLElement): Promise<void> {
             if (logo !== tile.logo) {
                 tile.logo = logo;
                 const image = images[logo]?.cloneNode() as
-                    HTMLImageElement | undefined;
+                    | HTMLImageElement
+                    | undefined;
 
                 if (image) {
                     image.alt = '';

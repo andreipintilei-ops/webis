@@ -35,9 +35,9 @@
     $headingWidth = count($headingLines) > 1 ? 'max-w-none' : 'max-w-[28ch]';
 
     // The home page's first, dark, full-screen hero: its backdrop is fixed
-    // behind the page (blocks after it may sit on it too) and it plays the
-    // intro (js/public/hero-intro.ts). The data-intro-* hooks do nothing on
-    // their own.
+    // behind the page (blocks after it may sit on it too), and the page after
+    // it slides up over it (js/public/hero-intro.ts). It is there from the
+    // first frame: no intro. The data-intro-* hooks do nothing on their own.
     $centered = ($data['layout'] ?? 'split') === 'centered';
 
     // Anton, uppercase. Anton has one weight: it must stay font-normal, or

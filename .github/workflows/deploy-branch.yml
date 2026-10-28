@@ -1,0 +1,120 @@
+name: deploy-branch
+
+# The `deploy` branch, which the servers pull (cPanel's Git Version
+# Control): main as it is, plus what the hosting cannot make itself — the
+# built assets (public/build: it has no Node) and the production vendor/
+# (so it needs no Composer). Rebuilt after every push to main whose tests
+# pass — run here, as tests.yml also gates on static analysis, which the
+# deploy does not wait for — as one more commit on top of the last: a
+# server's pull is always a fast-forward. Then, on the server: "Update from
+# Remote", "Deploy HEAD Commit" (.cpanel.yml, deploy/cpanel.sh).
+
+on:
+  push:
+    branches: [main]
+  # By hand, from the Actions tab: main as it is now.
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: deploy-branch
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    # The build boots the app (Wayfinder), which reads its settings from the
+    # database: an empty one, migrated; the tests their own (phpunit.xml).
+    services:
+      mysql:
+        image: mysql:8.4
+        env:
+          MYSQL_ALLOW_EMPTY_PASSWORD: 'yes'
+          MYSQL_DATABASE: webis
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h 127.0.0.1"
+          --health-interval=5s
+          --health-timeout=5s
+          --health-retries=20
+
+    env:
+      SHA: ${{ github.sha }}
+      DB_CONNECTION: mysql
+      DB_HOST: 127.0.0.1
+      DB_PORT: 3306
+      DB_USERNAME: root
+      DB_PASSWORD: ''
+
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ env.SHA }}
+          fetch-depth: 0
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240 # v2
+        with:
+          php-version: '8.4'
+          tools: composer:v2
+          coverage: none
+
+      - name: Setup Node
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: '22'
+
+      # The build runs artisan (Wayfinder's routes), so the app needs its
+      # dev packages and a key while it builds; only the production ones
+      # are shipped.
+      - name: Build the assets
+        run: |
+          composer install --no-interaction --prefer-dist --no-progress
+          cp .env.example .env
+          php artisan key:generate
+          php artisan migrate --force
+          npm ci
+          npm run build
+
+      - name: Tests
+        run: |
+          mysql -h 127.0.0.1 -u root -e "CREATE DATABASE IF NOT EXISTS webis_testing"
+          php artisan test --compact
+          rm .env
+
+      - name: Production vendor/
+        run: composer install --no-dev --optimize-autoloader --no-interaction --prefer-dist --no-progress
+
+      - name: Commit onto the deploy branch
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          if git ls-remote --exit-code --heads origin deploy > /dev/null; then
+            git fetch origin deploy
+            git worktree add ../deploy-tree -B deploy origin/deploy
+          else
+            git worktree add --orphan -b deploy ../deploy-tree
+          fi
+
+          # Main's files exactly (deleted ones gone too), then the two built
+          # folders on top.
+          cd ../deploy-tree
+          git read-tree -u --reset "$SHA"
+          rm -rf public/build vendor
+          cp -a "$GITHUB_WORKSPACE/public/build" public/build
+          cp -a "$GITHUB_WORKSPACE/vendor" vendor
+          git add -f public/build vendor
+
+          if git diff --cached --quiet; then
+            echo "Nothing changed since the last deploy commit."
+            exit 0
+          fi
+
+          git commit -q -m "Deploy ${SHA::7}: $(git -C "$GITHUB_WORKSPACE" log -1 --format=%s "$SHA")"
+          git push origin deploy

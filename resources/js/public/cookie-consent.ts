@@ -170,17 +170,12 @@ export function initCookieConsent(): void {
             }),
         );
 
-    // A moment after the page shows; after the home page's intro has played.
+    // A moment after the page shows.
     if (!config.choice) {
-        const intro = document.documentElement.classList.contains('intro');
-
-        window.setTimeout(
-            () => {
-                if (!config.choice && banner.hidden) {
-                    show(false);
-                }
-            },
-            intro ? 2600 : 600,
-        );
+        window.setTimeout(() => {
+            if (!config.choice && banner.hidden) {
+                show(false);
+            }
+        }, 600);
     }
 }

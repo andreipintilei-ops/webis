@@ -1,24 +1,10 @@
 import type { Gsap } from '@/public/gsap';
-import { EASE, loadGsap } from '@/public/gsap';
+import { loadGsap } from '@/public/gsap';
 
 /**
- * The opening hero's backdrop — fixed behind the page, full screen — its
- * intro, and how it leaves. After integratedbio.com, with the counter-motion
- * of a mask and what is inside it from andrei-pintilei.github.io/portfolio.
- *
- * The intro, on a full load (see the <head> script in
- * layouts/public.blade.php):
- * 1. A small rounded rectangle (~100px) appears in the middle of the blank
- *    page.
- * 2. It grows to the full screen — the backdrop seen through a clip-path
- *    inset with rounded corners, redrawn each frame — while the gradient
- *    inside settles from a slight zoom, against the growth.
- * 3. The title rises line by line out of its masks; the eyebrow, buttons,
- *    logo strip and header come in after it.
- *
- * The page is held at the top while that plays — it only reads if it cannot
- * be scrolled out from under the viewer — and let go shortly before the end,
- * so the tail plays under someone who has already started scrolling.
+ * The opening hero's backdrop — fixed behind the page, full screen — and
+ * how it leaves. After integratedbio.com. There is no intro: the hero is
+ * there from the first frame, as every other page's.
  *
  * Leaving: once the last section on the backdrop ([data-backdrop-area])
  * starts to scroll off, the page after it slides up over it on a rounded
@@ -26,30 +12,10 @@ import { EASE, loadGsap } from '@/public/gsap';
  * parallax. ("card": the backdrop shrinks into a rounded card above it.)
  * Scrubbed, so scrolling back up plays it in reverse.
  *
- * Applies to the page's intro hero ([data-intro], blocks/hero.blade.php).
+ * Applies to the page's opening hero ([data-intro], blocks/hero.blade.php).
  * With reduced motion the backdrop simply stays full screen until covered.
  */
 
-/** Seconds, on the site's expo family (gsap.ts). */
-const TIMING = {
-    appearAt: 0.1,
-    appear: 0.5,
-    // It barely settles before it opens up.
-    growAt: 0.45,
-    grow: 1.6,
-    // The content follows as the backdrop reaches the screen's edges.
-    textAt: 1.7,
-    text: 1.3,
-    lineStagger: 0.12,
-    restStagger: 0.1,
-};
-
-/**
- * The starting rectangle, px (2:1), and its corner radius. On narrow screens
- * it is scaled down to `maxShare` of the screen's width, keeping its shape.
- */
-const START = { width: 400, height: 200, maxShare: 0.8 };
-const RADIUS = 42;
 /**
  * Leaving: the card's margin from the screen's edges (a share of the
  * screen's width, capped in px) and corner radius (px), both reached over
@@ -83,91 +49,12 @@ export function backdropCovers(x: number, y: number): boolean {
         (x >= card.left && x <= card.right && y >= card.top && y <= card.bottom)
     );
 }
-/**
- * How far below its mask a title line waits (% of its height). More than a
- * full line: the marks over Î and Ă rise above the line and would otherwise
- * show at the mask's bottom edge.
- */
-const LINE_HIDDEN = 140;
-/** How far the inside starts zoomed in; it settles to 1 as the shape grows. */
-const ZOOM = 1.25;
-/**
- * Seconds before the intro ends that the page is let go, so the last of it
- * plays under a viewer who can already scroll — and how long the hold lasts
- * at the very most, in case the timeline never reports finishing.
- */
-const UNLOCK_BEFORE = 0.7;
-const HOLD_LIMIT = 6000;
-
-/** The keys that would scroll the page, unless something is being typed in. */
-const SCROLL_KEYS = new Set([
-    ' ',
-    'PageDown',
-    'PageUp',
-    'End',
-    'Home',
-    'ArrowDown',
-    'ArrowUp',
-]);
-
-/**
- * Hold the page at the top while the intro plays: the opening only reads if
- * it cannot be scrolled out from under the viewer. Wheel, touch and the
- * scroll keys are swallowed, and a scrollbar drag — which no handler can
- * prevent — is undone by putting the page back.
- *
- * Deliberately not `overflow: hidden`: that takes the scrollbar away and
- * shifts the whole page sideways the moment the hold is released. Returns
- * the release, which is safe to call more than once.
- */
-function holdAtTop(): () => void {
-    const swallow = (event: Event): void => event.preventDefault();
-    const onKey = (event: KeyboardEvent): void => {
-        const target = event.target as HTMLElement | null;
-
-        if (
-            SCROLL_KEYS.has(event.key) &&
-            !target?.closest('input, textarea, select, [contenteditable]')
-        ) {
-            event.preventDefault();
-        }
-    };
-    const rewind = (): void => {
-        if (window.scrollY !== 0) {
-            window.scrollTo(0, 0);
-        }
-    };
-
-    window.addEventListener('wheel', swallow, { passive: false });
-    window.addEventListener('touchmove', swallow, { passive: false });
-    window.addEventListener('keydown', onKey);
-    window.addEventListener('scroll', rewind, { passive: true });
-
-    let released = false;
-    const limit = window.setTimeout(() => release(), HOLD_LIMIT);
-
-    function release(): void {
-        if (released) {
-            return;
-        }
-
-        released = true;
-        window.clearTimeout(limit);
-        window.removeEventListener('wheel', swallow);
-        window.removeEventListener('touchmove', swallow);
-        window.removeEventListener('keydown', onKey);
-        window.removeEventListener('scroll', rewind);
-    }
-
-    return release;
-}
 
 /**
  * @param ready settles once smooth scrolling is set up (or skipped), so the
  *   scroll-linked leaving measures the page as it will scroll
  */
 export async function initHero(ready: Promise<unknown>): Promise<void> {
-    const root = document.documentElement;
     const hero = document.querySelector<HTMLElement>('[data-intro]');
     // Fixed behind the page, outside the hero (blocks/partials/hero-backdrop).
     const backdrop = document.querySelector<HTMLElement>(
@@ -181,28 +68,13 @@ export async function initHero(ready: Promise<unknown>): Promise<void> {
     }
 
     if (!hero || !backdrop || !motion) {
-        root.classList.remove('intro');
-
         return;
     }
 
     const gsap = await loadGsap().catch(() => null);
 
-    if (!gsap) {
-        root.classList.remove('intro');
-
-        return;
-    }
-
-    const leave = (): void => void leaveOnScroll(gsap, backdrop, ready);
-
-    // Played only from the very top; the <head> safety timeout may also have
-    // given up on us while GSAP loaded.
-    if (root.classList.contains('intro') && window.scrollY === 0) {
-        playIntro(gsap, hero, backdrop, leave);
-    } else {
-        root.classList.remove('intro');
-        leave();
+    if (gsap) {
+        void leaveOnScroll(gsap, backdrop, ready);
     }
 }
 
@@ -335,161 +207,4 @@ async function leaveOnScroll(
             draw();
         }
     });
-}
-
-function playIntro(
-    gsap: Gsap,
-    hero: HTMLElement,
-    backdrop: HTMLElement,
-    then: () => void,
-): void {
-    const root = document.documentElement;
-
-    root.classList.add('intro-running');
-
-    const release = holdAtTop();
-    const media = backdrop.querySelector<HTMLElement>('[data-intro-media]');
-    const lines = Array.from(
-        hero.querySelectorAll<HTMLElement>('.hero-line__inner'),
-    );
-    const fades = Array.from(
-        hero.querySelectorAll<HTMLElement>('[data-intro-fade]'),
-    );
-    const header = document.querySelector<HTMLElement>('.site-nav');
-
-    const width = backdrop.clientWidth;
-    const height = backdrop.clientHeight;
-    const startScale = Math.min(1, (width * START.maxShare) / START.width);
-    const startWidth = START.width * startScale;
-    const startHeight = START.height * startScale;
-    // appear: 0 → 1 as the rectangle comes in; grow: 0 → 1 to the full screen.
-    const shape = { appear: 0, grow: 0 };
-
-    // The visible shape: centred, `w` × `h`, corners flattening as it grows.
-    const draw = (): void => {
-        const p = shape.grow;
-        // Comes in from 70% of its starting size.
-        const start = 0.7 + 0.3 * shape.appear;
-        const w = startWidth * start + (width - startWidth) * p;
-        // Height lags width early on, so it stays wide while small.
-        const h = startHeight * start + (height - startHeight) * p ** 1.35;
-        const r = Math.min(RADIUS * (1 - p) ** 0.6, Math.min(w, h) / 2);
-
-        backdrop.style.clipPath = `inset(${(height - h) / 2}px ${(width - w) / 2}px round ${r}px)`;
-    };
-
-    // Take over the CSS starting states with the same values inline, then
-    // drop the class: from here on the script alone moves things.
-    draw();
-    gsap.set(backdrop, { autoAlpha: 0 });
-    // y: 0 explicitly — GSAP would otherwise read the CSS starting offset as
-    // a pixel shift of its own and stack the two.
-    gsap.set(lines, { y: 0, yPercent: LINE_HIDDEN });
-    gsap.set(fades, { autoAlpha: 0, y: 24 });
-
-    if (header) {
-        gsap.set(header, { autoAlpha: 0, y: -16 });
-    }
-
-    if (media) {
-        gsap.set(media, { scale: ZOOM });
-    }
-
-    root.classList.remove('intro');
-
-    const finish = (): void => {
-        // Full screen is the CSS resting state too, so nothing jumps here.
-        backdrop.style.clipPath = '';
-        gsap.set(backdrop, { clearProps: 'opacity,visibility' });
-        gsap.set(
-            [
-                ...lines,
-                ...fades,
-                ...(header ? [header] : []),
-                ...(media ? [media] : []),
-            ],
-            {
-                clearProps: 'transform,opacity,visibility',
-            },
-        );
-        release();
-        root.classList.remove('intro-running');
-        then();
-    };
-
-    const tl = gsap
-        .timeline({ onComplete: finish })
-        .to(
-            shape,
-            {
-                appear: 1,
-                duration: TIMING.appear,
-                ease: EASE.out,
-                onUpdate: draw,
-            },
-            TIMING.appearAt,
-        )
-        .to(
-            backdrop,
-            {
-                autoAlpha: 1,
-                duration: TIMING.appear * 0.6,
-                ease: 'power1.out',
-            },
-            TIMING.appearAt,
-        )
-        .to(
-            shape,
-            {
-                grow: 1,
-                duration: TIMING.grow,
-                ease: EASE.inOut,
-                onUpdate: draw,
-            },
-            TIMING.growAt,
-        )
-        .to(
-            lines,
-            {
-                yPercent: 0,
-                duration: TIMING.text,
-                ease: EASE.out,
-                stagger: TIMING.lineStagger,
-            },
-            TIMING.textAt,
-        )
-        .to(
-            fades,
-            {
-                autoAlpha: 1,
-                y: 0,
-                duration: TIMING.text,
-                ease: EASE.out,
-                stagger: TIMING.restStagger,
-            },
-            TIMING.textAt + 0.15,
-        );
-
-    // Against the growth: the inside settles from its zoom.
-    if (media) {
-        tl.to(
-            media,
-            { scale: 1, duration: TIMING.grow + 0.5, ease: EASE.out },
-            TIMING.growAt,
-        );
-    }
-
-    if (header) {
-        tl.to(
-            header,
-            { autoAlpha: 1, y: 0, duration: TIMING.text, ease: EASE.out },
-            TIMING.textAt + 0.1,
-        );
-    }
-
-    // Let the page go shortly before the end: by then the backdrop is open
-    // and the title is in, and the tail of the intro can play under a
-    // viewer who has already started scrolling. Added last, once every part
-    // is on the timeline and its full length is known.
-    tl.call(release, undefined, Math.max(0, tl.duration() - UNLOCK_BEFORE));
 }

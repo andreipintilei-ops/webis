@@ -228,7 +228,10 @@ const footerErrors = computed(
     () => footerForm.errors as Record<string, string>,
 );
 
-function footerError(key: string, field: keyof FooterFields): string | undefined {
+function footerError(
+    key: string,
+    field: keyof FooterFields,
+): string | undefined {
     return footerErrors.value[`pages.${key}.${field}`];
 }
 

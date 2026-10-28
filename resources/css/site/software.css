@@ -646,7 +646,7 @@
         }
 
         & i {
-            @apply grid place-items-center rounded-full font-semibold not-italic text-white;
+            @apply grid place-items-center rounded-full font-semibold text-white not-italic;
             width: 2em;
             height: 2em;
             font-size: 0.75em;

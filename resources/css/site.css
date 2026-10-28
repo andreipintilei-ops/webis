@@ -1,0 +1,21 @@
+/*
+  The public pages' stylesheet (layouts/public.blade.php). The admin keeps
+  its own, app.css: same components and tokens, but Tailwind there scans
+  the whole project — the admin's Vue components, shadcn and all — and the
+  utilities only they use made this one several times the size a page
+  needs. Here it scans only what the public pages are built from: their
+  Blade views, the public scripts and the PHP that writes classes into
+  them. A class written anywhere else is not generated here.
+*/
+@import 'tailwindcss' source(none);
+
+@import 'tw-animate-css';
+
+@import './site/index.css';
+@import './theme.css';
+
+@source '../views';
+@source '../js/public';
+@source '../js/public.ts';
+@source '../../app';
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';

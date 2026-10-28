@@ -11,11 +11,15 @@
     /* :where() — no specificity: white is the default; a section with a
        background of its own (Cum lucrăm, Contact) keeps it. */
     :where([data-hero-parallax] ~ :not([data-on-backdrop])),
-    :where(:is(.hero-sheet, .hero-sheet ~ [data-on-backdrop]) + :not([data-on-backdrop])) {
+    :where(
+        :is(.hero-sheet, .hero-sheet ~ [data-on-backdrop])
+            + :not([data-on-backdrop])
+    ) {
         @apply relative z-[1] bg-white;
     }
 
-    :is(.hero-sheet, .hero-sheet ~ [data-on-backdrop]) + :not([data-on-backdrop]) {
+    :is(.hero-sheet, .hero-sheet ~ [data-on-backdrop])
+        + :not([data-on-backdrop]) {
         margin-top: -32px;
         border-radius: 32px 32px 0 0;
 

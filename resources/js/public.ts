@@ -126,11 +126,28 @@ function boot(): void {
         initSoftwareReel();
         initLogoWalls();
 
-        // The stage's 3D object (Three.js), its own chunk.
-        if (document.querySelector('[data-shapeshifter]')) {
-            void import('@/public/shapeshifter').then(({ initShapeshifter }) =>
-                initShapeshifter(),
+        // The stage's 3D object (Three.js), its own chunk: fetched and built
+        // once the stage is within two screens of coming into view — it
+        // opens below the hero and the service cards — not at load, where
+        // it held up the first screen.
+        const stage = document.querySelector('[data-stage]');
+
+        if (stage && document.querySelector('[data-shapeshifter]')) {
+            const near = new IntersectionObserver(
+                ([entry]) => {
+                    if (!entry?.isIntersecting) {
+                        return;
+                    }
+
+                    near.disconnect();
+                    void import('@/public/shapeshifter').then(
+                        ({ initShapeshifter }) => initShapeshifter(),
+                    );
+                },
+                { rootMargin: '200% 0px' },
             );
+
+            near.observe(stage);
         }
 
         // The benefit rows drifting apart (/web).

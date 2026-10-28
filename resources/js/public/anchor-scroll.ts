@@ -22,7 +22,9 @@ export function initAnchorScroll(ready: Promise<unknown>): void {
             return null;
         }
 
-        const target = document.getElementById(decodeURIComponent(hash.slice(1)));
+        const target = document.getElementById(
+            decodeURIComponent(hash.slice(1)),
+        );
 
         return target?.hasAttribute('data-scroll-target') ? target : null;
     };
@@ -58,9 +60,9 @@ export function initAnchorScroll(ready: Promise<unknown>): void {
             return;
         }
 
-        const link = (event.target as Element | null)?.closest<HTMLAnchorElement>(
-            'a[href^="#"]',
-        );
+        const link = (
+            event.target as Element | null
+        )?.closest<HTMLAnchorElement>('a[href^="#"]');
         const target = link ? targetOf(link.getAttribute('href') ?? '') : null;
 
         if (!target) {

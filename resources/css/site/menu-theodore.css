@@ -170,9 +170,9 @@
     */
     :is(.theo-menu__links, .theo-menu__services):has(
             a:is(.theo-menu__link, .theo-menu__service):is(
-                :hover,
-                :focus-visible
-            )
+                    :hover,
+                    :focus-visible
+                )
         )
         :is(.theo-menu__link, .theo-menu__service):not(:hover, :focus-visible)
         .roll {

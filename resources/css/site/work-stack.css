@@ -12,7 +12,7 @@
 */
 @layer components {
     .work-stack {
-        @apply relative z-[1] isolate pt-20 md:pt-28;
+        @apply relative isolate z-[1] pt-20 md:pt-28;
         background: var(--paper);
         color: var(--navy-950);
 

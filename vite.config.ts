@@ -75,6 +75,8 @@ export default defineConfig({
         laravel({
             input: [
                 'resources/css/app.css',
+                // The public pages' own (site.css: only the public sources).
+                'resources/css/site.css',
                 // Inertia admin CMS.
                 'resources/js/app.ts',
                 // Vue islands mounted into the public Blade pages. Kept as a
@@ -89,10 +91,14 @@ export default defineConfig({
                 // those glyphs, mid-word.
                 //
                 // Onest is the one typeface, site and admin alike. 300 is the
-                // light weight of the large menu links.
+                // light weight of the large menu links. Only 400 and 500 are
+                // preloaded: no first screen sets text in the others, and
+                // preloading all ten files held the stylesheet back on a slow
+                // connection. The rest load when the page asks for them.
                 bunny('Onest', {
                     weights: [300, 400, 500, 600, 700],
                     subsets: ['latin', 'latin-ext'],
+                    preload: [{ weight: 400 }, { weight: 500 }],
                 }),
                 // Anton: the display face for big uppercase titles (the hero).
                 // One weight only — never set it bold, or the browser fakes it.

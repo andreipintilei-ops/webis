@@ -32,11 +32,7 @@
         "titlu_h4": "Model site agentie turism / Tour operator",
         "descriere_h4": "Va prezentam in cele ce urmeaza cateva modele si tipologii de <strong>site-uri pentru agentii de turism</strong> sau tour operatori dintre cele mai utilizate. Va puteti inspira daca va doriti ca unul dintre ele sa devina brandul unei viitoare agentii de turism pe care doriti sa o creati. In cazul in care va atrage oferta noastra de creare <strong>site agentie de turism</strong> sau realizare aplicatie web tour operator, dar aveti in minte alte idei, sau pur si simplu va doriti un template personalizat, nu ezitati sa ne contactati si va vom pune la dispozitie cele mai bune <strong>preturi de realizare site turism</strong>.",
         "_pods_galerie_h4": "a:3:{i:0;i:8870;i:1;i:8869;i:2;i:8855;}",
-        "galerie_h4": [
-            "8870",
-            "8869",
-            "8855"
-        ],
+        "galerie_h4": ["8870", "8869", "8855"],
         "_pods_imagine_reprezentativa": "a:1:{i:0;i:3738;}",
         "descriere_mica_h1": "Un pret site agentie de turism poate fi discutat doar daca ne vei contacta pentru o oferta site de turism, iar noi iti vom asculta toate cererile, si iti vom pune la dispozitie cele mai bune idei de creare site de turism",
         "subtitlu_h2": "Un site pentru agentie de turism va permite",
@@ -44,14 +40,7 @@
         "_pods_galerie_h1": "a:6:{i:0;i:14331;i:1;i:14332;i:2;i:14333;i:3;i:14334;i:4;i:14335;i:5;i:14336;}",
         "_pods_imagine_h3": "a:1:{i:0;i:14333;}",
         "_thumbnail_id": "14333",
-        "galerie_h1": [
-            "14331",
-            "14332",
-            "14333",
-            "14334",
-            "14335",
-            "14336"
-        ],
+        "galerie_h1": ["14331", "14332", "14333", "14334", "14335", "14336"],
         "imagine_h3": "14333"
     }
 }

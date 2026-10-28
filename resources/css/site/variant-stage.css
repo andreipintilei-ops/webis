@@ -112,8 +112,8 @@
                 min-height: calc(min(88vh, 860px) + 2 * var(--finale-rise));
                 margin-top: calc(-1 * var(--finale-rise));
                 clip-path: inset(
-                    var(--finale-rise)
-                        max(var(--site-gap), (100vw - 92rem) / 2) round 40px
+                    var(--finale-rise) max(var(--site-gap), (100vw - 92rem) / 2)
+                        round 40px
                 );
             }
         }
@@ -696,7 +696,11 @@
                 stroke: var(--lavender-300);
             }
 
-            & :is(.stage-item__icon:not(.stage-item__icon--solid), .stage-project__go) {
+            &
+                :is(
+                    .stage-item__icon:not(.stage-item__icon--solid),
+                    .stage-project__go
+                ) {
                 background: rgb(255 255 255 / 0.1);
                 color: var(--lavender-300);
             }
@@ -724,8 +728,14 @@
         :root[data-variant='stage'] .svc-cards:has(+ .stage) {
             mask:
                 linear-gradient(#000 0 0) top / 100% calc(100% - 31px) no-repeat,
-                radial-gradient(circle at 100% 100%, transparent 31.5px, #000 32px) bottom left / 32px 32px no-repeat,
-                radial-gradient(circle at 0 100%, transparent 31.5px, #000 32px) bottom right / 32px 32px no-repeat;
+                radial-gradient(
+                        circle at 100% 100%,
+                        transparent 31.5px,
+                        #000 32px
+                    )
+                    bottom left / 32px 32px no-repeat,
+                radial-gradient(circle at 0 100%, transparent 31.5px, #000 32px)
+                    bottom right / 32px 32px no-repeat;
         }
     }
 }

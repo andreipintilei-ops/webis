@@ -177,7 +177,9 @@
         scale: 1.2;
     }
 
-    .site-footer__social:is(:hover, :focus-visible) .site-footer__social-roll svg {
+    .site-footer__social:is(:hover, :focus-visible)
+        .site-footer__social-roll
+        svg {
         transition-duration: 0.35s;
         transform: translateY(150%);
 
@@ -247,5 +249,4 @@
             @apply block h-10 w-auto rounded-sm;
         }
     }
-
 }

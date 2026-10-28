@@ -33,7 +33,7 @@
     }
 
     .cookie-consent__text {
-        @apply mt-2 text-[0.9375rem] leading-relaxed text-neutral-600 text-pretty;
+        @apply mt-2 text-[0.9375rem] leading-relaxed text-pretty text-neutral-600;
 
         & a {
             @apply text-[var(--site-dark)] underline decoration-[var(--purple-500)] underline-offset-2;
@@ -151,7 +151,7 @@
 
                 &::before {
                     content: attr(data-label);
-                    @apply font-micro pt-1 text-xs tracking-[0.08em] uppercase;
+                    @apply pt-1 font-micro text-xs tracking-[0.08em] uppercase;
                     color: var(--accent);
                 }
 

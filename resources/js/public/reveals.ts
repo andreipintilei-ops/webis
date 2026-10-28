@@ -135,12 +135,20 @@ export async function initReveals(): Promise<void> {
                 const words = self.words as HTMLElement[];
                 const lines: HTMLElement[][] = [];
                 let at = 0;
-                let lastTop = -Infinity;
 
                 title.style.whiteSpace = 'nowrap';
 
+                // Every word's top read at once, before any break goes in:
+                // reading after each one would lay the whole page out again
+                // per word. Held to one line (nowrap), a break moves the
+                // words after it together, so whether two words share a line
+                // — all this asks — is the same before the breaks as after.
+                const masks = words.map((word) => word.parentElement ?? word);
+                const tops = masks.map(
+                    (mask) => mask.getBoundingClientRect().top,
+                );
+
                 words.forEach((word, index) => {
-                    const mask = word.parentElement ?? word;
                     const line = lineOf[at] ?? Math.max(0, lines.length - 1);
 
                     at += (word.textContent ?? '').replace(/\s/g, '').length;
@@ -150,12 +158,11 @@ export async function initReveals(): Promise<void> {
                     if (
                         index > 0 &&
                         line >= lines.length &&
-                        mask.getBoundingClientRect().top <= lastTop + 4
+                        tops[index]! <= tops[index - 1]! + 4
                     ) {
-                        mask.before(document.createElement('br'));
+                        masks[index]!.before(document.createElement('br'));
                     }
 
-                    lastTop = mask.getBoundingClientRect().top;
                     (lines[line] ??= []).push(word);
                 });
 
@@ -279,7 +286,7 @@ export async function initReveals(): Promise<void> {
         onEntry(part, tl);
     };
 
-    for (const part of parts) {
+    const setUp = (part: HTMLElement): void => {
         if (part.dataset.reveal === 'head') {
             head(part);
         } else if (part.classList.contains('chapter-sub')) {
@@ -287,5 +294,37 @@ export async function initReveals(): Promise<void> {
         } else {
             rest(part);
         }
-    }
+    };
+
+    // Each part set up as it comes within a screen and a half below the
+    // screen, not all of them at load: splitting a title and measuring it
+    // lays the page out, and a long page's worth at once held the first
+    // seconds up. Those near the top on load are set up straight away (the
+    // first report covers every part). One reached later that is already on
+    // screen — a jump down the page — is left as it is rather than hidden
+    // and played.
+    let first = true;
+    const near = new IntersectionObserver(
+        (entries) => {
+            for (const entry of entries) {
+                if (!entry.isIntersecting) {
+                    continue;
+                }
+
+                near.unobserve(entry.target);
+
+                const shown =
+                    entry.boundingClientRect.top < window.innerHeight * 0.85;
+
+                if (first || !shown) {
+                    setUp(entry.target as HTMLElement);
+                }
+            }
+
+            first = false;
+        },
+        { rootMargin: '0px 0px 150% 0px' },
+    );
+
+    parts.forEach((part) => near.observe(part));
 }

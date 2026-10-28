@@ -52,3 +52,14 @@ yarn-error.log
 
 # Local scratch (browser previews, screenshots)
 /temp/
+
+# Written by cPanel into the site's folder on the server (PHP settings,
+# AutoSSL's checks): never the app's, and in the way of a clean deploy.
+/.htaccess
+/.user.ini
+/php.ini
+/.well-known/
+/public/.user.ini
+/public/php.ini
+/public/.well-known/
+/public/cgi-bin/

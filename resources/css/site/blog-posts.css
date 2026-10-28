@@ -171,7 +171,11 @@
     .post-card__cover,
     .article-cover {
         background:
-            radial-gradient(ellipse 80% 70% at 15% 10%, rgb(255 255 255 / 0.22), transparent 65%),
+            radial-gradient(
+                ellipse 80% 70% at 15% 10%,
+                rgb(255 255 255 / 0.22),
+                transparent 65%
+            ),
             linear-gradient(135deg, var(--purple-500), var(--violet-500));
 
         & img {
@@ -193,14 +197,22 @@
        frame stands off the card rather than melting into it. */
     .site-blog__posts > li:nth-child(3n + 3) .post-card__cover {
         background:
-            radial-gradient(ellipse 80% 70% at 15% 10%, rgb(255 255 255 / 0.16), transparent 65%),
+            radial-gradient(
+                ellipse 80% 70% at 15% 10%,
+                rgb(255 255 255 / 0.16),
+                transparent 65%
+            ),
             linear-gradient(135deg, #6c2fc0, #4a35c8);
     }
 
     /* The listing's cards are all white: the pills' gradient on each. */
     .site-blog--page .site-blog__posts > li:nth-child(n) .post-card__cover {
         background:
-            radial-gradient(ellipse 80% 70% at 15% 10%, rgb(255 255 255 / 0.22), transparent 65%),
+            radial-gradient(
+                ellipse 80% 70% at 15% 10%,
+                rgb(255 255 255 / 0.22),
+                transparent 65%
+            ),
             linear-gradient(135deg, var(--purple-500), var(--violet-500));
     }
 
@@ -225,7 +237,7 @@
 
     /* The title, underlined from the left on hover. */
     .post-card__title {
-        @apply flex-1 text-[19px] lg:text-[20px] font-medium text-balance;
+        @apply flex-1 text-[19px] font-medium text-balance lg:text-[20px];
         line-height: 1.3;
         letter-spacing: -0.02em;
 

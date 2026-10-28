@@ -63,31 +63,6 @@
             } catch (e) {}
         </script>
 
-        {{--
-            The opening intro (js/public/hero-intro.ts): decided here too, so
-            the hero starts hidden instead of flashing. On every full load —
-            a visit, a reload — but not behind the page curtain, not when
-            going Back/Forward, never with reduced motion. If the script has
-            not taken over within 4s, the page is simply shown.
-        --}}
-        <script>
-            try {
-                var root = document.documentElement;
-                var nav = performance.getEntriesByType('navigation')[0];
-
-                if (! root.classList.contains('curtain-cover')
-                    && ! (nav && nav.type === 'back_forward')
-                    && ! window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-                    root.classList.add('intro');
-                    setTimeout(function () {
-                        if (! root.classList.contains('intro-running')) {
-                            root.classList.remove('intro');
-                        }
-                    }, 4000);
-                }
-            } catch (e) {}
-        </script>
-
         {{-- Cookie consent: Google's signals denied until the visitor says otherwise. --}}
         @include('partials.consent-head')
 
@@ -145,7 +120,7 @@
         @fonts
 
         {{-- Public entry only: Vue islands, never the Inertia admin runtime. --}}
-        @vite(['resources/css/app.css', 'resources/js/public.ts'])
+        @vite(['resources/css/site.css', 'resources/js/public.ts'])
 
         {{-- Pushed by the page, e.g. the hero image preload from <x-picture lcp>. --}}
         @stack('head')

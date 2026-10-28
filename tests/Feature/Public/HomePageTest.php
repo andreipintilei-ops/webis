@@ -141,7 +141,8 @@ it('ships the page-transition curtain and the prefetch hints', function () {
 
     expect($html)
         ->toContain("sessionStorage.getItem('webis:curtain')")
-        ->toContain("nav.type === 'back_forward'")
+        // No intro: the hero is there from the first frame.
+        ->not->toContain("classList.add('intro')")
         ->toContain('data-curtain-path')
         ->toContain('<script type="speculationrules">')
         ->toContain('"href_matches": "/admin/*"');

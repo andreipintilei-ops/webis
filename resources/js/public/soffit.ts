@@ -331,11 +331,49 @@ export function initSoffit(): void {
     for (const canvas of document.querySelectorAll<HTMLCanvasElement>(
         'canvas[data-soffit]',
     )) {
-        mount(canvas);
+        void mount(canvas);
     }
 }
 
-function mount(canvas: HTMLCanvasElement): void {
+/**
+ * Webis: the program linked without holding the page up. Compiling this
+ * shader takes the GPU driver a good part of a second on a weak device, and
+ * asking for the result at once waits for it on the main thread, before
+ * the page can paint. Where the browser compiles in the background
+ * (KHR_parallel_shader_compile), it is asked again each frame until done.
+ */
+function linked(
+    gl: WebGL2RenderingContext,
+    program: WebGLProgram,
+): Promise<void> {
+    const parallel = gl.getExtension('KHR_parallel_shader_compile') as {
+        COMPLETION_STATUS_KHR: number;
+    } | null;
+
+    if (!parallel) {
+        return Promise.resolve();
+    }
+
+    return new Promise((resolve) => {
+        const poll = (): void => {
+            if (
+                gl.getProgramParameter(program, parallel.COMPLETION_STATUS_KHR)
+            ) {
+                resolve();
+            } else {
+                requestAnimationFrame(poll);
+            }
+        };
+
+        poll();
+    });
+}
+
+async function mount(canvas: HTMLCanvasElement): Promise<void> {
+    // Webis: see-through until its first frame (an opaque canvas is black
+    // until it is drawn), the section's indigo base under it meanwhile.
+    canvas.style.opacity = '0';
+
     const gl = canvas.getContext('webgl2', {
         alpha: false,
         antialias: false,
@@ -349,6 +387,8 @@ function mount(canvas: HTMLCanvasElement): void {
         return;
     }
 
+    // Compiled and linked without asking how it went until it is done
+    // (linked()): a failure shows in the link status, with each shader's log.
     const compile = (type: number, source: string): WebGLShader => {
         const shader = gl.createShader(type);
 
@@ -359,20 +399,24 @@ function mount(canvas: HTMLCanvasElement): void {
         gl.shaderSource(shader, source);
         gl.compileShader(shader);
 
-        if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
-            throw new Error(`[soffit] ${gl.getShaderInfoLog(shader) ?? ''}`);
-        }
-
         return shader;
     };
 
     const program = gl.createProgram();
-    gl.attachShader(program, compile(gl.VERTEX_SHADER, VERT));
-    gl.attachShader(program, compile(gl.FRAGMENT_SHADER, FRAG));
+    const shaders = [
+        compile(gl.VERTEX_SHADER, VERT),
+        compile(gl.FRAGMENT_SHADER, FRAG),
+    ];
+
+    shaders.forEach((shader) => gl.attachShader(program, shader));
     gl.linkProgram(program);
 
+    await linked(gl, program);
+
     if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
-        throw new Error(`[soffit] ${gl.getProgramInfoLog(program) ?? ''}`);
+        throw new Error(
+            `[soffit] ${shaders.map((shader) => gl.getShaderInfoLog(shader) ?? '').join(' ')} ${gl.getProgramInfoLog(program) ?? ''}`,
+        );
     }
 
     gl.useProgram(program);
@@ -507,6 +551,8 @@ function mount(canvas: HTMLCanvasElement): void {
         gl.uniform2f(loc('uStirPos'), swirl.x, swirl.y);
         gl.uniform2f(loc('uStirVel'), swirl.vx, swirl.vy);
         gl.drawArrays(gl.TRIANGLES, 0, 3);
+        // Webis: shown from its first frame (see mount).
+        canvas.style.opacity = '';
     };
 
     // Reduced motion: one still frame, some way into the drift.
