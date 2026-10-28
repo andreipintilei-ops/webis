@@ -289,7 +289,6 @@ it('saves each settings group on its own', function () {
 
     $this->put(route('admin.settings.leads'), [
         'notification_emails' => ['office@webis.ro'],
-        'budget_options' => ['sub 5.000 lei', 'peste 5.000 lei'],
         'send_confirmation' => false,
     ])->assertSessionHasNoErrors();
     expect(app(LeadSettings::class)->notification_emails)->toBe(['office@webis.ro'])
