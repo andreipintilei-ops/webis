@@ -12,9 +12,11 @@ set -euo pipefail
 
 cd "$(dirname "$0")/.."
 
-# The PHP the site runs on (CloudLinux's PHP Selector, else EasyApache).
+# The PHP the site runs on: EasyApache's, as MultiPHP Manager gives it to
+# the domain (CloudLinux's PHP Selector cannot set one per domain there),
+# else CloudLinux's.
 PHP=""
-for candidate in /opt/alt/php84/usr/bin/php /opt/cpanel/ea-php84/root/usr/bin/php; do
+for candidate in /opt/cpanel/ea-php84/root/usr/bin/php /opt/alt/php84/usr/bin/php; do
     if [ -x "$candidate" ]; then
         PHP="$candidate"
         break

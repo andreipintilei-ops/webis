@@ -38,8 +38,10 @@ What stays on the server, out of git: `.env`, `storage/` (uploads, logs).
    then _Manage_ › Basic Information › checked-out branch: `deploy`.
 
 4. **The domain** (cPanel › Domains): test.webis.ro with its document root
-   at `test.webis.ro/public`; PHP 8.4 for it (MultiPHP Manager or Select PHP
-   Version); SSL (SSL/TLS Status › Run AutoSSL).
+   at `test.webis.ro/public`; PHP 8.4 for it: in Select PHP Version › Per
+   Domain Settings, _Use MultiPHP Manager_ for the domain, then MultiPHP
+   Manager › ea-php84 (the account's global version is the other sites');
+   SSL (SSL/TLS Status › Run AutoSSL).
 
 5. **`.env`** (File Manager, in `/home/<user>/test.webis.ro`): a copy of
    `deploy/env.test.example` named `.env`, the database and a new `APP_KEY`
@@ -51,11 +53,11 @@ What stays on the server, out of git: `.env`, `storage/` (uploads, logs).
 7. **Cron jobs** (cPanel › Cron Jobs), every minute, with the site's PHP:
 
     ```
-    cd ~/test.webis.ro && /opt/alt/php84/usr/bin/php artisan schedule:run >> /dev/null 2>&1
-    cd ~/test.webis.ro && /opt/alt/php84/usr/bin/php artisan queue:work --stop-when-empty --max-time=50 >> /dev/null 2>&1
+    cd ~/test.webis.ro && /opt/cpanel/ea-php84/root/usr/bin/php artisan schedule:run >> /dev/null 2>&1
+    cd ~/test.webis.ro && /opt/cpanel/ea-php84/root/usr/bin/php artisan queue:work --stop-when-empty --max-time=50 >> /dev/null 2>&1
     ```
 
-    (`/opt/cpanel/ea-php84/root/usr/bin/php` where CloudLinux's isn't there.)
+    (The PHP MultiPHP Manager gives the domain.)
 
 8. **First deploy**: Git™ Version Control › Manage › Pull or Deploy ›
    _Deploy HEAD Commit_.
