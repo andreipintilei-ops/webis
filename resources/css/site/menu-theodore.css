@@ -109,6 +109,20 @@
         padding: max(7.5rem, 14vh) clamp(2.5rem, 6vw, 5rem) max(2rem, 7vh);
     }
 
+    /* The logo, on a phone only (from 640px the menu is a panel and the
+       page's own logo stays in sight beside it): level with the round
+       button's middle, in line with the links below. */
+    .theo-menu__logo {
+        @apply absolute z-[2] flex items-center text-2xl font-semibold tracking-tight sm:hidden;
+        top: calc(var(--site-gap) / 1.5);
+        left: clamp(2.5rem, 6vw, 5rem);
+        height: clamp(4rem, 5.5vw, 5rem);
+
+        & img {
+            @apply h-7 w-auto;
+        }
+    }
+
     .theo-menu__label {
         @apply text-xs tracking-[0.08em] uppercase;
         color: rgb(255 255 255 / 0.5);
