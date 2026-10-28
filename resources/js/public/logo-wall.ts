@@ -72,6 +72,8 @@ async function setUp(stage: HTMLElement): Promise<void> {
     */
     const state = { x: 0, y: 0, form: still ? 1 : 0 };
     let pitch = 0;
+    /** Half the stage's width: the page's, as it runs off both sides. */
+    let halfWidth = 0;
     let frame = 0;
     const tiles: Tile[] = [];
 
@@ -132,13 +134,20 @@ async function setUp(stage: HTMLElement): Promise<void> {
             const turn = (1 - ease) * (mod(tile.i + tile.j, 2) ? 14 : -14);
 
             const logo = logoAt(tile.i, tile.j);
+            const opacity = fade * Math.min(1, ease * 1.5);
+            const left = x * pitch * spread;
+            const top = y * pitch * spread;
 
-            if (scale < 0.01) {
-                tile.element.style.visibility = 'hidden';
-                continue;
-            }
+            // Where it will stand once formed: on the stage, or past its
+            // sides or the rows it shows.
+            const shown =
+                Math.abs(y) < 1.6 &&
+                Math.abs(x * pitch) - pitch / 2 <= halfWidth;
 
-            if (logo !== tile.logo) {
+            // Its logo from the moment it is on the stage, still too small
+            // to see, so the forming never waits on one (decoded ahead, off
+            // the main thread).
+            if (shown && logo !== tile.logo) {
                 tile.logo = logo;
                 const image = images[logo]?.cloneNode() as
                     | HTMLImageElement
@@ -155,11 +164,25 @@ async function setUp(stage: HTMLElement): Promise<void> {
                 }
 
                 tile.element.replaceChildren(...(image ? [image] : []));
+                void image?.decode().catch(() => undefined);
+            }
+
+            // Nothing to see — gone, or off the stage's sides: hidden, not
+            // drawn and composited for nothing. A phone shows a fifth of the
+            // pool; drawing all of it each frame made the forming stutter.
+            if (
+                !shown ||
+                scale < 0.01 ||
+                opacity < 0.01 ||
+                Math.abs(left) - (pitch * scale) / 2 > halfWidth
+            ) {
+                tile.element.style.visibility = 'hidden';
+                continue;
             }
 
             tile.element.style.visibility = '';
-            tile.element.style.opacity = String(fade * Math.min(1, ease * 1.5));
-            tile.element.style.transform = `translate(-50%, -50%) translate3d(${x * pitch * spread}px, ${y * pitch * spread}px, 0) rotate(${turn}deg) scale(${scale})`;
+            tile.element.style.opacity = String(opacity);
+            tile.element.style.transform = `translate(-50%, -50%) translate3d(${left}px, ${top}px, 0) rotate(${turn}deg) scale(${scale})`;
             tile.element.dataset.i = String(tile.i);
             tile.element.dataset.j = String(tile.j);
         }
@@ -170,8 +193,13 @@ async function setUp(stage: HTMLElement): Promise<void> {
     };
 
     const measure = (): void => {
-        // A phone shows the diamond and the next columns' edges.
-        pitch = Math.min(200, stage.clientWidth / 4.64);
+        // A tablet shows the diamond and the next columns' edges; a phone
+        // has the logos larger, the diamond's tips going into the faded
+        // sides.
+        const width = stage.clientWidth;
+
+        halfWidth = width / 2;
+        pitch = Math.min(200, width / (width < 768 ? 3.9 : 4.64));
         stage.style.setProperty('--pitch', `${pitch}px`);
         draw();
     };
@@ -179,6 +207,28 @@ async function setUp(stage: HTMLElement): Promise<void> {
     new ResizeObserver(measure).observe(stage);
     measure();
     stage.classList.add('is-live');
+
+    // The logos fetched and decoded a screen ahead, not as the first tiles
+    // come up: they are lazy, and hidden in the list the tiles copy.
+    const ahead = new IntersectionObserver(
+        ([entry]) => {
+            if (!entry?.isIntersecting) {
+                return;
+            }
+
+            ahead.disconnect();
+
+            for (const image of images) {
+                if (image) {
+                    image.loading = 'eager';
+                    void image.decode().catch(() => undefined);
+                }
+            }
+        },
+        { rootMargin: '100% 0px' },
+    );
+
+    ahead.observe(stage);
 
     /* ---- Moves ----------------------------------------------------------- */
 
