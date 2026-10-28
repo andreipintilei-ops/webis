@@ -85,7 +85,6 @@ type AnalyticsSettings = {
 
 type LeadSettings = {
     notification_emails: string[];
-    budget_options: string[];
     send_confirmation: boolean;
 };
 
@@ -163,16 +162,14 @@ function submitAnalytics(): void {
     analyticsForm.put(analyticsRoute.url(), saveOptions);
 }
 
-// Leads — the lists are edited as one entry per line.
+// Leads — the addresses are edited as one per line.
 
 const leadsForm = useForm({
     notification_emails: [...props.leads.notification_emails],
-    budget_options: [...props.leads.budget_options],
     send_confirmation: props.leads.send_confirmation,
 });
 
 const emailsText = ref(props.leads.notification_emails.join('\n'));
-const budgetsText = ref(props.leads.budget_options.join('\n'));
 
 function lines(value: string): string[] {
     return value
@@ -182,7 +179,6 @@ function lines(value: string): string[] {
 }
 
 watch(emailsText, (value) => (leadsForm.notification_emails = lines(value)));
-watch(budgetsText, (value) => (leadsForm.budget_options = lines(value)));
 
 const leadsErrors = computed(() => leadsForm.errors as Record<string, string>);
 
@@ -783,23 +779,6 @@ function submitFooter(): void {
                             </p>
                             <InputError
                                 :message="listError('notification_emails')"
-                            />
-                        </div>
-                        <div class="grid gap-1.5">
-                            <Label for="budget-options">
-                                Opțiuni de buget din formular
-                            </Label>
-                            <Textarea
-                                id="budget-options"
-                                v-model="budgetsText"
-                                :rows="6"
-                                :aria-invalid="!!listError('budget_options')"
-                            />
-                            <p class="text-xs text-muted-foreground">
-                                Câte o opțiune pe rând, ex. „sub 5.000 lei”.
-                            </p>
-                            <InputError
-                                :message="listError('budget_options')"
                             />
                         </div>
                         <SwitchField

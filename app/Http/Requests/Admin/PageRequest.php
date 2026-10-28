@@ -96,7 +96,8 @@ class PageRequest extends ContentRequest
             'slug' => $this->string('slug')->toString(),
             'excerpt' => $this->input('excerpt'),
             'icon' => $this->input('icon'),
-            'hero_asset_id' => $this->input('hero_asset_id'),
+            // An article's share image is its cover: it has no other.
+            'hero_asset_id' => $type === PageType::Article ? null : $this->input('hero_asset_id'),
             'cover_alt' => $this->filled('cover_alt') ? $this->string('cover_alt')->trim()->toString() : null,
             'blocks' => app(BlockRegistry::class)->prepare((array) $this->input('blocks', [])),
             'details' => $details === [] ? null : $details,

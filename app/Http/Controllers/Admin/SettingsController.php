@@ -181,14 +181,11 @@ class SettingsController extends Controller
         $data = $request->validate([
             'notification_emails' => ['array', 'max:10'],
             'notification_emails.*' => ['required', 'email', 'max:255', 'distinct'],
-            'budget_options' => ['array', 'max:12'],
-            'budget_options.*' => ['required', 'string', 'max:60', 'distinct'],
             'send_confirmation' => ['boolean'],
         ]);
 
         $settings->fill([
             'notification_emails' => array_values($data['notification_emails'] ?? []),
-            'budget_options' => array_values($data['budget_options'] ?? []),
             'send_confirmation' => $request->boolean('send_confirmation'),
         ])->save();
 

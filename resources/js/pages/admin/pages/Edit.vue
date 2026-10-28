@@ -211,11 +211,14 @@ function remove(): void {
                             :error="form.errors.cover_alt"
                         />
                     </div>
-                    <div class="grid gap-1.5">
-                        <Label>Imagine reprezentativă</Label>
+                    <!-- An article shares its cover instead. -->
+                    <div v-else class="grid gap-1.5">
+                        <Label>Imagine pentru distribuire</Label>
                         <AssetField v-model="form.hero_asset_id" />
                         <p class="text-xs text-muted-foreground">
-                            Folosită pe cardurile care trimit la această pagină.
+                            Ce arată Facebook, LinkedIn sau WhatsApp când cineva
+                            distribuie linkul paginii. O imagine aleasă în SEO
+                            are prioritate.
                         </p>
                     </div>
                 </TabsContent>

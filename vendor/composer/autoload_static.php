@@ -780,6 +780,8 @@ class ComposerStaticInitd299c4a2f9d95d377019a209b7418a44
         'App\\Http\\Resources\\AssetResource' => __DIR__ . '/../..' . '/app/Http/Resources/AssetResource.php',
         'App\\Listeners\\FlattenCoverShareImage' => __DIR__ . '/../..' . '/app/Listeners/FlattenCoverShareImage.php',
         'App\\Listeners\\ForgetSitemap' => __DIR__ . '/../..' . '/app/Listeners/ForgetSitemap.php',
+        'App\\Mail\\LeadConfirmation' => __DIR__ . '/../..' . '/app/Mail/LeadConfirmation.php',
+        'App\\Mail\\LeadReceived' => __DIR__ . '/../..' . '/app/Mail/LeadReceived.php',
         'App\\Models\\Asset' => __DIR__ . '/../..' . '/app/Models/Asset.php',
         'App\\Models\\AssetUsage' => __DIR__ . '/../..' . '/app/Models/AssetUsage.php',
         'App\\Models\\Client' => __DIR__ . '/../..' . '/app/Models/Client.php',

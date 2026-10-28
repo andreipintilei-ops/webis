@@ -111,6 +111,8 @@ return array(
     'App\\Http\\Resources\\AssetResource' => $baseDir . '/app/Http/Resources/AssetResource.php',
     'App\\Listeners\\FlattenCoverShareImage' => $baseDir . '/app/Listeners/FlattenCoverShareImage.php',
     'App\\Listeners\\ForgetSitemap' => $baseDir . '/app/Listeners/ForgetSitemap.php',
+    'App\\Mail\\LeadConfirmation' => $baseDir . '/app/Mail/LeadConfirmation.php',
+    'App\\Mail\\LeadReceived' => $baseDir . '/app/Mail/LeadReceived.php',
     'App\\Models\\Asset' => $baseDir . '/app/Models/Asset.php',
     'App\\Models\\AssetUsage' => $baseDir . '/app/Models/AssetUsage.php',
     'App\\Models\\Client' => $baseDir . '/app/Models/Client.php',
