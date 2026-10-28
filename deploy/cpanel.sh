@@ -31,6 +31,10 @@ fi
 
 echo "Deploying $(git log -1 --format='%h %s') with $("$PHP" -r 'echo PHP_VERSION;')"
 
+# cPanel clones into a folder only its owner may enter (700): the web
+# server has to pass through it to the document root, public/.
+chmod 755 .
+
 "$PHP" artisan down --retry=15 || true
 trap '"$PHP" artisan up' EXIT
 
