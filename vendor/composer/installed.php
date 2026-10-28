@@ -3,7 +3,7 @@
         'name' => 'laravel/vue-starter-kit',
         'pretty_version' => 'dev-main',
         'version' => 'dev-main',
-        'reference' => '66a7ef2bae7233ae81936eaa193955ba82a2b8af',
+        'reference' => '6e22d8670a42ed8cf8e048eb0d4d83cb9de25b50',
         'type' => 'project',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -469,7 +469,7 @@
         'laravel/vue-starter-kit' => array(
             'pretty_version' => 'dev-main',
             'version' => 'dev-main',
-            'reference' => '66a7ef2bae7233ae81936eaa193955ba82a2b8af',
+            'reference' => '6e22d8670a42ed8cf8e048eb0d4d83cb9de25b50',
             'type' => 'project',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
