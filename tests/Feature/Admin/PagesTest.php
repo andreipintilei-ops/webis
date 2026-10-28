@@ -190,6 +190,20 @@ it('tracks images chosen for the page and its blocks', function () {
     expect($card->usages()->count())->toBe(1)->and($heroImage->usages()->count())->toBe(1);
 });
 
+it('keeps no share image of its own on an article, its cover being that', function () {
+    $image = Asset::factory()->create();
+    $article = Page::factory()->ofType(PageType::Article)->create(['hero_asset_id' => $image->id]);
+
+    $this->put(route('admin.pages.update', $article->id), pagePayload([
+        'type' => 'article',
+        'slug' => $article->slug,
+        'hero_asset_id' => $image->id,
+    ]))->assertSessionHasNoErrors();
+
+    expect($article->fresh()->hero_asset_id)->toBeNull()
+        ->and($image->usages()->count())->toBe(0);
+});
+
 it('moves pages to the trash, restores them and deletes them for good', function () {
     $page = Page::factory()->create();
 
