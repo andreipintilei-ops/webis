@@ -148,6 +148,22 @@
         @apply mt-8;
     }
 
+    /* Its parts close together — the gallery, the details, the links on —
+       the chapter's gap alone between them, no margins of their own on top;
+       it ends soon after its last link, and the related projects after it
+       start soon too: one light ground, one page. */
+    .project-page {
+        @apply pb-16 lg:pb-20;
+
+        & > .chapter__inner {
+            @apply gap-10 lg:gap-12;
+        }
+    }
+
+    .project-page + .related-projects {
+        @apply pt-8 lg:pt-12;
+    }
+
     /* The first image across the column, the rest two by two. */
     .project-page__gallery {
         @apply grid min-w-0 grid-cols-1 gap-4 md:grid-cols-2 md:gap-6;
@@ -162,7 +178,7 @@
     }
 
     .project-page__details {
-        @apply mt-12 grid md:mt-16;
+        @apply grid;
 
         & > div {
             @apply grid gap-2 py-6 md:grid-cols-[14rem_1fr] md:gap-8;
@@ -188,7 +204,7 @@
     }
 
     .project-page__back {
-        @apply mt-12 flex flex-wrap gap-x-10 gap-y-5;
+        @apply flex flex-wrap gap-x-10 gap-y-5;
     }
 
     /* ---- A product page's "Folosit de" ---------------------------------------- */
