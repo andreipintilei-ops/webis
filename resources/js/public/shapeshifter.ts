@@ -61,7 +61,7 @@ import { getSmoother } from '@/public/smooth-scroll';
  *
  * From 1024px it holds the middle of the screen in the chapter's half, coming
  * in with the stage's top, then settles into the panel and leaves with it.
- * Below, it sits behind the text: in the middle of the screen, dimmed so
+ * Below, it sits behind the text: a little above the screen's middle, dimmed so
  * the chapters read over it, taking its forms with the same scroll as
  * above; it comes up to full strength as it settles into the panel's W.
  *
@@ -215,7 +215,11 @@ const PANEL_FILL_NARROW = 0.78;
 const BEHIND_FILL = 0.85;
 const BEHIND_CAP = 0.45;
 const BEHIND_DIM = 0.85;
-const BEHIND_BLUR = 4;
+const BEHIND_BLUR = 3;
+/** Phones and tablets: where it is held, down the screen. Above the middle,
+ *  so it rides up with the page for longer and the screen's top is not left
+ *  empty while the text has still to come up. */
+const BEHIND_HOLD = 0.36;
 /**
  * The pixel ratio it is drawn at while mostly blurred: the blur hides the
  * lost detail, and the fewer pixels pay for the blur. Taken past the first
@@ -930,17 +934,18 @@ export async function initShapeshifter(): Promise<void> {
 
         if (narrow.matches) {
             // Alone at first, a quarter of the screen below the stage's top
-            // and then in the middle; behind the text once it comes up over
-            // it, a little dimmed and blurred, until the panel takes it:
-            // there it stands sharp, at full strength, in the panel's slot
-            // and rides it off the screen. In the middle it is held to the
-            // screen; before and after, the layer rides the page (`anchor`),
+            // and then held above the middle (BEHIND_HOLD); behind the text
+            // once it comes up over it, a little dimmed and blurred, until
+            // the panel takes it: there it stands sharp, at full strength, in
+            // the panel's slot and rides it off the screen. While held it is
+            // fixed to the screen; before and after, the layer rides the page (`anchor`),
             // the stage's top or the slot's middle carrying it — never
             // redrawn after the scroll, so it cannot trail it.
             const along = Math.min(Math.max(phase - 1, 0), 3);
             const home = panelSlot.getBoundingClientRect();
             const settled = smooth(clamp01(along - 2));
-            const hold = Math.max(vh / 2, box.top + vh / 4);
+            const held = vh * BEHIND_HOLD;
+            const hold = Math.max(held, box.top + vh / 4);
             const slotMiddle = home.top + home.height / 2;
             const behind = Math.min(width * BEHIND_FILL, vh * BEHIND_CAP);
             const onPanel = Math.min(
@@ -948,22 +953,22 @@ export async function initShapeshifter(): Promise<void> {
                 home.height * PANEL_CAP,
             );
             const ride =
-                box.top + vh / 4 > vh / 2
+                box.top + vh / 4 > held
                     ? 'in'
-                    : slotMiddle < vh / 2
+                    : slotMiddle < held
                       ? 'out'
                       : null;
 
             x = lerp(width / 2, home.left + home.width / 2, settled);
-            y = ride === 'in' ? hold : ride === 'out' ? slotMiddle : vh / 2;
+            y = ride === 'in' ? hold : ride === 'out' ? slotMiddle : held;
             size = lerp(behind, onPanel, settled);
 
-            // Laid in the page with the object in the layer's middle, where
-            // it is on the screen now; held again where that is the
-            // screen's own middle, so the hand-over does not move it.
+            // Laid in the page with the object where it is held on the
+            // layer, at its place on the screen now; held to the screen again
+            // where the two meet, so the hand-over does not move it.
             if (ride !== riding) {
                 riding = ride;
-                anchor(ride ? y - vh / 2 : null);
+                anchor(ride ? y - held : null);
                 holdToScreen();
             }
 
