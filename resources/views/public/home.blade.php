@@ -25,9 +25,11 @@
     <x-site.stage :side="$stageSide ?? null" />
     <x-site.logo-wall />
     <x-site.blog-posts>
-        {{-- On a phone the two words together and the pill under them (both
-             do not fit one line); from 768px the pill keeps to "articole". --}}
-        <x-slot:title><span class="max-md:whitespace-nowrap">Ultimele <span class="max-md:whitespace-normal md:whitespace-nowrap">articole <x-ui.title-pill variant="blog" class="max-md:mt-3" /></span></span></x-slot:title>
+        {{-- On a phone the two words together and the pill beside them, or
+             under them where all three do not fit one line — the taller line
+             the room between, so the pill stays level with the words when it
+             fits; from 768px the pill keeps to "articole". --}}
+        <x-slot:title><span class="max-md:whitespace-nowrap max-md:leading-[1.35]">Ultimele <span class="max-md:whitespace-normal md:whitespace-nowrap">articole <x-ui.title-pill variant="blog" /></span></span></x-slot:title>
     </x-site.blog-posts>
 
     {{-- The object: drawn between the sections' backgrounds and their text.

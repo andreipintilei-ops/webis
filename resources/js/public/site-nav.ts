@@ -83,7 +83,7 @@ function initScrolledState(): void {
  * `nav-on-dark` on <html> while the round button sits over a dark surface —
  * anything inside [data-nav-tone="dark"] — so it can turn white.
  *
- * It asks the browser what is actually drawn under the button's centre, so
+ * It asks the browser what is actually drawn beside the button's centre, so
  * overlaps come out right: the page sliding up over the parallax hero counts
  * as light the moment it reaches the button. Smooth scrolling keeps the page
  * moving after the last scroll event, so checks run each frame until it has
@@ -114,13 +114,21 @@ function initBurgerTone(): void {
             return;
         }
 
-        // Scaled to nothing while hidden, but the centre is still the centre.
+        // Just beside the button, level with its centre (scaled to nothing
+        // while hidden, its edge is still its centre): there the page is
+        // what is drawn on top, so one hit is enough. Every element under
+        // the button itself, each frame, was half the cost of a frame on a
+        // phone; that is asked only if an overlay is in the way.
         const box = burger.getBoundingClientRect();
-        const x = box.left + box.width / 2;
+        const x = Math.max(0, box.left - 8);
         const y = box.top + box.height / 2;
-        const under = document
-            .elementsFromPoint(x, y)
-            .find((element) => !element.closest(overlays));
+        const top = document.elementFromPoint(x, y);
+        const under =
+            top && !top.closest(overlays)
+                ? top
+                : document
+                      .elementsFromPoint(x, y)
+                      .find((element) => !element.closest(overlays));
         // A section on the hero's fixed background is dark only where that
         // background still shows — not once it has shrunk away (hero-intro.ts).
         const onBackdrop = under?.closest('[data-backdrop-area]') != null;

@@ -98,7 +98,7 @@
             --finale-rise: clamp(1.5rem, 5vh, 3.5rem);
             @apply max-w-none rounded-none;
             width: 100vw;
-            min-height: calc(74vh + 2 * var(--finale-rise));
+            min-height: calc(64vh + 2 * var(--finale-rise));
             margin-inline: calc(50% - 50vw);
             margin-block: calc(3rem - var(--finale-rise))
                 calc(-1 * var(--finale-rise));
@@ -536,7 +536,7 @@
     .stage-finale {
         @apply relative mx-auto mt-12 grid w-full max-w-[92rem] overflow-hidden rounded-3xl lg:mt-0 lg:rounded-[40px];
         grid-template-rows: 1fr auto;
-        min-height: 74vh;
+        min-height: 64vh;
 
         /* Wide and low: the W is a broad shape, so height it does not need. */
         @media (min-width: 1024px) {

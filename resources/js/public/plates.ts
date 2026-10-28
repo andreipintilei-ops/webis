@@ -17,14 +17,15 @@ export interface Pose {
     m?: number;
 }
 /** The plates: size (to a corner), the colour at its core, halfway out, at
- *  its edge, and whether it is a frosted one. Darkest first, so the W reads
- *  as one gradient from left to right. */
+ *  its edge, and whether it is a frosted one. Each a purple of its own —
+ *  indigo, violet, orchid, periwinkle, magenta — none of them light: on a
+ *  phone the white text runs over them (a white plate there washed it out). */
 export const PIECES: [number, string, string, string, boolean][] = [
     [1.15, '#0E0B33', '#2A1E8E', '#6B4BFF', false],
     [1.06, '#2C2390', '#5B45E6', '#A07BFF', false],
     [1, '#5A3FE0', '#8E63F5', '#D08CF5', false],
-    [0.94, '#B9ACFF', '#D9D1FF', '#F4F1FF', false],
-    [0.9, '#C4B8F2', '#EDE9FF', '#FFFFFF', true],
+    [0.94, '#1C2584', '#4A5BEA', '#8E9BFF', false],
+    [0.9, '#3A1A86', '#9148E0', '#C98BF5', true],
 ];
 
 /** The Webis logo's colours, plate by plate as they stand in the W (left to

@@ -206,13 +206,15 @@
 
     /* The plus, centred on the word's capitals, turned an eighth of a turn
        into a ✕ as the group opens; back as it closes (`is-closing`, while
-       it eases shut). */
+       it eases shut). Drawn as Onest's own "+": 0.37em across, its bars
+       0.075em thick (4.9 of the 24), square-ended — the type's weight,
+       not a thin cross beside it. */
     .theo-menu__plus {
-        @apply size-[0.6em] shrink-0;
+        @apply size-[0.37em] shrink-0;
         fill: none;
         stroke: currentColor;
-        stroke-width: 2;
-        stroke-linecap: round;
+        stroke-width: 4.9;
+        stroke-linecap: butt;
         transition: rotate var(--duration) var(--motion-out);
 
         .theo-menu__group[open]:not(.is-closing) & {
