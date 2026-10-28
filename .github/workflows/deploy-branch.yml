@@ -103,9 +103,13 @@ jobs:
           fi
 
           # Main's files exactly (deleted ones gone too), then the two built
-          # folders on top.
+          # folders on top. Not the tests: a server has no use for them, and
+          # their sample spam and scripts (tests/Unit/Legacy) are what a
+          # hosting's malware scanner "cleans", leaving the checkout changed
+          # and cPanel refusing to deploy.
           cd ../deploy-tree
           git read-tree -u --reset "$SHA"
+          git rm -rq tests
           rm -rf public/build vendor
           cp -a "$GITHUB_WORKSPACE/public/build" public/build
           cp -a "$GITHUB_WORKSPACE/vendor" vendor
