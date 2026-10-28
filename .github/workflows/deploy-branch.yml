@@ -109,7 +109,7 @@ jobs:
           # and cPanel refusing to deploy.
           cd ../deploy-tree
           git read-tree -u --reset "$SHA"
-          git rm -rq tests
+          git rm -rqf --ignore-unmatch tests
           rm -rf public/build vendor
           cp -a "$GITHUB_WORKSPACE/public/build" public/build
           cp -a "$GITHUB_WORKSPACE/vendor" vendor
