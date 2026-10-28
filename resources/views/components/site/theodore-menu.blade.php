@@ -32,6 +32,7 @@
     $onService = in_array(true, array_column($services, 'current'), true);
 
     $company = app(\App\Settings\CompanySettings::class);
+    $logo = app(\App\Support\Brand::class)->logoNegative();
     $phoneHref = \App\Support\PhoneLink::href($company->phone);
     $socials = array_filter($company->social);
 @endphp
@@ -40,6 +41,16 @@
 <a href="#" class="theo-backdrop" data-theo-backdrop tabindex="-1" aria-hidden="true"></a>
 
 <div id="{{ $id }}" class="theo-menu" data-theo-menu>
+    {{-- On a phone the menu is the whole screen and hides the page's logo:
+         its own, white, beside the round button (css/site/menu-theodore.css). --}}
+    <a href="/" class="theo-menu__logo" aria-label="{{ $company->name }} — prima pagină" data-theo-reveal>
+        @if ($logo)
+            <img src="{{ $logo['url'] }}" alt="" width="{{ $logo['width'] }}" height="{{ $logo['height'] }}">
+        @else
+            {{ $company->name }}
+        @endif
+    </a>
+
     <div class="theo-menu__inner">
         <nav class="theo-menu__nav" aria-label="Meniu principal">
             <p class="theo-menu__label" data-theo-reveal>Navigare</p>
