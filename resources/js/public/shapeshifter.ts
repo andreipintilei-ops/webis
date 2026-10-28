@@ -834,6 +834,9 @@ export async function initShapeshifter(): Promise<void> {
 
         width = w;
         height = h;
+        // Laid in the page for the old size: placed again on the next frame.
+        anchor(null);
+        riding = null;
         renderer.setPixelRatio(pixelRatio());
         renderer.setSize(width, height, false);
         camera.aspect = width / height;
@@ -856,29 +859,38 @@ export async function initShapeshifter(): Promise<void> {
     let blurred = '';
 
     /**
-     * Standing on the panel, the layer rides the page instead of being held
-     * to the screen: where the browser scrolls on its own (phones, with no
-     * smoothing), the object redrawn after each scroll would trail the panel
-     * by a frame. Laid in the page where it stands at that moment, it moves
-     * with the panel, and the object stays put inside it. Back on the screen
-     * as soon as it leaves the panel again.
+     * Wherever the object moves with the page, the layer rides the page
+     * instead of being held to the screen: where the browser scrolls on its
+     * own (phones, with no smoothing), the object redrawn after each scroll
+     * would trail the page by a frame — it shook. Laid in the page at a
+     * given top on the screen (`top`), the layer moves with the page and
+     * the object stays put inside it; null holds it to the screen again.
      */
     let anchored = false;
-    const anchor = (on: boolean): void => {
-        anchored = on;
+    const anchor = (top: number | null): void => {
+        anchored = top !== null;
 
-        if (!on) {
+        if (top === null) {
             host.style.position = '';
             host.style.top = '';
 
             return;
         }
 
-        const top = host.getBoundingClientRect().top;
-
         host.style.position = 'absolute';
         host.style.top = '0px';
         host.style.top = `${top - host.getBoundingClientRect().top}px`;
+    };
+    /** Phones: where it rides the page — in with the stage, out with the panel. */
+    let riding: 'in' | 'out' | null = null;
+
+    /** Held to the screen inside the smooth-scrolled content. */
+    const holdToScreen = (): void => {
+        if (getSmoother() && content && !anchored) {
+            const y = Number(gsap.getProperty(content, 'y')) || 0;
+
+            host.style.transform = `translate3d(0, ${-y}px, 0)`;
+        }
     };
 
     const frame = (time: number): void => {
@@ -886,12 +898,7 @@ export async function initShapeshifter(): Promise<void> {
             return;
         }
 
-        // Held to the screen inside the smooth-scrolled content.
-        if (getSmoother() && content && !anchored) {
-            const y = Number(gsap.getProperty(content, 'y')) || 0;
-
-            host.style.transform = `translate3d(0, ${-y}px, 0)`;
-        }
+        holdToScreen();
 
         const vh = height;
         const box = stage.getBoundingClientRect();
@@ -926,20 +933,39 @@ export async function initShapeshifter(): Promise<void> {
             // and then in the middle; behind the text once it comes up over
             // it, a little dimmed and blurred, until the panel takes it:
             // there it stands sharp, at full strength, in the panel's slot
-            // and rides it off the screen.
+            // and rides it off the screen. In the middle it is held to the
+            // screen; before and after, the layer rides the page (`anchor`),
+            // the stage's top or the slot's middle carrying it — never
+            // redrawn after the scroll, so it cannot trail it.
             const along = Math.min(Math.max(phase - 1, 0), 3);
             const home = panelSlot.getBoundingClientRect();
             const settled = smooth(clamp01(along - 2));
             const hold = Math.max(vh / 2, box.top + vh / 4);
+            const slotMiddle = home.top + home.height / 2;
             const behind = Math.min(width * BEHIND_FILL, vh * BEHIND_CAP);
             const onPanel = Math.min(
                 home.width * PANEL_FILL_NARROW,
                 home.height * PANEL_CAP,
             );
+            const ride =
+                box.top + vh / 4 > vh / 2
+                    ? 'in'
+                    : slotMiddle < vh / 2
+                      ? 'out'
+                      : null;
 
             x = lerp(width / 2, home.left + home.width / 2, settled);
-            y = lerp(hold, home.top + home.height / 2, settled);
+            y = ride === 'in' ? hold : ride === 'out' ? slotMiddle : vh / 2;
             size = lerp(behind, onPanel, settled);
+
+            // Laid in the page with the object in the layer's middle, where
+            // it is on the screen now; held again where that is the
+            // screen's own middle, so the hand-over does not move it.
+            if (ride !== riding) {
+                riding = ride;
+                anchor(ride ? y - vh / 2 : null);
+                holdToScreen();
+            }
 
             // From the text's top reaching the object's lower edge to its
             // middle.
@@ -979,10 +1005,11 @@ export async function initShapeshifter(): Promise<void> {
             size = lerp(inHalf, onPanel, settled);
         }
 
-        // Standing on the panel from the moment the path ends (the scrub
-        // has caught up); drawn where it is on the layer, not the screen.
-        if (phase >= STATES.length - 1 !== anchored) {
-            anchor(!anchored);
+        // From 1024px: standing on the panel from the moment the path ends
+        // (the scrub has caught up). Either way, drawn where it is on the
+        // layer, not the screen.
+        if (!narrow.matches && phase >= STATES.length - 1 !== anchored) {
+            anchor(anchored ? null : host.getBoundingClientRect().top);
         }
 
         if (anchored) {
