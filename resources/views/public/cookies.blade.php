@@ -114,6 +114,10 @@
                     Când pornești un videoclip, el se încarcă din modul de confidențialitate sporită al YouTube (youtube-nocookie.com), iar de atunci
                     YouTube (Google) poate salva date în browserul tău, după <a href="https://policies.google.com/privacy" rel="noopener">politica Google</a>.
                 </p>
+                <p>
+                    Pagina de contact are harta Google Maps a adresei noastre. Ea se încarcă de la Google când ajungi în dreptul ei, iar de atunci
+                    Google poate salva date în browserul tău, după <a href="https://policies.google.com/privacy" rel="noopener">politica Google</a>.
+                </p>
                 <p>Linkurile către rețelele sociale (Facebook, Instagram, LinkedIn) sunt simple linkuri: nu încarcă nimic de la acestea până nu le deschizi.</p>
                 @if ($providers !== [])
                     <p>Instrumentele de analiză și de marketing, când le accepți, sunt furnizate de:</p>

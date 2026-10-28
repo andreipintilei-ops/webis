@@ -173,24 +173,17 @@
             </ol>
         </div>
 
-        {{-- Where we are: until asked for, a panel with the address and a
-             link to Google Maps; a click swaps in Google's map, so its
-             script and cookies load only for whoever wants it
-             (js/public/lite-map.ts). Without the script the link opens
-             Google Maps. --}}
+        {{-- Where we are: Google's map, always there — loaded only as the
+             page is scrolled near it (loading="lazy"), so it costs the
+             first screen nothing. --}}
         @if ($address !== '')
             <div class="contact-page__map">
                 <div class="chapter-sub__header">
                     <h2 class="chapter-sub__label">Unde ne găsești</h2>
                     <a href="{{ $mapOpen }}" class="contact-map__open" target="_blank" rel="noopener">Deschide în Google Maps</a>
                 </div>
-                <div class="contact-map" data-lite-map="{{ $mapEmbed }}" data-title="Harta: {{ $mapQuery }}">
-                    <a href="{{ $mapOpen }}" class="contact-map__poster" data-lite-map-show target="_blank" rel="noopener">
-                        <svg class="contact-map__pin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0" /><circle cx="12" cy="10" r="3" /></svg>
-                        <span class="contact-map__address">{{ $address }}</span>
-                        <span class="contact-map__show">Arată harta</span>
-                        <span class="contact-map__note">Harta se încarcă de la Google Maps, care poate pune cookie-uri.</span>
-                    </a>
+                <div class="contact-map">
+                    <iframe src="{{ $mapEmbed }}" title="Harta: {{ $mapQuery }}" class="contact-map__frame" loading="lazy" referrerpolicy="strict-origin-when-cross-origin"></iframe>
                 </div>
             </div>
         @endif

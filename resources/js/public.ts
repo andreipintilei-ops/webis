@@ -9,7 +9,6 @@ import { initLogoWalls } from '@/public/logo-wall';
 import { initReviewsCarousels } from '@/public/reviews-carousel';
 import { initHero } from '@/public/hero-intro';
 import { initHeroPlanes } from '@/public/hero-planes';
-import { initLiteMaps } from '@/public/lite-map';
 import { initLiteVideos } from '@/public/lite-video';
 import { initWorkLists } from '@/public/work-list';
 import { initPageTransitions } from '@/public/page-transition';
@@ -104,7 +103,6 @@ function boot(): void {
     initCookieConsent();
     initContactForm();
     initLiteVideos();
-    initLiteMaps();
     initExplorers();
     initAnchorScroll(smooth);
     initReviewsCarousels();

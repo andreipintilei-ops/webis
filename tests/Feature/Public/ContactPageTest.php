@@ -44,16 +44,16 @@ it('shows where the office is: a lite map, nothing from Google until asked for, 
     $company->save();
 
     $html = $this->get('/contact')->assertOk()->getContent();
-    preg_match('#<div class="contact-page__map">.*?</a>\s*</div>\s*</div>#s', $html, $map);
+    preg_match('#<div class="contact-page__map">.*?</iframe>\s*</div>\s*</div>#s', $html, $map);
 
     expect($map[0])
         ->toContain('Unde ne găsești')
-        ->toContain('data-lite-map="https://maps.google.com/maps?q=Webis%2C+B-dul+Poitiers+16%2C+Ia%C8%99i&amp;z=16&amp;hl=ro&amp;output=embed"')
+        // The map itself, always there, loaded as it is scrolled near.
+        ->toContain('<iframe src="https://maps.google.com/maps?q=Webis%2C+B-dul+Poitiers+16%2C+Ia%C8%99i&amp;z=16&amp;hl=ro&amp;output=embed"')
+        ->toContain('loading="lazy"')
         // The link lands on the business itself, its place behind the reviews.
         ->toContain('href="https://www.google.com/maps/search/?api=1&amp;query=Webis%2C+B-dul+Poitiers+16%2C+Ia%C8%99i&amp;query_place_id=ChIJdb43T2j6ykARljUR4Ws4GEI"')
-        ->toContain('Arată harta')
-        // The map itself only once asked for (js/public/lite-map.ts).
-        ->and($html)->not->toContain('<iframe');
+        ->not->toContain('Arată harta');
 });
 
 it('keeps the contact template and redirects when a contact page is renamed', function () {

@@ -157,7 +157,7 @@
         @apply mx-auto mt-20 max-w-[var(--content-max)] md:mt-28;
     }
 
-    /* ---- Where we are: the lite map (js/public/lite-map.ts) ------------------ */
+    /* ---- Where we are: Google's map ---------------------------------------- */
 
     .contact-page__map {
         @apply mx-auto mt-20 max-w-[var(--content-max)] md:mt-28;
@@ -172,63 +172,12 @@
         }
     }
 
-    /* One frame for the panel and the map that takes its place: wide on a
-       desktop, squarer on a phone. */
+    /* The map's frame: wide on a desktop, squarer on a phone; Google's
+       map paper behind it while it loads. */
     .contact-map {
         @apply relative mt-8 aspect-[4/3] overflow-hidden rounded-3xl md:aspect-[21/9];
-        background: rgb(255 255 255 / 0.06);
+        background: #e5e3df;
         box-shadow: inset 0 0 0 1px var(--line);
-
-        &.is-shown {
-            background: #e5e3df;
-        }
-    }
-
-    .contact-map__poster {
-        @apply absolute inset-0 grid place-content-center justify-items-center gap-4 p-8 text-center;
-        color: var(--ink);
-        /* A street grid, faint: a map waiting to be asked for. */
-        background-image:
-            linear-gradient(rgb(255 255 255 / 0.05) 1px, transparent 1px),
-            linear-gradient(90deg, rgb(255 255 255 / 0.05) 1px, transparent 1px);
-        background-size: 48px 48px;
-        background-position: center;
-    }
-
-    .contact-map__pin {
-        @apply size-9;
-        color: var(--lavender-300);
-    }
-
-    .contact-map__address {
-        @apply text-xl font-medium md:text-2xl;
-        letter-spacing: -0.02em;
-    }
-
-    /* Styled as the site's buttons on dark: white, the label rolling the
-       violet in on hover. */
-    .contact-map__show {
-        @apply mt-2 inline-flex h-12 items-center rounded-full bg-white px-6 text-base;
-        color: var(--site-dark);
-        transition:
-            background-color var(--base) var(--ease),
-            color var(--base) var(--ease);
-
-        .contact-map__poster:is(:hover, :focus-visible) & {
-            background: var(--violet-cta);
-            color: #fff;
-        }
-    }
-
-    .contact-map__note {
-        @apply max-w-[36ch] text-sm text-pretty;
-        color: var(--muted);
-    }
-
-    .contact-map__poster:focus-visible {
-        outline: 2px solid var(--lavender-300);
-        outline-offset: -4px;
-        border-radius: inherit;
     }
 
     .contact-map__frame {
