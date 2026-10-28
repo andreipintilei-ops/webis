@@ -57,3 +57,15 @@
         Header set Cache-Control "public, max-age=31536000, immutable"
     </FilesMatch>
 </IfModule>
+
+# PHP 8.4 on the hosting (cPanel's MultiPHP Manager, ea-php84), in its own
+# words: setting a domain's version writes this block into the document
+# root's .htaccess — this file, a tracked one — and a changed file stops
+# cPanel from deploying. Already here and the same, it changes nothing.
+# Ignored by nginx (Herd, locally).
+# php -- BEGIN cPanel-generated handler, do not edit
+# Set the “ea-php84” package as the default “PHP” programming language.
+<IfModule mime_module>
+  AddHandler application/x-httpd-ea-php84 .php .php8 .phtml
+</IfModule>
+# php -- END cPanel-generated handler, do not edit
