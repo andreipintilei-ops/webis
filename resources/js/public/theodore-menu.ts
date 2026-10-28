@@ -119,6 +119,10 @@ export function initTheodoreMenu(): void {
     let isAnimating = false;
     let timeline: gsap.core.Timeline | null = null;
     let returnFocusTo: HTMLElement | null = null;
+    // Opened from the keyboard (a click with no pointer: detail 0). Only
+    // then does focus move into the menu: on a phone a focused first link
+    // would show as pointed at — rolled, its dot, the others dimmed.
+    let byKeyboard = false;
 
     // Closed menus are out of the tab order and hidden from screen readers.
     menu.inert = true;
@@ -139,11 +143,19 @@ export function initTheodoreMenu(): void {
         }
     };
 
-    /** Into the menu: its ✕ if it has one, else the first link. */
-    const focusInside = (): void =>
-        (closeButton ?? items[0])?.focus({ preventScroll: true });
+    /** Into the menu, from the keyboard: its ✕ if it has one, else the first link. */
+    const focusInside = (): void => {
+        if (byKeyboard) {
+            (closeButton ?? items[0])?.focus({ preventScroll: true });
+        }
+    };
 
-    const focusBack = (): void => returnFocusTo?.focus({ preventScroll: true });
+    /** Back to what opened it — when focus was in the menu, else it stays put. */
+    const focusBack = (): void => {
+        if (menu.contains(document.activeElement)) {
+            returnFocusTo?.focus({ preventScroll: true });
+        }
+    };
 
     /** Elements that drift away while the menu opens (the page). */
     const shifted = (): HTMLElement[] =>
@@ -527,6 +539,7 @@ export function initTheodoreMenu(): void {
         opener.addEventListener('click', (event) => {
             event.preventDefault();
             returnFocusTo = opener;
+            byKeyboard = event.detail === 0;
             void open();
         });
     }
@@ -539,6 +552,7 @@ export function initTheodoreMenu(): void {
                 void close();
             } else {
                 returnFocusTo = toggle;
+                byKeyboard = event.detail === 0;
                 void open();
             }
         });
