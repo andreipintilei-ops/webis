@@ -41,8 +41,8 @@
     /* Set off: the top bar's item (a dropdown stays lit while the pointer is
        in its panel), the side menu's links and its contact and social ones,
        the footer's links — and the side menu's Servicii by its state, once
-       as it opens and once as it closes, not by the pointer passing over it
-       on the way to the services. Rolling in is quicker than rolling back. */
+       as it opens and once as it closes (by the pointer too, with a mouse:
+       below). Rolling in is quicker than rolling back. */
     :is(
             .site-nav__links > li:is(:hover, :has(:focus-visible)),
             a.theo-menu__link:is(:hover, :focus-visible),
@@ -66,10 +66,16 @@
         }
     }
 
-    /* The pill buttons (components/ui/pill), with a mouse only: a tap would
-       leave them rolled. */
+    /* With a mouse only, as a tap would leave them rolled: the pill buttons
+       (components/ui/pill), and the side menu's Servicii by the pointer as
+       well as by its state — already rolled from the hover as it opens, so
+       it rolls once, not twice. */
     @media (hover: hover) and (pointer: fine) {
-        .pill:is(:hover, :focus-visible) .roll {
+        :is(
+                .pill:is(:hover, :focus-visible),
+                .theo-menu__group > .theo-menu__link:hover
+            )
+            .roll {
             & .roll__letter,
             & .roll__char::before {
                 transition-duration: 0.35s;
