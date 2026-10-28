@@ -9,7 +9,7 @@ import tailwindcss from '@tailwindcss/vite';
 import vue from '@vitejs/plugin-vue';
 import laravel from 'laravel-vite-plugin';
 import { bunny } from 'laravel-vite-plugin/fonts';
-import { defineConfig, lazyPlugins } from 'vite-plus';
+import { defineConfig, lazyPlugins, type Plugin } from 'vite-plus';
 
 /**
  * Make sure the `php` that build-time plugins shell out to is new enough.
@@ -70,6 +70,57 @@ function preferHerdPhp(): void {
 
 preferHerdPhp();
 
+/**
+ * WOFF2 only, in the build. For each character range the fonts plugin
+ * writes the WOFF2 file and its WOFF fallback as two @font-face rules, not
+ * one rule with both sources — so a browser takes them for two faces and
+ * downloads both (~170 KB more on a first visit). Every browser the site
+ * supports reads WOFF2: the WOFF rules, manifest entries and files go.
+ */
+function woff2Only(): Plugin {
+    const isWoff = (fileName: string): boolean => fileName.endsWith('.woff');
+    const strip = (css: string): string =>
+        css.replace(/@font-face\s*\{[^}]*format\("woff"\)[^}]*\}\s*/g, '');
+
+    return {
+        name: 'webis:woff2-only',
+        apply: 'build',
+        enforce: 'post',
+        generateBundle(_options, bundle) {
+            for (const [fileName, output] of Object.entries(bundle)) {
+                if (output.type !== 'asset') continue;
+
+                if (isWoff(fileName)) {
+                    delete bundle[fileName];
+                } else if (/^assets\/fonts-[\w-]+\.css$/.test(fileName)) {
+                    output.source = strip(String(output.source));
+                } else if (fileName === 'fonts-manifest.json') {
+                    const manifest = JSON.parse(String(output.source));
+                    const styles = manifest.style?.familyStyles ?? {};
+
+                    for (const alias of Object.keys(styles)) {
+                        styles[alias] = strip(styles[alias]);
+                    }
+
+                    for (const family of Object.values<any>(
+                        manifest.families ?? {},
+                    )) {
+                        for (const variant of Object.values<any>(
+                            family.variants ?? {},
+                        )) {
+                            variant.files = variant.files.filter(
+                                (file: { file: string }) => !isWoff(file.file),
+                            );
+                        }
+                    }
+
+                    output.source = JSON.stringify(manifest, null, 2);
+                }
+            }
+        },
+    };
+}
+
 export default defineConfig({
     plugins: lazyPlugins(() => [
         laravel({
@@ -129,6 +180,7 @@ export default defineConfig({
         wayfinder({
             formVariants: true,
         }),
+        woff2Only(),
     ]),
     // GSAP is only ever imported lazily (the public menu). Without this, the
     // dev server discovers it on first use, re-optimises and reloads the page.
