@@ -1,0 +1,400 @@
+[
+    {
+        "id": "6d6b21e",
+        "elType": "container",
+        "settings": {},
+        "elements": [
+            {
+                "id": "1be782d",
+                "elType": "container",
+                "settings": {},
+                "elements": [
+                    {
+                        "id": "8ec047f",
+                        "elType": "container",
+                        "settings": {},
+                        "elements": [
+                            {
+                                "id": "958fb20",
+                                "elType": "widget",
+                                "widgetType": "text-editor",
+                                "settings": {
+                                    "editor": "<p>Oferim servicii de mentenanta a site-ului WordPress</p>",
+                                    "typography_font_size": {
+                                        "unit": "px",
+                                        "size": 50
+                                    },
+                                    "typography_font_weight": "600"
+                                },
+                                "elements": []
+                            },
+                            {
+                                "id": "e0c9702",
+                                "elType": "widget",
+                                "widgetType": "text-editor",
+                                "settings": {
+                                    "editor": "<p>Te vei relaxa stiind ca vei beneficia de suportul unor profesionisti prin externalizarea activitatii de administrare a site-ului</p>",
+                                    "typography_font_size": {
+                                        "unit": "px",
+                                        "size": 20
+                                    },
+                                    "typography_font_weight": "200"
+                                },
+                                "elements": []
+                            },
+                            {
+                                "id": "3db16f7",
+                                "elType": "container",
+                                "settings": {},
+                                "elements": [
+                                    {
+                                        "id": "06bb7a2",
+                                        "elType": "widget",
+                                        "widgetType": "image",
+                                        "settings": {
+                                            "image": {
+                                                "url": "https://www.webis.ro/wp-content/uploads/2024/04/WordPress-logotype-webis.png",
+                                                "id": 14420
+                                            }
+                                        },
+                                        "elements": []
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "id": "36220e0",
+        "elType": "container",
+        "settings": {},
+        "elements": [
+            {
+                "id": "78be939",
+                "elType": "widget",
+                "widgetType": "heading",
+                "settings": {
+                    "title": "Pachete Mentenanta",
+                    "typography_font_size": {
+                        "unit": "px",
+                        "size": 45
+                    },
+                    "typography_font_weight": "500"
+                },
+                "elements": []
+            },
+            {
+                "id": "c5b91ea",
+                "elType": "widget",
+                "widgetType": "text-editor",
+                "settings": {
+                    "editor": "<p>Administrarea si intretinerea site-ului. Webis se ocupa de <strong>web design</strong>, <strong>web development</strong> &amp; <strong>SEO</strong>.</p>",
+                    "typography_font_weight": "400",
+                    "typography_font_size": {
+                        "unit": "px",
+                        "size": 15
+                    }
+                },
+                "elements": []
+            },
+            {
+                "id": "2b9ed6b",
+                "elType": "container",
+                "settings": {},
+                "elements": [
+                    {
+                        "id": "892e62e",
+                        "elType": "widget",
+                        "widgetType": "price-table",
+                        "settings": {
+                            "heading": "Basic",
+                            "sub_heading": "",
+                            "currency_symbol": "euro",
+                            "price": "40",
+                            "period": "Lunar",
+                            "features_list": [
+                                {
+                                    "item_text": "Actualizare platforma"
+                                },
+                                {
+                                    "item_text": "Actualizare plugin-uri"
+                                },
+                                {
+                                    "item_text": "Actualizare tema"
+                                },
+                                {
+                                    "item_text": "Optimizare baza de date"
+                                },
+                                {
+                                    "item_text": "Verificare incompatibilitate plugin-uri"
+                                },
+                                {
+                                    "item_text": "Suport Email"
+                                },
+                                {
+                                    "item_text": "2 backup-uri fizice/ lunar"
+                                },
+                                {
+                                    "item_text": "Optimizare 5 imagini/ lunar"
+                                },
+                                {
+                                    "item_text": "Monitorizare Uptime"
+                                },
+                                {
+                                    "item_text": "Suport Telefonic"
+                                },
+                                {
+                                    "item_text": "Detectare si rezolvare probleme de securitate"
+                                },
+                                {
+                                    "item_text": "Optimizare viteza pagini"
+                                }
+                            ],
+                            "button_text": "Comanda pachet",
+                            "link": {
+                                "url": "/contact"
+                            }
+                        },
+                        "elements": []
+                    },
+                    {
+                        "id": "29483b1",
+                        "elType": "widget",
+                        "widgetType": "price-table",
+                        "settings": {
+                            "heading": "Standard",
+                            "sub_heading": "",
+                            "currency_symbol": "euro",
+                            "price": "70",
+                            "period": "Lunar",
+                            "features_list": [
+                                {
+                                    "item_text": "Actualizare platforma"
+                                },
+                                {
+                                    "item_text": "Actualizare plugin-uri"
+                                },
+                                {
+                                    "item_text": "Actualizare tema"
+                                },
+                                {
+                                    "item_text": "Optimizare baza de date"
+                                },
+                                {
+                                    "item_text": "Verificare incompatibilitate plugin-uri"
+                                },
+                                {
+                                    "item_text": "Suport Email"
+                                },
+                                {
+                                    "item_text": "4 backup-uri fizice/ lunar"
+                                },
+                                {
+                                    "item_text": "Optimizare imagini: nelimitat"
+                                },
+                                {
+                                    "item_text": "Suport Telefonic: DA"
+                                },
+                                {
+                                    "item_text": "Detectare si rezolvare probleme de securitate"
+                                },
+                                {
+                                    "item_text": "Monitorizare Uptime"
+                                },
+                                {
+                                    "item_text": "Optimizare viteza pagini"
+                                }
+                            ],
+                            "button_text": "Comanda pachet",
+                            "link": {
+                                "url": "/contact"
+                            }
+                        },
+                        "elements": []
+                    },
+                    {
+                        "id": "3d3b966",
+                        "elType": "widget",
+                        "widgetType": "price-table",
+                        "settings": {
+                            "heading": "Premium",
+                            "sub_heading": "",
+                            "currency_symbol": "euro",
+                            "price": "140",
+                            "period": "Lunar",
+                            "features_list": [
+                                {
+                                    "item_text": "Actualizare platforma"
+                                },
+                                {
+                                    "item_text": "Actualizare plugin-uri"
+                                },
+                                {
+                                    "item_text": "Actualizare tema"
+                                },
+                                {
+                                    "item_text": "Optimizare baza de date"
+                                },
+                                {
+                                    "item_text": "Verificare incompatibilitate plugin-uri"
+                                },
+                                {
+                                    "item_text": "Suport Email"
+                                },
+                                {
+                                    "item_text": "4 backup-uri fizice/ luna"
+                                },
+                                {
+                                    "item_text": "Optimizare imagini: nelimitat"
+                                },
+                                {
+                                    "item_text": "Suport Telefonic"
+                                },
+                                {
+                                    "item_text": "Detectare si rezolvare probleme de securitate"
+                                },
+                                {
+                                    "item_text": "Optimizare viteza pagini"
+                                },
+                                {
+                                    "item_text": "Monitorizare Uptime"
+                                }
+                            ],
+                            "button_text": "Comanda pachet",
+                            "link": {
+                                "url": "/contact"
+                            }
+                        },
+                        "elements": []
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "id": "4136cf6",
+        "elType": "container",
+        "settings": {},
+        "elements": [
+            {
+                "id": "e44d709",
+                "elType": "container",
+                "settings": {},
+                "elements": [
+                    {
+                        "id": "87447dd",
+                        "elType": "widget",
+                        "widgetType": "heading",
+                        "settings": {
+                            "title": "Cele mai infectate site-uri",
+                            "typography_font_size": {
+                                "unit": "px",
+                                "size": 36
+                            },
+                            "typography_font_weight": "500"
+                        },
+                        "elements": []
+                    },
+                    {
+                        "id": "aeae706",
+                        "elType": "widget",
+                        "widgetType": "progress",
+                        "settings": {
+                            "title": "Wordpress",
+                            "percent": {
+                                "unit": "%",
+                                "size": 78
+                            }
+                        },
+                        "elements": []
+                    },
+                    {
+                        "id": "82f96b5",
+                        "elType": "widget",
+                        "widgetType": "progress",
+                        "settings": {
+                            "title": "Joomla",
+                            "percent": {
+                                "unit": "%",
+                                "size": 12
+                            }
+                        },
+                        "elements": []
+                    },
+                    {
+                        "id": "c5b8821",
+                        "elType": "widget",
+                        "widgetType": "progress",
+                        "settings": {
+                            "title": "Alte platforme",
+                            "percent": {
+                                "unit": "%",
+                                "size": 5
+                            }
+                        },
+                        "elements": []
+                    },
+                    {
+                        "id": "d74cdf6",
+                        "elType": "widget",
+                        "widgetType": "progress",
+                        "settings": {
+                            "title": "Magento",
+                            "percent": {
+                                "unit": "%",
+                                "size": 3
+                            }
+                        },
+                        "elements": []
+                    },
+                    {
+                        "id": "a084183",
+                        "elType": "widget",
+                        "widgetType": "progress",
+                        "settings": {
+                            "title": "Drupal",
+                            "percent": {
+                                "unit": "%",
+                                "size": 1
+                            }
+                        },
+                        "elements": []
+                    }
+                ]
+            },
+            {
+                "id": "2485912",
+                "elType": "container",
+                "settings": {},
+                "elements": [
+                    {
+                        "id": "dce604d",
+                        "elType": "widget",
+                        "widgetType": "heading",
+                        "settings": {
+                            "title": "Mentenanta site wordpress",
+                            "typography_font_size": {
+                                "unit": "px",
+                                "size": 36
+                            },
+                            "typography_font_weight": "500"
+                        },
+                        "elements": []
+                    },
+                    {
+                        "id": "abe278f",
+                        "elType": "widget",
+                        "widgetType": "text-editor",
+                        "settings": {
+                            "editor": "<p>78% din site-urile infectate folosesc platforma Wordpress. Acest procent este cauzat in mare parte de neactualizarea platformei si a plugin-urilor sau de alegerea unor teme cu brese de securitate.</p><p>Prin serviciul nostru de <strong>mentenanta wordpress </strong>ne ocupam de actualizarea platformei, a temei si a plugin-urilor instalate, dar si de optimizarea vitezei de incarcare.</p><p>In functie de planul ales beneficiati si de backup-uri periodice atat a fisierelor, cat si a bazei de date.</p>"
+                        },
+                        "elements": []
+                    }
+                ]
+            }
+        ]
+    }
+]

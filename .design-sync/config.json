@@ -1,0 +1,10 @@
+{
+    "pkg": "webis",
+    "globalName": "Webis",
+    "shape": "package",
+    "buildCmd": "npm run build && node .design-sync/prepare.mjs",
+    "cssEntry": ".cache/webis-site.css",
+    "extraFonts": [".cache/fonts/fonts.css"],
+    "readmeHeader": ".design-sync/conventions.md",
+    "projectId": "b57d077c-264f-45be-a238-06bf9c3f612c"
+}

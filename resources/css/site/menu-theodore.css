@@ -1,0 +1,295 @@
+/*
+  The full-screen menu (components/site/theodore-menu.blade.php; behaviour
+  js/public/theodore-menu.ts), opened by Codrops' "Theodore" (MIT) curtain.
+  The theo-header rules below belong to the kept test variant
+  (components/site/header-theodore.blade.php).
+*/
+@layer components {
+    /*
+      The header spans the page but must not block what lies under it (the
+      menu's close button sits in its top-right corner), so only its own links
+      take clicks.
+    */
+    .theo-header {
+        @apply pointer-events-none fixed inset-x-0 top-0 z-40 flex items-center justify-between px-6 py-5 text-black transition-colors duration-300 md:px-12;
+
+        & a {
+            @apply pointer-events-auto;
+        }
+    }
+
+    .theo-header__logo {
+        @apply grid text-2xl font-semibold tracking-tight;
+    }
+
+    /* Both logos share one grid cell; the menu state picks which one shows. */
+    .theo-header__logo-image {
+        @apply col-start-1 row-start-1 h-7 w-auto transition-opacity duration-300 md:h-8;
+    }
+
+    .theo-header__logo-image--negative {
+        @apply opacity-0;
+    }
+
+    .theo-header--menu-open .theo-header__logo-image {
+        @apply opacity-0;
+    }
+
+    .theo-header--menu-open .theo-header__logo-image--negative {
+        @apply opacity-100;
+    }
+
+    .theo-header__button {
+        @apply grid size-16 place-items-center rounded-full border border-current transition-[opacity,color] duration-300;
+        fill: currentColor;
+
+        & svg {
+            transition: transform var(--duration) var(--motion-out);
+        }
+
+        &:hover svg,
+        &:focus-visible svg {
+            transform: scale(1.12);
+        }
+    }
+
+    /* While the menu is open the header sits on black. */
+    .theo-header--menu-open {
+        @apply text-white;
+
+        & .theo-header__button {
+            @apply pointer-events-none opacity-0;
+        }
+    }
+
+    /*
+      The panel: on the right, the whole height (the whole screen on
+      phones). Indigo (--menu-ground), lighter than the wipe that reveals
+      it; film grain.
+    */
+    .theo-menu {
+        @apply pointer-events-none fixed top-0 right-0 bottom-0 z-30 w-full overflow-hidden text-white opacity-0 sm:w-[clamp(24rem,32vw,34rem)];
+        background: var(--menu-ground);
+
+        /* Film grain (--grain), under the content. */
+        &::after {
+            content: '';
+            @apply pointer-events-none absolute inset-0;
+            background-image: var(--grain);
+            mix-blend-mode: overlay;
+            opacity: var(--menu-grain);
+        }
+    }
+
+    .theo-menu--open,
+    /* No-JS fallback: the menu button links to #meniu. */
+    .theo-menu:target {
+        @apply pointer-events-auto opacity-100;
+    }
+
+    /* The page beside the panel, dimmed while it is open. */
+    .theo-backdrop {
+        @apply pointer-events-none fixed inset-0 z-[29] bg-black opacity-0;
+        transition: opacity 0.6s var(--motion-out);
+    }
+
+    :root.nav-open .theo-backdrop,
+    :root:has(.theo-menu:target) .theo-backdrop {
+        @apply pointer-events-auto opacity-35;
+    }
+
+    /*
+      After the panel on dennissnellenberg.com: the navigation from below
+      the round button, the foot at the bottom. Scrolls on its own when a
+      short screen cannot hold it. On a phone at least 2.5rem at the sides,
+      so the current page's dot, set outside its word, keeps clear of the edge.
+    */
+    .theo-menu__inner {
+        @apply relative z-[1] flex h-full flex-col justify-between gap-10 overflow-y-auto;
+        padding: max(7.5rem, 14vh) clamp(2.5rem, 6vw, 5rem) max(2rem, 7vh);
+    }
+
+    .theo-menu__label {
+        @apply text-xs tracking-[0.08em] uppercase;
+        color: rgb(255 255 255 / 0.5);
+    }
+
+    .theo-menu__stripe {
+        @apply mt-6 border-0 border-t border-white/20;
+    }
+
+    /* The pages, large; the current one (and the one pointed at) with a dot
+       before it, set outside the word. */
+    .theo-menu__links {
+        @apply flex flex-col items-start pt-[3.5vh];
+    }
+
+    .theo-menu__link {
+        @apply relative inline-block font-normal;
+        font-size: clamp(2.5rem, 4.4vw, 3.5rem);
+        line-height: 1;
+        will-change: transform;
+
+        &::before {
+            content: '';
+            @apply absolute top-1/2 size-2.5 rounded-full bg-white;
+            left: -1.4rem;
+            transform: translateY(-50%) scale(0);
+            transition: transform var(--duration) var(--motion-out);
+        }
+
+        &:hover::before,
+        &:focus-visible::before,
+        &.is-active::before {
+            transform: translateY(-50%) scale(1);
+        }
+
+        /* On a phone the current page's dot comes inside, on the menu's
+           edge with the other links, its word moved over for it; none on
+           a tap elsewhere. */
+        @media (max-width: 767px) {
+            &::before {
+                left: 0;
+            }
+
+            &.is-active {
+                padding-left: 1.4rem;
+            }
+
+            &:not(.is-active):is(:hover, :focus-visible)::before {
+                transform: translateY(-50%) scale(0);
+            }
+        }
+    }
+
+    /*
+      The labels roll letter by letter on hover, as the top bar's
+      (css/site/roll.css); the other links dim back — for a link only, not
+      Servicii, which would dim the services it has just opened. Each label
+      is its own row, so two rolling at once never cross.
+    */
+    :is(.theo-menu__links, .theo-menu__services):has(
+            a:is(.theo-menu__link, .theo-menu__service):is(
+                    :hover,
+                    :focus-visible
+                )
+        )
+        :is(.theo-menu__link, .theo-menu__service):not(:hover, :focus-visible)
+        .roll {
+        opacity: 0.35;
+    }
+
+    /* On the label: the links' own opacity is the entry's (GSAP, inline). */
+    :is(.theo-menu__link, .theo-menu__service) .roll {
+        transition: opacity var(--duration) var(--motion-out);
+    }
+
+    /*
+      Servicii: a page's size, but a disclosure — its plus turns to a ✕ and
+      the three services open under it, the height easing
+      (js/public/theodore-menu.ts; at once without it). Not selectable, so
+      a quick second click never paints the roll's hidden copies.
+    */
+    .theo-menu__group > summary {
+        @apply inline-flex cursor-pointer list-none items-center gap-[0.22em] select-none;
+        -webkit-tap-highlight-color: transparent;
+
+        &::-webkit-details-marker {
+            display: none;
+        }
+    }
+
+    /* What the script eases the height of. */
+    .theo-menu__sub {
+        @apply overflow-hidden;
+    }
+
+    /* The plus, centred on the word's capitals, turned an eighth of a turn
+       into a ✕ as the group opens; back as it closes (`is-closing`, while
+       it eases shut). */
+    .theo-menu__plus {
+        @apply size-[0.6em] shrink-0;
+        fill: none;
+        stroke: currentColor;
+        stroke-width: 2;
+        stroke-linecap: round;
+        transition: rotate var(--duration) var(--motion-out);
+
+        .theo-menu__group[open]:not(.is-closing) & {
+            rotate: 45deg;
+        }
+    }
+
+    .theo-menu__services {
+        @apply flex flex-col items-start gap-2.5 pt-6 pb-5 md:gap-3;
+    }
+
+    .theo-menu__service {
+        @apply leading-tight opacity-75;
+        font-size: clamp(1.375rem, 2.2vw, 1.75rem);
+        transition: opacity var(--duration-fast) var(--motion-out);
+
+        &:hover,
+        &:focus-visible,
+        &.is-active {
+            @apply opacity-100;
+        }
+    }
+
+    /* How to reach us, side by side. */
+    .theo-menu__foot {
+        @apply flex flex-wrap gap-x-14 gap-y-6;
+    }
+
+    /* Its links roll on hover, as the menu's own (css/site/roll.css). */
+    .theo-menu__details {
+        @apply mt-4 flex flex-wrap gap-x-6 gap-y-2;
+    }
+
+    /* The old variant's own ✕ (header-theodore): the round button's spot. */
+    .theo-menu__close {
+        @apply absolute top-5 right-6 z-10 grid size-16 place-items-center rounded-full border border-current text-white transition-colors md:right-12;
+        fill: none;
+        stroke: currentColor;
+        stroke-width: 1.5;
+        stroke-linecap: round;
+
+        & svg {
+            transition: transform var(--duration) var(--motion-out);
+        }
+
+        &:hover,
+        &:focus-visible {
+            @apply text-neutral-400;
+        }
+
+        &:hover svg,
+        &:focus-visible svg {
+            transform: rotate(90deg);
+        }
+    }
+
+    .theo-overlay {
+        @apply pointer-events-none fixed inset-0 z-50 size-full;
+        /* Same as the page-transition curtain: menu → next page is one seamless cover. */
+        fill: var(--menu-wipe);
+    }
+
+    /* The curtain's grain, clipped to its moving shape (theodore-menu.blade.php),
+       as on the page-transition curtain. */
+    .theo-overlay-grain {
+        @apply pointer-events-none fixed inset-0 z-50;
+        background-image: var(--grain);
+        mix-blend-mode: overlay;
+        opacity: var(--menu-grain);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .theo-menu__link::before,
+        .theo-menu__service,
+        .theo-menu__plus,
+        .theo-backdrop {
+            transition: none;
+        }
+    }
+}

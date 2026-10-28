@@ -1,0 +1,5 @@
+{
+    "name": "webis",
+    "private": true,
+    "description": "The design-sync package root: Webis's styles-only design system for claude.ai/design (see config.json)."
+}

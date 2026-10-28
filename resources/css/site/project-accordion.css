@@ -1,0 +1,270 @@
+/*
+  "Proiecte selectate", layout "accordion" (components/site/selected-projects):
+  the projects as rows that open, one at a time, into a short case — the
+  interface large on the project's colour beside the three facts and a link.
+  Native <details>, working without a script; with it
+  (js/public/project-accordion.ts) the case slides open and shut, one open
+  at a time, and the +/× icon turns with it.
+
+  On white. Contrast: names (--navy-950) 19:1, the rest (--ink-muted) 6.2:1.
+*/
+@layer components {
+    /* A white sheet rising over the lavender one before it (as each section
+       on sendpotion.com), with the same rounded top. */
+    .project-accordion {
+        @apply relative z-[1] px-[var(--site-gap)] pt-16 pb-24 md:pt-24 md:pb-32;
+        margin-top: -32px;
+        border-radius: 32px 32px 0 0;
+        color: var(--navy-950);
+        background: #fff;
+
+        /* The mock-ups, in the violet. */
+        --project-accent: var(--violet-500);
+        --project-tint: #efebff;
+    }
+
+    .project-accordion__inner {
+        @apply mx-auto max-w-[var(--content-max)];
+    }
+
+    /* ---- Head, as the other sections' ------------------------------------------ */
+
+    .project-accordion__head {
+        @apply grid gap-6 md:grid-cols-12 md:items-end md:gap-10;
+    }
+
+    .project-accordion__label {
+        @apply inline-flex h-7 items-center rounded-full bg-white px-3 text-xs font-medium;
+        color: var(--violet-500);
+        border: 1px solid rgb(119 90 252 / 0.2);
+    }
+
+    .project-accordion__title {
+        @apply mt-5 font-medium;
+        font-size: 36px;
+        line-height: 1.1;
+        letter-spacing: -0.02em;
+
+        @media (min-width: 1024px) {
+            font-size: 56px;
+        }
+    }
+
+    .project-accordion__intro {
+        @apply max-w-[42ch] text-pretty md:col-span-5 md:col-start-8 md:pb-2;
+        font-size: 17px;
+        line-height: 1.6;
+        color: var(--ink-muted);
+    }
+
+    /* ---- Rows --------------------------------------------------------------------- */
+
+    .project-accordion__list {
+        @apply mt-12 border-b md:mt-16;
+        border-color: rgb(38 42 111 / 0.12);
+    }
+
+    .project-accordion__item {
+        @apply border-t;
+        border-color: rgb(38 42 111 / 0.12);
+    }
+
+    /* Number, name, audience, and the +/× icon. */
+    .project-accordion__summary {
+        @apply grid cursor-pointer list-none items-center gap-x-6 py-7 md:py-9;
+        grid-template-columns: 2rem minmax(0, 1fr) auto;
+        outline-offset: 4px;
+
+        @media (min-width: 768px) {
+            @apply gap-x-8;
+            grid-template-columns: 3rem minmax(0, 1fr) 12rem auto;
+        }
+
+        &::-webkit-details-marker {
+            display: none;
+        }
+
+        &:focus-visible {
+            outline: 2px solid var(--violet-500);
+        }
+    }
+
+    .project-accordion__number {
+        @apply text-xs tracking-widest;
+        color: var(--ink-muted);
+    }
+
+    .project-accordion__name {
+        @apply font-medium text-balance;
+        font-size: clamp(1.375rem, 2.4vw, 2.125rem);
+        line-height: 1.15;
+        letter-spacing: -0.02em;
+        transition: transform var(--base) var(--ease);
+    }
+
+    .project-accordion__audience {
+        @apply hidden text-sm font-medium md:block;
+        color: var(--violet-500);
+    }
+
+    /* A ring with a plus, turning into a filled × when open. */
+    .project-accordion__icon {
+        @apply relative grid size-11 shrink-0 place-items-center rounded-full;
+        border: 1px solid rgb(38 42 111 / 0.18);
+        transition:
+            background-color var(--slow) var(--ease),
+            border-color var(--slow) var(--ease),
+            transform var(--slow) var(--ease);
+
+        &::before,
+        &::after {
+            content: '';
+            @apply absolute h-px w-3.5 rounded-full;
+            background: var(--navy-950);
+            transition: background-color var(--slow) var(--ease);
+        }
+
+        &::after {
+            transform: rotate(90deg);
+        }
+    }
+
+    /* Open (set by the script as the opening starts, so the icon turns with
+       it): the plus turns into a filled ×. */
+    .project-accordion__item.is-open .project-accordion__icon {
+        transform: rotate(45deg);
+        border-color: var(--violet-cta);
+        background: var(--violet-cta);
+
+        &::before,
+        &::after {
+            background: #fff;
+        }
+    }
+
+    @media (hover: hover) and (pointer: fine) {
+        .project-accordion__summary:hover {
+            & .project-accordion__name {
+                transform: translateX(0.5rem);
+            }
+
+            & .project-accordion__icon {
+                border-color: var(--violet-cta);
+            }
+        }
+    }
+
+    /* ---- The case ----------------------------------------------------------------- */
+
+    /* The interface (5 of 12, 16:10) beside the story; stacked below 1024px.
+       overflow-hidden: the script animates its height. */
+    .project-accordion__case {
+        @apply grid gap-8 overflow-hidden pb-10 lg:grid-cols-12 lg:gap-10 lg:pb-12;
+    }
+
+    .project-accordion__visual {
+        @apply relative max-w-xl overflow-hidden rounded-[20px] lg:col-span-5 lg:max-w-none;
+        aspect-ratio: 16 / 10;
+        background: linear-gradient(
+            135deg,
+            var(--purple-500),
+            var(--violet-500)
+        );
+
+        /* A fine pattern over the colour, under the interface, as on the
+           product cards of sendpotion.com: dots, a grid, corner marks. */
+        &::before {
+            content: '';
+            @apply pointer-events-none absolute inset-0;
+            background-image: var(--pattern);
+            background-size: var(--pattern-size);
+            background-position: center;
+        }
+
+        --pattern: radial-gradient(
+            circle,
+            rgb(255 255 255 / 0.32) 1.2px,
+            transparent 1.6px
+        );
+        --pattern-size: 18px 18px;
+
+        & .project-interface {
+            top: 2rem;
+            left: 2rem;
+            right: -1.5rem;
+            bottom: -1rem;
+            border-radius: 10px 0 0 0;
+            box-shadow: 0 24px 48px -20px rgb(1 15 28 / 0.4);
+        }
+    }
+
+    .project-accordion__item:nth-child(2) .project-accordion__visual {
+        --pattern:
+            linear-gradient(rgb(255 255 255 / 0.12) 1px, transparent 1px),
+            linear-gradient(90deg, rgb(255 255 255 / 0.12) 1px, transparent 1px);
+        --pattern-size: 24px 24px;
+
+        background: linear-gradient(135deg, var(--violet-500), #5b3fe0);
+    }
+
+    .project-accordion__item:nth-child(3) .project-accordion__visual {
+        /* Small corner marks (┌), as on the reference's third card. */
+        --pattern: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32'%3E%3Cpath d='M10 18V10h8' fill='none' stroke='%23fff' stroke-opacity='.45' stroke-width='1.5'/%3E%3C/svg%3E");
+        --pattern-size: 32px 32px;
+
+        background: linear-gradient(
+            135deg,
+            var(--lavender-300),
+            var(--violet-500)
+        );
+    }
+
+    .project-accordion__story {
+        @apply flex flex-col lg:col-span-6 lg:col-start-7 lg:pt-2;
+    }
+
+    .project-accordion__facts {
+        & > div {
+            @apply border-b py-4 first:pt-0;
+            border-color: rgb(38 42 111 / 0.1);
+        }
+
+        & dt {
+            @apply text-xs;
+            color: var(--ink-muted);
+        }
+
+        & dd {
+            @apply mt-1 text-base leading-relaxed text-pretty;
+        }
+
+        /* What it does now: the outcome, a little stronger. */
+        & > div:last-child dd {
+            @apply font-medium;
+        }
+    }
+
+    .project-accordion__link {
+        @apply mt-8 self-start;
+
+        & .arrow-link__fill {
+            background: var(--violet-cta);
+        }
+    }
+
+    /* The pill in the call-to-action purple-blue. */
+    .project-accordion__foot {
+        @apply mt-14 flex justify-center;
+
+        & .pill {
+            --btn-ink: var(--violet-cta);
+        }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .project-accordion__name,
+        .project-accordion__icon {
+            transition: none;
+        }
+    }
+}

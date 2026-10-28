@@ -1,0 +1,1130 @@
+/*
+  Software la comandă (public/software.blade.php), on the site's visual
+  language (css/site/system.css) and /web's spacing: what is particular to
+  the page. Scoped to its own classes (.sw-*); the shared pieces it reuses
+  (the hero, the statement, the marquee, the section heads, /web's cards
+  and questions) are only adjusted here where they sit on this page.
+
+  Behaviour: js/public/software-explorer.ts (02), software-timeline.ts (03),
+  anchor-scroll.ts (the statement's "Cum lucrăm").
+*/
+@layer components {
+    /* ---- Hero ------------------------------------------------------------------ */
+
+    /*
+      The display title (Anton, capitals) on two lines: as tight as it goes
+      while Ă's breve and Î's circumflex stay clear of the line above. At the
+      shared 1.05 they touch; measured in the browser, about 1.24 keeps them
+      clear. The hero only: the sections' titles are the site's chapter
+      titles, not the display face.
+    */
+    .sw-hero .page-hero__title {
+        line-height: 1.24;
+    }
+
+    /* ---- The statement, on the hero's backdrop --------------------------------- */
+
+    /* Its link goes down the page: the arrow turned to point there. */
+    #de-ce-la-comanda .arrow-link__icon {
+        rotate: 90deg;
+    }
+
+    /* ---- The modules' strip ------------------------------------------------------ */
+
+    /*
+      Along the hero's foot, where the home page's hero has its logos; no
+      hairline of its own, the statement's after it closing the strip.
+    */
+    .sw-hero__modules {
+        @apply mt-16;
+    }
+
+    /*
+      As /web's hero with its offers (.page-hero--led): the hero
+      fills the first screen on a desktop and the strip sits on its foot, a
+      short step above the fold. The band itself runs the window's full
+      width, out of the column; the hero clips the scrollbar's few pixels of
+      overhang.
+
+      The text centred between the logo and the strip: the hero starts just
+      under the logo, and the room left over goes equally above the label
+      and below the intro.
+    */
+    .sw-hero {
+        @apply items-stretch pb-10 md:pt-24 md:pb-14 lg:min-h-svh;
+        overflow-x: clip;
+
+        & .page-hero__inner {
+            @apply flex flex-col;
+        }
+
+        & .page-hero__label {
+            @apply mt-auto;
+        }
+
+        & .page-hero__foot {
+            @apply mb-auto;
+        }
+    }
+
+    .sw-hero__modules .sw-marquee {
+        width: 100vw;
+        margin-inline: calc(50% - 50vw);
+    }
+
+    /*
+      The marquee's items, as cards packed close together where the home
+      page spaces its logos wide: one band of cards, the icon at the top and
+      the module's name at the foot. Every card is the same size, so the
+      band keeps an even rhythm as it slides.
+
+      On the contact form's glass (css/site/contact-page.css): a thin sheen
+      at the top left, almost clear by the bottom right, and a fine
+      highlight along the top edge. Not its blur: inside the marquee's mask
+      it would have nothing behind it to blur, and the band is a few dozen
+      cards always moving.
+    */
+    .sw-marquee .sw-strip__item {
+        padding-inline: 0.3rem;
+    }
+
+    .sw-module {
+        @apply flex flex-col justify-between rounded-[1.5rem] border p-6 text-white;
+        width: clamp(11rem, 15vw, 15rem);
+        height: clamp(7.5rem, 9.75vw, 9.75rem);
+        border-color: rgb(255 255 255 / 0.14);
+        background: linear-gradient(
+            135deg,
+            rgb(255 255 255 / 0.07),
+            rgb(255 255 255 / 0.015) 60%
+        );
+        box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.18);
+        transition: border-color var(--fast) var(--ease);
+
+        & .sw-icon {
+            @apply size-6 shrink-0;
+            color: rgb(255 255 255 / 0.7);
+        }
+    }
+
+    .sw-strip__item:hover .sw-module {
+        border-color: rgb(255 255 255 / 0.35);
+    }
+
+    .sw-module__label {
+        @apply text-base leading-tight font-medium tracking-[-0.01em] text-balance md:text-lg;
+    }
+
+    /* Reduced motion: still, the one set centred, wrapping as it needs. */
+    @media (prefers-reduced-motion: reduce) {
+        .sw-marquee {
+            mask-image: none;
+
+            & .logo-marquee__track {
+                @apply w-auto justify-center;
+            }
+
+            & .logo-marquee__set {
+                @apply shrink flex-wrap justify-center gap-y-3;
+            }
+
+            & .logo-marquee__set[aria-hidden='true'] {
+                @apply hidden;
+            }
+        }
+    }
+
+    /* ---- The light panel: rising over the dark area ----------------------------- */
+
+    /*
+      As a section rises over an internal page's hero (css/site/page-hero.css),
+      but by the home page's 32px (css/site/service-cards.css): the statement
+      above then ends as far below its link as the home page's does.
+    */
+    .chapter.sw-why {
+        @apply -mt-8 rounded-t-[32px] pt-12 md:pt-16 lg:pt-20;
+
+        &::before {
+            border-radius: inherit;
+        }
+    }
+
+    /* ---- Links in the copy ("Vezi produsele SaaS →", "Vezi proiectele →") -------- */
+
+    .sw-link {
+        @apply inline-flex items-center font-medium whitespace-nowrap underline decoration-1 underline-offset-[0.3em];
+        color: var(--ink);
+        text-decoration-color: color-mix(
+            in srgb,
+            currentColor 35%,
+            transparent
+        );
+        transition:
+            color var(--fast) var(--ease),
+            text-decoration-color var(--fast) var(--ease);
+
+        &:hover {
+            color: var(--violet-500);
+            text-decoration-color: currentColor;
+        }
+
+        &:focus-visible {
+            outline: 2px solid var(--accent);
+            outline-offset: 4px;
+            border-radius: 2px;
+        }
+    }
+
+    /* ---- Why made to order: the cells, then the alternative ------------------------ */
+
+    .sw-mock__tile {
+        @apply grid shrink-0 place-items-center text-white;
+        width: 2em;
+        height: 2em;
+        border-radius: 0.55em;
+        background: linear-gradient(
+            135deg,
+            var(--purple-500),
+            var(--violet-500)
+        );
+        box-shadow: 0 0.4em 0.8em -0.4em rgb(119 90 252 / 0.8);
+
+        & .sw-icon {
+            width: 1.1em;
+            height: 1.1em;
+        }
+    }
+
+    /* Status pills, shared by the mock-ups. */
+    .sw-status {
+        @apply rounded-full font-medium whitespace-nowrap;
+        padding: 0.3em 0.75em;
+        font-size: 0.85em;
+    }
+
+    .sw-status--ok {
+        color: #17663a;
+        background: #dcf3e4;
+    }
+
+    .sw-status--work {
+        color: #4b33c9;
+        background: #ebe6ff;
+    }
+
+    .sw-status--wait {
+        color: #8a5300;
+        background: #fdf0d5;
+    }
+
+    /* ---- 02 What we build: the modules as a reel ------------------------------ */
+
+    /* The neighbours run off the screen's edges, clipped there. */
+    .chapter.sw-build {
+        overflow-x: clip;
+    }
+
+    .sw-build .chapter__inner {
+        @apply gap-10 lg:gap-14;
+    }
+
+    /* Beside the title: its line, and where the reel is. */
+    .sw-reel__aside {
+        @apply grid gap-4 lg:col-span-5 lg:col-start-8 lg:pb-2;
+
+        & .chapter__intro {
+            @apply lg:col-auto lg:col-start-auto lg:pb-0;
+        }
+    }
+
+    .sw-reel__count {
+        @apply font-micro text-xs tracking-[0.08em] tabular-nums;
+        color: var(--muted);
+
+        & span {
+            color: var(--accent);
+        }
+    }
+
+    /*
+      The track: out to the screen's edges, its first panel on the
+      column's edge. A row that scrolls sideways by itself, snapping to each
+      panel; held and moved by the script instead once pinned.
+    */
+    .sw-reel__viewport {
+        @apply overflow-x-auto;
+        width: 100vw;
+        margin-inline: calc(50% - 50vw);
+        scroll-snap-type: x mandatory;
+        scrollbar-width: none;
+
+        &::-webkit-scrollbar {
+            @apply hidden;
+        }
+    }
+
+    /*
+      The carousel (js/public/software-reel.ts): the panels on top of each
+      other in the middle, the script placing each by how far it is from
+      the current one; gliding there, except while dragged.
+    */
+    .sw-reel.is-carousel {
+        & .sw-reel__viewport {
+            @apply relative cursor-grab overflow-visible outline-none;
+            scroll-snap-type: none;
+            touch-action: pan-y;
+        }
+
+        & .sw-reel__track {
+            @apply block w-auto p-0;
+        }
+
+        & .sw-reel__item {
+            @apply absolute top-0 left-1/2 select-none;
+            translate: -50% 0;
+            transition:
+                transform 0.75s var(--ease),
+                opacity 0.75s var(--ease);
+            will-change: transform;
+        }
+
+        /* The neighbours, a little behind: a click brings them forward. */
+        & .sw-reel__item:not(.is-current) {
+            @apply cursor-pointer;
+        }
+
+        & .sw-modcard {
+            box-shadow: 0 40px 80px -50px rgb(31 40 104 / 0.45);
+        }
+    }
+
+    .sw-reel.is-carousel.is-dragging {
+        & .sw-reel__viewport {
+            @apply cursor-grabbing;
+        }
+
+        & .sw-reel__item {
+            transition: none;
+        }
+    }
+
+    .sw-reel.is-still .sw-reel__item {
+        transition: none;
+    }
+
+    .sw-reel__viewport:focus-visible .sw-modcard {
+        outline: 3px solid var(--violet-500);
+        outline-offset: 4px;
+    }
+
+    /* Under it: the arrows either side of a dot per panel. */
+    .sw-reel__controls {
+        @apply hidden;
+    }
+
+    .sw-reel.is-carousel .sw-reel__controls {
+        @apply flex items-center justify-center gap-6;
+    }
+
+    .sw-reel__step {
+        @apply grid size-12 cursor-pointer place-items-center rounded-full border;
+        border-color: var(--line);
+        color: var(--ink);
+        transition:
+            background-color var(--base) var(--ease),
+            color var(--base) var(--ease),
+            border-color var(--base) var(--ease);
+
+        & svg {
+            @apply w-3.5;
+        }
+
+        &:hover,
+        &:focus-visible {
+            @apply text-white;
+            border-color: #1f2868;
+            background: #1f2868;
+        }
+    }
+
+    .sw-reel__step--prev svg {
+        rotate: 180deg;
+    }
+
+    .sw-reel__dots {
+        @apply flex items-center gap-2;
+    }
+
+    .sw-reel__dot {
+        @apply h-2 w-2 cursor-pointer rounded-full;
+        background: rgb(31 40 104 / 0.2);
+        transition:
+            width var(--slow) var(--ease),
+            background-color var(--slow) var(--ease);
+
+        &[aria-current='true'] {
+            @apply w-6;
+            background: #1f2868;
+        }
+    }
+
+    .sw-reel__track {
+        @apply flex w-max gap-5 lg:gap-6;
+        padding-inline: max(var(--site-gap), (100vw - var(--content-max)) / 2);
+    }
+
+    .sw-reel__item {
+        @apply flex;
+        scroll-snap-align: center;
+    }
+
+    /* A panel: its number, name and line, its interface beside them. */
+    .sw-modcard {
+        @apply grid gap-8 overflow-hidden rounded-[1.75rem] bg-white p-7 lg:grid-cols-[minmax(0,0.72fr)_minmax(0,1.28fr)] lg:gap-10 lg:rounded-[2rem] lg:p-10;
+        width: min(86vw, 54rem);
+
+        @media (min-width: 1024px) {
+            height: clamp(24rem, 58vh, 34rem);
+        }
+    }
+
+    .sw-modcard__copy {
+        @apply flex flex-col gap-4 lg:justify-between;
+    }
+
+    .sw-modcard__no {
+        @apply font-light tabular-nums;
+        font-size: clamp(2.75rem, 4.6vw, 4.5rem);
+        line-height: 0.9;
+        letter-spacing: -0.05em;
+        color: var(--violet-500);
+    }
+
+    .sw-modcard__name {
+        @apply font-medium text-balance;
+        font-size: clamp(1.625rem, 2.3vw, 2.25rem);
+        line-height: 1.08;
+        letter-spacing: -0.03em;
+        color: var(--ink);
+    }
+
+    .sw-modcard__text {
+        @apply mt-3 max-w-[32ch] text-[17px] leading-relaxed text-pretty;
+        color: var(--muted);
+    }
+
+    /* The interface: the mock-up's card, filling its half. */
+    /*
+      A drawn screen held in a card (the carousel's panels here, Produse
+      SaaS's stacking cards): the whole window, centred in its frame, rather
+      than running off the frame's foot.
+    */
+    :is(.sw-modcard__screen, .saas-stack__visual) .sw-mock {
+        @apply flex items-center;
+        padding: 6%;
+
+        & .sw-mock__window {
+            @apply w-full rounded-[0.9em] border-b;
+            min-height: 0;
+        }
+    }
+
+    .sw-modcard__screen {
+        @apply min-h-0;
+        aspect-ratio: 4 / 3;
+
+        @media (min-width: 1024px) {
+            aspect-ratio: auto;
+        }
+
+        & .sw-mock {
+            @apply h-full;
+        }
+    }
+
+    /* ---- 02 The mock-ups: the home page's purple UI card ---------------------------- */
+
+    /*
+      The card: the lavender ground with a faint grid and a purple glow, the
+      application's window on it, running off the card's foot. Everything in
+      the window is sized in em off the card's width (the container).
+    */
+    .sw-mock {
+        @apply relative overflow-hidden rounded-[1.5rem];
+        container-type: inline-size;
+        padding: 6% 6% 0;
+        background:
+            radial-gradient(
+                ellipse 70% 60% at 78% 30%,
+                rgb(164 76 238 / 0.22),
+                transparent 70%
+            ),
+            radial-gradient(
+                ellipse 60% 55% at 10% 100%,
+                rgb(119 90 252 / 0.18),
+                transparent 70%
+            ),
+            linear-gradient(160deg, #f8f6ff, #ece8ff);
+
+        /* The faint grid, fading out from the middle. */
+        &::before {
+            content: '';
+            @apply pointer-events-none absolute inset-0;
+            background-image:
+                linear-gradient(rgb(38 42 111 / 0.07) 1px, transparent 1px),
+                linear-gradient(
+                    90deg,
+                    rgb(38 42 111 / 0.07) 1px,
+                    transparent 1px
+                );
+            background-size: 2.5rem 2.5rem;
+            mask-image: radial-gradient(
+                ellipse 70% 70% at 50% 40%,
+                #000 20%,
+                transparent 80%
+            );
+        }
+    }
+
+    .sw-mock__window {
+        @apply relative overflow-hidden rounded-t-[0.9em] border border-b-0 bg-white;
+        font-size: clamp(8.5px, 2cqi, 14px);
+        min-height: 31em;
+        border-color: rgb(38 42 111 / 0.12);
+        box-shadow: 0 1.5em 3em -1.5em rgb(91 63 224 / 0.45);
+        color: var(--navy-950);
+
+        & .sw-icon {
+            width: 1.15em;
+            height: 1.15em;
+        }
+    }
+
+    .sw-mock__bar {
+        @apply flex items-center gap-[0.75em] border-b;
+        padding: 0.9em 1.25em;
+        border-color: rgb(38 42 111 / 0.08);
+
+        & > b {
+            @apply font-semibold;
+            font-size: 1.1em;
+        }
+    }
+
+    .sw-mock__crumb {
+        @apply truncate;
+        color: var(--ink-muted);
+
+        &::before {
+            content: '/';
+            margin-right: 0.6em;
+            opacity: 0.5;
+        }
+    }
+
+    .sw-mock__dots {
+        @apply ml-auto flex gap-[0.35em];
+
+        & i {
+            @apply block rounded-full;
+            width: 0.5em;
+            height: 0.5em;
+            background: #dcd7f7;
+        }
+    }
+
+    .sw-mock__body {
+        padding: 1.25em;
+    }
+
+    .sw-mock__tools {
+        @apply mb-[1em] flex items-center justify-between gap-[1em];
+    }
+
+    .sw-mock__search {
+        @apply flex items-center gap-[0.5em] rounded-full border;
+        padding: 0.45em 1.2em 0.45em 0.85em;
+        min-width: 45%;
+        border-color: rgb(38 42 111 / 0.12);
+        color: var(--ink-muted);
+    }
+
+    .sw-mock__button {
+        @apply flex items-center gap-[0.4em] rounded-full font-medium whitespace-nowrap text-white;
+        padding: 0.45em 1em 0.45em 0.8em;
+        background: var(--violet-cta);
+    }
+
+    /* ERP: the stock. */
+    .sw-stock {
+        @apply w-full border-collapse text-left;
+
+        & th {
+            @apply font-micro font-normal tracking-[0.06em] uppercase;
+            font-size: 0.8em;
+            padding: 0 0.75em 0.75em;
+            color: var(--ink-muted);
+        }
+
+        & td {
+            @apply border-t;
+            padding: 0.85em 0.75em;
+            border-color: rgb(38 42 111 / 0.08);
+        }
+
+        & td:nth-child(2) {
+            @apply font-micro;
+            font-size: 0.92em;
+        }
+
+        & td:last-child {
+            color: var(--ink-muted);
+        }
+
+        & tr.is-low td {
+            background: #fff8eb;
+        }
+    }
+
+    .sw-pill-warn {
+        @apply ml-[0.5em] inline-flex items-center gap-[0.3em] rounded-full align-middle font-medium whitespace-nowrap;
+        padding: 0.2em 0.65em 0.2em 0.5em;
+        font-size: 0.82em;
+        color: #8a5300;
+        background: #fde9c2;
+
+        & .sw-icon {
+            width: 1em;
+            height: 1em;
+        }
+    }
+
+    /* CRM: the offers' pipeline. */
+    .sw-pipeline {
+        @apply grid grid-cols-3 gap-[0.75em];
+    }
+
+    .sw-pipeline__col {
+        @apply flex flex-col gap-[0.6em] rounded-[0.75em];
+        padding: 0.75em;
+        background: #f6f4ff;
+    }
+
+    .sw-pipeline__head {
+        @apply mb-[0.2em] flex items-center justify-between font-semibold;
+        font-size: 0.92em;
+
+        & span {
+            @apply grid place-items-center rounded-full font-micro font-normal;
+            min-width: 1.7em;
+            height: 1.7em;
+            font-size: 0.85em;
+            background: #fff;
+            color: var(--ink-muted);
+        }
+    }
+
+    .sw-deal {
+        @apply flex flex-col gap-[0.6em] rounded-[0.6em] border bg-white;
+        padding: 0.75em 0.8em;
+        border-color: rgb(38 42 111 / 0.08);
+        box-shadow: 0 0.2em 0.5em -0.3em rgb(38 42 111 / 0.2);
+
+        & b {
+            @apply font-medium;
+            line-height: 1.3;
+        }
+    }
+
+    .sw-deal__foot {
+        @apply flex items-center justify-between;
+
+        & span {
+            @apply font-micro;
+            font-size: 0.88em;
+            color: var(--ink-muted);
+        }
+
+        & i {
+            @apply grid place-items-center rounded-full font-semibold text-white not-italic;
+            width: 2em;
+            height: 2em;
+            font-size: 0.75em;
+            background: linear-gradient(
+                135deg,
+                var(--purple-500),
+                var(--violet-500)
+            );
+        }
+    }
+
+    .sw-pipeline__col.is-won {
+        background: #ecf8f0;
+
+        & .sw-deal {
+            border-color: rgb(23 102 58 / 0.15);
+        }
+    }
+
+    /* Registratură: the register. */
+    .sw-register__next {
+        @apply mb-[0.75em] rounded-[0.6em];
+        padding: 0.6em 0.9em;
+        font-size: 0.92em;
+        color: var(--ink-muted);
+        background: #f6f4ff;
+
+        & b {
+            @apply font-micro font-semibold;
+            color: var(--violet-500);
+        }
+    }
+
+    .sw-register li {
+        @apply grid items-center gap-x-[1em] border-t;
+        grid-template-columns: auto minmax(0, 1fr) auto;
+        padding: 0.8em 0.25em;
+        border-color: rgb(38 42 111 / 0.08);
+    }
+
+    .sw-register__no {
+        @apply font-micro whitespace-nowrap;
+        font-size: 0.88em;
+        color: var(--ink-muted);
+    }
+
+    .sw-register__title {
+        @apply truncate font-medium;
+    }
+
+    .sw-way {
+        @apply rounded-full font-medium;
+        padding: 0.25em 0.7em;
+        font-size: 0.82em;
+    }
+
+    .sw-way--intrare {
+        color: #17663a;
+        background: #dcf3e4;
+    }
+
+    .sw-way--iesire {
+        color: #4b33c9;
+        background: #ebe6ff;
+    }
+
+    .sw-way--intern {
+        color: var(--ink-muted);
+        background: #eef0f4;
+    }
+
+    /* Approvals: one request on its way up. */
+    .sw-request {
+        @apply rounded-[0.8em] border;
+        padding: 1.1em 1.2em 1.3em;
+        border-color: rgb(38 42 111 / 0.1);
+        box-shadow: 0 0.6em 1.5em -0.9em rgb(91 63 224 / 0.35);
+    }
+
+    .sw-request__head {
+        @apply flex items-start gap-[0.8em];
+
+        & > span:nth-child(2) {
+            @apply flex min-w-0 flex-1 flex-col gap-[0.2em];
+        }
+
+        & b {
+            @apply font-semibold;
+            font-size: 1.05em;
+        }
+
+        & small {
+            font-size: 0.9em;
+            color: var(--ink-muted);
+        }
+    }
+
+    .sw-request__icon {
+        @apply grid shrink-0 place-items-center rounded-[0.55em];
+        width: 2.2em;
+        height: 2.2em;
+        color: var(--violet-500);
+        background: #ebe6ff;
+    }
+
+    .sw-flow {
+        @apply relative mt-[1.6em] grid grid-cols-3;
+
+        /* The line through the steps: done in violet, to come dashed. */
+        &::before,
+        &::after {
+            content: '';
+            @apply absolute;
+            top: 1em;
+            height: 2px;
+        }
+
+        &::before {
+            left: 16.66%;
+            width: 33.33%;
+            background: var(--violet-500);
+        }
+
+        &::after {
+            left: 50%;
+            width: 33.33%;
+            background: repeating-linear-gradient(
+                90deg,
+                #c9c0f7 0 0.4em,
+                transparent 0.4em 0.7em
+            );
+        }
+
+        & li {
+            @apply relative z-[1] flex flex-col items-center gap-[0.25em] text-center;
+        }
+
+        & b {
+            @apply mt-[0.4em] font-semibold;
+        }
+
+        & small {
+            font-size: 0.85em;
+            color: var(--ink-muted);
+        }
+    }
+
+    .sw-flow__dot {
+        @apply grid place-items-center rounded-full text-white;
+        width: 2em;
+        height: 2em;
+
+        & .sw-icon {
+            stroke-width: 2.75;
+            width: 1em;
+            height: 1em;
+        }
+    }
+
+    .sw-flow .is-done .sw-flow__dot {
+        background: var(--violet-500);
+    }
+
+    .sw-flow .is-now .sw-flow__dot {
+        @apply bg-white;
+        border: 2px solid var(--violet-500);
+        box-shadow: 0 0 0 0.35em rgb(119 90 252 / 0.18);
+    }
+
+    .sw-flow .is-now small {
+        @apply font-medium;
+        color: #8a5300;
+    }
+
+    .sw-toast {
+        @apply mt-[1.1em] ml-auto flex w-fit items-center gap-[0.6em] rounded-full text-white;
+        padding: 0.6em 1.1em 0.6em 0.9em;
+        font-size: 0.92em;
+        background: var(--navy-950);
+        box-shadow: 0 0.8em 1.6em -0.8em rgb(1 15 28 / 0.6);
+
+        & .sw-icon {
+            color: var(--lavender-300);
+        }
+    }
+
+    /* Reports: two figures and the bars. */
+    .sw-report__figures {
+        @apply mb-[0.9em] grid grid-cols-2 gap-[0.75em];
+    }
+
+    .sw-figure {
+        @apply flex flex-col rounded-[0.75em] border;
+        padding: 0.85em 1em;
+        border-color: rgb(38 42 111 / 0.1);
+
+        & small {
+            font-size: 0.88em;
+            color: var(--ink-muted);
+        }
+
+        & b {
+            @apply font-semibold;
+            margin-top: 0.15em;
+            font-size: 1.9em;
+            line-height: 1.15;
+            letter-spacing: -0.02em;
+        }
+
+        & span {
+            @apply font-medium;
+            font-size: 0.82em;
+            color: #17663a;
+        }
+    }
+
+    .sw-chart {
+        @apply rounded-[0.75em] border;
+        padding: 0.85em 1em 0.75em;
+        border-color: rgb(38 42 111 / 0.1);
+    }
+
+    .sw-chart__head {
+        @apply mb-[0.75em] flex items-center justify-between;
+
+        & b {
+            @apply font-semibold;
+        }
+    }
+
+    .sw-chart__bars {
+        @apply grid h-[8.5em] grid-cols-6 items-end gap-[0.9em];
+
+        & > span {
+            @apply flex h-full flex-col justify-end gap-[0.4em] text-center;
+        }
+
+        & i {
+            @apply block rounded-t-[0.35em];
+            height: var(--h);
+            background: #e4defd;
+        }
+
+        & .is-now i {
+            background: linear-gradient(var(--purple-500), var(--violet-500));
+        }
+
+        & small {
+            font-size: 0.8em;
+            color: var(--ink-muted);
+        }
+    }
+
+    /* Integrations: the application in the middle, three lines out. */
+    .sw-links {
+        @apply relative;
+        height: 25em;
+
+        & b {
+            @apply font-semibold;
+        }
+
+        & small {
+            font-size: 0.85em;
+            color: var(--ink-muted);
+        }
+    }
+
+    .sw-links__lines {
+        @apply absolute inset-0 size-full;
+
+        & path {
+            stroke: var(--violet-500);
+            stroke-opacity: 0.55;
+            stroke-width: 1.5;
+            stroke-dasharray: 5 6;
+            vector-effect: non-scaling-stroke;
+            animation: sw-flow 1.4s linear infinite;
+        }
+    }
+
+    @keyframes sw-flow {
+        to {
+            stroke-dashoffset: -11;
+        }
+    }
+
+    .sw-node {
+        @apply absolute flex -translate-x-1/2 -translate-y-1/2 flex-col items-center gap-[0.3em] rounded-[0.8em] border bg-white text-center;
+        padding: 0.8em 1.1em;
+        min-width: 9em;
+        border-color: rgb(38 42 111 / 0.12);
+        box-shadow: 0 0.6em 1.4em -0.8em rgb(91 63 224 / 0.45);
+
+        & > .sw-icon {
+            width: 1.5em;
+            height: 1.5em;
+            color: var(--violet-500);
+        }
+    }
+
+    .sw-node--app {
+        @apply flex-row gap-[0.7em];
+        left: 50%;
+        top: 50%;
+        padding: 0.9em 1.3em;
+        border-color: var(--violet-500);
+        box-shadow:
+            0 0 0 0.45em rgb(119 90 252 / 0.12),
+            0 1em 2em -1em rgb(91 63 224 / 0.6);
+
+        & b {
+            font-size: 1.1em;
+        }
+    }
+
+    .sw-node--a {
+        left: 17.5%;
+        top: 18.2%;
+    }
+
+    .sw-node--b {
+        left: 82.5%;
+        top: 18.2%;
+    }
+
+    .sw-node--c {
+        left: 50%;
+        top: 86.4%;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .sw-links__lines path {
+            animation: none;
+        }
+    }
+
+    /* ---- 03 How we work: the delivery as a timeline, on the indigo ------------------ */
+
+    /* A flat indigo, as /web's steps: the chapters' dark glows left out. */
+    .sw-steps.chapter--dark {
+        background: #1f2868;
+    }
+
+    .sw-timeline {
+        --step: 380ms;
+        --fill: 520ms;
+    }
+
+    .sw-seg {
+        @apply relative flex flex-col gap-3;
+    }
+
+    .sw-seg__label {
+        @apply font-micro text-xs tracking-[0.08em] whitespace-nowrap uppercase;
+        color: rgb(255 255 255 / 0.7);
+        transition: color var(--base) var(--ease);
+        transition-delay: calc(var(--i) * var(--step) + var(--fill) * 0.5);
+    }
+
+    .sw-seg__bar {
+        @apply relative block h-2 overflow-hidden rounded-full;
+        background: rgb(255 255 255 / 0.1);
+    }
+
+    .sw-seg__fill {
+        @apply absolute inset-0 block origin-left rounded-full;
+        background: rgb(255 255 255 / 0.5);
+        transition: transform var(--fill) cubic-bezier(0.65, 0, 0.35, 1);
+        transition-delay: calc(var(--i) * var(--step));
+    }
+
+    /* Development: three short bars, the modules delivered one after
+       another, in the accent. */
+    .sw-seg__bars {
+        @apply grid grid-cols-3 gap-1.5;
+    }
+
+    .sw-seg--build .sw-seg__fill {
+        background: linear-gradient(90deg, var(--lavender-300), #b98bff);
+        box-shadow: 0 0 1rem rgb(161 142 255 / 0.6);
+    }
+
+    .sw-seg--build .sw-seg__label {
+        @apply text-white;
+    }
+
+    /* Maintenance: it carries on, fading out to the right. */
+    .sw-seg--care .sw-seg__bar {
+        mask-image: linear-gradient(90deg, #000 30%, transparent);
+    }
+
+    .sw-seg--care .sw-seg__fill {
+        background: linear-gradient(
+            90deg,
+            rgb(255 255 255 / 0.55),
+            rgb(161 142 255 / 0.6)
+        );
+    }
+
+    .sw-seg__tag {
+        @apply w-fit rounded-full border font-micro text-[11px] tracking-[0.04em] whitespace-nowrap;
+        padding: 0.2rem 0.6rem;
+        color: var(--lavender-300);
+        border-color: rgb(161 142 255 / 0.45);
+        background: rgb(161 142 255 / 0.12);
+        transition:
+            opacity var(--base) var(--ease),
+            transform var(--base) var(--ease);
+        transition-delay: calc(var(--i) * var(--step) + var(--fill));
+    }
+
+    .sw-stage__name {
+        @apply text-xl font-medium tracking-[-0.02em];
+    }
+
+    .sw-stage__line {
+        @apply mt-2 text-base leading-relaxed text-pretty;
+        color: var(--muted);
+    }
+
+    /* A step's text lights with its segment. */
+    .sw-stage__text {
+        @apply mt-8 pr-4 md:mt-12 lg:mt-14;
+        transition: opacity var(--slow) var(--ease);
+        transition-delay: calc(var(--i) * var(--step));
+    }
+
+    /* Before it plays (set by the script, never without it): unlit. */
+    .sw-timeline[data-state='waiting'] {
+        & .sw-seg__fill {
+            transform: scaleX(0);
+            transition: none;
+        }
+
+        & .sw-seg__tag {
+            opacity: 0;
+            transform: translateY(0.375rem);
+            transition: none;
+        }
+
+        & .sw-seg--build .sw-seg__label {
+            color: rgb(255 255 255 / 0.7);
+            transition: none;
+        }
+
+        & .sw-stage__text {
+            opacity: 0.35;
+            transition: none;
+        }
+    }
+
+    /* The steps' grid: one under another on phones (label, segment, tag,
+       title, text); two to a row on tablets, all four in a row from
+       1024px, the segments' gap the columns' — so each text starts at its
+       segment's left edge, and a row of segments reads as one track. */
+    .sw-timeline {
+        @apply grid grid-cols-1 gap-y-10 md:grid-cols-2 md:gap-y-14 lg:grid-cols-4;
+        column-gap: 0.5rem;
+    }
+
+    /* Only development has a tag: none on phones for the others; its place
+       kept from tablets up, so every title in a row starts level. */
+    .sw-seg__tag--none {
+        @apply hidden md:invisible md:block;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .sw-timeline *,
+        .sw-timeline *::before,
+        .sw-timeline *::after {
+            transition: none !important;
+        }
+    }
+
+    /* ---- 05 Projects: /web's, the link on its own --------------------------------- */
+
+    .sw-projects .web-projects__foot {
+        @apply text-lg;
+    }
+}

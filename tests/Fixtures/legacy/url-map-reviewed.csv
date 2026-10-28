@@ -1,0 +1,23 @@
+﻿old_url,old_path,sources,object_type,object_sub_type,wp_id,wp_status,noindex,title,meta_description,focus_keyword,canonical,published_at,primary_category,article_count,content_source,has_elementor,inbound_internal_links,images,spam_flags,decision,target_path,notes,original_date,review
+https://www.webis.ro/web-development/,/web-development,yoast,term,category,13,,,"Web development",,,,,,2,,,,,,category,/blog/categorie/web-development/,,,
+https://www.webis.ro/seo/,/seo,yoast,term,category,27,,,SEO,"Totul despre SEO",,,,,1,,,,,,category,/blog/categorie/seo/,,,
+https://www.webis.ro/gazduire/,/gazduire,yoast,term,category,30,,,Găzduire,,,,,,1,,,,,,redirect,/blog/categorie/web-development/,,,"CHANGED: merged into web-development"
+https://www.webis.ro/uncategorized/,/uncategorized,yoast,term,category,1,,,Uncategorized,,,,,,0,,,,,,gone,,"Junk (spam injection or leftover): 410, never redirected",,
+https://www.webis.ro/2025/11/13/lucky-casino/,/2025/11/13/lucky-casino,analytics,,,,,,,,,,,,,,,,,url:casino,gone,,,,
+https://www.webis.ro/ghid-seo/,/ghid-seo,yoast,post,post,11,publish,,"Ghid SEO","Un ghid SEO pe înțelesul tuturor","ghid seo",https://www.webis.ro/ghid-seo/,"2026-04-14 12:27:44",seo,,elementor,1,,1,,article,/ghid-seo/,,2021-04-21,"CHANGED: Use original_date as published_at"
+https://www.webis.ro/12705-2/,/12705-2,yoast,post,post,12,publish,,"Ce tip de găzduire poți alege?",,,,"2026-04-14 09:15:00",web-development,,elementor,1,,0,,article,/care-sunt-tipurile-de-gazduire/,,2022-03-03,"DECIDED: original slug"
+https://www.webis.ro/creare-site-web/,/creare-site-web,yoast,post,page,40,publish,,"Creare magazin online",,,,"2024-03-05 08:31:05",,,elementor,1,,0,,page,/creare-site-web/,,,
+https://www.webis.ro/contact/,/contact,yoast,post,page,41,publish,,Contact,,,,"2024-03-05 08:32:17",,,elementor,1,,0,iframe:maps.google.com,skip,/contact/,"Already live on the new site",,
+https://www.webis.ro/servicii/creare-site-florarie/,/servicii/creare-site-florarie,yoast,post,domenii,30,publish,,"Creare site florărie",,,,"2024-05-02 10:00:00",,,empty,0,,0,,industry,/servicii/creare-site-florarie/,,,
+https://www.webis.ro/proiect/zyanya/,/proiect/zyanya,yoast,post,proiect,20,publish,,Zyanya,,,,"2024-07-12 10:00:25",magazin-online,,classic,0,,1,,project,/proiect/zyanya/,,,
+https://www.webis.ro/proiect/zyanya-logo/,/proiect/zyanya-logo,yoast,post,proiect,21,publish,,"Zyanya Logo",,,,"2024-07-11 00:00:45",logo-design,,classic,0,,1,,project,/proiect/zyanya-logo/,,,
+https://www.webis.ro/proiect/little-tokyo/,/proiect/little-tokyo,yoast,post,proiect,22,publish,,"Little Tokyo",,,https://webis.ro/proiect/little-tokyo/,"2023-02-01 10:00:09",,,classic,0,,1,,project,/proiect/little-tokyo/,,,
+https://www.webis.ro/proiect/zyanya-2/,/proiect/zyanya-2,wp-old-url,post,proiect,20,,,Zyanya,,,,,,,,,,,,redirect,/proiect/zyanya/,"Old address of this post",,
+https://www.webis.ro/proiect/zyanya-veche/,/proiect/zyanya-veche,wp-old-url,post,proiect,20,,,Zyanya,,,,,,,,,,,,redirect,/proiect/zyanya/,"Old address of this post",,
+https://www.webis.ro/page/,/page,wp-shape,wordpress,pagination,,,,,,,,,,,,,,,,redirect,/blog/,"Prefix row: /page/N/ pagination of the old blog home",,
+https://www.webis.ro/bucla-a/,/bucla-a,analytics,,,,,,,,,,,,,,,,,,redirect,/bucla-b/,,,
+https://www.webis.ro/bucla-b/,/bucla-b,analytics,,,,,,,,,,,,,,,,,,redirect,/bucla-a/,,,
+https://www.webis.ro/lant-1/,/lant-1,analytics,,,,,,,,,,,,,,,,,,redirect,/lant-2/,,,
+https://www.webis.ro/lant-2/,/lant-2,analytics,,,,,,,,,,,,,,,,,,redirect,/ghid-seo/,,,
+https://www.webis.ro/2026/03/28/,/2026/03/28,search-console,,,,,,,,,,,,,,,,,url:spam-date,gone,,"Prefix row: spam injected on 2026-03-28",,
+https://www.webis.ro/2026/04/14/ghid-seo/,/2026/04/14/ghid-seo,search-console,,,,,,,,,,,,,,,,,,redirect,/ghid-seo/,"Dated rule: answered by HandleNotFound, no table row",,

@@ -1,0 +1,56 @@
+{
+    "type": "page",
+    "title": "Produse",
+    "url": "/produse/",
+    "category": null,
+    "excerpt": null,
+    "published_at": "2026-10-01",
+    "seo": {
+        "title": null,
+        "description": null,
+        "canonical": null,
+        "noindex": false,
+        "og_image_asset_id": null,
+        "focus_keyword": null
+    },
+    "blocks": [
+        {
+            "id": "01m3vvx960tgh8cepn5xgct23q",
+            "type": "hero",
+            "v": 1,
+            "data": {
+                "eyebrow": "Pentru companii, instituții publice și universități.",
+                "heading": "Construim software care\nînțelege și simplifică",
+                "subheading": null,
+                "image_asset_id": 11,
+                "layout": "centered",
+                "background": "none",
+                "align": "left",
+                "logos": true,
+                "primary_cta": {
+                    "url": "/contact",
+                    "label": "Hai să discutăm"
+                },
+                "secondary_cta": {
+                    "url": "/clienti",
+                    "label": "Proiecte"
+                }
+            }
+        },
+        {
+            "id": "01m48bmrkps3p93jrsfq1vsrn0",
+            "type": "statement",
+            "v": 1,
+            "data": {
+                "eyebrow": "Despre noi",
+                "statement": "Din 2016 dezvoltăm software,\npentru organizații care nu găsesc\nde-a gata ce le trebuie.",
+                "text": "Am început cu site-uri și magazine online. Astăzi construim sisteme pentru universități, instituții publice și companii, și ne dezvoltăm propriile produse. Aceiași oameni, aceeași firmă — alt fel de proiecte.",
+                "link": {
+                    "label": "Vezi proiectele",
+                    "url": "/portofoliu/"
+                },
+                "background": "hero"
+            }
+        }
+    ]
+}

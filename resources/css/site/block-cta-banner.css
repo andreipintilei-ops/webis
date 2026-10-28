@@ -1,0 +1,79 @@
+/*
+  The CTA block (blocks/cta-banner): a panel in the content column, its
+  corners the closing panel's (css/site/variant-stage.css, .stage-finale),
+  on the lavender. Its ground as that panel's: the hero's indigo lit by
+  purple and violet glows, with the dark sections' film grain — or, as
+  "accent", the violet, from the W's plate (.plate) purple to violet.
+*/
+@layer components {
+    .block-cta__panel {
+        @apply relative isolate mx-auto grid max-w-[var(--content-max)] gap-10 overflow-hidden rounded-3xl px-7 py-12 text-white md:px-12 md:py-16 lg:grid-cols-12 lg:items-end lg:gap-10 lg:rounded-[40px] lg:px-16 lg:py-20;
+        background:
+            radial-gradient(
+                ellipse 55% 70% at 100% 0%,
+                rgb(164 76 238 / 0.5),
+                transparent 70%
+            ),
+            radial-gradient(
+                ellipse 50% 60% at 0% 100%,
+                rgb(119 90 252 / 0.45),
+                transparent 70%
+            ),
+            #1f2868;
+
+        /* The film grain, as the closing panel's. */
+        &::after {
+            content: '';
+            @apply pointer-events-none absolute inset-0 -z-10;
+            background-image: var(--grain);
+            mix-blend-mode: overlay;
+            opacity: 0.35;
+        }
+    }
+
+    .block-cta__panel--accent {
+        background: linear-gradient(
+            135deg,
+            var(--violet-500),
+            var(--purple-500)
+        );
+    }
+
+    /*
+      On a page opening on the violet gradient the white pill turns violet
+      (css/site/buttons.css); on the violet panel it would vanish, so there
+      it stays white. As specific as that rule, and after it.
+    */
+    :root .block-cta .block-cta__panel--accent .pill.btn-dark {
+        --btn-ink: #fff;
+        --btn-contrast: var(--site-dark);
+
+        & .pill__title .roll__char::before {
+            color: var(--btn-ink);
+        }
+    }
+
+    .block-cta__text {
+        @apply lg:col-span-8;
+    }
+
+    /* Anton has one weight: font-normal. 1.16 like the hero: Romanian's
+       Î and Ă need the room. */
+    /* The blocks' heading face (css/site/sections.css, .chead__title): the
+       display face is the hero's alone. */
+    .block-cta__title {
+        @apply max-w-[22ch] font-medium text-balance;
+        font-size: clamp(2.125rem, 3.9vw, 3.75rem);
+        line-height: 1.05;
+        letter-spacing: -0.04em;
+    }
+
+    .block-cta__line {
+        @apply mt-5 max-w-[52ch] text-lg leading-relaxed text-pretty lg:text-xl;
+        color: rgb(255 255 255 / 0.8);
+    }
+
+    .block-cta__actions {
+        @apply flex flex-wrap items-center gap-x-8 gap-y-5 lg:col-span-4 lg:justify-end lg:pb-1;
+    }
+}

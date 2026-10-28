@@ -1,0 +1,83 @@
+<!-- @dsCard group="Actions" name="Buttons" subtitle="Pill (primary) and arrow link (secondary), light and dark" -->
+<!doctype html>
+<html lang="ro">
+    <head>
+        <meta charset="utf-8" />
+        <link rel="stylesheet" href="../../styles.css" />
+        <style>
+            body {
+                margin: 0;
+                padding: 24px;
+                background: #fff;
+            }
+            .row {
+                display: flex;
+                flex-wrap: wrap;
+                align-items: center;
+                gap: 40px;
+                padding: 28px;
+                border-radius: 20px;
+            }
+            .row + .row {
+                margin-top: 16px;
+            }
+        </style>
+    </head>
+    <body class="site-body font-sans antialiased">
+        <span data-intro-backdrop="" data-palette="violet" hidden=""></span>
+        <div class="row chapter chapter--lavender">
+            <a href="/contact" class="pill btn-light"
+                ><span class="pill__ripple" aria-hidden="true"
+                    ><span></span></span
+                ><span class="pill__title"
+                    ><span>Discută un proiect</span></span
+                ></a
+            >
+            <a href="/web" class="arrow-link btn-light"
+                ><span class="arrow-link__circle" aria-hidden="true"
+                    ><span class="arrow-link__dot"></span
+                    ><span class="arrow-link__fill"></span
+                    ><svg
+                        class="arrow-link__icon"
+                        viewBox="0 0 11 10"
+                        fill="currentColor"
+                    >
+                        <path
+                            d="M0 5.656V4.304l8.419.014-3.359-3.358L5.99 0l5.002 4.973-4.987 4.987-.93-.96 3.358-3.358L0 5.656Z"
+                        ></path></svg></span
+                ><span class="arrow-link__label"
+                    >Află mai multe<span
+                        class="arrow-link__border"
+                        aria-hidden="true"
+                    ></span></span
+            ></a>
+        </div>
+        <div class="row chapter chapter--dark">
+            <a href="/contact" class="pill btn-dark"
+                ><span class="pill__ripple" aria-hidden="true"
+                    ><span></span></span
+                ><span class="pill__title"
+                    ><span>Hai să discutăm</span></span
+                ></a
+            >
+            <a href="/produse" class="arrow-link btn-dark"
+                ><span class="arrow-link__circle" aria-hidden="true"
+                    ><span class="arrow-link__dot"></span
+                    ><span class="arrow-link__fill"></span
+                    ><svg
+                        class="arrow-link__icon"
+                        viewBox="0 0 11 10"
+                        fill="currentColor"
+                    >
+                        <path
+                            d="M0 5.656V4.304l8.419.014-3.359-3.358L5.99 0l5.002 4.973-4.987 4.987-.93-.96 3.358-3.358L0 5.656Z"
+                        ></path></svg></span
+                ><span class="arrow-link__label"
+                    >Toate produsele<span
+                        class="arrow-link__border"
+                        aria-hidden="true"
+                    ></span></span
+            ></a>
+        </div>
+    </body>
+</html>

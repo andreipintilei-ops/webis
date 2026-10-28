@@ -1,0 +1,209 @@
+/*
+  The hero of an internal page (components/site/page-hero.blade.php): the
+  violet gradient fixed behind it, the contact page's type
+  (css/site/contact-page.css), and the section after it rising 32px over
+  it on a 32px rounded top, as the home page's cards over its hero. No
+  parallax: it scrolls with the page.
+*/
+@layer components {
+    .page-hero {
+        @apply relative flex items-center px-[var(--site-gap)] pt-40 pb-28 text-white md:pt-48 md:pb-40;
+        /* Taller than its text from tablet up: room for the planes, and a
+           hero that reads as one. */
+        @media (min-width: 768px) {
+            min-height: min(48rem, 88svh);
+        }
+    }
+
+    .page-hero__inner {
+        @apply relative mx-auto w-full max-w-[var(--content-max)];
+    }
+
+    .page-hero__label {
+        @apply mb-6 font-micro text-xs tracking-[0.08em] text-white/80 uppercase;
+    }
+
+    .page-hero__title {
+        @apply font-display text-[clamp(2.75rem,6.8vw,6.25rem)] leading-[1.2] font-normal text-balance uppercase;
+    }
+
+    .page-hero__foot {
+        @apply mt-8 flex flex-col gap-6 md:mt-10 md:flex-row md:items-end md:justify-between;
+    }
+
+    .page-hero__intro {
+        @apply max-w-[36rem] text-base leading-relaxed text-pretty text-white/80 md:text-lg;
+    }
+
+    /* Links in the slot, beside the intro (the 404 page). */
+    .page-hero__links {
+        @apply flex flex-wrap items-center gap-x-10 gap-y-5;
+    }
+
+    /* Alone on its page (the 404): the screen's height, the footer after. */
+    .page-hero--error {
+        @apply flex min-h-[85svh] items-end;
+    }
+
+    /* As the home page (css/site/service-cards.css, .svc-cards): what follows
+       rises 32px over the hero's foot on a 32px rounded top, and keeps those
+       32px clear at its own top. No parallax: the hero scrolls with the page. */
+    .page-hero + * {
+        @apply relative z-[1] -mt-8 rounded-t-[32px] pt-8;
+
+        &::before {
+            border-radius: inherit;
+        }
+    }
+
+    /* Taller (/web, /produse): from 1024px most of the first screen,
+       however tall; tablets as the other heroes. */
+    @media (min-width: 1024px) {
+        .page-hero--tall {
+            min-height: 88svh;
+        }
+    }
+
+    /* A hero closed by offers across its foot (/web, /servicii)
+       keeps 32px more room there, so the section rising over it covers none
+       of them. */
+    .page-hero--sheet.page-hero--led {
+        @apply pb-[calc(2.5rem+32px)] md:pb-[calc(3.5rem+32px)];
+
+        /* From 1024px at least the whole first screen, the section after it
+           rising over the 32px below the fold: none of it shows until the
+           page is scrolled. */
+        @media (min-width: 1024px) {
+            min-height: calc(100svh + 32px);
+        }
+    }
+
+    /* Square: the section after it starts on its edge, carrying on over the
+       same gradient (/portofoliu, /produse, /software-la-comanda). */
+    .page-hero--flush + * {
+        @apply mt-0 rounded-none pt-0;
+    }
+
+    /*
+      Offers across the hero's foot (/web, /servicii, the SaaS pages), as
+      the home page's rating and logos close its hero: on a hairline at the
+      bottom, the hero's text and space above it.
+    */
+    .page-hero--led {
+        @apply items-stretch pb-10 md:pb-14 lg:min-h-svh;
+
+        & .page-hero__inner {
+            @apply flex flex-col;
+        }
+
+        /* Always some room between the intro and what is under it. */
+        & .page-hero__foot {
+            @apply mb-16;
+        }
+    }
+
+    /* The round arrow on those offers, filling white on hover
+       (css/site/web.css). */
+    .blog-lead__arrow {
+        @apply grid size-14 shrink-0 place-items-center rounded-full border;
+        border-color: rgb(255 255 255 / 0.35);
+        transition:
+            background-color var(--slow) var(--ease),
+            color var(--slow) var(--ease),
+            border-color var(--slow) var(--ease);
+
+        & svg {
+            @apply w-3.5;
+        }
+    }
+
+    /*
+      An article's hero (public/page): the title in the text face, since
+      some titles run to a dozen words; shorter than the
+      other heroes, as it holds only the title.
+    */
+    .page-hero--article {
+        @media (min-width: 768px) {
+            min-height: min(36rem, 70svh);
+        }
+
+        & .page-hero__title {
+            @apply max-w-[20em] font-sans font-medium normal-case;
+            font-size: clamp(2rem, 4.2vw, 3.75rem);
+            line-height: 1.1;
+            letter-spacing: -0.03em;
+        }
+    }
+
+    /*
+      With its cover (public/page, Support\Blog\Cover): under the title on
+      phones and tablets; from 1024px beside it, the label and the title in
+      the left seven columns, the cover in the right five, in the middle of
+      the hero's height. The title a little smaller for its narrower column.
+    */
+    .page-hero--cover {
+        & .article-cover {
+            @apply mt-10 aspect-video overflow-hidden rounded-2xl md:mt-12 lg:rounded-3xl;
+            box-shadow: 0 40px 80px -40px rgb(10 8 40 / 0.6);
+        }
+
+        @media (min-width: 1024px) {
+            & .page-hero__inner {
+                @apply grid grid-cols-12 items-center gap-x-12;
+            }
+
+            & .page-hero__label,
+            & .page-hero__title {
+                grid-column: 1 / span 7;
+            }
+
+            & .page-hero__title {
+                font-size: clamp(2rem, 3.4vw, 3.25rem);
+            }
+
+            /* Together in the middle, however tall the cover makes the two
+               rows: the label at the foot of the first, the title at the
+               head of the second. */
+            & .page-hero__label {
+                align-self: end;
+            }
+
+            & .page-hero__title {
+                align-self: start;
+            }
+
+            & .article-cover {
+                @apply mt-0;
+                grid-column: 8 / span 5;
+                grid-row: 1 / span 2;
+            }
+
+            /* A cut-out takes the room a frame would, and more: into the gap
+               beside the title and out past the column's edge. */
+            & .article-cover.is-cutout {
+                margin-left: -2rem;
+                margin-right: calc(-1 * min(4vw, 3rem));
+            }
+        }
+
+        /* A cut-out (no ground of its own) stands straight on the hero's
+           gradient: no frame, no shadow, its whole drawing at its own
+           proportions. */
+        & .article-cover.is-cutout {
+            @apply aspect-auto overflow-visible rounded-none;
+            background: none;
+            box-shadow: none;
+
+            & img {
+                @apply h-auto p-0;
+            }
+        }
+    }
+
+    /* The article after its hero: room under the sheet's rounded top before
+       the text, as the other chapters keep (the rule above leaves it the
+       32px it rises by). */
+    .page-hero--article + * {
+        @apply pt-[calc(32px+3.5rem)] lg:pt-[calc(32px+5rem)];
+    }
+}

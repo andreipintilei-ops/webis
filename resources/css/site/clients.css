@@ -1,0 +1,23 @@
+/*
+  The clients' logos, on the light chapters' lavender and their colours
+  (css/site/service-chapters.css): /portofoliu's "Am lucrat cu" wall and a
+  product page's "Folosit de" strip (css/site/portfolio.css).
+*/
+@layer components {
+    /* Quiet: every logo in one ink, whatever its own colours (a white one
+       too), stronger when pointed at. */
+    .client-logos {
+        @apply flex flex-wrap items-center gap-x-10 gap-y-6;
+
+        & img {
+            @apply h-10 w-auto max-w-[9rem] object-contain;
+            filter: brightness(0);
+            opacity: 0.55;
+            transition: opacity var(--base) var(--ease);
+        }
+
+        & li:hover img {
+            opacity: 0.85;
+        }
+    }
+}

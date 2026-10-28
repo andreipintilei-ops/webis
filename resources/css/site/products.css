@@ -1,0 +1,518 @@
+/*
+  Produse SaaS (public/products.blade.php): what is particular to the page.
+  Scoped to its own classes (.saas-*): the hero's foot, the products as
+  /portofoliu's stacking cards, the comparison and how to start, and the inside of each
+  product's drawn screen (components/saas/mockup, in the software page's
+  mock-up card: css/site/software.css, .sw-mock).
+*/
+@layer components {
+    /* ---- The hero's foot: the four products, on a hairline -------------------- */
+
+    /* The two ways on under the intro, not beside it, as in the home page
+       hero: the intro, then the button and the link 2.5rem below. */
+    .saas-hero .page-hero__foot {
+        @apply gap-10 md:flex-col md:items-start md:justify-start;
+    }
+
+    /* From a tablet up the hairlines between them run down to the hero's
+       foot — the screen's, from 1024px (page-hero--led) — with no margin
+       under them: the room under the words is the cells' own. */
+    .saas-hero {
+        @apply md:pb-0;
+    }
+
+    .saas-hero-products {
+        @apply grid border-t sm:grid-cols-2 md:mt-auto lg:grid-cols-4;
+        border-color: rgb(255 255 255 / 0.25);
+    }
+
+    /* Each column the row's full height, so the hairlines between them run
+       the same length, down to the same foot. */
+    .saas-hero-products > li {
+        @apply flex;
+    }
+
+    .saas-hero-product {
+        @apply relative grid flex-1 content-start gap-y-2 py-6 text-white md:pt-8 md:pb-14 lg:pr-8;
+        transition: opacity var(--base) var(--ease);
+    }
+
+    /* A hairline between them from 1024px, under each other below. */
+    .saas-hero-products > li + li .saas-hero-product {
+        @apply border-t lg:border-t-0 lg:border-l lg:pl-8;
+        border-color: rgb(255 255 255 / 0.25);
+    }
+
+    .saas-hero-product__no {
+        @apply font-micro text-[11px] tracking-[0.08em];
+        color: rgb(255 255 255 / 0.6);
+    }
+
+    /* One size for the four, small enough that the longest ("Bugetare
+       participativă") holds one line in its column at 1440px. */
+    .saas-hero-product__name {
+        @apply font-medium;
+        font-size: clamp(1.25rem, 1.6vw, 1.625rem);
+        line-height: 1.1;
+        letter-spacing: -0.03em;
+    }
+
+    .saas-hero-product__for {
+        @apply text-[15px];
+        color: rgb(255 255 255 / 0.75);
+    }
+
+    /* A small arrow on the number's line, at the column's right, sliding in
+       as the column is pointed at or reached with the keyboard. */
+    .saas-hero-product__arrow {
+        @apply absolute top-6 right-0 size-3 md:top-8 lg:right-8;
+        opacity: 0;
+        transform: translateX(-6px);
+        transition:
+            opacity var(--base) var(--ease),
+            transform var(--base) var(--ease);
+    }
+
+    .saas-hero-product:is(:hover, :focus-visible) .saas-hero-product__arrow {
+        opacity: 1;
+        transform: none;
+    }
+
+    /* The others step back as one is pointed at. */
+    @media (hover: hover) {
+        .saas-hero-products:has(a.saas-hero-product:hover)
+            .saas-hero-product:not(:hover) {
+            opacity: 0.55;
+        }
+    }
+
+    /* ---- The products: /portofoliu's stacking cards (css/site/work-stack.css) ---- */
+
+    /* On the hero's backdrop, straight after it: no lavender, no grain. */
+    .work-stack.saas-stack {
+        @apply pt-0 md:pt-0 lg:pt-0;
+        background: transparent;
+
+        &::before {
+            @apply hidden;
+        }
+
+        /* The names smaller than /portofoliu's clients, the same on every
+           card: the longest, Research Information Management System, on
+           two lines, the others on one. */
+        & .work-stack__client {
+            font-size: clamp(2.25rem, 4.2vw, 3.8rem);
+        }
+    }
+
+    /*
+      Each product in one of the home page's product gradients
+      (css/site/product-stack.css), the deep indigo one left out: purple,
+      violet and lilac, a soft glow in one corner. The lilac, too light for
+      white text, kept to the right, under the screen; the words on the
+      deeper side.
+    */
+    .saas-stack__card--smilesoft .work-stack__panel {
+        background:
+            radial-gradient(
+                ellipse 60% 70% at 100% 0%,
+                rgb(239 220 255 / 0.35),
+                transparent 60%
+            ),
+            linear-gradient(
+                135deg,
+                var(--purple-500),
+                var(--violet-500) 60%,
+                #5b3fe0
+            );
+    }
+
+    .saas-stack__card--rims .work-stack__panel {
+        background:
+            radial-gradient(
+                ellipse 60% 70% at 100% 100%,
+                rgb(239 220 255 / 0.4),
+                transparent 60%
+            ),
+            linear-gradient(
+                315deg,
+                #c98bf5,
+                var(--purple-500) 35%,
+                var(--violet-500) 75%
+            );
+    }
+
+    .saas-stack__card--bugetare .work-stack__panel {
+        background:
+            radial-gradient(
+                ellipse 60% 70% at 0% 100%,
+                rgb(164 76 238 / 0.55),
+                transparent 60%
+            ),
+            linear-gradient(200deg, var(--violet-500), #5b3fe0);
+    }
+
+    .saas-stack__card--confirmo .work-stack__panel {
+        background:
+            radial-gradient(
+                ellipse 60% 70% at 100% 0%,
+                rgb(239 220 255 / 0.35),
+                transparent 60%
+            ),
+            linear-gradient(
+                135deg,
+                var(--violet-500),
+                var(--purple-500) 55%,
+                #c98bf5
+            );
+    }
+
+    /* The text at full white on the purples, for the contrast (as
+       /portofoliu's purple card, css/site/work-stack.css). */
+    .saas-stack__panel {
+        @apply lg:items-stretch lg:py-14;
+        --muted: #fff;
+    }
+
+    /* The words in the left half, the name at the top and the rest at the
+       foot; the screen in the right half. */
+    .saas-stack__main {
+        @apply relative z-[1] flex flex-col justify-between gap-10 lg:col-span-6;
+    }
+
+    .saas-stack__foot {
+        @apply flex flex-col items-start gap-6;
+    }
+
+    .saas-stack__text {
+        @apply max-w-[44ch] text-[17px] leading-relaxed text-pretty md:text-lg;
+        color: var(--muted);
+    }
+
+    /* What it holds: one line, the parts set apart by a dot. */
+    .saas-stack__points {
+        @apply flex flex-wrap gap-x-3 gap-y-1 border-t pt-4 text-[15px] text-white;
+        border-color: rgb(255 255 255 / 0.25);
+
+        & span + span::before {
+            content: '·';
+            @apply mr-3;
+            color: rgb(255 255 255 / 0.6);
+        }
+    }
+
+    .saas-stack__links {
+        @apply flex flex-wrap items-center gap-x-10 gap-y-5;
+
+        & .work-stack__link {
+            @apply mt-0 lg:mt-0;
+        }
+    }
+
+    /* The screen: the mock-up card, filling the card's right half. */
+    .saas-stack__visual {
+        @apply w-full lg:col-span-6 lg:col-start-7 lg:h-full lg:min-h-0;
+
+        & .sw-mock {
+            @apply lg:h-full;
+        }
+    }
+
+    /* ---- The light panel: rising over the backdrop after the cards ------------ */
+
+    /* As on /software-la-comanda/ (css/site/software.css). */
+    .chapter.saas-compare {
+        @apply -mt-8 rounded-t-[32px] pt-24 lg:pt-32;
+
+        &::before {
+            border-radius: inherit;
+        }
+    }
+
+    /* ---- Product or made to order ----------------------------------------------- */
+
+    .saas-compare .chapter__inner {
+        @apply gap-12 lg:gap-16;
+    }
+
+    /* Side by side in one white panel, the product's column lit. */
+    .saas-table {
+        @apply overflow-x-auto rounded-[1.75rem] bg-white lg:rounded-[2rem];
+        box-shadow: 0 30px 70px -50px rgb(31 40 104 / 0.35);
+
+        & table {
+            @apply w-full min-w-[36rem] border-collapse text-left;
+        }
+
+        & thead th {
+            @apply px-6 pt-8 pb-5 align-bottom font-medium lg:px-10 lg:pt-10;
+            font-size: clamp(1.25rem, 1.8vw, 1.625rem);
+            letter-spacing: -0.02em;
+            color: var(--ink);
+        }
+
+        & tbody th {
+            @apply w-[22%] px-6 py-5 align-top font-micro text-xs font-normal tracking-[0.08em] uppercase lg:px-10;
+            color: var(--muted);
+        }
+
+        & tbody td {
+            @apply px-6 py-5 align-top text-base leading-relaxed lg:px-10;
+            color: var(--muted);
+        }
+
+        & tbody tr {
+            @apply border-t;
+            border-color: #ebe7fb;
+        }
+
+        & tbody tr:last-child > * {
+            @apply pb-8 lg:pb-10;
+        }
+    }
+
+    .saas-table .saas-table__ours {
+        color: var(--ink);
+        background: #f6f4ff;
+    }
+
+    .saas-table td.saas-table__ours {
+        @apply font-medium;
+    }
+
+    /* How to start: three steps on a line, then the ways on. */
+    .saas-start {
+        @apply grid gap-6 lg:grid-cols-12 lg:items-start lg:gap-x-10;
+    }
+
+    .saas-start__steps {
+        @apply grid gap-5 md:grid-cols-3 lg:col-span-12;
+
+        & li {
+            @apply grid gap-2 border-t pt-4 text-base leading-relaxed text-pretty;
+            border-color: var(--line);
+            color: var(--ink);
+        }
+
+        & span {
+            @apply font-micro text-xs tabular-nums;
+            color: var(--muted);
+        }
+    }
+
+    .saas-start__links {
+        @apply flex flex-wrap items-center gap-x-8 gap-y-4 lg:col-span-12;
+    }
+
+    /* ---- The products' screens: what is inside each window -------------------- */
+
+    /* SmileSoft: a clinic's day, a column per doctor. */
+    .saas-day {
+        @apply grid gap-[0.5em];
+        grid-template-columns: 4em 1fr 1fr;
+        grid-template-rows: auto repeat(4, 4.4em);
+
+        & > b {
+            @apply font-semibold;
+            padding-bottom: 0.4em;
+        }
+
+        & > small {
+            @apply font-micro tabular-nums;
+            grid-column: 1;
+            font-size: 0.8em;
+            color: var(--ink-muted);
+        }
+    }
+
+    .saas-visit {
+        @apply flex flex-col rounded-[0.7em];
+        padding: 0.6em 0.8em;
+        font-size: 0.9em;
+        color: var(--ink-muted);
+        border-left: 0.25em solid currentColor;
+
+        & b {
+            @apply font-semibold;
+            color: var(--navy-950);
+        }
+    }
+
+    .saas-visit--a {
+        color: #5b45e6;
+        background: #efebff;
+    }
+
+    .saas-visit--b {
+        color: #1e8a4d;
+        background: #e3f5ea;
+    }
+
+    .saas-visit--c {
+        color: #b56d00;
+        background: #fdf0d5;
+    }
+
+    /* RIMS: research projects and how far along each is. */
+    .saas-projects {
+        @apply w-full border-collapse text-left;
+
+        & th {
+            @apply font-micro font-normal tracking-[0.06em] uppercase;
+            font-size: 0.8em;
+            padding: 0 0.6em 0.7em;
+            color: var(--ink-muted);
+        }
+
+        & td {
+            @apply border-t whitespace-nowrap;
+            padding: 0.85em 0.6em;
+            border-color: rgb(38 42 111 / 0.08);
+            color: var(--ink-muted);
+        }
+
+        & td:first-child {
+            color: var(--navy-950);
+        }
+
+        & td:last-child {
+            @apply flex items-center gap-[0.6em] tabular-nums;
+        }
+    }
+
+    .saas-progress {
+        @apply block overflow-hidden rounded-full;
+        width: 5em;
+        height: 0.45em;
+        background: #ece9fb;
+
+        & i {
+            @apply block h-full rounded-full;
+            width: var(--p);
+            background: var(--violet-500);
+        }
+    }
+
+    /* Bugetare participativă: the proposals and their votes. */
+    .saas-ideas {
+        @apply grid gap-[0.4em];
+
+        & li {
+            @apply grid items-center gap-x-[1em] gap-y-[0.4em] rounded-[0.7em] border;
+            grid-template-columns: 1fr auto;
+            padding: 0.8em 1em;
+            border-color: rgb(38 42 111 / 0.08);
+        }
+
+        & p {
+            @apply flex flex-col;
+            grid-column: 1 / -1;
+        }
+
+        & b {
+            @apply font-semibold;
+        }
+
+        & small {
+            font-size: 0.85em;
+            color: var(--ink-muted);
+        }
+    }
+
+    .saas-votes {
+        @apply block overflow-hidden rounded-full;
+        height: 0.5em;
+        background: #ece9fb;
+
+        & i {
+            @apply block h-full rounded-full;
+            width: var(--v);
+            background: linear-gradient(90deg, var(--violet-500), #a44cee);
+        }
+    }
+
+    .saas-ideas__count {
+        @apply font-micro tabular-nums;
+        font-size: 0.8em;
+        color: var(--ink-muted);
+    }
+
+    /* Confirmo: a day, its free times, the SMS that confirms it. */
+    .saas-book {
+        @apply grid gap-[1.1em];
+    }
+
+    .saas-book__days {
+        @apply grid grid-cols-5 gap-[0.5em];
+
+        & span {
+            @apply flex flex-col items-center rounded-[0.7em] border;
+            padding: 0.6em 0;
+            border-color: rgb(38 42 111 / 0.1);
+        }
+
+        & small {
+            font-size: 0.8em;
+            color: var(--ink-muted);
+        }
+
+        & b {
+            @apply font-semibold;
+            font-size: 1.2em;
+        }
+
+        & .is-on {
+            @apply text-white;
+            border-color: transparent;
+            background: var(--violet-cta);
+
+            & small {
+                color: rgb(255 255 255 / 0.8);
+            }
+        }
+    }
+
+    .saas-book__slots {
+        @apply grid grid-cols-3 gap-[0.5em];
+
+        & span {
+            @apply rounded-full border text-center font-medium tabular-nums;
+            padding: 0.55em 0;
+            border-color: rgb(38 42 111 / 0.12);
+        }
+
+        & .is-on {
+            border-color: var(--violet-cta);
+            color: var(--violet-cta);
+            background: #efebff;
+        }
+
+        & .is-taken {
+            @apply line-through;
+            color: var(--ink-muted);
+            opacity: 0.5;
+        }
+    }
+
+    .saas-book__sms {
+        @apply flex items-start gap-[0.75em] rounded-[0.9em];
+        padding: 0.9em 1em;
+        background: #e3f5ea;
+
+        & .sw-icon {
+            @apply shrink-0;
+            margin-top: 0.15em;
+            color: #1e8a4d;
+        }
+
+        & span {
+            @apply flex flex-col;
+        }
+
+        & b {
+            @apply font-semibold;
+            font-size: 0.85em;
+            color: #1e8a4d;
+        }
+    }
+}

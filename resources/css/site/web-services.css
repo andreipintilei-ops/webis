@@ -1,0 +1,50 @@
+/* Section 7: compact links to the existing web-service destinations. */
+@layer components {
+    .web-services {
+        @apply relative z-[1] bg-white px-[var(--site-gap)] pb-20 md:pb-28;
+    }
+
+    .web-services__inner {
+        @apply mx-auto grid max-w-[var(--content-max)] gap-8 lg:grid-cols-2 lg:gap-16;
+    }
+
+    .web-services__heading {
+        @apply min-w-0;
+    }
+
+    .web-services__eyebrow {
+        @apply mb-5 flex items-center gap-2.5 text-xs leading-relaxed font-medium tracking-[0.12em] uppercase;
+
+        &::before {
+            content: '';
+            @apply size-2 shrink-0;
+            background: #2b7be8;
+        }
+    }
+
+    .web-services__title {
+        @apply max-w-[24ch] leading-[1.15] font-medium tracking-[-0.035em] text-balance;
+        font-size: clamp(2rem, 3vw, 2.75rem);
+    }
+
+    .web-services__list {
+        @apply min-w-0 divide-y divide-neutral-200 border-y border-neutral-200;
+    }
+
+    .web-services__item {
+        @apply py-2 pl-3;
+    }
+
+    .web-services__link {
+        @apply min-h-11 w-full py-3 pr-8 leading-relaxed whitespace-normal;
+
+        & .arrow-link__label {
+            @apply min-w-0;
+            overflow-wrap: anywhere;
+        }
+
+        &:focus-visible {
+            @apply rounded-sm outline-2 outline-offset-4 outline-sky-600;
+        }
+    }
+}

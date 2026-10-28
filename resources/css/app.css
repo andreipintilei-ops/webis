@@ -1,0 +1,19 @@
+@import 'tailwindcss';
+
+@import 'tw-animate-css';
+
+/* Public site components, and the shared tokens and utilities. */
+@import './site/index.css';
+@import './theme.css';
+
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+@source '../../storage/framework/views/*.php';
+
+/*
+  CRITICAL: the public/SEO pages are Blade, not Vue. Tailwind 4 auto-detects
+  sources from the Vite entrypoints, which only reaches resources/js — without
+  this line every utility class used in a .blade.php file is purged from the
+  production bundle. Dev mode will NOT catch it: `npm run dev` looks perfect
+  and `npm run build` ships an unstyled public site.
+*/
+@source '../views';

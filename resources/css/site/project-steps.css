@@ -1,0 +1,232 @@
+/*
+  "Proiecte selectate", layout "steps" (components/site/selected-projects),
+  after the walkthrough on sendpotion.com: a dark sheet rising over the
+  section before it, lit by soft purple gradients; the head; then a row per project — its step beside a
+  very tall purple card, cards almost touching. From 1024px the step is held
+  centred in view while its card passes, then pushed on by the next, its
+  lines easing in as it arrives; the interface window, larger than the card,
+  drifts (js/public/project-steps.ts). Below 1024px each step sits above its
+  card.
+
+  White text on the deep indigo; the purple light kept mostly to the right.
+*/
+@layer components {
+    .project-steps {
+        @apply relative z-[1] px-[var(--site-gap)] pt-16 pb-24 md:pt-24 md:pb-32;
+        margin-top: -32px;
+        border-radius: 32px 32px 0 0;
+        /* Purple light in large soft gradients over a deep indigo, spread
+           down the section (left side kept darker, under the steps). */
+        @apply isolate overflow-clip text-white;
+        background:
+            radial-gradient(
+                ellipse 70% 40% at 100% 8%,
+                rgb(164 76 238 / 0.55),
+                transparent 70%
+            ),
+            radial-gradient(
+                ellipse 60% 35% at 0% 45%,
+                rgb(119 90 252 / 0.4),
+                transparent 70%
+            ),
+            radial-gradient(
+                ellipse 75% 40% at 90% 70%,
+                rgb(119 90 252 / 0.5),
+                transparent 70%
+            ),
+            radial-gradient(
+                ellipse 80% 35% at 30% 100%,
+                rgb(164 76 238 / 0.45),
+                transparent 70%
+            ),
+            linear-gradient(180deg, #1f2868, #2d2b78 50%, #1f2868);
+
+        /* The mock-ups, in the violet. */
+        --project-accent: var(--violet-500);
+        --project-tint: #efebff;
+    }
+
+    .project-steps__inner {
+        @apply mx-auto max-w-[var(--content-max)];
+    }
+
+    /* ---- Head, as the other sections' ------------------------------------------ */
+
+    .project-steps__head {
+        @apply grid gap-6 md:grid-cols-12 md:items-end md:gap-10;
+    }
+
+    .project-steps__label {
+        @apply inline-flex h-7 items-center rounded-full bg-white px-3 text-xs font-medium;
+        color: var(--violet-500);
+        border: 1px solid rgb(119 90 252 / 0.2);
+    }
+
+    .project-steps__title {
+        @apply mt-5 font-medium;
+        font-size: 36px;
+        line-height: 1.1;
+        letter-spacing: -0.02em;
+
+        @media (min-width: 1024px) {
+            font-size: 56px;
+        }
+    }
+
+    .project-steps__intro {
+        @apply max-w-[42ch] text-pretty md:col-span-5 md:col-start-8 md:pb-2;
+        font-size: 17px;
+        line-height: 1.6;
+        color: rgb(255 255 255 / 0.78);
+    }
+
+    /* ---- The rows: step and card ------------------------------------------------- */
+
+    /* Cards almost touching from 1024px, as on the reference; apart when
+       stacked, so each step reads with its own card. */
+    .project-steps__rows {
+        @apply mt-12 grid gap-16 md:mt-16 lg:gap-3.5;
+    }
+
+    /* Stacked below 1024px; from it the step beside a narrower card (about
+       45% of the row, as on the reference). */
+    .project-steps__row {
+        @apply grid gap-6 lg:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)] lg:gap-16;
+    }
+
+    /* Held centred in view by the script while its card passes. */
+    .project-steps__text {
+        @apply flex flex-col self-start will-change-transform;
+    }
+
+    /* A small index, then the audience in lavender. */
+    .project-steps__meta {
+        @apply flex items-center gap-3 text-sm font-medium;
+        color: var(--lavender-300);
+
+        & > span {
+            @apply rounded-full px-2 py-0.5 text-xs tabular-nums;
+            color: #fff;
+            border: 1px solid rgb(255 255 255 / 0.3);
+        }
+    }
+
+    /* Bold and large, as on the reference; one word on a highlight. */
+    /* The project's name leads. */
+    .project-steps__name {
+        @apply mt-5 font-semibold text-balance;
+        font-size: clamp(2.25rem, 4vw, 3.75rem);
+        line-height: 1.1;
+        letter-spacing: -0.03em;
+
+        & mark {
+            @apply rounded-[0.45em] px-[0.2em];
+            color: var(--navy-950);
+            background: var(--lavender-300);
+            box-decoration-break: clone;
+        }
+    }
+
+    .project-steps__line {
+        @apply mt-4 max-w-[36ch] text-[17px] leading-relaxed text-pretty;
+        color: rgb(255 255 255 / 0.78);
+    }
+
+    /* The outcome, under a hairline: a small label, then the result large. */
+    .project-steps__result {
+        @apply mt-8 max-w-[28ch] border-t pt-5;
+        border-color: rgb(255 255 255 / 0.18);
+
+        & p {
+            @apply mt-2 font-medium text-pretty;
+            font-size: clamp(1.25rem, 1.8vw, 1.625rem);
+            line-height: 1.25;
+            letter-spacing: -0.01em;
+        }
+    }
+
+    .project-steps__result-label {
+        @apply text-xs font-medium tracking-[0.12em] uppercase;
+        color: var(--lavender-300);
+    }
+
+    /*
+      A very tall purple card with a fine pattern. From 1024px it runs past
+      the content column to 10px from the right edge of the screen, still
+      rounded all round; the steps keep to the column.
+    */
+    .project-steps__visual {
+        @apply relative h-[420px] overflow-hidden rounded-[28px] sm:h-[560px] lg:h-[clamp(640px,96vh,980px)];
+
+        @media (min-width: 1024px) {
+            margin-right: calc(
+                10px - max(var(--site-gap), (100vw - var(--content-max)) / 2)
+            );
+        }
+        background: linear-gradient(
+            135deg,
+            var(--purple-500),
+            var(--violet-500)
+        );
+
+        &::before {
+            content: '';
+            @apply pointer-events-none absolute inset-0;
+            background-image: var(--pattern);
+            background-size: var(--pattern-size);
+            background-position: center;
+        }
+
+        --pattern: radial-gradient(
+            circle,
+            rgb(255 255 255 / 0.32) 1.2px,
+            transparent 1.6px
+        );
+        --pattern-size: 18px 18px;
+    }
+
+    /* The second card a deeper violet. */
+    .project-steps__row:nth-child(2) .project-steps__visual {
+        --pattern:
+            linear-gradient(rgb(255 255 255 / 0.12) 1px, transparent 1px),
+            linear-gradient(90deg, rgb(255 255 255 / 0.12) 1px, transparent 1px);
+        --pattern-size: 24px 24px;
+
+        background: linear-gradient(135deg, var(--violet-500), #5b3fe0);
+    }
+
+    /* The third pale, its marks in violet. */
+    .project-steps__row:nth-child(3) .project-steps__visual {
+        --pattern: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32'%3E%3Cpath d='M10 18V10h8' fill='none' stroke='%23775afc' stroke-opacity='.45' stroke-width='1.5'/%3E%3C/svg%3E");
+        --pattern-size: 32px 32px;
+
+        background: linear-gradient(160deg, #e4ddff, #cbbdff);
+    }
+
+    /*
+      The window, as on the reference: landscape, 80% of the card's width
+      with equal margins, around the middle, the card's colour all round
+      it. It drifts as the page scrolls (the script).
+    */
+    .project-steps__window {
+        @apply absolute will-change-transform;
+        top: 26%;
+        left: 10%;
+        width: 80%;
+        aspect-ratio: 3 / 2;
+
+        & .project-interface {
+            inset: 0;
+            border-radius: 12px;
+            box-shadow: 0 30px 60px -24px rgb(1 15 28 / 0.45);
+        }
+    }
+
+    .project-steps__foot {
+        @apply mt-14 flex justify-center;
+
+        & .pill {
+            --btn-ink: var(--violet-cta);
+        }
+    }
+}

@@ -1,0 +1,237 @@
+/* The contact page shares the hero palette, chapter grid and enquiry form. */
+@layer components {
+    .contact-hero {
+        @apply relative flex items-center px-[var(--site-gap)] pt-44 pb-14 text-white md:pt-48 md:pb-16;
+        /* As tall as the other internal pages' heroes (page-hero.css). */
+        @media (min-width: 768px) {
+            min-height: min(48rem, 88svh);
+        }
+    }
+
+    .contact-hero__inner {
+        @apply mx-auto w-full max-w-[var(--content-max)];
+    }
+
+    .contact-hero__label {
+        @apply mb-7 font-micro text-xs tracking-[0.08em] text-white/80 uppercase;
+    }
+
+    .contact-hero__title {
+        @apply font-display text-[clamp(2.75rem,6.8vw,6.25rem)] leading-[1.16] font-normal uppercase;
+    }
+
+    .contact-hero__foot {
+        @apply mt-9 flex flex-col gap-7 md:flex-row md:items-end md:justify-between;
+
+        & p {
+            @apply text-base leading-relaxed text-white/80 md:text-lg;
+        }
+    }
+
+    .contact-page {
+        @apply pt-0 pb-20 md:pt-0 md:pb-28;
+        --ink: #fff;
+        --muted: rgb(255 255 255 / 0.78);
+        --line: rgb(255 255 255 / 0.25);
+        --accent: var(--lavender-300);
+        color: var(--ink);
+        background: transparent;
+        scroll-margin-top: 2rem;
+    }
+
+    .contact-page .contact__inner {
+        @apply items-start gap-10 border-t pt-12 md:pt-16 lg:gap-12;
+        border-color: var(--line);
+    }
+
+    .contact-page .contact__aside {
+        @apply lg:col-span-4;
+    }
+
+    /*
+      The form on a panel of its own, so the fields read as one object
+      rather than floating on the backdrop: glass, the gradient showing
+      through it — a thin sheen catching the light at the top left, almost
+      clear by the bottom right, a fine highlight along the top edge, and
+      the colours behind blurred but kept rich.
+    */
+    .contact-page .contact__main {
+        @apply rounded-[28px] border p-7 md:rounded-[36px] md:p-10 lg:col-span-8 lg:p-12;
+        border-color: rgb(255 255 255 / 0.14);
+        background: linear-gradient(
+            135deg,
+            rgb(255 255 255 / 0.07),
+            rgb(255 255 255 / 0.015) 60%
+        );
+        box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.18);
+        backdrop-filter: blur(20px) saturate(140%);
+    }
+
+    .contact-page .chapter__title {
+        font-size: clamp(2.25rem, 3.4vw, 3.25rem);
+        line-height: 1.08;
+    }
+
+    .contact-page__intro {
+        @apply mt-6 max-w-[34ch] text-xl leading-relaxed;
+        color: var(--muted);
+    }
+
+    .contact-page .contact__details {
+        @apply mt-10 gap-6;
+    }
+
+    .contact-page__detail-label {
+        @apply mb-2 block font-micro text-[11px] tracking-[0.08em] uppercase;
+        color: var(--muted);
+    }
+
+    .contact-page .contact__detail {
+        @apply text-2xl break-words;
+        color: var(--ink);
+    }
+
+    .contact-page a.contact__detail:is(:hover, :focus-visible) {
+        color: var(--lavender-300);
+    }
+
+    .contact-page .contact__promise {
+        @apply mt-8 text-sm;
+        color: var(--muted);
+    }
+
+    .contact-page__form-head {
+        @apply mb-9;
+
+        & h3 {
+            @apply text-3xl font-medium tracking-[-0.02em];
+        }
+
+        & p {
+            @apply mt-3 max-w-[55ch] text-sm leading-relaxed;
+            color: var(--muted);
+        }
+    }
+
+    .contact-page .contact__label {
+        color: var(--muted);
+    }
+
+    .contact-page .contact__input {
+        color: var(--ink);
+        border-color: rgb(255 255 255 / 0.3);
+
+        &:focus {
+            border-color: var(--lavender-300);
+            box-shadow: 0 1px 0 var(--lavender-300);
+        }
+
+        &::placeholder {
+            @apply text-base;
+            color: var(--muted);
+        }
+
+        &[aria-invalid='true'] {
+            border-color: #ff9a9a;
+        }
+    }
+
+    .contact-page .contact__error {
+        color: #ffb3b3;
+    }
+
+    .contact-page .contact__privacy {
+        color: var(--muted);
+
+        & a:is(:hover, :focus-visible) {
+            color: var(--lavender-300);
+        }
+    }
+
+    .contact-page .contact__sent {
+        @apply border-t pt-8;
+        border-color: var(--line);
+    }
+
+    .contact-page__next {
+        @apply mx-auto mt-20 max-w-[var(--content-max)] md:mt-28;
+    }
+
+    /* ---- Where we are: the lite map (js/public/lite-map.ts) ------------------ */
+
+    .contact-page__map {
+        @apply mx-auto mt-20 max-w-[var(--content-max)] md:mt-28;
+    }
+
+    .contact-map__open {
+        @apply text-sm underline-offset-4 transition-colors hover:underline;
+        color: var(--muted);
+
+        &:is(:hover, :focus-visible) {
+            color: var(--lavender-300);
+        }
+    }
+
+    /* One frame for the panel and the map that takes its place: wide on a
+       desktop, squarer on a phone. */
+    .contact-map {
+        @apply relative mt-8 aspect-[4/3] overflow-hidden rounded-3xl md:aspect-[21/9];
+        background: rgb(255 255 255 / 0.06);
+        box-shadow: inset 0 0 0 1px var(--line);
+
+        &.is-shown {
+            background: #e5e3df;
+        }
+    }
+
+    .contact-map__poster {
+        @apply absolute inset-0 grid place-content-center justify-items-center gap-4 p-8 text-center;
+        color: var(--ink);
+        /* A street grid, faint: a map waiting to be asked for. */
+        background-image:
+            linear-gradient(rgb(255 255 255 / 0.05) 1px, transparent 1px),
+            linear-gradient(90deg, rgb(255 255 255 / 0.05) 1px, transparent 1px);
+        background-size: 48px 48px;
+        background-position: center;
+    }
+
+    .contact-map__pin {
+        @apply size-9;
+        color: var(--lavender-300);
+    }
+
+    .contact-map__address {
+        @apply text-xl font-medium md:text-2xl;
+        letter-spacing: -0.02em;
+    }
+
+    /* Styled as the site's buttons on dark: white, the label rolling the
+       violet in on hover. */
+    .contact-map__show {
+        @apply mt-2 inline-flex h-12 items-center rounded-full bg-white px-6 text-base;
+        color: var(--site-dark);
+        transition:
+            background-color var(--base) var(--ease),
+            color var(--base) var(--ease);
+
+        .contact-map__poster:is(:hover, :focus-visible) & {
+            background: var(--violet-cta);
+            color: #fff;
+        }
+    }
+
+    .contact-map__note {
+        @apply max-w-[36ch] text-sm text-pretty;
+        color: var(--muted);
+    }
+
+    .contact-map__poster:focus-visible {
+        outline: 2px solid var(--lavender-300);
+        outline-offset: -4px;
+        border-radius: inherit;
+    }
+
+    .contact-map__frame {
+        @apply absolute inset-0 block size-full border-0;
+    }
+}

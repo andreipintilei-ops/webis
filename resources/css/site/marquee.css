@@ -1,0 +1,79 @@
+/*
+  Client-logo marquee (components/logo-marquee.blade.php): a track of two
+  identical halves sliding left by one half, forever. Pure CSS — nothing
+  runs in JavaScript. Hovering pauses it; reduced motion stills it.
+
+  Spacing lives inside each item (not as a gap between sets), so both halves
+  are exactly the same width and the loop has no seam.
+*/
+@layer components {
+    .logo-marquee {
+        @apply relative w-full overflow-hidden;
+        /* The ends fade out rather than cut off. */
+        mask-image: linear-gradient(
+            to right,
+            transparent,
+            #000 7%,
+            #000 93%,
+            transparent
+        );
+    }
+
+    .logo-marquee__track {
+        @apply flex w-max;
+        /* Constant speed: the duration grows with the number of logos per half. */
+        animation: logo-marquee calc(var(--marquee-items, 10) * 3s) linear
+            infinite;
+    }
+
+    .logo-marquee:hover .logo-marquee__track {
+        animation-play-state: paused;
+    }
+
+    .logo-marquee__set {
+        @apply flex shrink-0 items-center;
+    }
+
+    .logo-marquee__item {
+        @apply flex shrink-0 items-center;
+        padding-inline: clamp(2rem, 3.5vw, 3.5rem);
+    }
+
+    .logo-marquee__logo {
+        /*
+          --logo-size is a square logo's height; --logo-scale (set per logo)
+          evens out the visual weight of long and compact marks.
+        */
+        --logo-size: clamp(3.75rem, 5.5vw, 5.25rem);
+
+        @apply block w-auto max-w-none object-contain;
+        height: calc(var(--logo-size) * var(--logo-scale, 0.7));
+        opacity: 0.9;
+        transition: opacity var(--duration) var(--motion-out);
+    }
+
+    .logo-marquee__item:hover .logo-marquee__logo {
+        opacity: 1;
+    }
+
+    /* One flat colour whatever the uploaded logo looks like. */
+    .logo-marquee--dark .logo-marquee__logo {
+        filter: brightness(0) invert(1);
+    }
+
+    .logo-marquee--light .logo-marquee__logo {
+        filter: brightness(0);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .logo-marquee__track {
+            animation: none;
+        }
+    }
+}
+
+@keyframes logo-marquee {
+    to {
+        transform: translateX(-50%);
+    }
+}

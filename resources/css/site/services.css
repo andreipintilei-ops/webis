@@ -1,0 +1,240 @@
+/*
+  The home page's services (blocks/partials/services.blade.php), after the
+  results cards on gethyped.nl: tall colour cards, each a little tilted.
+  Hovering one straightens it, grows it a little and brings it forward; the
+  cards on its left lean further left and step aside, those on its right
+  lean right. CSS only: each card's transform is built from custom
+  properties (--x, --y, --r, --s) that the hover rules change.
+
+  The cards set their own ink, so the home page's tone remap
+  (css/site/lower-tone.css) does not reach them.
+*/
+@layer components {
+    .services {
+        @apply px-[var(--site-gap)] py-20 md:py-28;
+    }
+
+    .services__inner {
+        @apply mx-auto max-w-[var(--content-max)];
+    }
+
+    .services__head {
+        @apply mb-10 md:mb-14;
+    }
+
+    /* The section label, as on the other sections. */
+    .services__heading {
+        @apply flex items-center gap-2.5 text-xs font-medium tracking-[0.12em] uppercase;
+
+        &::before {
+            content: '';
+            @apply size-2 shrink-0;
+            background: #2b7be8;
+        }
+    }
+
+    .services__intro {
+        @apply mt-6 max-w-2xl text-lg text-pretty;
+    }
+
+    /*
+      Stacked on phones. From tablet width up the cards overlap, like a hand
+      of cards: each pulled under the one before by --overlap, so each is
+      that much wider than a third. Later cards lie on top; the hovered one comes forward.
+    */
+    .services__list {
+        --overlap: 0rem;
+
+        @apply grid gap-6 md:flex md:gap-0;
+
+        @media (min-width: 768px) {
+            --overlap: 0rem;
+        }
+    }
+
+    @media (min-width: 768px) {
+        /* Equal: a third of the row plus its share of the two overlaps. */
+        .services__list > .service-card {
+            flex: none;
+            width: calc((100% + 2 * var(--overlap)) / 3);
+        }
+
+        .services__list > .service-card + .service-card {
+            margin-left: calc(-1 * var(--overlap));
+        }
+
+        /* The text keeps clear of the next card's edge. */
+        .services__list > .service-card:not(:last-child) {
+            padding-right: calc(2.5rem + var(--overlap));
+        }
+    }
+
+    /* ---- The cards ---------------------------------------------------------------- */
+
+    .service-card {
+        /* The resting tilt and offset; hover rules change the live values. */
+        --tilt: -3deg;
+        --lift: 0rem;
+        --r: var(--tilt);
+        --x: 0rem;
+        --y: var(--lift);
+        --s: 1;
+        --card-ink: #16171a;
+        --card-muted: rgb(22 23 26 / 0.75);
+
+        @apply relative isolate flex flex-col overflow-hidden rounded-[1.75rem] p-8 md:p-9 lg:p-10;
+        /* The title is sized from the card's width. */
+        container-type: inline-size;
+        min-height: clamp(24rem, 34vw, 32rem);
+        color: var(--card-ink);
+        background: var(--card-bg);
+        /* --in-*: the entry animation's offsets (js/public/services.ts), added on top. */
+        opacity: var(--in-o, 1);
+        transform: translate(var(--x), calc(var(--y) + var(--in-y, 0rem)))
+            rotate(calc(var(--r) + var(--in-r, 0deg))) scale(var(--s));
+        transition: transform 0.7s cubic-bezier(0.34, 1.4, 0.64, 1);
+    }
+
+    .service-card:nth-child(3n + 2) {
+        --tilt: 2.5deg;
+        --lift: 1.25rem;
+    }
+
+    .service-card:nth-child(3n + 3) {
+        --tilt: -1.5deg;
+        --lift: 0.5rem;
+    }
+
+    /* The colours of the reference image. */
+    .service-card--blue {
+        --card-bg: #2172ff;
+    }
+
+    .service-card--red {
+        --card-bg: #ff5b51;
+    }
+
+    .service-card--yellow {
+        --card-bg: #f9d850;
+    }
+
+    .service-card--on-dark {
+        --card-ink: #fff;
+        --card-muted: rgb(255 255 255 / 0.82);
+    }
+
+    .service-card__number {
+        @apply text-sm font-medium tracking-[0.12em];
+        color: var(--card-muted);
+    }
+
+    /*
+      Anton, in capitals, on two lines (split in the template), neither line
+      allowed to wrap. Sized from the card's own width (container units), so
+      the longest line — about 11 capitals — always fits.
+    */
+    .service-card__title {
+        /* Room for Romanian marks: the comma under Ș/Ț, the ones over Î/Ă. */
+        @apply mt-5 font-display leading-[1.2] font-normal uppercase;
+        font-size: min(5.5rem, 100cqw / 5.1);
+
+        & > span {
+            @apply block whitespace-nowrap;
+        }
+    }
+
+    /* At the foot, under a rule: the text and the link. */
+    .service-card__foot {
+        @apply mt-auto border-t pt-5;
+        border-color: color-mix(in srgb, var(--card-ink) 30%, transparent);
+    }
+
+    .service-card__text {
+        @apply max-w-[38ch] text-base leading-relaxed text-pretty;
+        color: var(--card-muted);
+    }
+
+    .service-card__note {
+        @apply mt-3 max-w-[38ch] text-sm leading-relaxed font-medium text-pretty;
+    }
+
+    .service-card__link {
+        @apply mt-6;
+    }
+
+    /*
+      The card is the link's target: its hit area reaches far past the link
+      and the card (overflow-hidden) clips it.
+    */
+    .service-card__link::after {
+        content: '';
+        @apply absolute z-[1];
+        inset: -100vmax;
+    }
+
+    /* The link in the card's own ink, whatever the page's tone (stronger than
+       the tone's .btn-light rule, lower-tone.css). */
+    /* The circle fills with the ink, the arrow on it takes the card's colour. */
+    :root .services .service-card .service-card__link.arrow-link {
+        --btn-ink: var(--card-ink);
+        --btn-contrast: var(--card-bg);
+    }
+
+    /* ---- Hover ---------------------------------------------------------------------- */
+
+    @media (hover: hover) and (pointer: fine) {
+        /* The hovered card straightens, grows and comes forward. */
+        .service-card:hover {
+            --r: 0deg;
+            --y: -0.5rem;
+            --s: 1.04;
+            z-index: 2;
+        }
+
+        /* Those before it lean further left and step aside — by the overlap,
+           so the hovered card covers none of their text… */
+        .service-card:has(~ .service-card:hover) {
+            --r: calc(var(--tilt) - 4deg);
+            --x: calc(-1 * (var(--overlap) + 0.75rem));
+        }
+
+        /* …those after it lean right. */
+        .service-card:hover ~ .service-card {
+            --r: calc(var(--tilt) + 4deg);
+            --x: calc(var(--overlap) + 0.75rem);
+        }
+    }
+
+    /* Keyboard focus: straightened, like hover, without moving the others. */
+    .service-card:has(.service-card__link:focus-visible) {
+        --r: 0deg;
+        --s: 1.02;
+        z-index: 2;
+    }
+
+    /* Phones: a gentler tilt, stacked. */
+    @media (max-width: 767px) {
+        .service-card {
+            --lift: 0rem;
+            min-height: 20rem;
+        }
+
+        .service-card:nth-child(3n + 1) {
+            --tilt: -1.5deg;
+        }
+
+        .service-card:nth-child(3n + 2) {
+            --tilt: 1.5deg;
+        }
+
+        .service-card:nth-child(3n + 3) {
+            --tilt: -1deg;
+        }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .service-card {
+            transition: none;
+        }
+    }
+}

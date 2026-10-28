@@ -1,0 +1,275 @@
+<?php
+
+namespace App\Http\Controllers\Admin;
+
+use App\Actions\Blog\StoreCover;
+use App\Enums\ContentStatus;
+use App\Enums\PageType;
+use App\Http\Controllers\Admin\Concerns\EditsContent;
+use App\Http\Controllers\Admin\Concerns\ManagesTrash;
+use App\Http\Controllers\Admin\Concerns\SavesOrder;
+use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\PageRequest;
+use App\Models\Page;
+use App\Support\AdminChoices;
+use App\Support\AdminTime;
+use App\Support\PublicUrls;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Inertia\Inertia;
+use Inertia\Response;
+
+class PageController extends Controller
+{
+    use EditsContent, ManagesTrash, SavesOrder;
+
+    /**
+     * GET /admin/pagini — filter by type to see (and drag) the order used on
+     * the site; the trash lists deleted pages for restore. Without the
+     * articles: they are listed under Blog (PostController@index).
+     */
+    public function index(Request $request): Response
+    {
+        $search = trim((string) $request->query('q', ''));
+        $type = PageType::tryFrom((string) $request->query('type', ''));
+        $type = $type === PageType::Article ? null : $type;
+        $status = ContentStatus::tryFrom((string) $request->query('status', ''));
+        $trashed = $request->boolean('trashed');
+
+        $pages = Page::query()
+            ->where('type', '!=', PageType::Article)
+            ->when($trashed, fn (Builder $query) => $query->onlyTrashed())
+            ->when($search !== '', fn (Builder $query) => $query->where(fn (Builder $where) => $where
+                ->where('title', 'like', "%{$search}%")
+                ->orWhere('slug', 'like', "%{$search}%")))
+            ->when($type, fn (Builder $query, PageType $type) => $query->where('type', $type->value))
+            ->when($status, fn (Builder $query, ContentStatus $status) => $query->where('status', $status->value))
+            ->when($type, fn (Builder $query) => $query->orderBy('sort_order')->orderBy('title'), fn (Builder $query) => $query->latest('updated_at'))
+            ->paginate($type ? 200 : 25)
+            ->withQueryString()
+            ->through(fn (Page $page): array => [
+                'id' => $page->id,
+                'title' => $page->title,
+                'url' => PublicUrls::for($page),
+                'type' => $page->type->value,
+                'type_label' => $page->type->label(),
+                'status' => $page->status->value,
+                'status_label' => $page->status->label(),
+                'is_live' => $page->isPublished(),
+                'published_at' => AdminTime::display($page->published_at),
+                'updated_at' => AdminTime::display($page->updated_at),
+                'trashed' => $page->trashed(),
+            ]);
+
+        return Inertia::render('admin/pages/Index', [
+            'pages' => $pages,
+            'filters' => [
+                'q' => $search,
+                'type' => $type->value ?? '',
+                'status' => $status->value ?? '',
+                'trashed' => $trashed,
+            ],
+            'types' => array_values(array_filter(
+                $this->typeOptions(),
+                fn (array $option): bool => $option['value'] !== PageType::Article->value,
+            )),
+            'statuses' => $this->statusOptions(),
+        ]);
+    }
+
+    /**
+     * GET /admin/pagini/creeaza?type=service
+     */
+    public function create(Request $request): Response
+    {
+        return $this->editor(new Page([
+            'type' => PageType::tryFrom((string) $request->query('type')) ?? PageType::Page,
+            'title' => '',
+            'slug' => '',
+            'blocks' => [],
+        ]));
+    }
+
+    /**
+     * POST /admin/pagini
+     */
+    public function store(PageRequest $request): RedirectResponse
+    {
+        $page = DB::transaction(function () use ($request): Page {
+            $page = Page::create($request->pageAttributes());
+            $page->projects()->sync($this->pivotOrder($request->projectIds()));
+
+            return $page;
+        });
+
+        $this->announceIfNewlyPublished($page, false);
+        Inertia::flash('toast', ['type' => 'success', 'message' => 'Pagina a fost creată.']);
+
+        return to_route('admin.pages.edit', $page->id);
+    }
+
+    /**
+     * GET /admin/pagini/{page}/editeaza
+     */
+    public function edit(Page $page): Response
+    {
+        return $this->editor($page->load('projects:id'));
+    }
+
+    /**
+     * PUT /admin/pagini/{page}
+     */
+    public function update(PageRequest $request, Page $page): RedirectResponse
+    {
+        $wasPublished = $page->isPublished();
+
+        DB::transaction(function () use ($request, $page): void {
+            $page->update($request->pageAttributes());
+            $page->projects()->sync($this->pivotOrder($request->projectIds()));
+        });
+
+        $this->announceIfNewlyPublished($page, $wasPublished);
+        Inertia::flash('toast', ['type' => 'success', 'message' => 'Modificările au fost salvate.']);
+
+        return to_route('admin.pages.edit', $page->id);
+    }
+
+    /**
+     * POST /admin/pagini/{page}/coperta — an article's cover, uploaded on its
+     * own (the page's form is sent as JSON, a file is not), and its alt
+     * text if given; it replaces the one it had.
+     */
+    public function storeCover(Request $request, Page $page, StoreCover $storeCover): RedirectResponse
+    {
+        abort_unless($page->type === PageType::Article, 404);
+
+        $request->validate([
+            'cover' => ['required', 'file', 'mimes:png,jpg,jpeg,webp', 'max:12288', 'dimensions:min_width=1200,min_height=675'],
+            'cover_alt' => ['nullable', 'string', 'max:125'],
+        ], [
+            'cover.dimensions' => 'Imaginea trebuie să aibă cel puțin 1200 × 675 px (ideal 1536 × 1024).',
+        ], ['cover' => 'coperta', 'cover_alt' => 'textul alternativ']);
+
+        $storeCover($page, $request->file('cover'), $request->filled('cover_alt') ? $request->string('cover_alt')->trim()->toString() : null);
+        Inertia::flash('toast', ['type' => 'success', 'message' => 'Coperta a fost încărcată.']);
+
+        return back();
+    }
+
+    /**
+     * DELETE /admin/pagini/{page}/coperta
+     */
+    public function destroyCover(Page $page): RedirectResponse
+    {
+        $page->clearMediaCollection(Page::COVER);
+        Inertia::flash('toast', ['type' => 'success', 'message' => 'Coperta a fost eliminată.']);
+
+        return back();
+    }
+
+    public function destroy(Page $page): RedirectResponse
+    {
+        $response = $this->trash($page);
+
+        // An article goes back to Blog, where the articles are listed.
+        return $page->type === PageType::Article ? to_route('admin.posts.index') : $response;
+    }
+
+    public function restore(Page $page): RedirectResponse
+    {
+        return $this->untrash($page);
+    }
+
+    public function forceDestroy(Page $page): RedirectResponse
+    {
+        $response = $this->purge($page);
+
+        return $page->type === PageType::Article ? to_route('admin.posts.index', ['trashed' => 1]) : $response;
+    }
+
+    /**
+     * POST /admin/pagini/ordine — ids in their new order.
+     */
+    public function reorder(Request $request): RedirectResponse
+    {
+        $this->saveOrder(Page::class, $request);
+
+        return back();
+    }
+
+    protected function routePrefix(): string
+    {
+        return 'pages';
+    }
+
+    protected function trashMessages(): array
+    {
+        return [
+            'trashed' => 'Pagina a fost mutată în coș.',
+            'restored' => 'Pagina a fost restaurată.',
+            'purged' => 'Pagina a fost ștearsă definitiv.',
+        ];
+    }
+
+    private function editor(Page $page): Response
+    {
+        return Inertia::render('admin/pages/Edit', [
+            'page' => [
+                'id' => $page->exists ? $page->id : null,
+                'type' => $page->type->value,
+                'post_category_id' => $page->post_category_id,
+                'title' => $page->title,
+                'slug' => $page->slug,
+                'excerpt' => $page->excerpt,
+                'icon' => $page->icon,
+                'hero_asset_id' => $page->hero_asset_id,
+                'cover_url' => ($media = $page->getFirstMedia(Page::COVER)) ? $media->getUrl('cover-768') : null,
+                'cover_alt' => $page->cover_alt,
+                'blocks' => $page->blocks ?? [],
+                'details' => [
+                    'price_from' => $page->details['price_from'] ?? null,
+                    'service_type' => $page->details['service_type'] ?? null,
+                ],
+                'sort_order' => $page->sort_order ?? 0,
+                'project_ids' => $page->exists ? $page->projects->pluck('id')->all() : [],
+                'seo' => $page->seo->toArray(),
+                'url' => $page->exists ? PublicUrls::for($page) : null,
+                ...$this->publicationPayload($page),
+            ],
+            'types' => $this->typeOptions(),
+            'statuses' => $this->statusOptions(),
+            'blockTypes' => $this->blockTypes(),
+            'choices' => AdminChoices::all(),
+            'revisions' => $this->revisionsFor($page),
+            'titleSuffix' => $this->titleSuffix(),
+        ]);
+    }
+
+    /**
+     * @return list<array{value: string, label: string}>
+     */
+    private function typeOptions(): array
+    {
+        return array_map(
+            fn (PageType $type): array => ['value' => $type->value, 'label' => $type->label()],
+            PageType::cases(),
+        );
+    }
+
+    /**
+     * @param  list<int>  $ids
+     * @return array<int, array{sort_order: int}>
+     */
+    private function pivotOrder(array $ids): array
+    {
+        $order = [];
+
+        foreach ($ids as $position => $id) {
+            $order[$id] = ['sort_order' => $position];
+        }
+
+        return $order;
+    }
+}

@@ -1,0 +1,171 @@
+/*
+  /portofoliu's featured projects (components/site/featured-work): on the
+  light chapters' lavender and grain, a head, then each project as a
+  screen-high rounded card in a colour of the hero's, white on it — the
+  purple, the violet, the purple into the violet, the deep violet, and
+  round again — its client
+  large with what it was, a line and its site on the left, its screenshot on
+  the right. From 1024px they stack on scroll
+  (js/public/product-stack.ts): each grows into place, holds, and shrinks
+  and tilts as the next slides up over it. Below that, and with reduced
+  motion, rounded cards one after another.
+*/
+@layer components {
+    .work-stack {
+        @apply relative isolate z-[1] pt-20 md:pt-28;
+        background: var(--paper);
+        color: var(--navy-950);
+
+        /* The light chapters' colours (css/site/service-chapters.css). */
+        --ink: var(--navy-950);
+        --muted: var(--ink-muted);
+        --line: rgb(45 43 120 / 0.12);
+        --accent: var(--violet-500);
+
+        &::before {
+            content: '';
+            @apply pointer-events-none absolute inset-0 -z-10;
+            background-image: var(--grain-light);
+            opacity: var(--paper-grain);
+        }
+    }
+
+    /* After the figures on the dark area: rising 32px over them on a 32px
+       rounded top, as the home page's cards (css/site/service-cards.css). */
+    .figures + .work-stack {
+        @apply -mt-8 rounded-t-[32px];
+
+        &::before {
+            border-radius: inherit;
+        }
+    }
+
+    /* ---- Head ------------------------------------------------------------------ */
+
+    .work-stack__head {
+        @apply mx-auto grid max-w-[calc(var(--content-max)+2*var(--site-gap))] gap-6 px-[var(--site-gap)] pb-12 md:grid-cols-12 md:items-end md:gap-10 md:pb-16;
+    }
+
+    .work-stack__intro {
+        @apply max-w-[42ch] text-pretty md:col-span-5 md:col-start-8 md:pb-2;
+        font-size: 17px;
+        line-height: 1.6;
+        color: var(--muted);
+    }
+
+    /* ---- The cards ------------------------------------------------------------------ */
+
+    .work-stack__cards {
+        @apply grid gap-4 px-[var(--site-gap)] pb-20 lg:block lg:gap-0 lg:px-0 lg:pb-0;
+    }
+
+    /* One screen each from 1024px, inset from its edges; the later ones
+       above the earlier. */
+    .work-stack__card {
+        @apply relative;
+        z-index: calc(var(--i) + 1);
+
+        @media (min-width: 1024px) {
+            @apply h-svh p-[var(--site-gap)];
+        }
+    }
+
+    /* Moved by the entry (the script); the panel inside by being covered. */
+    .work-stack__frame {
+        @apply lg:h-full;
+        transform-origin: 50% 100%;
+        will-change: transform;
+    }
+
+    .work-stack__panel {
+        @apply relative grid gap-8 overflow-hidden rounded-[28px] p-6 text-white sm:p-8 md:p-12 lg:h-full lg:grid-cols-12 lg:items-center lg:gap-10 lg:rounded-[32px] lg:px-[max(3.5rem,calc((100%-var(--content-max))/2))] lg:py-0;
+        box-shadow: 0 30px 60px -40px rgb(45 43 120 / 0.35);
+        transform-origin: 50% 0%;
+        will-change: transform;
+        --muted: rgb(255 255 255 / 0.8);
+        --accent: #fff;
+    }
+
+    /*
+      The colours, by place, round every four: a class the template sets
+      (work-stack__card--tone-1…4), not :nth-child — from 1024px the script
+      wraps each pinned card in a spacer of its own. The purple, the
+      lightest: its text at full white, for the contrast.
+    */
+    .work-stack__card--tone-1 .work-stack__panel {
+        background: var(--purple-500);
+        --muted: #fff;
+    }
+
+    .work-stack__card--tone-2 .work-stack__panel {
+        background: var(--violet-500);
+    }
+
+    .work-stack__card--tone-3 .work-stack__panel {
+        background: linear-gradient(
+            135deg,
+            var(--purple-500),
+            var(--violet-500) 60%,
+            #5b3fe0
+        );
+    }
+
+    .work-stack__card--tone-4 .work-stack__panel {
+        background: #5b3fe0;
+    }
+
+    .work-stack__content {
+        @apply relative z-[1] flex flex-col items-start lg:col-span-5;
+    }
+
+    .work-stack__count {
+        @apply font-micro text-xs tracking-[0.08em] uppercase;
+        color: var(--accent);
+    }
+
+    /* The client, very large. */
+    .work-stack__client {
+        @apply mt-5 font-semibold text-balance;
+        font-size: clamp(2.5rem, 5.5vw, 5.5rem);
+        line-height: 0.98;
+        letter-spacing: -0.04em;
+        overflow-wrap: anywhere;
+    }
+
+    .work-stack__line {
+        @apply mt-6 max-w-[40ch] text-[17px] leading-relaxed text-pretty;
+        color: var(--muted);
+    }
+
+    .work-stack__site {
+        @apply mt-3 text-[15px] font-medium;
+    }
+
+    .work-stack__link {
+        @apply mt-8 lg:mt-10;
+    }
+
+    /* White, its label in the violet — over the violet pages' own dark pill
+       (css/site/buttons.css), hence the weight. */
+    .work-stack .work-stack__card .work-stack__link.pill.btn-dark {
+        --btn-ink: #fff;
+        --btn-contrast: var(--violet-500);
+    }
+
+    /* The screenshot, landscape, as large as the card allows. */
+    .work-stack__visual {
+        @apply relative block overflow-hidden rounded-2xl lg:col-span-7;
+        aspect-ratio: 3 / 2;
+        background: #ece8ff;
+        box-shadow: 0 30px 60px -24px rgb(1 15 28 / 0.35);
+
+        & img {
+            @apply size-full object-cover object-top;
+            transition: transform var(--slow) var(--ease);
+        }
+
+        &:hover img {
+            transform: scale(1.03);
+        }
+    }
+}

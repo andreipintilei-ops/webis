@@ -1,0 +1,49 @@
+/*
+  Page-transition curtain (resources/js/public/page-transition.ts), after
+  Codrops' "Theodore". Above everything, including the open menu panel.
+  Purple with film grain (--menu-wipe, --grain: css/site/menu-panel.css),
+  the colour of the menu's wipe, so menu → next page is one cover.
+*/
+@layer components {
+    .page-curtain {
+        @apply pointer-events-none fixed inset-0 z-[1000] size-full;
+        fill: var(--menu-wipe);
+    }
+
+    /*
+      The curtain's grain: a full-screen layer clipped to the curtain's own
+      shape, which it follows frame by frame (a clipPath <use>-ing the
+      animated path, layouts/public.blade.php). Tiled in screen pixels, so
+      the grain is not stretched like the 0–100 curtain drawing.
+    */
+    .page-curtain-grain {
+        @apply pointer-events-none fixed inset-0 z-[1000];
+        background-image: var(--grain);
+        mix-blend-mode: overlay;
+        opacity: var(--menu-grain);
+        clip-path: url(#page-curtain-clip);
+    }
+
+    /*
+      A page reached through a transition is painted covered (the <head>
+      script adds html.curtain-cover) until the curtain lifts — so its content
+      never flashes before the reveal.
+    */
+    .page-curtain-cover {
+        @apply pointer-events-none fixed inset-0 z-[1000] hidden;
+        background: var(--menu-wipe);
+
+        /* Its grain, as on the curtain. */
+        &::after {
+            content: '';
+            @apply absolute inset-0;
+            background-image: var(--grain);
+            mix-blend-mode: overlay;
+            opacity: var(--menu-grain);
+        }
+    }
+
+    :root.curtain-cover .page-curtain-cover {
+        @apply block;
+    }
+}

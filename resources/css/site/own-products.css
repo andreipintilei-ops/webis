@@ -1,0 +1,51 @@
+/*
+  Section 6, "Produsele noastre": two products side by side between
+  hairlines.
+*/
+@layer components {
+    .own-products {
+        @apply relative z-[1] bg-white px-[var(--site-gap)] py-20 md:py-28;
+    }
+
+    .own-products__inner {
+        @apply mx-auto max-w-[var(--content-max)];
+    }
+
+    .own-products__eyebrow {
+        @apply flex items-center gap-2.5 text-xs leading-relaxed font-medium tracking-[0.12em] uppercase;
+
+        &::before {
+            content: '';
+            @apply size-2 shrink-0;
+            background: #2b7be8;
+        }
+    }
+
+    .own-products__list {
+        @apply mt-8 grid divide-y divide-neutral-200 border-y border-neutral-200 md:mt-10 md:grid-cols-2 md:divide-x md:divide-y-0;
+    }
+
+    .own-product {
+        @apply flex min-w-0 flex-col py-10 md:px-10 md:py-12 md:first:pl-0 md:last:pr-0 lg:px-14;
+    }
+
+    .own-product__name {
+        @apply leading-[1.1] font-medium tracking-[-0.035em];
+        font-size: clamp(2.25rem, 3.5vw, 3.25rem);
+        color: #2469c7;
+        overflow-wrap: anywhere;
+    }
+
+    .own-product__description {
+        @apply mt-6 text-xl leading-snug font-medium tracking-[-0.02em] text-pretty md:text-2xl;
+    }
+
+    .own-product__detail {
+        @apply mt-3 max-w-[40ch] text-base leading-relaxed text-pretty text-neutral-600 md:text-lg;
+    }
+
+    /* Held to the foot, so both links line up. */
+    .own-product__foot {
+        @apply mt-auto pt-10;
+    }
+}

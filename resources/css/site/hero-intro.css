@@ -1,0 +1,18 @@
+/*
+  The opening hero (blocks/hero.blade.php; js/public/hero-intro.ts): its
+  backdrop fills the screen from the first frame — there is no intro — and
+  the page after it slides up over it as it scrolls away.
+*/
+@layer components {
+    /* Title lines: each its own block. The padding keeps Romanian accents
+       (Î, Ă, the commas of Ș and Ț) inside it; the margin gives the room back. */
+    .hero-line {
+        @apply block overflow-clip;
+        padding-block: 0.08em;
+        margin-block: -0.08em;
+    }
+
+    .hero-line__inner {
+        @apply block;
+    }
+}

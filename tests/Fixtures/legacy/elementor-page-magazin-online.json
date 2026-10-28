@@ -1,0 +1,687 @@
+[
+    {
+        "id": "0ad0425",
+        "elType": "container",
+        "settings": {},
+        "elements": [
+            {
+                "id": "f036dc3",
+                "elType": "container",
+                "settings": {},
+                "elements": [
+                    {
+                        "id": "77b22d1",
+                        "elType": "container",
+                        "settings": {},
+                        "elements": [
+                            {
+                                "id": "1bcc2f3",
+                                "elType": "widget",
+                                "widgetType": "text-editor",
+                                "settings": {
+                                    "editor": "<p>Ai nevoie de un magazin online?</p>",
+                                    "typography_font_size": {
+                                        "unit": "px",
+                                        "size": 50
+                                    },
+                                    "typography_font_weight": "600"
+                                },
+                                "elements": []
+                            },
+                            {
+                                "id": "17e464f",
+                                "elType": "widget",
+                                "widgetType": "text-editor",
+                                "settings": {
+                                    "editor": "<p>Oferim soluții personalizate și ușor de utilizat pentru a transforma visul tău de afacere online în realitate.&nbsp;</p>",
+                                    "typography_font_size": {
+                                        "unit": "px",
+                                        "size": 20
+                                    },
+                                    "typography_font_weight": "200"
+                                },
+                                "elements": []
+                            },
+                            {
+                                "id": "f2fdbbf",
+                                "elType": "container",
+                                "settings": {},
+                                "elements": [
+                                    {
+                                        "id": "befdd2b",
+                                        "elType": "widget",
+                                        "widgetType": "button",
+                                        "settings": {
+                                            "text": "Cere Oferta",
+                                            "typography_font_weight": "500",
+                                            "typography_font_size": {
+                                                "unit": "px",
+                                                "size": 15
+                                            },
+                                            "__dynamic__": {
+                                                "link": "[elementor-tag id=\"1\" name=\"popup\" settings=\"{}\"]"
+                                            }
+                                        },
+                                        "elements": []
+                                    },
+                                    {
+                                        "id": "fd8c656",
+                                        "elType": "widget",
+                                        "widgetType": "button",
+                                        "settings": {
+                                            "text": "Vezi Portofoliul",
+                                            "typography_font_weight": "500",
+                                            "typography_font_size": {
+                                                "unit": "px",
+                                                "size": 15
+                                            },
+                                            "link": {
+                                                "url": "/portofoliu"
+                                            }
+                                        },
+                                        "elements": []
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        "id": "d601db2",
+                        "elType": "container",
+                        "settings": {
+                            "hide_tablet": "hidden-tablet"
+                        },
+                        "elements": [
+                            {
+                                "id": "ae64590",
+                                "elType": "widget",
+                                "widgetType": "image",
+                                "settings": {
+                                    "image": {
+                                        "id": 1867,
+                                        "url": "https://webis.ro/wp-content/uploads/2024/03/online-shop-optimizat-scaled-1-png.png"
+                                    }
+                                },
+                                "elements": []
+                            },
+                            {
+                                "id": "ef86026",
+                                "elType": "widget",
+                                "widgetType": "image",
+                                "settings": {
+                                    "image": {
+                                        "id": "35",
+                                        "url": "https://webis.ro/wp-content/uploads/2024/03/nori-8.png"
+                                    },
+                                    "opacity": {
+                                        "unit": "px",
+                                        "size": 1,
+                                        "sizes": []
+                                    },
+                                    "_position": "absolute"
+                                },
+                                "elements": []
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "id": "00884eb",
+        "elType": "container",
+        "settings": {},
+        "elements": [
+            {
+                "id": "5aed281",
+                "elType": "widget",
+                "widgetType": "heading",
+                "settings": {
+                    "title": "Serviciile noastre",
+                    "typography_font_size": {
+                        "unit": "px",
+                        "size": 18
+                    },
+                    "typography_font_weight": "600",
+                    "typography_text_transform": "uppercase"
+                },
+                "elements": []
+            },
+            {
+                "id": "4534723",
+                "elType": "widget",
+                "widgetType": "heading",
+                "settings": {
+                    "title": "Creare magazin online",
+                    "typography_font_size": {
+                        "unit": "px",
+                        "size": 45
+                    },
+                    "typography_font_weight": "500"
+                },
+                "elements": []
+            },
+            {
+                "id": "ba538f4",
+                "elType": "container",
+                "settings": {},
+                "elements": [
+                    {
+                        "id": "f002aa1",
+                        "elType": "container",
+                        "settings": {},
+                        "elements": [
+                            {
+                                "id": "d7deb73",
+                                "elType": "container",
+                                "settings": {},
+                                "elements": [
+                                    {
+                                        "id": "29f6b81",
+                                        "elType": "widget",
+                                        "widgetType": "image-box",
+                                        "settings": {
+                                            "image": {
+                                                "id": 149,
+                                                "url": "https://webis.ro/wp-content/uploads/2024/03/unu-8.png"
+                                            },
+                                            "title_text": "Design responsive",
+                                            "description_text": "Clientii vor putea accesa site-ul atat de pe calculator, cat si de pe dispozitivele mobile precum tableta si telefonul.",
+                                            "title_typography_font_size": {
+                                                "unit": "px",
+                                                "size": 22
+                                            }
+                                        },
+                                        "elements": []
+                                    }
+                                ]
+                            },
+                            {
+                                "id": "8e84a8e",
+                                "elType": "container",
+                                "settings": {},
+                                "elements": [
+                                    {
+                                        "id": "763a21a",
+                                        "elType": "widget",
+                                        "widgetType": "image-box",
+                                        "settings": {
+                                            "image": {
+                                                "id": 150,
+                                                "url": "https://webis.ro/wp-content/uploads/2024/03/web-browser.png"
+                                            },
+                                            "title_text": "Optimizare SEO",
+                                            "description_text": "Magazinul online va fi realizat conform cerintelor SEO pentru a obtine o pozitionare buna in motoarele de cautare.",
+                                            "title_typography_font_size": {
+                                                "unit": "px",
+                                                "size": 22
+                                            }
+                                        },
+                                        "elements": []
+                                    }
+                                ]
+                            },
+                            {
+                                "id": "4b038b6",
+                                "elType": "container",
+                                "settings": {},
+                                "elements": [
+                                    {
+                                        "id": "81040b7",
+                                        "elType": "widget",
+                                        "widgetType": "image-box",
+                                        "settings": {
+                                            "image": {
+                                                "id": 151,
+                                                "url": "https://webis.ro/wp-content/uploads/2024/03/cash-1.png"
+                                            },
+                                            "title_text": "Produse fara limita",
+                                            "description_text": "Prin intermediul panoului de administrare puteti adauga un numar nelimitat de produse, categorii sau pagini.",
+                                            "title_typography_font_size": {
+                                                "unit": "px",
+                                                "size": 22
+                                            }
+                                        },
+                                        "elements": []
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        "id": "df7caa2",
+                        "elType": "container",
+                        "settings": {},
+                        "elements": [
+                            {
+                                "id": "e0067d7",
+                                "elType": "container",
+                                "settings": {},
+                                "elements": [
+                                    {
+                                        "id": "f505cf9",
+                                        "elType": "widget",
+                                        "widgetType": "image-box",
+                                        "settings": {
+                                            "image": {
+                                                "id": 152,
+                                                "url": "https://webis.ro/wp-content/uploads/2024/03/logo-medfiz-1-01.png"
+                                            },
+                                            "title_text": "Generare factura",
+                                            "description_text": "Nu veti mai pierde timp cu generarea manuala a facturilor. Prin apasarea unui singur buton factura este creata automat.",
+                                            "title_typography_font_size": {
+                                                "unit": "px",
+                                                "size": 22
+                                            }
+                                        },
+                                        "elements": []
+                                    }
+                                ]
+                            },
+                            {
+                                "id": "64e960e",
+                                "elType": "container",
+                                "settings": {},
+                                "elements": [
+                                    {
+                                        "id": "a7c8326",
+                                        "elType": "widget",
+                                        "widgetType": "image-box",
+                                        "settings": {
+                                            "image": {
+                                                "id": 153,
+                                                "url": "https://webis.ro/wp-content/uploads/2024/03/payment.png"
+                                            },
+                                            "title_text": "Plati online & ramburs",
+                                            "description_text": "Clientii dvs. vor avea posibilitatea de a achita comanda prin plata online, ramburs sau transfer bancar.",
+                                            "title_typography_font_size": {
+                                                "unit": "px",
+                                                "size": 22
+                                            }
+                                        },
+                                        "elements": []
+                                    }
+                                ]
+                            },
+                            {
+                                "id": "01dfb58",
+                                "elType": "container",
+                                "settings": {},
+                                "elements": [
+                                    {
+                                        "id": "69eb499",
+                                        "elType": "widget",
+                                        "widgetType": "image-box",
+                                        "settings": {
+                                            "image": {
+                                                "id": 154,
+                                                "url": "https://webis.ro/wp-content/uploads/2024/03/click.png"
+                                            },
+                                            "title_text": "Simplu de utilizat",
+                                            "description_text": "“The last but not the least” – siteul trebuie sa fie foarte usor de folosit de catre clienti pentru a obtine o rata de conversie cat mai mare.",
+                                            "title_typography_font_size": {
+                                                "unit": "px",
+                                                "size": 22
+                                            }
+                                        },
+                                        "elements": []
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "id": "4e1afda",
+        "elType": "container",
+        "settings": {},
+        "elements": [
+            {
+                "id": "7d9098f",
+                "elType": "container",
+                "settings": {},
+                "elements": [
+                    {
+                        "id": "bf98bb1",
+                        "elType": "widget",
+                        "widgetType": "counter",
+                        "settings": {
+                            "ending_number": 7,
+                            "title": "Ani de experienta",
+                            "suffix": "+"
+                        },
+                        "elements": []
+                    },
+                    {
+                        "id": "39d0b3f",
+                        "elType": "widget",
+                        "widgetType": "counter",
+                        "settings": {
+                            "ending_number": 237,
+                            "title": "Proiecte finalizate"
+                        },
+                        "elements": []
+                    },
+                    {
+                        "id": "b61c5a6",
+                        "elType": "widget",
+                        "widgetType": "counter",
+                        "settings": {
+                            "ending_number": 184,
+                            "title": "Clienti fericiti"
+                        },
+                        "elements": []
+                    },
+                    {
+                        "id": "d31d52b",
+                        "elType": "widget",
+                        "widgetType": "counter",
+                        "settings": {
+                            "ending_number": 1820,
+                            "title": "Cafele baute"
+                        },
+                        "elements": []
+                    },
+                    {
+                        "id": "6ca3e51",
+                        "elType": "widget",
+                        "widgetType": "image",
+                        "settings": {
+                            "image": {
+                                "id": "79",
+                                "url": "https://webis.ro/wp-content/uploads/2024/03/cloud-8.png"
+                            },
+                            "_position": "absolute",
+                            "hide_mobile": "hidden-mobile"
+                        },
+                        "elements": []
+                    },
+                    {
+                        "id": "560b8e9",
+                        "elType": "widget",
+                        "widgetType": "image",
+                        "settings": {
+                            "image": {
+                                "id": "69",
+                                "url": "https://webis.ro/wp-content/uploads/2024/03/cloud-1-8.png"
+                            },
+                            "_position": "absolute",
+                            "hide_mobile": "hidden-mobile"
+                        },
+                        "elements": []
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "id": "1b3e89a",
+        "elType": "container",
+        "settings": {},
+        "elements": [
+            {
+                "id": "9c792b8",
+                "elType": "container",
+                "settings": {},
+                "elements": [
+                    {
+                        "id": "0c60fb1",
+                        "elType": "widget",
+                        "widgetType": "heading",
+                        "settings": {
+                            "title": "FAQs",
+                            "typography_font_size": {
+                                "unit": "px",
+                                "size": 18
+                            },
+                            "typography_font_weight": "600",
+                            "typography_text_transform": "uppercase"
+                        },
+                        "elements": []
+                    },
+                    {
+                        "id": "f7eeb8c",
+                        "elType": "widget",
+                        "widgetType": "heading",
+                        "settings": {
+                            "title": "Intrebari frecvente",
+                            "typography_font_size": {
+                                "unit": "px",
+                                "size": 45
+                            },
+                            "typography_font_weight": "500"
+                        },
+                        "elements": []
+                    },
+                    {
+                        "id": "7ad2db0",
+                        "elType": "widget",
+                        "widgetType": "text-editor",
+                        "settings": {
+                            "editor": "<div class=\"elementor-element elementor-element-7fe6092 elementor-widget elementor-widget-text-editor\" data-id=\"7fe6092\" data-element_type=\"widget\" data-widget_type=\"text-editor.default\"><div class=\"elementor-widget-container\">Oferim servicii SEO atat pentru clienti din Iasi, cat si pentru cei din restul tarii. Webis se ocupa de web design, web development &amp; SEO.</div></div>",
+                            "typography_font_weight": "400",
+                            "typography_font_size": {
+                                "unit": "px",
+                                "size": 15
+                            }
+                        },
+                        "elements": []
+                    },
+                    {
+                        "id": "98cf682",
+                        "elType": "widget",
+                        "widgetType": "image",
+                        "settings": {
+                            "image": {
+                                "id": 159,
+                                "url": "https://webis.ro/wp-content/uploads/2024/03/faq-10.png"
+                            },
+                            "hide_tablet": "hidden-tablet"
+                        },
+                        "elements": []
+                    }
+                ]
+            },
+            {
+                "id": "7221072",
+                "elType": "container",
+                "settings": {},
+                "elements": [
+                    {
+                        "id": "6164246",
+                        "elType": "widget",
+                        "widgetType": "toggle",
+                        "settings": {
+                            "tabs": [
+                                {
+                                    "tab_title": "Cat costa un magazin online profesional?",
+                                    "tab_content": "<p>Prețul unui magazin online profesional poate varia în funcție de complexitatea proiectului, cerințele specifice și platforma utilizată. La Webis, oferim o evaluare detaliată a cerințelor și un raport calitate-preț excelent, adaptat nevoilor și bugetului dvs. Contactați-ne pentru a începe colaborarea și pentru a obține cel mai bun magazin online pentru afacerea dvs.</p>"
+                                },
+                                {
+                                    "tab_title": "Este greu sa administrez site-ul? Cum adaug produse?",
+                                    "tab_content": "<p>Fiecare magazin online realizat de Webis include panou de administrare pentru a gestiona produsele, categoriile, comenzile, clientii si paginile interne precum „contact”, „termeni si conditii”, etc.</p><p>Realizarea site-ului include instructajul dvs. sau al angajatilor. Dupa instructaj veti putea adauga/modifica/sterge produse in cateva secunde.</p>"
+                                },
+                                {
+                                    "tab_title": "Magazinul online poate avea mai multe limbi?",
+                                    "tab_content": "<p>Da, platforma folosita permite gestiunea a 2 sau mai multe limbi.</p>"
+                                },
+                                {
+                                    "tab_title": "Nu stiu de unde sa incep. Oferiti consiliere?",
+                                    "tab_content": "<p>Majoritatea clientilor vin la noi in birou cu o simpla idee si pleaca cu un plan bine elaborat.</p><p>Exerienta noastra este la dispozita dumneavoastra!</p>"
+                                },
+                                {
+                                    "tab_title": "Care sunt pasii pentru realizarea unui magazin online?",
+                                    "tab_content": "<p><strong>1. Analiza.</strong> Probabil cel mai important pas este cel de a analiza impreuna cu clientul cerintele si mai ales obiectivele pentru termen scurt si lung. </p><p><strong>2. Grafica &amp; model.</strong> Fiecare site realizat de Webis are un concept grafic unic. Nu lucram pe teme deja realizate, element care ne diferentiaza de majoritatea firmelor de web design din Iasi si din tara.</p><p><strong>3. Implementare funtionalitati. </strong>In cursul acestui pas ne ocupam de realizarea magazinului web in sine si de implementarea cerintelor extra: module de plata / module de facturare / etc.</p><p><strong>4. Testare. </strong>Introducem produse demo si verificam functionalitata generala a site-ului.</p><p><strong>5. Predare. </strong>Deschidem sampania!</p>"
+                                },
+                                {
+                                    "tab_title": "Cat dureaza realizarea unui magazin online?",
+                                    "tab_content": "Timpul necesar pentru realizarea unui magazin online la cheie este de aproximativ 30 de zile calendaristice, dar poate varia in functie de complexitate si de domeniu de activitate.\n\n"
+                                },
+                                {
+                                    "tab_title": "Magazinul va fi vizibil pe telefoanele mobile?",
+                                    "tab_content": "<p>Da, site-ul dvs. va fi optimizat atat pentru telefoanele mobile cat si pentru tableta sau laptopuri cu rezolutie mica.</p><p>Fiecare site creat de Webis este responsive.</p>"
+                                },
+                                {
+                                    "tab_title": "Pot integra un Blog sau alte sectiuni?",
+                                    "tab_content": "<p>Da, putem integra un blog pentru articole, dar si alte sectiuni precum:</p><p>– noutati<br />– locuri de munca disponibile<br />– harta magazine<br />– portofoliu<br />– etc</p><p>Putem integra aproapre orice sectiune. </p>"
+                                }
+                            ],
+                            "title_typography_font_size": {
+                                "unit": "px",
+                                "size": 18
+                            }
+                        },
+                        "elements": []
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "id": "d36ad03",
+        "elType": "container",
+        "settings": {},
+        "elements": [
+            {
+                "id": "11563ad",
+                "elType": "container",
+                "settings": {},
+                "elements": [
+                    {
+                        "id": "73499f6",
+                        "elType": "widget",
+                        "widgetType": "form",
+                        "settings": {
+                            "button_text": "Trimite"
+                        },
+                        "elements": []
+                    }
+                ]
+            },
+            {
+                "id": "3c841cb",
+                "elType": "container",
+                "settings": {},
+                "elements": [
+                    {
+                        "id": "1bc336a",
+                        "elType": "widget",
+                        "widgetType": "heading",
+                        "settings": {
+                            "title": "Contacteaza-ne",
+                            "typography_font_size": {
+                                "unit": "px",
+                                "size": 18
+                            },
+                            "typography_font_weight": "600",
+                            "typography_text_transform": "uppercase"
+                        },
+                        "elements": []
+                    },
+                    {
+                        "id": "d9f4a9f",
+                        "elType": "widget",
+                        "widgetType": "heading",
+                        "settings": {
+                            "title": "Hai să lucrăm<b> împreună</b>",
+                            "typography_font_size": {
+                                "unit": "px",
+                                "size": 45
+                            },
+                            "typography_font_weight": "500"
+                        },
+                        "elements": []
+                    },
+                    {
+                        "id": "1716f7a",
+                        "elType": "widget",
+                        "widgetType": "heading",
+                        "settings": {
+                            "title": "Ai nevoie de un site bine făcut?  Completeaza formularul de alaturi si vei primi o oferta personalizata <b> GRATUITA! </b>",
+                            "typography_font_size": {
+                                "unit": "px",
+                                "size": 15
+                            },
+                            "typography_font_weight": "400"
+                        },
+                        "elements": []
+                    },
+                    {
+                        "id": "95f676b",
+                        "elType": "container",
+                        "settings": {},
+                        "elements": [
+                            {
+                                "id": "c0681a8",
+                                "elType": "widget",
+                                "widgetType": "image-box",
+                                "settings": {
+                                    "image": {
+                                        "id": 178,
+                                        "url": "https://webis.ro/wp-content/uploads/2024/03/chat-optimizat-e1705935886761.png"
+                                    },
+                                    "title_text": "",
+                                    "description_text": "<a href=\"mailto:info@webis.ro\" style=\"color: #775AFC;\">info@webis.ro</a>",
+                                    "link": {
+                                        "url": "mailto: info@webis.ro"
+                                    },
+                                    "title_typography_font_size": {
+                                        "unit": "px",
+                                        "size": 30
+                                    }
+                                },
+                                "elements": []
+                            },
+                            {
+                                "id": "b71f23c",
+                                "elType": "widget",
+                                "widgetType": "image-box",
+                                "settings": {
+                                    "image": {
+                                        "id": 179,
+                                        "url": "https://webis.ro/wp-content/uploads/2024/03/pin-3D-icon-optimizat.png"
+                                    },
+                                    "title_text": "",
+                                    "description_text": "<a href=\"https://maps.app.goo.gl/yhuJCA93FumRp6cP9\" style=\"color: #775AFC;\">B-ul Poitiers 16, Iasi</a>",
+                                    "link": {
+                                        "url": "https://maps.app.goo.gl/yhuJCA93FumRp6cP9"
+                                    },
+                                    "title_typography_font_size": {
+                                        "unit": "px",
+                                        "size": 30
+                                    }
+                                },
+                                "elements": []
+                            },
+                            {
+                                "id": "08046cf",
+                                "elType": "widget",
+                                "widgetType": "image-box",
+                                "settings": {
+                                    "image": {
+                                        "id": "87",
+                                        "url": "https://webis.ro/wp-content/uploads/2024/03/holding-mobile.png"
+                                    },
+                                    "title_text": "",
+                                    "description_text": "<a href=\"tel:0770 700 607\" style=\"color: #775AFC;\">0770 700 607</a>",
+                                    "link": {
+                                        "url": "tel: 0770 700 607"
+                                    },
+                                    "title_typography_font_size": {
+                                        "unit": "px",
+                                        "size": 30
+                                    }
+                                },
+                                "elements": []
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    }
+]

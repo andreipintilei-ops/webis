@@ -1,0 +1,111 @@
+/*
+  Section 8, Contact (components/site/contact): the hero's navy, the details
+  on the left, the form on the right — underlined fields, the white pill.
+*/
+@layer components {
+    .contact {
+        @apply relative z-[1] px-[var(--site-gap)] py-20 text-white md:py-28;
+        background: var(--site-menu);
+    }
+
+    .contact__inner {
+        @apply mx-auto grid max-w-[var(--content-max)] gap-14 md:grid-cols-12 md:gap-10;
+    }
+
+    .contact__aside {
+        @apply md:col-span-5;
+    }
+
+    .contact__title {
+        @apply font-display text-[clamp(3rem,6vw,5.5rem)] leading-[1.16] font-normal uppercase;
+    }
+
+    .contact__details {
+        @apply mt-10 flex flex-col gap-1.5 text-lg md:text-xl;
+    }
+
+    .contact__detail {
+        @apply text-white/80;
+        transition: color var(--duration-fast) var(--motion-out);
+    }
+
+    a.contact__detail:is(:hover, :focus-visible) {
+        @apply text-white;
+    }
+
+    .contact__promise {
+        @apply mt-8 text-base text-white/60;
+    }
+
+    .contact__main {
+        @apply min-w-0 md:col-span-7;
+    }
+
+    .contact__fields {
+        @apply grid gap-x-8 gap-y-6 sm:grid-cols-2;
+    }
+
+    .contact__field--wide {
+        @apply sm:col-span-2;
+    }
+
+    .contact__label {
+        @apply mb-2 block text-xs font-medium tracking-[0.12em] text-white/70 uppercase;
+    }
+
+    /* Underlined, on the navy. */
+    .contact__input {
+        @apply block w-full border-b border-white/25 bg-transparent py-2.5 text-lg text-white outline-none;
+        transition: border-color var(--duration-fast) var(--motion-out);
+
+        &:focus {
+            @apply border-white;
+        }
+
+        &[aria-invalid='true'] {
+            border-color: #ff9a9a;
+        }
+    }
+
+    .contact__input--area {
+        @apply resize-y;
+        min-height: 7.5rem;
+    }
+
+    .contact__error {
+        @apply mt-2 min-h-[1.25rem] text-sm;
+        color: #ffb3b3;
+
+        &:empty {
+            @apply min-h-0;
+        }
+    }
+
+    .contact__trap {
+        @apply absolute -left-[9999px] h-px w-px overflow-hidden;
+    }
+
+    .contact__submit {
+        @apply mt-10 flex flex-wrap items-center gap-x-8 gap-y-4;
+
+        & .pill {
+            @apply cursor-pointer;
+        }
+
+        & .pill:disabled {
+            @apply cursor-wait opacity-60;
+        }
+    }
+
+    .contact__privacy {
+        @apply max-w-[40ch] text-sm text-white/60;
+
+        & a {
+            @apply underline underline-offset-2 hover:text-white;
+        }
+    }
+
+    .contact__sent {
+        @apply text-2xl leading-snug font-medium tracking-[-0.02em] md:text-3xl;
+    }
+}

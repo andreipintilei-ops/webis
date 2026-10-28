@@ -1,0 +1,199 @@
+/*
+  "Proiecte selectate", layout "list" (components/site/selected-projects),
+  after the recent-work list on dennissnellenberg.com: the projects as rows
+  between hairlines — number, a thumbnail of the interface on the project's
+  colour, the audience, name and need → built, the result. On desktop with
+  a pointer the other rows dim as one is hovered, and its thumbnail comes
+  forward. Below 1024px the thumbnail runs across the row, under the story.
+
+  Contrast: names (--navy-950) 18:1, the rest (--ink-muted) 5.7:1 on the
+  lavender; dimming is decoration only (hovering a row brings it back).
+*/
+@layer components {
+    .project-list {
+        @apply relative z-[1] px-[var(--site-gap)] pt-16 pb-24 md:pt-24 md:pb-32;
+        color: var(--navy-950);
+        background: var(--lavender-50);
+
+        /* The mock-ups, in the violet. */
+        --project-accent: var(--violet-500);
+        --project-tint: #efebff;
+    }
+
+    .project-list__inner {
+        @apply mx-auto max-w-[var(--content-max)];
+    }
+
+    /* ---- Head ------------------------------------------------------------------ */
+
+    .project-list__head {
+        @apply grid gap-6 md:grid-cols-12 md:items-end md:gap-10;
+    }
+
+    /* As the other sections' heads (css/site/service-cards.css): a small
+       pill, the title at 36px / 56px. */
+    .project-list__label {
+        @apply inline-flex h-7 items-center rounded-full bg-white px-3 text-xs font-medium;
+        color: var(--violet-500);
+        border: 1px solid rgb(119 90 252 / 0.2);
+    }
+
+    .project-list__title {
+        @apply mt-5 font-medium;
+        font-size: 36px;
+        line-height: 1.1;
+        letter-spacing: -0.02em;
+
+        @media (min-width: 1024px) {
+            font-size: 56px;
+        }
+    }
+
+    .project-list__intro {
+        @apply max-w-[42ch] text-pretty md:col-span-5 md:col-start-8 md:pb-2;
+        font-size: 17px;
+        line-height: 1.6;
+        color: var(--ink-muted);
+    }
+
+    /* ---- Rows --------------------------------------------------------------------- */
+
+    /* The column names, over the rows (desktop). */
+    .project-list__columns {
+        @apply mt-16 hidden gap-x-8 pb-4 text-xs font-medium tracking-[0.12em] uppercase lg:grid;
+        grid-template-columns: 3rem minmax(0, 1fr) 15rem;
+        color: var(--ink-muted);
+
+        & > span:first-child {
+            grid-column: 2;
+        }
+    }
+
+    .project-list__rows {
+        @apply mt-10 border-b lg:mt-0;
+        border-color: rgb(38 42 111 / 0.12);
+    }
+
+    /*
+      Phones: the number and the story, the thumbnail across the row below.
+      From 1024px: number, thumbnail, story, result.
+    */
+    .project-list__row {
+        @apply relative grid items-center gap-x-6 gap-y-5 border-t py-8 lg:py-9;
+        border-color: rgb(38 42 111 / 0.12);
+        grid-template-columns: 2rem minmax(0, 1fr);
+        transition: opacity var(--base) var(--ease);
+
+        @media (min-width: 1024px) {
+            @apply gap-x-8;
+            grid-template-columns: 3rem 15rem minmax(0, 1fr) 15rem;
+        }
+    }
+
+    .project-list__number {
+        @apply self-start pt-1 text-xs tracking-widest lg:self-center lg:pt-0;
+        color: var(--ink-muted);
+    }
+
+    /* The interface on the project's colour, 16:10. */
+    .project-list__thumb {
+        @apply relative order-last overflow-hidden rounded-2xl lg:order-none;
+        grid-column: 1 / -1;
+        aspect-ratio: 16 / 10;
+        background: linear-gradient(
+            135deg,
+            var(--purple-500),
+            var(--violet-500)
+        );
+        transition: transform var(--base) var(--ease);
+
+        @media (min-width: 1024px) {
+            grid-column: auto;
+        }
+
+        & .project-interface {
+            top: 1.25rem;
+            left: 1.25rem;
+            right: -1rem;
+            bottom: -1rem;
+            border-radius: 8px 0 0 0;
+            transition: transform var(--slow) var(--ease);
+        }
+    }
+
+    .project-list__row:nth-child(2) .project-list__thumb {
+        background: linear-gradient(135deg, var(--violet-500), #5b3fe0);
+    }
+
+    .project-list__row:nth-child(3) .project-list__thumb {
+        background: linear-gradient(
+            135deg,
+            var(--lavender-300),
+            var(--violet-500)
+        );
+    }
+
+    .project-list__audience {
+        @apply text-xs font-medium;
+        color: var(--violet-500);
+    }
+
+    .project-list__name {
+        @apply mt-2 font-medium text-balance;
+        font-size: clamp(1.5rem, 2.5vw, 2.25rem);
+        line-height: 1.15;
+        letter-spacing: -0.02em;
+    }
+
+    .project-list__story {
+        @apply mt-3 max-w-[60ch] text-[15px] leading-relaxed text-pretty;
+        color: var(--ink-muted);
+    }
+
+    .project-list__arrow {
+        @apply mx-1.5;
+        color: var(--violet-500);
+    }
+
+    .project-list__result {
+        @apply text-sm text-pretty;
+        grid-column: 2;
+
+        @media (min-width: 1024px) {
+            grid-column: auto;
+        }
+    }
+
+    /* The pill in the call-to-action purple-blue. */
+    .project-list__foot {
+        @apply mt-14 flex justify-center;
+
+        & .pill {
+            --btn-ink: var(--violet-cta);
+        }
+    }
+
+    /* Hover (desktop with a pointer): the others dim back; the hovered
+       one's thumbnail grows a little and its interface slides up into view. */
+    @media (min-width: 1024px) and (hover: hover) and (pointer: fine) {
+        .project-list__rows:hover .project-list__row:not(:hover) {
+            opacity: 0.4;
+        }
+
+        .project-list__row:hover .project-list__thumb {
+            transform: scale(1.04);
+
+            & .project-interface {
+                transform: translate(-0.5rem, -0.5rem);
+            }
+        }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .project-list__row,
+        .project-list__thumb,
+        .project-list__thumb .project-interface {
+            transition: none;
+        }
+    }
+}

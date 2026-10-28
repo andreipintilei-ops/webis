@@ -1,0 +1,30 @@
+/*
+  What follows the opening hero covers it as the page scrolls: everything
+  after it is lifted above it on the page's white. No parallax: the hero
+  scrolls with the page. A dark hero (.hero-sheet, blocks/hero) is left as
+  the home page's: the first block after it — after the blocks set on its
+  fixed background ([data-on-backdrop], see blocks.blade.php), if any —
+  rises 32px over its foot on a 32px rounded top (as css/site/
+  service-cards.css's sheet, and the internal pages' heroes).
+*/
+@layer components {
+    /* :where() — no specificity: white is the default; a section with a
+       background of its own (Cum lucrăm, Contact) keeps it. */
+    :where([data-hero-parallax] ~ :not([data-on-backdrop])),
+    :where(
+        :is(.hero-sheet, .hero-sheet ~ [data-on-backdrop])
+            + :not([data-on-backdrop])
+    ) {
+        @apply relative z-[1] bg-white;
+    }
+
+    :is(.hero-sheet, .hero-sheet ~ [data-on-backdrop])
+        + :not([data-on-backdrop]) {
+        margin-top: -32px;
+        border-radius: 32px 32px 0 0;
+
+        &::before {
+            border-radius: inherit;
+        }
+    }
+}

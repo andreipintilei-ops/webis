@@ -1,0 +1,94 @@
+/*
+  The menus' letter roll (components/ui/roll.blade.php), after the "What we
+  do" cards on atomic.black: each letter sits in its own mask with a copy
+  waiting above it; set off by its link (the top bar's, on the item's
+  hover or focus; the side menu's, on its own), the letters drop away and the copies fall into their place, one after
+  another from the left, 10ms apart. Rolling back plays it in reverse, a
+  little slower.
+
+  The mask's padding keeps the marks over Ă and Î and the comma under Ș and
+  Ț inside it; the letter and its copy sit on a tight line and move by half
+  again their height, so neither shows in the mask at rest.
+*/
+@layer components {
+    .roll {
+        @apply inline-block whitespace-nowrap;
+    }
+
+    .roll__char {
+        @apply relative inline-block overflow-clip align-top;
+        /* Its own tight line, so the letter sits where its copy lands. */
+        line-height: 0.97;
+        padding-block: 0.16em 0.12em;
+    }
+
+    .roll__letter,
+    .roll__char::before {
+        @apply inline-block;
+        line-height: 0.97;
+        transition: transform 0.55s cubic-bezier(0.4, 0, 0.2, 1);
+        transition-delay: calc(var(--i) * 10ms);
+    }
+
+    /* The copy, from data-l. */
+    .roll__char::before {
+        content: attr(data-l);
+        @apply absolute left-0;
+        top: 0.16em;
+        transform: translateY(-150%);
+    }
+
+    /* Set off: the top bar's item (a dropdown stays lit while the pointer is
+       in its panel), the side menu's links and its contact and social ones,
+       the footer's links — and the side menu's Servicii by its state, once
+       as it opens and once as it closes, not by the pointer passing over it
+       on the way to the services. Rolling in is quicker than rolling back. */
+    :is(
+            .site-nav__links > li:is(:hover, :has(:focus-visible)),
+            a.theo-menu__link:is(:hover, :focus-visible),
+            .theo-menu__group[open]:not(.is-closing) > .theo-menu__link,
+            .theo-menu__service:is(:hover, :focus-visible),
+            .theo-menu__details a:is(:hover, :focus-visible),
+            .site-footer__link:is(:hover, :focus-visible)
+        )
+        .roll {
+        & .roll__letter,
+        & .roll__char::before {
+            transition-duration: 0.35s;
+        }
+
+        & .roll__letter {
+            transform: translateY(150%);
+        }
+
+        & .roll__char::before {
+            transform: translateY(0);
+        }
+    }
+
+    /* The pill buttons (components/ui/pill), with a mouse only: a tap would
+       leave them rolled. */
+    @media (hover: hover) and (pointer: fine) {
+        .pill:is(:hover, :focus-visible) .roll {
+            & .roll__letter,
+            & .roll__char::before {
+                transition-duration: 0.35s;
+            }
+
+            & .roll__letter {
+                transform: translateY(150%);
+            }
+
+            & .roll__char::before {
+                transform: translateY(0);
+            }
+        }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .roll__letter,
+        .roll__char::before {
+            transition: none;
+        }
+    }
+}

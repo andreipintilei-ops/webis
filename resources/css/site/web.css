@@ -1,0 +1,360 @@
+/*
+  /web — Web și e-commerce (public/web.blade.php), on the site's visual
+  language (css/site/system.css): what is particular to the page — the
+  offers and projects as the notched card (css/site/blog-posts.css), the
+  split sections, the steps on the indigo, the questions.
+*/
+@layer components {
+    /*
+      ---- A split section: the title beside what it introduces ---------------
+      The title, its line and any link in the first four of twelve columns;
+      the content from the sixth to the twelfth. The page's second axis.
+    */
+    .web-split {
+        @apply grid gap-y-10 lg:grid-cols-12 lg:gap-x-10;
+    }
+
+    .web-split__head {
+        @apply grid content-start justify-items-start gap-5 lg:col-span-4 lg:self-start;
+    }
+
+    .web-split__body {
+        @apply lg:col-span-7 lg:col-start-6;
+    }
+
+    .web-split__line {
+        @apply max-w-[34ch] text-pretty;
+        font-size: 18px;
+        line-height: 1.6;
+        color: var(--muted);
+    }
+
+    /* ---- What suits you: two notched cards, five columns and seven --------- */
+
+    .web-offers__list {
+        @apply grid grid-cols-1 gap-5 lg:grid-cols-12;
+
+        & > li {
+            @apply flex lg:col-span-5;
+        }
+
+        & > li:last-child {
+            @apply lg:col-span-7;
+        }
+
+        & .post-card {
+            @apply flex-1;
+        }
+    }
+
+    /* How long it takes, above its name. */
+    .web-offer__time {
+        @apply mb-5 font-micro text-xs tracking-[0.08em] uppercase;
+        color: var(--card-muted);
+    }
+
+    .post-card.web-offer {
+        @apply min-h-0 gap-0 px-8 pt-8 pb-8 lg:min-h-0 lg:px-10 lg:pt-10;
+    }
+
+    /* The shop on the hero's indigo. */
+    .post-card.web-offer--dark {
+        --card-bg: #1f2868;
+        --card-ink: #fff;
+        --card-muted: rgb(255 255 255 / 0.75);
+    }
+
+    /* In the text face: the display one is the hero's alone. */
+    .web-offer__title {
+        @apply font-medium text-balance;
+        font-size: clamp(1.75rem, 2.4vw, 2.25rem);
+        line-height: 1.1;
+        letter-spacing: -0.02em;
+    }
+
+    .web-offer__for {
+        @apply mt-3 max-w-[42ch] text-base leading-relaxed text-pretty;
+        color: var(--card-muted);
+    }
+
+    .web-offer__points {
+        @apply mt-6 mb-8 flex flex-col gap-2.5;
+    }
+
+    .web-offer__point {
+        @apply flex items-start gap-3 text-base leading-snug;
+
+        & svg {
+            @apply mt-0.5 size-5 shrink-0;
+            fill: none;
+            stroke: var(--violet-500);
+            stroke-width: 2.25;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+    }
+
+    .web-offer--dark .web-offer__point svg {
+        stroke: var(--lavender-300);
+    }
+
+    .web-offer .post-card__foot {
+        @apply mt-auto;
+    }
+
+    /* ---- How we work: split, on the indigo ---------------------------------- */
+
+    /* A flat indigo: the chapters' dark glows left out here. */
+    .web-steps.chapter--dark {
+        background: #1f2868;
+    }
+
+    /* How long it takes, each under its label: what leads the section. */
+    .web-steps__durations {
+        @apply mt-4 grid w-full grid-cols-2 gap-6 border-t pt-6 lg:mt-8;
+        border-color: var(--line);
+
+        & dt {
+            @apply font-micro text-xs tracking-[0.08em] uppercase;
+            color: var(--muted);
+        }
+
+        & dd {
+            @apply mt-3 flex items-baseline gap-2 text-lg font-medium;
+            letter-spacing: -0.02em;
+        }
+
+        & dd span {
+            @apply tabular-nums;
+            font-size: clamp(2.75rem, 4.4vw, 4rem);
+            line-height: 0.95;
+            letter-spacing: -0.045em;
+        }
+    }
+
+    /* ---- Projects: one large, two beside it, the screenshot on top ----------- */
+
+    /* The ways to the rest, on the title's baseline. */
+    .web-projects__ways {
+        @apply flex flex-wrap items-center gap-x-8 gap-y-4 lg:col-span-6 lg:col-start-7 lg:justify-end lg:pb-1;
+    }
+
+    .web-projects__list {
+        @apply grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-12 lg:grid-rows-2;
+
+        & > li {
+            @apply flex lg:col-span-5;
+        }
+
+        & > li:first-child {
+            @apply sm:col-span-2 lg:col-span-7 lg:row-span-2;
+        }
+
+        & .post-card {
+            @apply flex-1;
+        }
+    }
+
+    /* Three of a kind side by side, each screenshot whole at 3:2
+       (/creare-magazin-online/, /creare-site-de-prezentare/). */
+    .web-projects__list--even {
+        @apply lg:grid-cols-3 lg:grid-rows-none;
+
+        & > li:first-child {
+            @apply lg:col-span-1 lg:row-span-1;
+        }
+
+        & > li {
+            @apply lg:col-span-1;
+        }
+    }
+
+    /* The large one: its screenshot takes the height the two beside it make,
+       the title keeping its own. */
+    .web-projects__list:not(.web-projects__list--even) > li:first-child {
+        & .web-project__media {
+            @apply lg:aspect-auto lg:min-h-[22rem] lg:flex-1;
+
+            /* Taller than the screenshot: cropped from its middle. */
+            & img {
+                @apply lg:object-center;
+            }
+        }
+
+        & .post-card__title {
+            @apply lg:flex-none;
+        }
+    }
+
+    .post-card.web-project {
+        @apply min-h-0 gap-4 pt-4 lg:min-h-0 lg:pt-4;
+    }
+
+    .web-project__media {
+        @apply -mx-3 block overflow-hidden rounded-[14px] lg:-mx-4;
+        aspect-ratio: 3 / 2;
+        background: var(--card-chip);
+
+        /* A project's cover, as <x-picture> renders it (components/site/project-card). */
+        & picture {
+            @apply block size-full;
+        }
+
+        & img {
+            @apply size-full object-cover object-top;
+            transition: transform var(--slow) var(--ease);
+        }
+    }
+
+    .web-project:is(:hover, :focus-visible) .web-project__media img {
+        transform: scale(1.03);
+    }
+
+    /* ---- The hero's foot: the two offers, on a hairline ------------------- */
+
+    .web-hero-offers {
+        @apply grid border-t md:mt-auto lg:grid-cols-2;
+        border-color: rgb(255 255 255 / 0.25);
+    }
+
+    .web-hero-offer {
+        @apply grid gap-y-3 py-8 text-white md:py-10 lg:pr-12;
+    }
+
+    /* The second beside the first, a hairline between them; under it below
+       1024px. */
+    .web-hero-offers > li + li .web-hero-offer {
+        @apply border-t lg:border-t-0 lg:border-l lg:pr-0 lg:pl-12;
+        border-color: rgb(255 255 255 / 0.25);
+    }
+
+    .web-hero-offer__meta {
+        @apply font-micro text-[11px] tracking-[0.08em] uppercase;
+        color: rgb(255 255 255 / 0.75);
+    }
+
+    .web-hero-offer__title {
+        @apply font-medium;
+        font-size: clamp(1.75rem, 2.6vw, 2.5rem);
+        line-height: 1.08;
+        letter-spacing: -0.03em;
+    }
+
+    .web-hero-offer__side {
+        @apply flex items-end justify-between gap-8;
+    }
+
+    .web-hero-offer__text {
+        @apply max-w-[36ch] text-base leading-relaxed text-pretty md:text-[17px];
+        color: rgb(255 255 255 / 0.8);
+    }
+
+    .web-hero-offer:is(:hover, :focus-visible) .blog-lead__arrow {
+        @apply border-white bg-white;
+        color: var(--violet-500);
+    }
+
+    /* ---- After launch: a pair, side by side between hairlines --------------- */
+
+    .web-after {
+        @apply grid border-t lg:grid-cols-2;
+        border-color: var(--line);
+    }
+
+    .web-after__item {
+        @apply flex h-full flex-col items-start gap-5 border-b py-10 lg:py-12;
+        border-color: var(--line);
+        color: var(--ink);
+    }
+
+    .web-after > li:last-child .web-after__item {
+        @apply lg:border-l lg:pl-12;
+    }
+
+    .web-after > li:first-child .web-after__item {
+        @apply lg:pr-12;
+    }
+
+    .web-after__title {
+        @apply font-medium text-balance;
+        font-size: clamp(1.75rem, 2.8vw, 2.75rem);
+        line-height: 1.05;
+        letter-spacing: -0.035em;
+    }
+
+    .web-after__line {
+        @apply max-w-[40ch] text-[17px] leading-relaxed text-pretty;
+        color: var(--muted);
+    }
+
+    .web-after__go {
+        @apply mt-auto inline-flex items-center gap-2.5 border-b pb-1 font-medium;
+        border-color: currentColor;
+
+        & svg {
+            @apply size-2.5;
+            transition: translate var(--base) var(--ease);
+        }
+    }
+
+    .web-after__item:hover .web-after__go svg {
+        translate: 3px 0;
+    }
+
+    /* ---- Questions: rows that open ------------------------------------------- */
+
+    .web-faq__item {
+        @apply border-b;
+        border-color: var(--line);
+
+        &:first-child {
+            @apply border-t;
+        }
+    }
+
+    .web-faq__question {
+        @apply flex cursor-pointer list-none items-center justify-between gap-6 py-6 text-lg font-medium md:text-[22px];
+
+        &::-webkit-details-marker {
+            @apply hidden;
+        }
+    }
+
+    /* The +, turning into a × as the row opens. */
+    .web-faq__icon {
+        @apply relative size-10 shrink-0 rounded-full;
+        border: 1px solid var(--line);
+        transition:
+            transform var(--slow) var(--ease),
+            background-color var(--slow) var(--ease),
+            border-color var(--slow) var(--ease);
+
+        &::before,
+        &::after {
+            content: '';
+            @apply absolute top-1/2 left-1/2 h-px w-3.5 -translate-x-1/2 -translate-y-1/2;
+            background: currentColor;
+        }
+
+        &::after {
+            @apply rotate-90;
+        }
+    }
+
+    .web-faq__item.is-open .web-faq__icon,
+    .web-faq__item[open] .web-faq__icon {
+        transform: rotate(45deg);
+        border-color: var(--violet-500);
+        background: var(--violet-500);
+        color: #fff;
+    }
+
+    .web-faq__answer {
+        @apply overflow-hidden;
+
+        & p {
+            @apply max-w-[60ch] pb-6 text-base leading-relaxed text-pretty md:text-lg;
+            color: var(--muted);
+        }
+    }
+}

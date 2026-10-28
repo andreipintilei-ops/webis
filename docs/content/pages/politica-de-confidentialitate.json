@@ -1,0 +1,247 @@
+{
+    "type": "legal",
+    "title": "Politica de confidentialitate",
+    "url": "/politica-de-confidentialitate/",
+    "category": null,
+    "excerpt": "Politica de confidentialitate Cine suntem noi Adresa site-ului nostru este: https://www.webis.ro. Cookie-uri Dacă lăsați un comentariu pe site-ul nostru, puteți opta pentru salvarea numelui, a adresei…",
+    "published_at": "2024-03-05",
+    "seo": {
+        "title": null,
+        "description": null,
+        "canonical": null,
+        "noindex": false,
+        "og_image_asset_id": null,
+        "focus_keyword": null
+    },
+    "blocks": [
+        {
+            "id": "01m5hq64x6xcddgmbes1ch59pn",
+            "type": "hero",
+            "v": 1,
+            "data": {
+                "eyebrow": null,
+                "heading": "Politica de confidentialitate",
+                "subheading": null,
+                "image_asset_id": 99,
+                "layout": "split",
+                "background": "gradient-violet",
+                "align": "center",
+                "logos": false,
+                "primary_cta": null,
+                "secondary_cta": null
+            }
+        },
+        {
+            "id": "01m5hq64x926wrxy1cph7ymfq1",
+            "type": "rich_text",
+            "v": 1,
+            "data": {
+                "content": {
+                    "type": "doc",
+                    "content": [
+                        {
+                            "type": "heading",
+                            "attrs": {
+                                "level": 3,
+                                "id": "cine-suntem-noi"
+                            },
+                            "content": [
+                                {
+                                    "type": "text",
+                                    "text": "Cine suntem noi"
+                                }
+                            ]
+                        },
+                        {
+                            "type": "paragraph",
+                            "content": [
+                                {
+                                    "type": "text",
+                                    "text": "Adresa site-ului nostru este: https://www.webis.ro."
+                                }
+                            ]
+                        },
+                        {
+                            "type": "heading",
+                            "attrs": {
+                                "level": 3,
+                                "id": "cookie-uri"
+                            },
+                            "content": [
+                                {
+                                    "type": "text",
+                                    "text": "Cookie-uri"
+                                }
+                            ]
+                        },
+                        {
+                            "type": "paragraph",
+                            "content": [
+                                {
+                                    "type": "text",
+                                    "text": "Dacă lăsați un comentariu pe site-ul nostru, puteți opta pentru salvarea numelui, a adresei de e-mail și a site-ului web în cookie-uri. Acestea sunt pentru comoditatea dumneavoastră, astfel încât să nu fie nevoie să vă completați din nou datele când lăsați un alt comentariu. Aceste cookie-uri vor dura un an."
+                                }
+                            ]
+                        },
+                        {
+                            "type": "paragraph",
+                            "content": [
+                                {
+                                    "type": "text",
+                                    "text": "Dacă vizitați pagina noastră de conectare, vom seta un cookie temporar pentru a determina dacă browserul dumneavoastră acceptă cookie-uri. Acest cookie nu conține date personale și este eliminat atunci când închideți browserul."
+                                }
+                            ]
+                        },
+                        {
+                            "type": "paragraph",
+                            "content": [
+                                {
+                                    "type": "text",
+                                    "text": "Când vă conectați, vom configura și câteva module cookie pentru a vă salva informațiile de conectare și opțiunile de afișare a ecranului. Cookie-urile de conectare durează două zile, iar modulele cookie de opțiuni de ecran durează un an. Dacă selectați „Țineți minte”, autentificarea dvs. va persista timp de două săptămâni. Dacă vă deconectați de la contul dvs., cookie-urile de conectare vor fi eliminate."
+                                }
+                            ]
+                        },
+                        {
+                            "type": "paragraph",
+                            "content": [
+                                {
+                                    "type": "text",
+                                    "text": "Dacă editați sau publicați un articol, un cookie suplimentar va fi salvat în browser. Acest cookie nu include date personale și indică pur și simplu ID-ul postării articolului pe care tocmai l-ați editat. Expiră după 1 zi."
+                                }
+                            ]
+                        },
+                        {
+                            "type": "heading",
+                            "attrs": {
+                                "level": 3,
+                                "id": "continut-incorporat-de-pe-alte-site-uri-web"
+                            },
+                            "content": [
+                                {
+                                    "type": "text",
+                                    "text": "Conținut încorporat de pe alte site-uri web"
+                                }
+                            ]
+                        },
+                        {
+                            "type": "paragraph",
+                            "content": [
+                                {
+                                    "type": "text",
+                                    "text": "Articolele de pe acest site pot include conținut încorporat (de exemplu, videoclipuri, imagini, articole etc.). Conținutul încorporat de pe alte site-uri web se comportă exact în același mod ca și cum vizitatorul ar fi vizitat celălalt site web."
+                                }
+                            ]
+                        },
+                        {
+                            "type": "paragraph",
+                            "content": [
+                                {
+                                    "type": "text",
+                                    "text": "Aceste site-uri web pot colecta date despre dvs., pot folosi cookie-uri, pot încorpora urmărirea suplimentară de la terți și vă pot monitoriza interacțiunea cu acel conținut încorporat, inclusiv urmărirea interacțiunii dvs. cu conținutul încorporat dacă aveți un cont și sunteți conectat la acel site web."
+                                }
+                            ]
+                        },
+                        {
+                            "type": "heading",
+                            "attrs": {
+                                "level": 3,
+                                "id": "cu-cine-impartasim-datele-dvs"
+                            },
+                            "content": [
+                                {
+                                    "type": "text",
+                                    "text": "Cu cine împărtășim datele dvs"
+                                }
+                            ]
+                        },
+                        {
+                            "type": "paragraph",
+                            "content": [
+                                {
+                                    "type": "text",
+                                    "text": "Dacă solicitați o resetare a parolei, adresa dvs. IP va fi inclusă în e-mailul de resetare."
+                                }
+                            ]
+                        },
+                        {
+                            "type": "heading",
+                            "attrs": {
+                                "level": 3,
+                                "id": "cat-timp-pastram-datele-dvs"
+                            },
+                            "content": [
+                                {
+                                    "type": "text",
+                                    "text": "Cât timp păstrăm datele dvs"
+                                }
+                            ]
+                        },
+                        {
+                            "type": "paragraph",
+                            "content": [
+                                {
+                                    "type": "text",
+                                    "text": "Text sugerat: dacă lăsați un comentariu, comentariul și metadatele sale sunt păstrate pe termen nelimitat. Acest lucru este astfel încât să putem recunoaște și aproba automat orice comentarii ulterioare, în loc să le ținem într-o coadă de moderare."
+                                }
+                            ]
+                        },
+                        {
+                            "type": "paragraph",
+                            "content": [
+                                {
+                                    "type": "text",
+                                    "text": "Pentru utilizatorii care se înregistrează pe site-ul nostru web (dacă există), stocăm și informațiile personale pe care le furnizează în profilul lor de utilizator. Toți utilizatorii își pot vedea, edita sau șterge informațiile personale în orice moment (cu excepția faptului că nu își pot schimba numele de utilizator). Administratorii site-urilor web pot, de asemenea, să vadă și să editeze aceste informații."
+                                }
+                            ]
+                        },
+                        {
+                            "type": "heading",
+                            "attrs": {
+                                "level": 3,
+                                "id": "ce-drepturi-aveti-asupra-datelor-dvs"
+                            },
+                            "content": [
+                                {
+                                    "type": "text",
+                                    "text": "Ce drepturi aveți asupra datelor dvs"
+                                }
+                            ]
+                        },
+                        {
+                            "type": "paragraph",
+                            "content": [
+                                {
+                                    "type": "text",
+                                    "text": "Text sugerat: Dacă aveți un cont pe acest site sau ați lăsat comentarii, puteți solicita să primiți un fișier exportat cu datele personale pe care le deținem despre dvs., inclusiv orice date pe care ni le-ați furnizat. De asemenea, puteți solicita să ștergem toate datele personale pe care le deținem despre dumneavoastră. Aceasta nu include datele pe care suntem obligați să le păstrăm în scopuri administrative, legale sau de securitate."
+                                }
+                            ]
+                        },
+                        {
+                            "type": "heading",
+                            "attrs": {
+                                "level": 3,
+                                "id": "unde-sunt-trimise-datele-dvs"
+                            },
+                            "content": [
+                                {
+                                    "type": "text",
+                                    "text": "Unde sunt trimise datele dvs"
+                                }
+                            ]
+                        },
+                        {
+                            "type": "paragraph",
+                            "content": [
+                                {
+                                    "type": "text",
+                                    "text": "Text sugerat: comentariile vizitatorilor pot fi verificate printr-un serviciu automat de detectare a spam-ului."
+                                }
+                            ]
+                        }
+                    ]
+                },
+                "content_html": "<h3 id=\"cine-suntem-noi\">Cine suntem noi</h3><p>Adresa site-ului nostru este: https://www.webis.ro.</p><h3 id=\"cookie-uri\">Cookie-uri</h3><p>Dacă lăsați un comentariu pe site-ul nostru, puteți opta pentru salvarea numelui, a adresei de e-mail și a site-ului web în cookie-uri. Acestea sunt pentru comoditatea dumneavoastră, astfel încât să nu fie nevoie să vă completați din nou datele când lăsați un alt comentariu. Aceste cookie-uri vor dura un an.</p><p>Dacă vizitați pagina noastră de conectare, vom seta un cookie temporar pentru a determina dacă browserul dumneavoastră acceptă cookie-uri. Acest cookie nu conține date personale și este eliminat atunci când închideți browserul.</p><p>Când vă conectați, vom configura și câteva module cookie pentru a vă salva informațiile de conectare și opțiunile de afișare a ecranului. Cookie-urile de conectare durează două zile, iar modulele cookie de opțiuni de ecran durează un an. Dacă selectați „Țineți minte”, autentificarea dvs. va persista timp de două săptămâni. Dacă vă deconectați de la contul dvs., cookie-urile de conectare vor fi eliminate.</p><p>Dacă editați sau publicați un articol, un cookie suplimentar va fi salvat în browser. Acest cookie nu include date personale și indică pur și simplu ID-ul postării articolului pe care tocmai l-ați editat. Expiră după 1 zi.</p><h3 id=\"continut-incorporat-de-pe-alte-site-uri-web\">Conținut încorporat de pe alte site-uri web</h3><p>Articolele de pe acest site pot include conținut încorporat (de exemplu, videoclipuri, imagini, articole etc.). Conținutul încorporat de pe alte site-uri web se comportă exact în același mod ca și cum vizitatorul ar fi vizitat celălalt site web.</p><p>Aceste site-uri web pot colecta date despre dvs., pot folosi cookie-uri, pot încorpora urmărirea suplimentară de la terți și vă pot monitoriza interacțiunea cu acel conținut încorporat, inclusiv urmărirea interacțiunii dvs. cu conținutul încorporat dacă aveți un cont și sunteți conectat la acel site web.</p><h3 id=\"cu-cine-impartasim-datele-dvs\">Cu cine împărtășim datele dvs</h3><p>Dacă solicitați o resetare a parolei, adresa dvs. IP va fi inclusă în e-mailul de resetare.</p><h3 id=\"cat-timp-pastram-datele-dvs\">Cât timp păstrăm datele dvs</h3><p>Text sugerat: dacă lăsați un comentariu, comentariul și metadatele sale sunt păstrate pe termen nelimitat. Acest lucru este astfel încât să putem recunoaște și aproba automat orice comentarii ulterioare, în loc să le ținem într-o coadă de moderare.</p><p>Pentru utilizatorii care se înregistrează pe site-ul nostru web (dacă există), stocăm și informațiile personale pe care le furnizează în profilul lor de utilizator. Toți utilizatorii își pot vedea, edita sau șterge informațiile personale în orice moment (cu excepția faptului că nu își pot schimba numele de utilizator). Administratorii site-urilor web pot, de asemenea, să vadă și să editeze aceste informații.</p><h3 id=\"ce-drepturi-aveti-asupra-datelor-dvs\">Ce drepturi aveți asupra datelor dvs</h3><p>Text sugerat: Dacă aveți un cont pe acest site sau ați lăsat comentarii, puteți solicita să primiți un fișier exportat cu datele personale pe care le deținem despre dvs., inclusiv orice date pe care ni le-ați furnizat. De asemenea, puteți solicita să ștergem toate datele personale pe care le deținem despre dumneavoastră. Aceasta nu include datele pe care suntem obligați să le păstrăm în scopuri administrative, legale sau de securitate.</p><h3 id=\"unde-sunt-trimise-datele-dvs\">Unde sunt trimise datele dvs</h3><p>Text sugerat: comentariile vizitatorilor pot fi verificate printr-un serviciu automat de detectare a spam-ului.</p>"
+            }
+        }
+    ]
+}

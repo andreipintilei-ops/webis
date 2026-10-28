@@ -1,0 +1,741 @@
+/*
+  The home page's stage (public/home.blade.php): "The Shapeshifter"
+  (js/public/shapeshifter.ts) — the three services as one stage
+  (components/site/stage.blade.php) built around one object of five thin
+  matte plates, drawn between the stage's ground and its content, and the
+  purple panel after them where the plates stand as a W.
+
+  Every rule is scoped to :root[data-variant='stage'] rather than written as
+  the site's default, so the pages that share these classes — /clienti and
+  its own trial — are left alone. Except the panel (.stage-finale, from
+  components/site/cta-panel): /portofoliu closes on it too.
+*/
+@layer components {
+    /* The object's layer: the screen's size, never in the way of a click.
+       The script holds it to the screen (inside the smooth-scrolled content,
+       where position: fixed doesn't hold) — fixed is its place without it.
+       See-through: what follows the hero gets a white ground otherwise
+       (hero-parallax.css). */
+    :root[data-variant='stage'] .shapeshifter {
+        @apply pointer-events-none fixed top-0 left-0 z-[1] h-screen w-full bg-transparent;
+
+        & canvas {
+            @apply block size-full;
+        }
+    }
+
+    /*
+      The layering: the chapters stop being layers of their own, so the
+      object (z 1) paints above their grounds and below their content
+      (z 2). The grain keeps its place above the ground at z 0.
+    */
+    :root[data-variant='stage'] .chapter {
+        z-index: auto;
+
+        &::before {
+            z-index: 0;
+        }
+    }
+
+    :root[data-variant='stage'] .chapter__inner {
+        @apply relative z-[2];
+    }
+
+    /* ---- The stage ------------------------------------------------------------- */
+
+    /*
+      The room under the finale panel is the section's own padding, not a
+      margin on the panel: as the stage's last child, a margin would collapse
+      out of the section and leave the page's plain white showing under it
+      instead of the lavender paper and its grain.
+    */
+    :root[data-variant='stage'] .stage {
+        @apply pb-20 lg:pt-0 lg:pb-32;
+
+        & > .chapter__inner {
+            @apply gap-0;
+        }
+    }
+
+    /*
+      A chapter: on phones the object's box, then the text. From 1024px a
+      screen tall at least, the text in six columns on one half and the
+      other half kept for the object (the slot, as tall as the chapter).
+      The room between chapters is where the object changes.
+    */
+    :root[data-variant='stage'] .stage-chapter {
+        @apply grid gap-10 py-16;
+
+        @media (min-width: 1024px) {
+            @apply grid-cols-12 items-center gap-x-10 gap-y-0;
+            min-height: 100vh;
+            padding-block: 22vh;
+
+            &:first-child {
+                padding-top: 0;
+            }
+
+            &:last-child {
+                padding-bottom: 8vh;
+            }
+        }
+    }
+
+    /*
+      The panel is laid out to the screen's edges, and `--finale-rise`
+      taller above and below, and clipped back to the card; as the W forms,
+      the clip opens out to them and the corners go square
+      (js/public/stage-finale-grow.ts), so it grows in height a little as
+      well as out to the sides. The rise is padding (the content stays in
+      the card) and a negative margin (the card stands where it did). The
+      W's slot keeps the card's width, so only the ground grows. Without the
+      script: the card, as elsewhere.
+    */
+    :root[data-variant='stage'] .stage {
+        overflow-x: clip;
+
+        & .stage-finale {
+            --finale-rise: clamp(1.5rem, 5vh, 3.5rem);
+            @apply max-w-none rounded-none;
+            width: 100vw;
+            min-height: calc(74vh + 2 * var(--finale-rise));
+            margin-inline: calc(50% - 50vw);
+            margin-block: calc(3rem - var(--finale-rise))
+                calc(-1 * var(--finale-rise));
+            padding-block: var(--finale-rise);
+            clip-path: inset(
+                var(--finale-rise) max(var(--site-gap), (100vw - 92rem) / 2)
+                    round 1.5rem
+            );
+
+            @media (min-width: 1024px) {
+                min-height: calc(min(88vh, 860px) + 2 * var(--finale-rise));
+                margin-top: calc(-1 * var(--finale-rise));
+                clip-path: inset(
+                    var(--finale-rise) max(var(--site-gap), (100vw - 92rem) / 2)
+                        round 40px
+                );
+            }
+        }
+
+        & .stage-finale__slot {
+            @apply justify-self-center;
+            width: min(92rem, 100vw - 2 * var(--site-gap));
+        }
+    }
+
+    /* The object on one side throughout (/acasa-3d-dreapta): it does not
+       cross the screen between chapters, so they sit closer. */
+    @media (min-width: 1024px) {
+        :root[data-variant='stage'] .stage--one-side .stage-chapter {
+            min-height: 85vh;
+
+            &:not(:first-child) {
+                padding-top: 14vh;
+            }
+
+            &:not(:last-child) {
+                padding-bottom: 14vh;
+            }
+        }
+    }
+
+    :root[data-variant='stage'] .stage-chapter__slot {
+        @apply relative aspect-[5/4] w-full;
+
+        /* Without WebGL: the object as a still (shapeshifter.ts). */
+        & .shapeshifter-still {
+            @apply absolute inset-0 m-auto max-h-[70%] w-auto max-w-[80%] object-contain;
+        }
+
+        @media (min-width: 1024px) {
+            @apply row-start-1 aspect-auto self-stretch;
+        }
+    }
+
+    /* Drawn live (js/public/shapeshifter.ts): below 1024px the object sits
+       behind the text, so the chapters' boxes go; they stay for the still
+       image without WebGL. */
+    @media (max-width: 1023px) {
+        :root[data-variant='stage'] .stage--live .stage-chapter__slot {
+            @apply hidden;
+        }
+
+        /* The stage opens on the object alone: the first chapter's text
+           starts below it (a quarter of the screen down, plus half its
+           height, as shapeshifter.ts places it) and then comes up over it. */
+        :root[data-variant='stage'] .stage--live .stage-chapter:first-child {
+            padding-top: calc(25vh + min(42.5vw, 22.5vh) + 3rem);
+        }
+    }
+
+    :root[data-variant='stage'] .stage-chapter__body {
+        @apply min-w-0 lg:row-start-1;
+    }
+
+    @media (min-width: 1024px) {
+        :root[data-variant='stage'] .stage-chapter[data-side='right'] {
+            & .stage-chapter__body {
+                grid-column: 1 / span 6;
+            }
+
+            & .stage-chapter__slot {
+                grid-column: 7 / span 6;
+            }
+        }
+
+        :root[data-variant='stage'] .stage-chapter[data-side='left'] {
+            & .stage-chapter__body {
+                grid-column: 7 / span 6;
+            }
+
+            & .stage-chapter__slot {
+                grid-column: 1 / span 6;
+            }
+        }
+    }
+
+    :root[data-variant='stage'] .stage-chapter__intro {
+        @apply mt-6 text-pretty;
+        font-size: 18px;
+        line-height: 1.6;
+        color: var(--muted);
+    }
+
+    :root[data-variant='stage'] .stage-chapter__cta {
+        @apply mt-12;
+    }
+
+    /* Software: the shared chapter heading, actions, then four capabilities.
+       Only the text column changes; the object's slot and stage stay intact. */
+    :root[data-variant='stage'] .stage-software {
+        & .stage-chapter__intro {
+            @apply mt-6 max-w-[40ch] text-xl lg:text-[22px];
+            line-height: 1.55;
+        }
+
+        & .stage-software__actions {
+            @apply mt-8 gap-x-7;
+        }
+
+        & .stage-software__items {
+            @apply mt-12 grid-cols-2 gap-x-0 gap-y-8 border-t-0 sm:grid-cols-4 lg:grid-cols-2 xl:grid-cols-4;
+        }
+
+        & .stage-item {
+            @apply grid-cols-1 gap-x-0 border-b-0 px-5 py-0;
+
+            &:nth-child(even) {
+                border-left: 1px solid var(--line);
+            }
+
+            &:nth-child(odd) {
+                @apply pl-0;
+            }
+
+            @media (min-width: 640px) {
+                &:not(:first-child) {
+                    border-left: 1px solid var(--line);
+                }
+
+                &:nth-child(odd):not(:first-child) {
+                    @apply pl-5;
+                }
+
+                &:last-child {
+                    @apply pr-0;
+                }
+            }
+
+            @media (min-width: 1024px) and (max-width: 1279px) {
+                &:nth-child(odd) {
+                    @apply border-l-0 pl-0;
+                }
+            }
+        }
+
+        & .stage-item__icon {
+            @apply row-span-1 mb-5 size-12 rounded-2xl;
+
+            & svg {
+                @apply size-6;
+            }
+        }
+
+        & .stage-item__name {
+            @apply text-base;
+        }
+
+        & .stage-item__text {
+            @apply mt-2;
+        }
+
+        & .stage-software__benefits {
+            @apply mt-12 flex flex-wrap gap-6 border-t pt-6;
+            border-color: var(--line);
+        }
+
+        & .stage-software__benefit {
+            @apply grid min-w-0 grid-cols-[auto_minmax(0,1fr)] items-start gap-3;
+            flex: 1 1 220px;
+
+            & + li {
+                flex-basis: 310px;
+            }
+
+            & h3 {
+                @apply text-[15px] font-medium;
+            }
+
+            & p {
+                @apply mt-1 text-[15px] leading-relaxed;
+                color: var(--muted);
+            }
+        }
+
+        & .stage-software__benefit-icon {
+            @apply grid size-6 place-items-center;
+            color: var(--muted);
+
+            & svg {
+                @apply size-6;
+            }
+        }
+    }
+
+    /* Web: the same column treatment as 01, in three — the icon over its
+       name and one line, hairlines between, and no rules above or below.
+       Stacked under 640px, where three would be too narrow to read. */
+    :root[data-variant='stage'] .stage-web {
+        & .stage-chapter__intro {
+            @apply mt-6 max-w-[40ch] text-xl lg:text-[22px];
+            line-height: 1.55;
+        }
+
+        & .stage-web__items {
+            @apply mt-12 grid-cols-1 gap-x-0 gap-y-8 border-t-0 sm:grid-cols-3;
+        }
+
+        & .stage-item {
+            @apply grid-cols-1 gap-x-0 border-b-0 px-0 py-0;
+        }
+
+        & .stage-item__icon {
+            @apply row-span-1 mb-5 size-12 rounded-2xl;
+
+            & svg {
+                @apply size-6;
+            }
+        }
+
+        & .stage-item__name {
+            @apply text-base;
+        }
+
+        & .stage-item__text {
+            @apply mt-2;
+        }
+
+        /* The hairlines sit on the list items, not on the links inside them:
+           every link is its own item's first child. */
+        & .stage-web__items > li {
+            @apply min-w-0;
+        }
+
+        @media (min-width: 640px) {
+            & .stage-web__items > li {
+                @apply px-6;
+            }
+
+            & .stage-web__items > li:not(:first-child) {
+                border-left: 1px solid var(--line);
+            }
+
+            & .stage-web__items > li:first-child {
+                @apply pl-0;
+            }
+
+            & .stage-web__items > li:last-child {
+                @apply pr-0;
+            }
+        }
+
+        /* A column is still a link: the tile fills and the name underlines,
+           rather than a block of tint between the hairlines. */
+        & .stage-item--link:hover {
+            background-color: transparent;
+
+            & .stage-item__icon {
+                background: var(--violet-500);
+                color: #fff;
+            }
+
+            & .stage-item__name {
+                @apply underline underline-offset-4;
+            }
+        }
+    }
+
+    /* ---- What we build: an icon, a name, a line; hairlines between ---------- */
+
+    :root[data-variant='stage'] .stage-items {
+        @apply mt-12 grid;
+        border-top: 1px solid var(--line);
+
+        &.stage-items--2 {
+            @apply sm:grid-cols-2 sm:gap-x-8;
+        }
+    }
+
+    :root[data-variant='stage'] .stage-item {
+        @apply grid grid-cols-[auto_1fr] content-start items-start gap-x-4 py-5;
+        border-bottom: 1px solid var(--line);
+    }
+
+    :root[data-variant='stage'] .stage-item__icon {
+        @apply row-span-2 grid size-11 place-items-center rounded-xl;
+        background: #ebe6ff;
+        color: var(--violet-500);
+
+        & svg {
+            @apply size-5;
+        }
+
+        &.stage-item__icon--solid {
+            @apply size-12;
+            background: linear-gradient(
+                135deg,
+                var(--purple-500),
+                var(--violet-500)
+            );
+            color: #fff;
+        }
+    }
+
+    :root[data-variant='stage'] .stage-item__name {
+        @apply font-medium;
+        font-size: 17px;
+        line-height: 1.3;
+    }
+
+    :root[data-variant='stage'] .stage-item__text {
+        @apply mt-1 text-pretty;
+        font-size: 15px;
+        line-height: 1.5;
+        color: var(--muted);
+    }
+
+    :root[data-variant='stage'] .stage-item--link {
+        transition: background-color var(--base) var(--ease);
+
+        &:hover {
+            background-color: var(--tint);
+        }
+    }
+
+    /* ---- The products: one card each ---------------------------------------- */
+
+    :root[data-variant='stage'] .stage-products {
+        @apply mt-12 grid gap-3 sm:grid-cols-3;
+
+        & > li {
+            @apply min-w-0;
+        }
+    }
+
+    /* Grows with `scale`, not `transform`: the entry (reveals.ts) moves it by
+       transform, and a transition there would hold it back. */
+    :root[data-variant='stage'] .stage-product {
+        @apply flex h-full items-center gap-5 rounded-2xl bg-white/80 p-5;
+        transition: scale var(--slow) cubic-bezier(0.34, 1.56, 0.64, 1);
+
+        @media (min-width: 640px) {
+            @apply grid grid-cols-[1fr_auto] grid-rows-[auto_1fr] items-start gap-x-3 gap-y-5;
+
+            & .stage-item__icon {
+                @apply col-start-1 row-span-1 row-start-1;
+            }
+
+            & .stage-product__body {
+                @apply col-span-2 row-start-2 content-start gap-2;
+            }
+
+            & .stage-project__go {
+                @apply col-start-2 row-start-1 size-8 self-center;
+            }
+        }
+
+        &:hover {
+            scale: 1.015;
+        }
+    }
+
+    :root[data-variant='stage'] .stage-product__body {
+        @apply grid min-w-0 flex-1 gap-1;
+    }
+
+    :root[data-variant='stage'] .stage-product__name {
+        @apply font-medium;
+        font-size: 16px;
+    }
+
+    :root[data-variant='stage'] .stage-product__text {
+        @apply text-pretty;
+        font-size: 15px;
+        line-height: 1.5;
+        color: var(--muted);
+    }
+
+    :root[data-variant='stage'] .stage-checks {
+        @apply mt-8 flex flex-wrap gap-x-6 gap-y-2 text-[15px];
+        color: var(--muted);
+
+        & li {
+            @apply inline-flex items-center gap-2;
+        }
+
+        & svg {
+            @apply size-4 fill-none;
+            stroke: var(--violet-500);
+            stroke-width: 2.5;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+    }
+
+    /* ---- The round arrow on a product card --------------------------------- */
+
+    :root[data-variant='stage'] .stage-project__go {
+        @apply grid size-10 shrink-0 place-items-center rounded-full;
+        background: #ebe6ff;
+        color: var(--violet-500);
+        transition:
+            background-color var(--base) var(--ease),
+            color var(--base) var(--ease);
+
+        & svg {
+            @apply size-3;
+        }
+
+        .stage-product:hover & {
+            background: var(--violet-500);
+            color: #fff;
+        }
+    }
+
+    /* ---- The finale: the plates gather into a W on a purple panel ----------- */
+
+    /*
+      On the content column, like the chapters' text beside it.
+
+      Its z-index stays `auto` on purpose — no stacking context of its own, so
+      the ground (z 0) paints under the object's layer (z 1) and the text
+      (z 2) over it. `overflow: hidden` clips the gradient to the radius and
+      creates no context; `isolate` would break the whole arrangement.
+    */
+    .stage-finale {
+        @apply relative mx-auto mt-12 grid w-full max-w-[92rem] overflow-hidden rounded-3xl lg:mt-0 lg:rounded-[40px];
+        grid-template-rows: 1fr auto;
+        min-height: 74vh;
+
+        /* Wide and low: the W is a broad shape, so height it does not need. */
+        @media (min-width: 1024px) {
+            min-height: min(88vh, 860px);
+        }
+    }
+
+    /*
+      A plain CSS gradient, no WebGL: the hero's indigo with one soft violet
+      glow behind the W, and nothing else. It has to stay deep — the W
+      standing on it runs from a near-navy plate to a white one, and a bright
+      ground would swallow both ends.
+    */
+    .stage-finale__ground {
+        @apply absolute inset-0 z-0;
+        background:
+            radial-gradient(
+                ellipse 60% 50% at 50% 32%,
+                rgb(119 90 252 / 0.32),
+                transparent 72%
+            ),
+            #1f2868;
+
+        /* The same film grain the dark sections use, so it is not flat. */
+        &::after {
+            content: '';
+            @apply absolute inset-0;
+            background-image: var(--grain);
+            mix-blend-mode: overlay;
+            opacity: 0.35;
+        }
+    }
+
+    /* Where the W stands: everything above the closing title. */
+    .stage-finale__slot {
+        @apply pointer-events-none relative grid place-items-center;
+    }
+
+    .stage-finale__body {
+        @apply relative z-[2] grid justify-items-center gap-5 px-[var(--site-gap)] pb-16 text-center text-white lg:gap-6 lg:pb-24;
+
+        /* The button stands off the copy above it. */
+        & .pill {
+            @apply mt-4 lg:mt-5;
+        }
+    }
+
+    /* The hero's title: Anton, in capitals, the second half in lavender.
+       1.16 like the hero — Romanian's Î and Ă need the room. */
+    .stage-finale__title {
+        @apply max-w-[30ch] font-display text-[clamp(2.5rem,4.4vw,4.75rem)] leading-[1.16] font-normal text-balance uppercase;
+
+        & span {
+            color: var(--lavender-300);
+        }
+    }
+
+    .stage-finale__line {
+        @apply max-w-[58ch] text-lg text-pretty lg:text-xl;
+        line-height: 1.55;
+        color: rgb(255 255 255 / 0.8);
+    }
+
+    /* Without WebGL (the script adds the class): the same W, in CSS, in the
+       logo's colours as the 3D one ends. */
+    .stage-finale__still {
+        @apply hidden;
+    }
+
+    .stage-finale--still .stage-finale__still {
+        @apply relative z-[2] block w-[min(66%,620px)];
+        aspect-ratio: 5 / 2.6;
+
+        & i {
+            @apply absolute block w-[22%] rounded-[24%];
+            aspect-ratio: 1;
+            translate: -50% -50%;
+            rotate: 45deg;
+            box-shadow: 0 18px 40px rgb(16 10 60 / 0.45);
+        }
+
+        & i:nth-child(odd) {
+            top: 30%;
+        }
+
+        & i:nth-child(even) {
+            top: 70%;
+        }
+
+        & i:nth-child(1) {
+            left: 10%;
+            background: #5b5ea6;
+        }
+
+        & i:nth-child(2) {
+            left: 30%;
+            background: #62b246;
+        }
+
+        & i:nth-child(3) {
+            left: 50%;
+            background: #ffe000;
+        }
+
+        & i:nth-child(4) {
+            left: 70%;
+            background: #f4a024;
+        }
+
+        & i:nth-child(5) {
+            left: 90%;
+            background: #f24f55;
+        }
+    }
+
+    /* The standalone panel's own W (js/public/finale-w.ts): its canvas
+       fills the slot, behind the text's layer. */
+    .stage-finale__canvas {
+        @apply absolute inset-0 z-[1] block size-full;
+    }
+
+    /*
+      A test: below 1024px, where the object sits behind the text, the whole
+      stage on the finale panel's ground — its indigo and film grain — so
+      the panel at its end is the same night it has been in all along. The
+      light chapter's colours turn to the dark one's (service-chapters.css);
+      the few set by hand follow.
+    */
+    @media (max-width: 1023px) {
+        :root[data-variant='stage'] .stage.chapter--light {
+            --surface: #1f2868;
+            --ink: #fff;
+            --muted: rgb(255 255 255 / 0.78);
+            --line: rgb(255 255 255 / 0.14);
+            --tint: rgb(255 255 255 / 0.06);
+            --accent: var(--lavender-300);
+
+            /* Its top 32px under the lavender cards before it, which show it
+               through a rounded top cut from their foot (below). Its foot
+               short: the panel, now the same night, ends it already. */
+            @apply -mt-8 pb-8;
+
+            &::before {
+                background-image: var(--grain);
+                mix-blend-mode: overlay;
+                opacity: 0.35;
+            }
+
+            /* The links in white, their circle filling white (the dark tone,
+               buttons.css). */
+            & .arrow-link.btn-light {
+                --btn-ink: #fff;
+                --btn-contrast: var(--site-dark);
+            }
+
+            & .stage-checks svg {
+                stroke: var(--lavender-300);
+            }
+
+            &
+                :is(
+                    .stage-item__icon:not(.stage-item__icon--solid),
+                    .stage-project__go
+                ) {
+                background: rgb(255 255 255 / 0.1);
+                color: var(--lavender-300);
+            }
+
+            & .stage-product {
+                background: rgb(255 255 255 / 0.07);
+                box-shadow: inset 0 0 0 1px var(--line);
+            }
+        }
+
+        /*
+          The stage cannot rise over the cards (it is no layer of its own,
+          so the object can sit between its ground and its text), so the
+          cards' foot — the 32px kept for whatever rises over it — opens
+          instead: all of it see-through but its two corners, which stay
+          lavender outside a 32px curve. The stage shows through, grain and
+          all, on a rounded top.
+        */
+        /* The lavender after it starts on its own top padding again: no
+           longer one ground with the stage (service-chapters.css). */
+        :root[data-variant='stage'] .stage.chapter--light + .chapter--light {
+            @apply pt-24;
+        }
+
+        :root[data-variant='stage'] .svc-cards:has(+ .stage) {
+            mask:
+                linear-gradient(#000 0 0) top / 100% calc(100% - 31px) no-repeat,
+                radial-gradient(
+                        circle at 100% 100%,
+                        transparent 31.5px,
+                        #000 32px
+                    )
+                    bottom left / 32px 32px no-repeat,
+                radial-gradient(circle at 0 100%, transparent 31.5px, #000 32px)
+                    bottom right / 32px 32px no-repeat;
+        }
+    }
+}

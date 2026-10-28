@@ -1,0 +1,38 @@
+/*
+  The gallery block (blocks/gallery): a grid of images in the site's card
+  corner (20px, as the notched card and /web's project screenshots), all
+  cropped to 4:3 so the rows line up, on the lavender's own chip colour
+  while they load. Captions in the mono face, the chapter's muted ink.
+*/
+@layer components {
+    .block-gallery__grid {
+        @apply grid grid-cols-2 gap-x-4 gap-y-6 md:gap-x-5 md:gap-y-8;
+    }
+
+    .block-gallery__grid--2 {
+        @apply grid-cols-1 sm:grid-cols-2;
+    }
+
+    .block-gallery__grid--3 {
+        @apply lg:grid-cols-3;
+    }
+
+    .block-gallery__grid--4 {
+        @apply lg:grid-cols-4;
+    }
+
+    .block-gallery__media {
+        @apply overflow-hidden rounded-[20px];
+        aspect-ratio: 4 / 3;
+        background: var(--tint);
+
+        & img {
+            @apply size-full object-cover;
+        }
+    }
+
+    .block-gallery__caption {
+        @apply mt-3 font-micro text-xs leading-relaxed tracking-[0.04em] text-pretty;
+        color: var(--muted);
+    }
+}

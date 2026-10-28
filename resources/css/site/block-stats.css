@@ -1,0 +1,90 @@
+/*
+  The stats block (blocks/stats): figures on the hero's indigo, flat like
+  /web's steps (css/site/web.css, 03) — the chapters' dark glows left out.
+  Each on a hairline: the number in the display face (shown first; in the
+  markup the label is the term it describes), the label in the rows'
+  medium weight, the note in the muted white.
+*/
+@layer components {
+    .block-stats.chapter--dark {
+        background: #1f2868;
+    }
+
+    .block-stats__list {
+        @apply grid grid-cols-2 gap-x-5 gap-y-10 lg:grid-cols-3 lg:gap-x-8;
+    }
+
+    .block-stats__list--1 {
+        @apply grid-cols-1 lg:grid-cols-1;
+    }
+
+    .block-stats__list--4 {
+        @apply lg:grid-cols-4;
+    }
+
+    /* Five in a row from 1024px: a ranking reads along one line. */
+    .block-stats__list--5 {
+        @apply lg:grid-cols-5;
+
+        & .block-stats__value {
+            font-size: clamp(3rem, 5vw, 5rem);
+        }
+    }
+
+    .block-stats__item {
+        @apply relative flex min-w-0 flex-col border-t pt-6 lg:pt-8;
+        border-color: var(--line);
+    }
+
+    /* A share: its hairline filled that far, a little heavier, in lavender. */
+    .block-stats__item--share::before {
+        content: '';
+        @apply absolute -top-px left-0 h-[3px] rounded-full;
+        width: max(var(--share), 4px);
+        background: #a18eff;
+    }
+
+    /* Anton has one weight: font-normal, or the browser fakes a bold. */
+    .block-stats__value {
+        @apply order-first font-display font-normal uppercase;
+        font-size: clamp(3rem, 6.5vw, 6rem);
+        line-height: 1;
+        color: var(--ink);
+    }
+
+    .block-stats__label {
+        @apply mt-4 text-base leading-snug font-medium tracking-[-0.01em] text-balance md:text-xl;
+    }
+
+    .block-stats__note {
+        @apply mt-2 max-w-[34ch] text-sm leading-relaxed text-pretty md:text-base;
+        color: var(--muted);
+    }
+
+    /* The passage under the figures, well clear of them: two columns from
+       1024px, its heading across both. */
+    .block-stats__body {
+        @apply mt-16 lg:mt-24 lg:columns-2 lg:gap-x-16;
+
+        & > * {
+            break-inside: avoid;
+        }
+    }
+
+    /* The heading's gap moved under it: a column's top margin is dropped
+       where it breaks, so the two columns start level. (.rich-text too, to
+       outrank its own heading-then-paragraph spacing.) */
+    .rich-text.block-stats__body > :is(h2, h3, h4) {
+        column-span: all;
+        @apply lg:mb-6;
+
+        & + * {
+            @apply lg:mt-0;
+        }
+    }
+
+    /* On the lavender, the share's fill in the violet. */
+    .block-stats.chapter--light .block-stats__item--share::before {
+        background: var(--accent);
+    }
+}

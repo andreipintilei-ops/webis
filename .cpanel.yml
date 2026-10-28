@@ -1,0 +1,7 @@
+---
+# cPanel's Git Version Control runs these on "Deploy HEAD Commit", in the
+# repository's directory. The server tracks the `deploy` branch
+# (.github/workflows/deploy-branch.yml); deploy/cpanel.sh does the rest.
+deployment:
+    tasks:
+        - /bin/bash deploy/cpanel.sh

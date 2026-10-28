@@ -1,0 +1,56 @@
+/*
+  The violet chips between the words of a title, three white icons each
+  (components/ui/title-pill.blade.php; js/public/title-pill.ts). Sized in
+  em, so they follow the title; set on the
+  line's middle. Once the script has set them up they wait closed
+  (data-state="waiting") and open as their title comes into view: revealed
+  from their middle outward, the icons fading up last. They keep their width
+  while closed, so the title never re-wraps as they open.
+*/
+@layer components {
+    .title-pill {
+        --pill-w: 2.2em;
+
+        @apply relative inline-flex shrink-0 items-center justify-center overflow-hidden rounded-full align-middle;
+        width: var(--pill-w);
+        height: 0.9em;
+        margin-block-start: -0.14em;
+        color: #fff;
+        background: linear-gradient(
+            135deg,
+            var(--purple-500),
+            var(--violet-500)
+        );
+        clip-path: inset(0 0 round 999px);
+        transition: clip-path 0.9s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .title-pill__inner {
+        @apply flex shrink-0 items-center justify-center;
+        gap: 0.14em;
+        transition:
+            opacity 0.5s var(--ease) 0.35s,
+            transform 0.6s var(--ease) 0.35s;
+
+        & svg {
+            width: 0.42em;
+            height: 0.42em;
+        }
+    }
+
+    .title-pill[data-state='waiting'] {
+        clip-path: inset(0 50% round 999px);
+
+        & .title-pill__inner {
+            opacity: 0;
+            transform: translateY(0.15em);
+        }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .title-pill,
+        .title-pill__inner {
+            transition: none;
+        }
+    }
+}

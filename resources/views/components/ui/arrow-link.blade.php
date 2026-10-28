@@ -1,0 +1,26 @@
+{{--
+    Secondary button, after exoape.com: a small dot and an underlined label;
+    on hover a circle with an arrow grows out of the dot (css/site/buttons.css).
+    `tone`: "light" (for white backgrounds) or "dark" (for dark ones).
+    `down`: the arrow points down, dropping in from above — by default for
+    a link further down the same page (an href starting with "#").
+--}}
+@props(['href', 'tone' => 'light', 'down' => null])
+
+@php($down ??= str_starts_with($href, '#'))
+
+{{-- A path in its canonical form (TrailingSlash::href): a block's link typed
+     as "/web" still takes no 301. --}}
+<a href="{{ \App\Support\TrailingSlash::href($href) }}" {{ $attributes->class(['arrow-link', 'btn-'.$tone, 'arrow-link--down' => $down]) }}>
+    <span class="arrow-link__circle" aria-hidden="true">
+        <span class="arrow-link__dot"></span>
+        <span class="arrow-link__fill"></span>
+        <svg class="arrow-link__icon" viewBox="0 0 11 10" fill="currentColor">
+            <path d="M0 5.656V4.304l8.419.014-3.359-3.358L5.99 0l5.002 4.973-4.987 4.987-.93-.96 3.358-3.358L0 5.656Z" />
+        </svg>
+    </span>
+    <span class="arrow-link__label">
+        {{ $slot }}
+        <span class="arrow-link__border" aria-hidden="true"></span>
+    </span>
+</a>
