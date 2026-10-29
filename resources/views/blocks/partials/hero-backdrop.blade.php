@@ -23,6 +23,9 @@
     'absolute inset-0 -z-10' => ! $fixed,
     'bg-[var(--site-menu)]' => $palette !== 'violet',
     'bg-[#1f2868]' => $palette === 'violet',
+    // The violet gradient's look, still, until its first frame
+    // (css/site/hero-intro.css).
+    'hero-backdrop--violet' => $backdrop === 'gradient' && $palette === 'violet',
 ]) data-palette="{{ $palette }}" @if ($fixed) data-intro-backdrop @endif>
     <div class="absolute inset-0" data-intro-media>
         @if ($backdrop === 'gradient')
