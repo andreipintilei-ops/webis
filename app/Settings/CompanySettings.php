@@ -21,6 +21,9 @@ class CompanySettings extends Settings
     /** Număr de înregistrare la Registrul Comerțului. */
     public ?string $registration_number;
 
+    /** When the company was founded: a year (2016) or a date (2016-03-01). */
+    public ?string $founding_date;
+
     public ?string $phone;
 
     public ?string $email;

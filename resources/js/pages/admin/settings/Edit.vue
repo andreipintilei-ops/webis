@@ -46,6 +46,7 @@ type CompanySettings = {
     legal_name: string;
     vat_id: string | null;
     registration_number: string | null;
+    founding_date: string | null;
     phone: string | null;
     email: string | null;
     street_address: string | null;
@@ -360,6 +361,11 @@ function submitFooter(): void {
                                 v-model="companyForm.registration_number"
                                 label="Nr. Reg. Com."
                                 :error="companyForm.errors.registration_number"
+                            />
+                            <TextField
+                                v-model="companyForm.founding_date"
+                                label="Anul înființării"
+                                :error="companyForm.errors.founding_date"
                             />
                         </div>
                     </section>

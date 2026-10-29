@@ -167,13 +167,19 @@
                     {{ $company->name }}
                 @endif
             </a>
+            {{-- The company's identity in plain text, as its JSON-LD gives it
+                 (Support\Seo\StructuredData): who it is, told apart from any
+                 business of a like name. --}}
             <p class="site-footer__legal">
                 © {{ now()->year }} {{ $company->legal_name }}
                 @if ($company->vat_id)
                     · CUI {{ $company->vat_id }}
                 @endif
                 @if ($company->registration_number)
-                    · {{ $company->registration_number }}
+                    · Reg. Com. {{ $company->registration_number }}
+                @endif
+                @if ($address !== '')
+                    · {{ $address }}
                 @endif
             </p>
             {{-- The ANPC pictograms for alternative and online dispute

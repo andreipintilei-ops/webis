@@ -7,6 +7,7 @@ use App\Models\Client;
 use App\Models\Page;
 use App\Models\PostCategory;
 use App\Models\Project;
+use App\Settings\CompanySettings;
 use App\Settings\SeoSettings;
 use App\Support\Seo\SeoAudit;
 use App\Support\Seo\SeoText;
@@ -126,7 +127,7 @@ it('describes the business on the home page and /contact/, without ratings', fun
     foreach (['/', '/contact/'] as $path) {
         $html = $this->asWritten()->get($path)->assertOk()->getContent();
         $nodes = jsonLdOf($html);
-        $business = $nodes['Organization+LocalBusiness'];
+        $business = $nodes['Organization+ProfessionalService'];
 
         expect($business['@id'])->toBe('https://www.webis.ro/#organization')
             ->and($business['legalName'])->not->toBeEmpty()
@@ -138,6 +139,49 @@ it('describes the business on the home page and /contact/, without ratings', fun
     }
 });
 
+it('tells the company apart from any of a like name: its registration, founding and place', function () {
+    seoSite();
+    $company = app(CompanySettings::class);
+    $company->vat_id = 'RO12345678';
+    $company->registration_number = 'J22/1234/2016';
+    $company->street_address = 'B-dul Poitiers 16';
+    $company->postal_code = '700671';
+    $company->latitude = 47.1355;
+    $company->longitude = 27.5925;
+    $company->save();
+
+    $html = $this->asWritten()->get('/')->assertOk()->getContent();
+    $business = jsonLdOf($html)['Organization+ProfessionalService'];
+    $elsewhere = jsonLdOf($this->asWritten()->get('/servicii/creare-site-stomatologie/')->getContent())['Organization'];
+
+    expect($business)->toMatchArray([
+        'foundingDate' => '2016',
+        'taxID' => 'RO12345678',
+        'vatID' => 'RO12345678',
+        'identifier' => ['@type' => 'PropertyValue', 'propertyID' => 'Registrul Comerțului', 'value' => 'J22/1234/2016'],
+        'geo' => ['@type' => 'GeoCoordinates', 'latitude' => 47.1355, 'longitude' => 27.5925],
+    ])
+        ->and($business['address']['postalCode'])->toBe('700671')
+        // The registration on every page; the place where it is a business.
+        ->and($elsewhere)->toHaveKeys(['foundingDate', 'taxID', 'identifier'])
+        ->not->toHaveKey('geo')
+        // And in plain text, in the footer.
+        ->and($html)->toContain('· CUI RO12345678')
+        ->toContain('· Reg. Com. J22/1234/2016')
+        ->toContain('· B-dul Poitiers 16, Iași');
+});
+
+it('gives no VAT id for a CUI without the RO of a VAT payer', function () {
+    seoSite();
+    $company = app(CompanySettings::class);
+    $company->vat_id = '12345678';
+    $company->save();
+
+    $business = jsonLdOf($this->asWritten()->get('/')->getContent())['Organization+ProfessionalService'];
+
+    expect($business['taxID'])->toBe('12345678')->and($business)->not->toHaveKey('vatID');
+});
+
 it('describes the organization everywhere, an internal page\'s path and an article', function () {
     seoSite();
 
@@ -145,7 +189,7 @@ it('describes the organization everywhere, an internal page\'s path and an artic
     $article = jsonLdOf($this->asWritten()->get('/articol-1/')->assertOk()->getContent());
 
     expect($industry)->toHaveKey('Organization')
-        ->not->toHaveKey('Organization+LocalBusiness')
+        ->not->toHaveKey('Organization+ProfessionalService')
         ->and(array_column($industry['BreadcrumbList']['itemListElement'], 'name'))->toBe(['Acasă', 'Site-uri tematice', 'Creare site stomatologie'])
         ->and(array_column($industry['BreadcrumbList']['itemListElement'], 'item')[1])->toBe('https://www.webis.ro/realizare-site-uri-tematice/')
         ->and($article['BlogPosting'])->toHaveKeys(['headline', 'datePublished', 'dateModified', 'author', 'image', 'mainEntityOfPage'])

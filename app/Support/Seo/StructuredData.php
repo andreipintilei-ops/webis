@@ -15,9 +15,12 @@ use Illuminate\Support\Str;
  * The JSON-LD the public layout writes in <head>, from the settings (company
  * details, SEO, brand), never hard-coded per view:
  *
- * - every page: the Organization and the WebSite;
- * - the home page and /contact/: the Organization is a LocalBusiness too —
- *   one node, both types, so the two are the same entity (one @id);
+ * - every page: the Organization and the WebSite — with what tells this
+ *   company apart from others of a like name: its legal name, founding
+ *   date, CUI and Reg. Com. number (when set);
+ * - the home page and /contact/: the Organization is a ProfessionalService
+ *   too (a LocalBusiness: its address, coordinates, hours) — one node, both
+ *   types, so the two are the same entity (one @id);
  * - internal pages: a BreadcrumbList, Acasă › section › page;
  * - articles: a BlogPosting.
  *
@@ -147,10 +150,12 @@ final class StructuredData
     {
         $logo = $this->logo();
         $node = [
-            '@type' => $localBusiness ? ['Organization', 'LocalBusiness'] : 'Organization',
+            '@type' => $localBusiness ? ['Organization', 'ProfessionalService'] : 'Organization',
             '@id' => self::organizationId(),
             'name' => $this->company->name,
             'legalName' => $this->company->legal_name,
+            'foundingDate' => $this->company->founding_date,
+            ...$this->registration(),
             'url' => self::home(),
             'logo' => $logo === null ? null : array_filter(['@type' => 'ImageObject', 'url' => $logo['url'], 'width' => $logo['width'], 'height' => $logo['height']]),
             'email' => $this->company->email,
@@ -169,6 +174,9 @@ final class StructuredData
                     'postalCode' => $this->company->postal_code,
                     'addressCountry' => $this->company->country_code,
                 ]),
+                'geo' => $this->company->latitude !== null && $this->company->longitude !== null
+                    ? ['@type' => 'GeoCoordinates', 'latitude' => $this->company->latitude, 'longitude' => $this->company->longitude]
+                    : null,
                 'areaServed' => $this->company->country_code,
                 'openingHoursSpecification' => $this->openingHours() ?: null,
             ];
@@ -220,6 +228,29 @@ final class StructuredData
         return self::image(Asset::with('media')->find($this->seo->logo_asset_id))
             ?? $this->brand->icon()
             ?? $this->brand->logo();
+    }
+
+    /**
+     * The company's registration, as the footer shows it: the CUI as its tax
+     * id — and as its VAT id when it carries the RO of a VAT payer — and the
+     * Reg. Com. number as an identifier of its own.
+     *
+     * @return array<string, mixed>
+     */
+    private function registration(): array
+    {
+        $cui = $this->company->vat_id;
+        $registry = $this->company->registration_number;
+
+        return array_filter([
+            'taxID' => $cui,
+            'vatID' => $cui !== null && Str::startsWith(Str::upper($cui), 'RO') ? $cui : null,
+            'identifier' => $registry === null ? null : [
+                '@type' => 'PropertyValue',
+                'propertyID' => 'Registrul Comerțului',
+                'value' => $registry,
+            ],
+        ], fn ($value) => $value !== null && $value !== '');
     }
 
     private function telephone(): ?string

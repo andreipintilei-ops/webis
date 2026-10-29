@@ -83,6 +83,8 @@ class SettingsController extends Controller
             'legal_name' => ['required', 'string', 'max:150'],
             'vat_id' => ['nullable', 'string', 'max:20'],
             'registration_number' => ['nullable', 'string', 'max:30'],
+            // A year, or a full date: what schema.org's foundingDate takes.
+            'founding_date' => ['nullable', 'regex:/^\d{4}(-\d{2}-\d{2})?$/'],
             'phone' => ['nullable', 'string', 'max:30'],
             'email' => ['nullable', 'email', 'max:255'],
             'street_address' => ['nullable', 'string', 'max:255'],
