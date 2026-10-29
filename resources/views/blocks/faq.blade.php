@@ -20,7 +20,7 @@
         fn ($item) => is_array($item) && trim((string) ($item['question'] ?? '')) !== '' && trim((string) ($item['answer'] ?? '')) !== '',
     ));
     $heading = trim((string) ($data['heading'] ?? '')) ?: 'Întrebări frecvente';
-    $intro = trim((string) ($data['intro'] ?? '')) ?: 'Nu găsești răspunsul? Scrie-ne și îți răspundem în aceeași zi lucrătoare.';
+    $intro = trim((string) ($data['intro'] ?? '')) ?: 'Nu găsești răspunsul? Scrie-ne și îți răspundem cât de curând.';
 @endphp
 
 @if ($items !== [])

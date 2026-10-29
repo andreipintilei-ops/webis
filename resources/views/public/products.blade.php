@@ -245,7 +245,7 @@
             <div class="web-split" data-split>
                 <header class="web-split__head" data-split-head data-reveal="head">
                     <h2 id="saas-faq-title" class="chapter__title">Întrebări frecvente.</h2>
-                    <p class="web-split__line">Nu găsești răspunsul? Spune-ne ce produs te interesează și îți răspundem în aceeași zi lucrătoare.</p>
+                    <p class="web-split__line">Nu găsești răspunsul? Spune-ne ce produs te interesează și îți răspundem cât de curând.</p>
                     <x-ui.arrow-link href="/contact/">Scrie-ne</x-ui.arrow-link>
                 </header>
 

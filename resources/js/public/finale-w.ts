@@ -45,6 +45,15 @@ const TURN: Vec[] = [
 const SPAN = 0.6;
 const STAGGER = 0.1;
 
+/** The room's soft fill, from every side, in place of an environment map. */
+const FILL = 2;
+
+/** One frame let through, and the work after it in a task of its own. */
+const breathe = (): Promise<void> =>
+    new Promise((resolve) =>
+        requestAnimationFrame(() => setTimeout(resolve, 0)),
+    );
+
 export function initFinaleW(): void {
     document
         .querySelectorAll<HTMLElement>('[data-finale-w]')
@@ -65,15 +74,17 @@ async function setUp(panel: HTMLElement): Promise<void> {
     }
 
     const reduced = prefersReducedMotion();
-    const [THREE, { RoomEnvironment }, gsap, { ScrollTrigger }] =
-        await Promise.all([
-            import('three'),
-            import('three/addons/environments/RoomEnvironment.js'),
-            loadGsap(),
-            import('gsap/ScrollTrigger'),
-        ]);
+    const [THREE, gsap, { ScrollTrigger }] = await Promise.all([
+        import('three'),
+        loadGsap(),
+        import('gsap/ScrollTrigger'),
+    ]);
 
     gsap.registerPlugin(ScrollTrigger);
+
+    // Built in steps, a frame let through between them: it starts while the
+    // page is being scrolled.
+    await breathe();
 
     let renderer: InstanceType<typeof THREE.WebGLRenderer>;
 
@@ -94,23 +105,26 @@ async function setUp(panel: HTMLElement): Promise<void> {
 
     // The home page's scene as its W stands on the panel: the same lens,
     // the softened light it ends on (no violet rim to tint the colours).
+    //
+    // Lit without an environment map: the room three.js would build for it
+    // (RoomEnvironment through PMREMGenerator) compiles shaders of its own
+    // that cannot be compiled in the background, and held the scroll up
+    // for a second as the footer came near. On these matte plates it was
+    // only a soft fill, from every side; an even light gives it instead.
     const scene = new THREE.Scene();
-    const pmrem = new THREE.PMREMGenerator(renderer);
-
-    scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
-    scene.environmentIntensity = 0.35;
 
     const camera = new THREE.PerspectiveCamera(18, 1, 0.1, 100);
 
     camera.position.set(0, 0, 30);
 
     const hemi = new THREE.HemisphereLight(0xf5f3ff, 0x1f2868, 0.55);
+    const ambient = new THREE.AmbientLight(0xffffff, FILL);
     const key = new THREE.DirectionalLight(0xffffff, 0.95);
     const rim = new THREE.DirectionalLight(0xa44cee, 0.3);
 
     key.position.set(-5, 7, 8);
     rim.position.set(6, -3, -7);
-    scene.add(hemi, key, rim);
+    scene.add(hemi, ambient, key, rim);
 
     const euler = new THREE.Euler(0, 0, 0, 'ZXY');
     const toQuat = (r: Vec): Quaternion =>
@@ -255,6 +269,11 @@ async function setUp(panel: HTMLElement): Promise<void> {
     function draw(): void {
         frame ||= requestAnimationFrame(render);
     }
+
+    // The shaders compiled before the first frame, in the background where
+    // the browser can (KHR_parallel_shader_compile), not on it.
+    await breathe();
+    await renderer.compileAsync(scene, camera).catch(() => undefined);
 
     new ResizeObserver(resize).observe(slot);
     resize();
