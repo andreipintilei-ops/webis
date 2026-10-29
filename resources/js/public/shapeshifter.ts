@@ -216,6 +216,9 @@ const BEHIND_FILL = 0.85;
 const BEHIND_CAP = 0.45;
 const BEHIND_DIM = 0.85;
 const BEHIND_BLUR = 3;
+/** The even light that stands for the room's, in the chapters and on the
+ *  panel (no environment map: see the scene). */
+const AMBIENT: [number, number] = [3.9, 2.1];
 /** Phones and tablets: where it is held, down the screen. Above the middle,
  *  so it rides up with the page for longer and the screen's top is not left
  *  empty while the text has still to come up. */
@@ -278,13 +281,11 @@ export async function initShapeshifter(): Promise<void> {
     // (css/site/variant-stage.css), the object sits behind the text.
     stage.classList.add('stage--live');
 
-    const [THREE, { RoomEnvironment }, gsap, { ScrollTrigger }] =
-        await Promise.all([
-            import('three'),
-            import('three/addons/environments/RoomEnvironment.js'),
-            loadGsap(),
-            import('gsap/ScrollTrigger'),
-        ]);
+    const [THREE, gsap, { ScrollTrigger }] = await Promise.all([
+        import('three'),
+        loadGsap(),
+        import('gsap/ScrollTrigger'),
+    ]);
 
     gsap.registerPlugin(ScrollTrigger);
 
@@ -310,12 +311,12 @@ export async function initShapeshifter(): Promise<void> {
     renderer.toneMappingExposure = 1;
     host.append(renderer.domElement);
 
+    // No environment map: the room three.js would build for it
+    // (RoomEnvironment through PMREMGenerator) compiles shaders of its own
+    // that cannot be compiled in the background — a second with the page
+    // held up. Its soft light from every side is an even light instead
+    // (AMBIENT), eased down with the rest as the plates settle (paint).
     const scene: Scene = new THREE.Scene();
-    const pmrem = new THREE.PMREMGenerator(renderer);
-
-    // Soft reflections from a room: what makes it look rendered.
-    scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
-    scene.environmentIntensity = 0.7;
 
     // A long lens: graphic, not a 3D demo.
     const camera: PerspectiveCamera = new THREE.PerspectiveCamera(
@@ -331,9 +332,11 @@ export async function initShapeshifter(): Promise<void> {
     const key = new THREE.DirectionalLight(0xffffff, 1.45);
     const rim = new THREE.DirectionalLight(0xa44cee, 1.5);
 
+    const ambient = new THREE.AmbientLight(0xffffff, AMBIENT[0]);
+
     key.position.set(-5, 7, 8);
     rim.position.set(6, -3, -7);
-    scene.add(hemi, key, rim);
+    scene.add(hemi, ambient, key, rim);
 
     // ---- The slabs ---------------------------------------------------------
 
@@ -460,7 +463,7 @@ export async function initShapeshifter(): Promise<void> {
         hemi.intensity = lerp(1.05, 0.55, k);
         key.intensity = lerp(1.45, 0.95, k);
         rim.intensity = lerp(1.5, 0.3, k);
-        scene.environmentIntensity = lerp(0.7, 0.35, k);
+        ambient.intensity = lerp(AMBIENT[0], AMBIENT[1], k);
 
         slabs.forEach((mesh, index) => {
             const from = gradients[index]!;
