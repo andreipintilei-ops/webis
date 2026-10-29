@@ -1,0 +1,1 @@
+import{rn as e}from"./app-CuQBOmsZ.js";var t=e({name:`chevron-down`,size:24,node:[[`path`,{d:`m6 9 6 6 6-6`,key:`qrunsl`}]]}),n=e({name:`chevron-up`,size:24,node:[[`path`,{d:`m18 15-6-6-6 6`,key:`153udz`}]]});export{t as n,n as t};
