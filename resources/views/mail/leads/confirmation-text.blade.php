@@ -1,7 +1,7 @@
 {{-- App\Mail\LeadConfirmation, as plain text: not HTML, so nothing to escape. --}}
 Bună, {!! \Illuminate\Support\Str::before(trim($lead->name), ' ') ?: $lead->name !!}!
 
-Îți mulțumim că ne-ai scris. Am primit mesajul tău și îți răspundem în aceeași zi lucrătoare.
+Îți mulțumim că ne-ai scris. Am primit mesajul tău și îți răspundem cât de curând.
 
 Ce ne-ai trimis:
 

@@ -636,7 +636,7 @@ it('renders the FAQ as /web does: the title held on the left, rows that open on 
         ->toContain('<div class="web-split" data-split>')
         ->toMatch('/<h2 id="faq-title" class="chapter__title">Întrebări frecvente<\/h2>/')
         // No intro: the new pages' own line, and the way to write to us.
-        ->toContain('<p class="web-split__line">Nu găsești răspunsul? Scrie-ne și îți răspundem în aceeași zi lucrătoare.</p>')
+        ->toContain('<p class="web-split__line">Nu găsești răspunsul? Scrie-ne și îți răspundem cât de curând.</p>')
         ->toContain('href="/contact/"')
         ->toContain('class="web-faq__list web-split__body" data-split-body')
         ->and(substr_count($section, '<details class="web-faq__item" data-accordion-item'))->toBe(2)

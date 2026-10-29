@@ -86,12 +86,12 @@
                 </ul>
             @endif
 
-            <p class="contact__promise">Răspundem în aceeași zi lucrătoare.</p>
+            <p class="contact__promise">Răspundem cât de curând.</p>
         </div>
 
         <div class="contact__main">
             <p @class(['contact__sent', 'hidden' => ! $sent]) role="status" tabindex="-1" data-contact-sent>
-                Mulțumim! Îți răspundem în aceeași zi lucrătoare.
+                Mulțumim! Îți răspundem cât de curând.
             </p>
 
             <form method="POST" action="{{ route('contact.store') }}" @class(['contact__form', 'hidden' => $sent]) data-contact-form novalidate>

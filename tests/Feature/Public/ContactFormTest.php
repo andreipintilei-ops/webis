@@ -49,7 +49,7 @@ it('comes back to the form with a thank-you without JavaScript', function () {
         ->assertRedirect(url('/contact').'#contact')
         ->assertSessionHas('contact-sent');
 
-    $this->get('/contact')->assertSee('Mulțumim! Îți răspundem în aceeași zi lucrătoare.');
+    $this->get('/contact')->assertSee('Mulțumim! Îți răspundem cât de curând.');
 });
 
 it('needs a name, a message and one way to answer', function () {
