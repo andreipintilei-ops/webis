@@ -232,11 +232,17 @@ export const W: Pose[] = PIECES.map(([size], i) => {
         m: 1,
     };
 });
+/** WebGL drawn by a GPU: in software (no GPU, a blocked driver) the scenes
+ *  would run on the CPU and stall the page, so the stills show instead. */
 export const hasWebGL = (): boolean => {
     try {
         const canvas = document.createElement('canvas');
+        const options = { failIfMajorPerformanceCaveat: true };
 
-        return !!(canvas.getContext('webgl2') ?? canvas.getContext('webgl'));
+        return !!(
+            canvas.getContext('webgl2', options) ??
+            canvas.getContext('webgl', options)
+        );
     } catch {
         return false;
     }

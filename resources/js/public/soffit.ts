@@ -374,12 +374,18 @@ async function mount(canvas: HTMLCanvasElement): Promise<void> {
     // until it is drawn), the section's indigo base under it meanwhile.
     canvas.style.opacity = '0';
 
+    // Webis: not drawn in software. Without a GPU (some phones, a blocked
+    // driver, the test machines behind PageSpeed) the browser runs the
+    // shader on the CPU, every frame, the whole screen: the page stalls and
+    // the phone heats up. There the hero keeps its CSS stand-in
+    // (css/site/hero-intro.css), the same picture without the movement.
     const gl = canvas.getContext('webgl2', {
         alpha: false,
         antialias: false,
         depth: false,
         stencil: false,
         powerPreference: 'high-performance',
+        failIfMajorPerformanceCaveat: true,
     });
 
     // No WebGL2: the section's background colour (the gradient's base) stays.

@@ -15,4 +15,37 @@
     .hero-line__inner {
         @apply block;
     }
+
+    /*
+      The violet gradient (js/public/soffit.ts) as it rests, in CSS: the
+      indigo, its violet rising from the bottom, the purple at the right.
+      There from the first paint; the WebGL fades in over it whenever the
+      GPU is ready — a second or more on a phone, and never the same twice —
+      changing only the movement, not the picture. Without it the hero sat
+      plain indigo until then and the screen changed late: what Speed Index
+      measures, and why the score swung from run to run.
+    */
+    .hero-backdrop--violet {
+        background-image:
+            radial-gradient(
+                ellipse 85% 62% at 85% 100%,
+                rgb(164 76 238 / 0.95),
+                transparent 72%
+            ),
+            radial-gradient(
+                ellipse 95% 55% at 25% 108%,
+                rgb(119 90 252 / 0.85),
+                transparent 72%
+            ),
+            radial-gradient(
+                ellipse 70% 50% at 100% 70%,
+                rgb(119 90 252 / 0.45),
+                transparent 70%
+            ),
+            linear-gradient(rgb(42 42 120 / 0.55), transparent 60%);
+
+        & canvas[data-soffit] {
+            transition: opacity 0.8s var(--ease);
+        }
+    }
 }
