@@ -7,6 +7,7 @@ use App\Http\Middleware\HandleAppearance;
 use App\Http\Middleware\HandleInertiaRequests;
 use App\Http\Middleware\RedirectLegacyIds;
 use App\Http\Middleware\RobotsHeader;
+use App\Http\Middleware\StrictTransportSecurity;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -27,8 +28,10 @@ return Application::configure(basePath: dirname(__DIR__))
             'can.access-admin' => EnsureCanAccessAdmin::class,
         ]);
 
-        // Every response: no indexing outside production, nor of the admin.
+        // Every response: no indexing outside production, nor of the admin;
+        // over HTTPS, the browser told to keep to it (HSTS).
         $middleware->append(RobotsHeader::class);
+        $middleware->append(StrictTransportSecurity::class);
 
         $middleware->web(prepend: [
             RedirectLegacyIds::class,
