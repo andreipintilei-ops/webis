@@ -11,11 +11,8 @@
     RewriteCond %{HTTP_HOST} ^webis\.ro$ [NC]
     RewriteRule ^ https://www.webis.ro%{REQUEST_URI} [R=301,L]
 
-    # The old WordPress site's images, linked from elsewhere and found in
-    # Google Images: to the same file on old.webis.ro, where that site now
-    # is. Only as long as it is kept there.
-    RewriteCond %{HTTP_HOST} ^(www\.)?webis\.ro$ [NC]
-    RewriteRule ^wp-content/uploads/(.*)$ https://old.webis.ro/wp-content/uploads/$1 [R=301,L]
+    # The old WordPress site's /wp-content/uploads/… go on to the app, whose
+    # redirects table sends each to its file under /storage (one 301).
 
     # Handle Authorization Header
     RewriteCond %{HTTP:Authorization} .
