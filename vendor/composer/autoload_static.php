@@ -768,6 +768,7 @@ class ComposerStaticInitd299c4a2f9d95d377019a209b7418a44
         'App\\Http\\Middleware\\HandleInertiaRequests' => __DIR__ . '/../..' . '/app/Http/Middleware/HandleInertiaRequests.php',
         'App\\Http\\Middleware\\RedirectLegacyIds' => __DIR__ . '/../..' . '/app/Http/Middleware/RedirectLegacyIds.php',
         'App\\Http\\Middleware\\RobotsHeader' => __DIR__ . '/../..' . '/app/Http/Middleware/RobotsHeader.php',
+        'App\\Http\\Middleware\\StrictTransportSecurity' => __DIR__ . '/../..' . '/app/Http/Middleware/StrictTransportSecurity.php',
         'App\\Http\\Requests\\Admin\\ContentRequest' => __DIR__ . '/../..' . '/app/Http/Requests/Admin/ContentRequest.php',
         'App\\Http\\Requests\\Admin\\PageRequest' => __DIR__ . '/../..' . '/app/Http/Requests/Admin/PageRequest.php',
         'App\\Http\\Requests\\Admin\\PostRequest' => __DIR__ . '/../..' . '/app/Http/Requests/Admin/PostRequest.php',

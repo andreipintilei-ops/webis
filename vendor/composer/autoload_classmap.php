@@ -99,6 +99,7 @@ return array(
     'App\\Http\\Middleware\\HandleInertiaRequests' => $baseDir . '/app/Http/Middleware/HandleInertiaRequests.php',
     'App\\Http\\Middleware\\RedirectLegacyIds' => $baseDir . '/app/Http/Middleware/RedirectLegacyIds.php',
     'App\\Http\\Middleware\\RobotsHeader' => $baseDir . '/app/Http/Middleware/RobotsHeader.php',
+    'App\\Http\\Middleware\\StrictTransportSecurity' => $baseDir . '/app/Http/Middleware/StrictTransportSecurity.php',
     'App\\Http\\Requests\\Admin\\ContentRequest' => $baseDir . '/app/Http/Requests/Admin/ContentRequest.php',
     'App\\Http\\Requests\\Admin\\PageRequest' => $baseDir . '/app/Http/Requests/Admin/PageRequest.php',
     'App\\Http\\Requests\\Admin\\PostRequest' => $baseDir . '/app/Http/Requests/Admin/PostRequest.php',

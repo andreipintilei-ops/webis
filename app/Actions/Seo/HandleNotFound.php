@@ -148,7 +148,7 @@ class HandleNotFound
      */
     public static function legacyIdsPath(): string
     {
-        return storage_path('app/private/legacy/legacy-ids.json');
+        return (string) config('site.legacy_ids');
     }
 
     private function applies(Request $request): bool
