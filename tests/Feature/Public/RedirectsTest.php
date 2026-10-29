@@ -155,8 +155,9 @@ it('treats a row that targets itself as a miss, not a loop', function () {
 
 describe('WordPress ids', function () {
     beforeEach(function () {
+        // A map of the test's own, never the repository's.
         $this->legacyStorage = sys_get_temp_dir().'/webis-legacy-ids-'.uniqid();
-        $this->app->useStoragePath($this->legacyStorage);
+        config(['site.legacy_ids' => $this->legacyStorage.'/legacy-ids.json']);
     });
 
     afterEach(function () {
@@ -181,6 +182,15 @@ describe('WordPress ids', function () {
         $this->get('/?page_id=19525')->assertStatus(410);
         // Not an id at all: the home page.
         $this->get('/?p=abc')->assertOk();
+    });
+
+    it('ships the map with the code, so every server has it', function () {
+        $repository = base_path('database/data/legacy-ids.json');
+        $ids = json_decode((string) file_get_contents($repository), true);
+
+        expect($ids)->toBeArray()->not->toBeEmpty()
+            // The article from the report: /?p=12228.
+            ->and($ids['12228'] ?? null)->toBe('/ce-este-algoritmul-md5/');
     });
 
     it('is a no-op without the map', function () {

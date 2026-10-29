@@ -28,4 +28,19 @@ return [
 
     'canonical_url' => rtrim((string) env('SITE_CANONICAL_URL', 'https://www.webis.ro'), '/'),
 
+    /*
+    |--------------------------------------------------------------------------
+    | The old site's post ids
+    |--------------------------------------------------------------------------
+    |
+    | WordPress post id → its new address, for the /?p=123 links
+    | (Actions\Seo\HandleNotFound). Kept in the repository, so every server
+    | has it with the code: under storage/ it reached none of them. The
+    | legacy import writes a fresh one into its output folder
+    | (storage/app/private/legacy); after a re-import, copy it here.
+    |
+    */
+
+    'legacy_ids' => base_path('database/data/legacy-ids.json'),
+
 ];
